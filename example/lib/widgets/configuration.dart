@@ -240,8 +240,8 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
                           child: Text(isApiMode ? "API" : "BUCKETING")))
                 ],
               ),
-              SizedBox(height: _spaceBetweenInput),
-              FSInputField("Timeout", timeoutController, TextInputType.number),
+              // SizedBox(height: _spaceBetweenInput),
+              // FSInputField("Timeout", timeoutController, TextInputType.number),
               SizedBox(height: _spaceBetweenInput),
               FSInputField(
                   "VisitorId", visitorIdController, TextInputType.text),

@@ -10,5 +10,5 @@ class FlagshipConfig {
   DecisionManager decisionManager = ApiManager();
 
   FlagshipConfig.defaultMode(
-      {this.timeout: 2, this.decisionMode = FSMode.DECISION_API});
+      {this.timeout: 2000, this.decisionMode = FSMode.DECISION_API});
 }
