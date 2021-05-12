@@ -1,3 +1,4 @@
+import 'package:flagship_qa/mixins/dialog.dart';
 import 'package:flutter/material.dart';
 import './FSinputField.dart';
 import 'package:http/http.dart';
@@ -13,9 +14,9 @@ class Configuration extends StatefulWidget {
   _ConfigurationState createState() => _ConfigurationState();
 }
 
-class _ConfigurationState extends State<Configuration> {
-  String envId = 'YOUR_ENV_ID';
-  String apiKey = "YOUR_API_KEY";
+class _ConfigurationState extends State<Configuration> with ShowDialog {
+  String envId = 'bkev142bl68g07m5n69g';
+  String apiKey = "YbG55489hK13O3pcfmBFy4ouGJCNdclZ2uOm9iae";
 
   final envIdController = TextEditingController();
   final apiKeyController = TextEditingController();
@@ -41,7 +42,7 @@ class _ConfigurationState extends State<Configuration> {
   @override
   void initState() {
     super.initState();
-    visitorContext = initialVisitorContext;
+    visitorContext = Map<String, Object>.from(initialVisitorContext);
   }
 
   /// Reset filed
@@ -135,28 +136,14 @@ class _ConfigurationState extends State<Configuration> {
     // });
 
     /// synchronize
-    currentVisitor.synchronizeModifications().then((value) {
+    currentVisitor?.synchronizeModifications().then((value) {
       String titleMsg = "SDK ready & synchronized";
       if (value != FSStatus.Ready) {
         titleMsg = "SDK not ready";
       }
 
       /// Show dialog
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return new AlertDialog(
-              title: new Text(titleMsg),
-              actions: <Widget>[
-                new TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('Close'),
-                ),
-              ],
-            );
-          });
+      showBasicDialog(titleMsg, '');
     });
   }
 
@@ -169,6 +156,24 @@ class _ConfigurationState extends State<Configuration> {
   }
 
   void _onTapContext(BuildContext ctx) {
+    if (Flagship.getCurrentVisitor() == null) {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return new AlertDialog(
+              title: new Text("Visitor not created yet"),
+              actions: <Widget>[
+                new TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Close'),
+                ),
+              ],
+            );
+          });
+      return;
+    }
     Navigator.of(ctx).pushNamed(ContextScreen.routeName, arguments: {
       // 'id':id,
     });

@@ -11,8 +11,8 @@ class Event extends StatefulWidget {
 }
 
 class _EventState extends State<Event> {
-  TextEditingController _eventActionController;
-  TextEditingController _eventValueController;
+  late TextEditingController _eventActionController;
+  late TextEditingController _eventValueController;
 
   @override
   void initState() {
@@ -40,7 +40,7 @@ class _EventState extends State<Event> {
     var text = "Event sent";
     var subText = "Event has been sent";
     try {
-      await currentVisitor.sendHit(event);
+      await currentVisitor?.sendHit(event);
     } catch (e) {
       text = "Event send error";
       subText = e.toString();

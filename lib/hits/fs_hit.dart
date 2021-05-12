@@ -36,7 +36,7 @@ class Hit extends FSHitProtocol {
   }
 
   Hit() {
-    this.visitorId = Flagship.getCurrentVisitor().visitorId;
+    this.visitorId = Flagship.getCurrentVisitor()?.visitorId ?? "";
     this.clientId = Flagship.sharedInstance().envId ?? "";
   }
 

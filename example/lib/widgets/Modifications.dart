@@ -41,20 +41,20 @@ class _ModificationsState extends State<Modifications> {
       defaultValue = jsonDecode(defaultValueFlagController.text);
     }
     var ret =
-        currentVisitor.getModification(keyFlagController.text, defaultValue);
+        currentVisitor?.getModification(keyFlagController.text, defaultValue);
 
     setState(() {
       valueForFlag = ret.toString();
     });
 
-    var mapResult = currentVisitor.getModificationInfo(keyFlagController.text);
+    var mapResult = currentVisitor?.getModificationInfo(keyFlagController.text);
     _resetField();
     if (mapResult != null) {
       setState(() {
-        variationId = mapResult['variationId'] ?? "None";
-        variationGroupId = mapResult['variationGroupId'] ?? "None";
-        campaignId = mapResult['campaignId'] ?? "None";
-        isReference = mapResult['isReference'] ?? false;
+        variationId = (mapResult['variationId'] ?? "None") as String;
+        variationGroupId = (mapResult['variationGroupId'] ?? "None") as String;
+        campaignId = (mapResult['campaignId'] ?? "None") as String;
+        isReference = (mapResult['isReference'] ?? false) as bool;
       });
     } else {
       setState(() {
@@ -68,7 +68,7 @@ class _ModificationsState extends State<Modifications> {
 
   // Activate
   _activate() async {
-    await currentVisitor.activateModification(keyFlagController.text);
+    await currentVisitor?.activateModification(keyFlagController.text);
 
     showDialog(
         context: context,
@@ -151,11 +151,11 @@ class _ModificationsState extends State<Modifications> {
                     Expanded(
                       child: DropdownButton<String>(
                         value: flagType,
-                        onChanged: (String newValue) {
+                        onChanged: (String? newValue) {
                           defaultValueFlagController.text =
                               newValue == 'number' ? '0' : 'defaultValue';
                           setState(() {
-                            flagType = newValue;
+                            flagType = newValue ?? "";
                           });
                         },
                         dropdownColor: Colors.black,

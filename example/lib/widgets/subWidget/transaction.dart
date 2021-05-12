@@ -10,18 +10,18 @@ class Transaction extends StatefulWidget {
 }
 
 class _TransactionState extends State<Transaction> {
-  List<Map<String, Object>> listInputs;
+  late List<Map<String, Object>> listInputs;
 
-  TextEditingController _textControllerId;
-  TextEditingController _textControllerAffiliation;
-  TextEditingController _textControllerRevenue;
-  TextEditingController _textControllerShipping;
-  TextEditingController _textControllerTax;
-  TextEditingController _textControllerCurrency;
-  TextEditingController _textControllerCoupon;
-  TextEditingController _textControllerPaymentMethod;
-  TextEditingController _textControllerShippingMethod;
-  TextEditingController _textControllerItemCount;
+  late TextEditingController _textControllerId;
+  late TextEditingController _textControllerAffiliation;
+  late TextEditingController _textControllerRevenue;
+  late TextEditingController _textControllerShipping;
+  late TextEditingController _textControllerTax;
+  late TextEditingController _textControllerCurrency;
+  late TextEditingController _textControllerCoupon;
+  late TextEditingController _textControllerPaymentMethod;
+  late TextEditingController _textControllerShippingMethod;
+  late TextEditingController _textControllerItemCount;
 
   @override
   void initState() {
@@ -107,12 +107,12 @@ class _TransactionState extends State<Transaction> {
     var text = "Transaction sent";
     var subText = "Transaction has been sent";
     try {
-      await Flagship.getCurrentVisitor().sendHit(transacEvent);
+      await Flagship.getCurrentVisitor()?.sendHit(transacEvent);
 
       /// send item  // a revoir
       var itemEvent =
           FSItem(transactionId: "12121212", name: "flutter_name", code: 'code');
-      await Flagship.getCurrentVisitor().sendHit(itemEvent);
+      await Flagship.getCurrentVisitor()?.sendHit(itemEvent);
     } catch (e) {
       text = "Transaction send error";
       subText = e.toString();
@@ -158,7 +158,10 @@ class _TransactionState extends State<Transaction> {
           children: listInputs.map((e) {
             return Container(
                 padding: EdgeInsets.all(10),
-                child: FSInputField(e["label"], e['ctrl'], e['type']));
+                child: FSInputField(
+                    e["label"] as String,
+                    e['ctrl'] as TextEditingController,
+                    e['type'] as TextInputType));
           }).toList(),
         ),
         SizedBox(height: _verticalSpace),

@@ -9,14 +9,14 @@ class Item extends StatefulWidget {
 }
 
 class _ItemState extends State<Item> {
-  List<Map<String, Object>> listInputs;
+  late List<Map<String, Object>> listInputs;
 
-  TextEditingController _textControllerTransactionId;
-  TextEditingController _textControllerName;
-  TextEditingController _textControllerCode;
-  TextEditingController _textControllerPrice;
-  TextEditingController _textControllerQuantity;
-  TextEditingController _textControllerCategory;
+  late TextEditingController _textControllerTransactionId;
+  late TextEditingController _textControllerName;
+  late TextEditingController _textControllerCode;
+  late TextEditingController _textControllerPrice;
+  late TextEditingController _textControllerQuantity;
+  late TextEditingController _textControllerCategory;
 
   @override
   void initState() {
@@ -78,7 +78,7 @@ class _ItemState extends State<Item> {
     var text = "Item sent";
     var subText = "Item has been sent";
     try {
-      await Flagship.getCurrentVisitor().sendHit(itemEvent);
+      await Flagship.getCurrentVisitor()?.sendHit(itemEvent);
     } catch (e) {
       text = "Item sent error";
       subText = e.toString();
@@ -124,7 +124,10 @@ class _ItemState extends State<Item> {
           children: listInputs.map((e) {
             return Container(
                 padding: EdgeInsets.all(10),
-                child: FSInputField(e["label"], e['ctrl'], e['type']));
+                child: FSInputField(
+                    e["label"] as String,
+                    e['ctrl'] as TextEditingController,
+                    e['type'] as TextInputType));
           }).toList(),
         ),
         SizedBox(height: _verticalSpace),

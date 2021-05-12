@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flagship/visitor.dart';
+import 'package:flagship_qa/mixins/dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flagship/flagship.dart';
 import '../tools/fs_tools.dart';
@@ -11,7 +12,7 @@ class ContextScreen extends StatefulWidget {
   _ContextScreenState createState() => _ContextScreenState();
 }
 
-class _ContextScreenState extends State<ContextScreen> {
+class _ContextScreenState extends State<ContextScreen> with ShowDialog {
   TextEditingController ctxInput = TextEditingController();
 
   @override
@@ -24,8 +25,6 @@ class _ContextScreenState extends State<ContextScreen> {
   Widget build(BuildContext context) {
     ctxInput.text = FSTools.getMyPrettyContext();
 
-    final mediaQuery = MediaQuery.of(context);
-
     return Scaffold(
       appBar: AppBar(
         title: Text("Update context"),
@@ -35,16 +34,13 @@ class _ContextScreenState extends State<ContextScreen> {
           children: [
             Container(
                 color: Colors.black,
-                width: double.infinity,
-                height: (mediaQuery.size.height - mediaQuery.padding.top) * 0.5,
-                child: EditableText(
-                  maxLines: null,
+                child: TextField(
+                  style: TextStyle(
+                      color: Colors.white, backgroundColor: Colors.black),
                   controller: ctxInput,
-                  focusNode: FocusNode(),
-                  style: TextStyle(color: Colors.white),
-                  cursorColor: Colors.red,
-                  backgroundCursorColor: Colors.red,
-                  onChanged: (newVal) {},
+                  decoration: null,
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
                 )),
             SizedBox(
                 width: double.infinity,
@@ -61,50 +57,25 @@ class _ContextScreenState extends State<ContextScreen> {
   _onValidate() {
     String subMsg;
     try {
-      Visitor currentClient = Flagship.getCurrentVisitor();
-      Map<String, Object> ret = jsonDecode(ctxInput.text);
-      currentClient.updateContextWithMap(ret);
+      Visitor? currentClient = Flagship.getCurrentVisitor();
+      if (currentClient == null) {
+        throw new Exception("Visitor not initialized");
+      }
+      Map<String, dynamic> ret = jsonDecode(ctxInput.text);
+      currentClient.updateContextWithMap(Map<String, Object>.from(ret));
       subMsg = "Context updated";
 
       /// Synchronize
       currentClient.synchronizeModifications().then((state) {
-        if (state == FSStatus.Ready) {
-          subMsg = "Context updated and synchronized";
-        } else {
-          subMsg = "Context updated but the synchronized failed";
-        }
-        _showDialog("Context validation", subMsg);
+        subMsg = (state == FSStatus.Ready)
+            ? "Context updated and synchronized"
+            : "Context updated but the synchronized failed";
+
+        showBasicDialog("Context validation", subMsg);
       });
     } catch (error) {
       subMsg = "Validation failed : $error";
-      print(error);
-      _showDialog("Context validation", subMsg);
+      showBasicDialog("Context validation", subMsg);
     }
-  }
-
-  /// Show dialog
-  _showDialog(String titleMsg, String subTitle) {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return new AlertDialog(
-            title: new Text(titleMsg),
-            content: new Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(subTitle),
-              ],
-            ),
-            actions: <Widget>[
-              new TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('Close'),
-              ),
-            ],
-          );
-        });
   }
 }

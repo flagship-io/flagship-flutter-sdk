@@ -7,7 +7,7 @@ class FSTools {
 
   static String getMyPrettyContext() {
     try {
-      var ctx = Flagship.getCurrentVisitor().getCurrentContext();
+      var ctx = Flagship.getCurrentVisitor()?.getCurrentContext() ?? {};
       return encoder.convert(ctx);
     } catch (e) {
       return e.toString();

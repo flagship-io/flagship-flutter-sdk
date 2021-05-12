@@ -40,9 +40,7 @@ class MainScreen extends StatefulWidget {
     Hits(),
   ];
 
-  MainScreen({this.title});
-
-  final String title;
+  MainScreen({title = ""});
 
   @override
   MainScreenState createState() => MainScreenState();

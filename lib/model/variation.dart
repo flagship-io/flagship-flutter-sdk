@@ -8,7 +8,7 @@ class Variation {
 
   Variation.fromJson(Map<String, dynamic> json)
       : idVariation = json['id'] as String,
-        allocation = json['allocation'] as int,
+        allocation = (json['allocation'] ?? 0) as int,
         reference = json['reference'] as bool,
         modifications = Modifications.fromJson(
             json['modifications'] as Map<String, dynamic>);

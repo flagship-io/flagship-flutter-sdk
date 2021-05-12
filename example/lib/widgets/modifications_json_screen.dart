@@ -26,7 +26,7 @@ class _ModificationsJSONScreenState extends State<ModificationsJSONScreen> {
                   height: 20,
                 ),
                 Text(FSTools.encoder
-                    .convert(Flagship.getCurrentVisitor().modifications)),
+                    .convert(Flagship.getCurrentVisitor()?.modifications)),
               ],
             ),
           )

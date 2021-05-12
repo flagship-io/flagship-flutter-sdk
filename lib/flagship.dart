@@ -62,11 +62,8 @@ class Flagship {
   }
 
   /// Return the current visitor
-  static Visitor getCurrentVisitor() {
-    return _singleton.currentVisitor ??
-        Visitor(_configuration, "generate automatique id ", {});
-
-    /// To do add tools to create a random id
+  static Visitor? getCurrentVisitor() {
+    return _singleton.currentVisitor;
   }
 
   /// Create a new visitor

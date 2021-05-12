@@ -5,16 +5,12 @@ import 'package:flagship/hits/fs_screen.dart';
 import 'package:flagship/flagship.dart';
 
 class Screen extends StatefulWidget {
-  const Screen({Key key, this.inputController}) : super(key: key);
-
-  final TextEditingController inputController;
-
   @override
   _ScreenState createState() => _ScreenState();
 }
 
 class _ScreenState extends State<Screen> {
-  TextEditingController _textController;
+  late TextEditingController _textController;
 
   @override
   void initState() {
@@ -27,7 +23,7 @@ class _ScreenState extends State<Screen> {
     var text = "Screen hit sent";
     var subText = "Screen hit has been sent";
     try {
-      await Flagship.getCurrentVisitor().sendHit(screenEvent);
+      await Flagship.getCurrentVisitor()?.sendHit(screenEvent);
     } catch (e) {
       text = "Screen send error";
       subText = e.toString();
