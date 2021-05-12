@@ -22,17 +22,37 @@ class _ConfigurationState extends State<Configuration> {
   final timeoutController = TextEditingController();
   final visitorIdController = TextEditingController();
 
+  final Map<String, Object> initialVisitorContext = {
+    "isVip": true,
+    "key1": 12.5,
+    "key2": "title",
+    "key3": 2,
+    'key4': 22,
+    "key5": 4444,
+    "key6": true,
+    "key7": "ola"
+  };
+
   bool isApiMode = true;
   bool isAuthenticate = false;
+
+  Map<String, Object> visitorContext = {};
+
+  @override
+  void initState() {
+    super.initState();
+    visitorContext = initialVisitorContext;
+  }
 
   /// Reset filed
   _resetConfig() {
     setState(() {
-      print("reset fileds");
+      print("reset fields");
       envIdController.clear();
       apiKeyController.clear();
       timeoutController.clear();
       visitorIdController.clear();
+      visitorContext = initialVisitorContext;
       isApiMode = true;
     });
   }
@@ -77,12 +97,10 @@ class _ConfigurationState extends State<Configuration> {
 
     /// Start visitor
     Flagship.startVisitor(envIdController.text, apiKeyController.text,
-        visitorIdController.text, {"isVip": true});
-
-    var currentVisitor = Flagship.getCurrentVisitor();
+        visitorIdController.text, visitorContext);
 
     /// get the current visitor
-    //var currentVisitor = Flagship.getCurrentVisitor();
+    var currentVisitor = Flagship.getCurrentVisitor();
 
     // /// Get modification for "btnTitle"
     // var value = currentVisitor.getModification("btnTitle", "defaultValue");
@@ -105,16 +123,16 @@ class _ConfigurationState extends State<Configuration> {
     // currentVisitor.updateContext("key3", 2);
 
     // /// update context with map
-    currentVisitor.updateContextWithMap({
-      "isVip": true,
-      "key1": 12.5,
-      "key2": "title",
-      "key3": 2,
-      'key4': 22,
-      "key5": 4444,
-      "key6": true,
-      "key7": "ola"
-    });
+    // currentVisitor.updateContextWithMap({
+    //   "isVip": true,
+    //   "key1": 12.5,
+    //   "key2": "title",
+    //   "key3": 2,
+    //   'key4': 22,
+    //   "key5": 4444,
+    //   "key6": true,
+    //   "key7": "ola"
+    // });
 
     /// synchronize
     currentVisitor.synchronizeModifications().then((value) {
@@ -144,9 +162,10 @@ class _ConfigurationState extends State<Configuration> {
 
 // Change Mode
   _changeMode() {
-    setState(() {
-      isApiMode = !isApiMode;
-    });
+    // For now, disabled bucketing mode
+    // setState(() {
+    //   //isApiMode = !isApiMode;
+    // });
   }
 
   void _onTapContext(BuildContext ctx) {
@@ -216,25 +235,25 @@ class _ConfigurationState extends State<Configuration> {
               FSInputField(
                   "VisitorId", visitorIdController, TextInputType.text),
               SizedBox(height: _spaceBetweenInput),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Expanded(
-                      child: Text(
-                    "Authenticate",
-                    style: TextStyle(color: Colors.white),
-                  )),
-                  Container(
-                      child: Switch.adaptive(
-                    value: isAuthenticate,
-                    onChanged: (val) {
-                      setState(() {
-                        isAuthenticate = val;
-                      });
-                    },
-                  )),
-                ],
-              ),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.start,
+              //   children: [
+              //     Expanded(
+              //         child: Text(
+              //       "Authenticate",
+              //       style: TextStyle(color: Colors.white),
+              //     )),
+              //     Container(
+              //         child: Switch.adaptive(
+              //       value: isAuthenticate,
+              //       onChanged: (val) {
+              //         setState(() {
+              //           isAuthenticate = val;
+              //         });
+              //       },
+              //     )),
+              //   ],
+              // ),
               SizedBox(height: _spaceBetweenInput * 10),
               Container(
                   width: double.infinity,

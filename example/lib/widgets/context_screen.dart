@@ -12,7 +12,6 @@ class ContextScreen extends StatefulWidget {
 }
 
 class _ContextScreenState extends State<ContextScreen> {
-  Visitor currentClient = Flagship.getCurrentVisitor();
   TextEditingController ctxInput = TextEditingController();
 
   @override
@@ -62,6 +61,7 @@ class _ContextScreenState extends State<ContextScreen> {
   _onValidate() {
     String subMsg;
     try {
+      Visitor currentClient = Flagship.getCurrentVisitor();
       Map<String, Object> ret = jsonDecode(ctxInput.text);
       currentClient.updateContextWithMap(ret);
       subMsg = "Context updated";

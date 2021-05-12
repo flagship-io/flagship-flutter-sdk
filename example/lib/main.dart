@@ -84,7 +84,10 @@ class MainScreenState extends State<MainScreen> {
         onTap: _onTap,
       ),
       body: Center(
-        child: widget.listWidgets[_selectedIndex],
+        child: IndexedStack(
+          children: widget.listWidgets,
+          index: _selectedIndex,
+        ),
       ),
     );
   }
