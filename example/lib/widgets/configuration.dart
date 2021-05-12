@@ -15,8 +15,8 @@ class Configuration extends StatefulWidget {
 }
 
 class _ConfigurationState extends State<Configuration> with ShowDialog {
-  String envId = 'bkev142bl68g07m5n69g';
-  String apiKey = "YbG55489hK13O3pcfmBFy4ouGJCNdclZ2uOm9iae";
+  String envId = 'YOUR_ENV_ID';
+  String apiKey = "YOUR_API_KEY";
 
   final envIdController = TextEditingController();
   final apiKeyController = TextEditingController();
