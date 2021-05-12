@@ -70,4 +70,8 @@ class Flagship {
   static Visitor newVisitor(String visitorId, Map<String, Object> context) {
     return Visitor(_configuration, visitorId, context);
   }
+
+  FlagshipConfig getConfiguration() {
+    return _configuration;
+  }
 }

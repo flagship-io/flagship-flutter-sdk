@@ -96,12 +96,18 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   _startSdk() {
     print("........Start sdk Flagship ...........");
 
+    /// get the current visitor
+    var currentVisitor = Flagship.getCurrentVisitor();
+    if (currentVisitor != null) {
+      visitorContext = currentVisitor.getCurrentContext();
+    }
+
     /// Start visitor
     Flagship.startVisitor(envIdController.text, apiKeyController.text,
         visitorIdController.text, visitorContext);
 
     /// get the current visitor
-    var currentVisitor = Flagship.getCurrentVisitor();
+    currentVisitor = Flagship.getCurrentVisitor();
 
     // /// Get modification for "btnTitle"
     // var value = currentVisitor.getModification("btnTitle", "defaultValue");

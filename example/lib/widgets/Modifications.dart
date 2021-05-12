@@ -28,8 +28,8 @@ class _ModificationsState extends State<Modifications> {
 
   double _spaceBetweenElements = 10;
 
-  var currentVisitor = Flagship.getCurrentVisitor();
   _getModification() {
+    var currentVisitor = Flagship.getCurrentVisitor();
     dynamic defaultValue = defaultValueFlagController.text;
     if (flagType == "boolean") {
       defaultValue = defaultValueBool.toString();
@@ -68,6 +68,7 @@ class _ModificationsState extends State<Modifications> {
 
   // Activate
   _activate() async {
+    var currentVisitor = Flagship.getCurrentVisitor();
     await currentVisitor?.activateModification(keyFlagController.text);
 
     showDialog(

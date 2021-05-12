@@ -5,7 +5,7 @@ import 'package:flagship/utils/constants.dart';
 class FlagshipConfig {
   FSMode decisionMode = FSMode.DECISION_API;
 
-  int timeout = 2; // 2 seconds
+  int timeout = 2000; // 2 seconds
 
   DecisionManager decisionManager = ApiManager();
 
