@@ -2,11 +2,11 @@ import 'package:flagship/flagship.dart';
 
 enum Type { SCREENVIEW, PAGEVIEW, TRANSACTION, ITEM, EVENT, ACTIVATION, NONE }
 
-abstract class FSHitProtocol {
+abstract class HitProtocol {
   Map<String, Object> get bodyTrack;
 }
 
-class Hit extends FSHitProtocol {
+class Hit extends HitProtocol {
   // type for hit
   Type type = Type.NONE;
 

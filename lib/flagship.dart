@@ -47,28 +47,20 @@ class Flagship {
 
   /// Start visitor
   ///
-  /// envId : environement id (provided by flagship)
-  /// apiKey: Api key (provided by flagship)
   /// visitorId : Id for the visitor
   /// context : Map that represent visitor's attribut  {"isVip":true}
-  static startVisitor(String envId, String apiKey, String visitorId,
-      Map<String, Object> context) {
-    print(
-        " ############# Start sdk  $envId  and  $apiKey   ######################");
+  static Visitor newVisitor(String visitorId, Map<String, Object> context) {
+    return Visitor(_configuration, visitorId, context);
+  }
 
-    _singleton.apiKey = apiKey;
-    _singleton.envId = envId;
-    _singleton.currentVisitor = Visitor(_configuration, visitorId, context);
+  /// Set the current visitor singleton
+  static setCurrentVisitor(Visitor visitor) {
+    _singleton.currentVisitor = visitor;
   }
 
   /// Return the current visitor
   static Visitor? getCurrentVisitor() {
     return _singleton.currentVisitor;
-  }
-
-  /// Create a new visitor
-  static Visitor newVisitor(String visitorId, Map<String, Object> context) {
-    return Visitor(_configuration, visitorId, context);
   }
 
   FlagshipConfig getConfiguration() {

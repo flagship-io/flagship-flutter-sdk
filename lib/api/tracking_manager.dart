@@ -43,22 +43,23 @@ class TrackingManager {
   }
 
   /// Send Hit
-  Future<void> sendHit(FSHitProtocol pHit) async {
+  Future<void> sendHit(HitProtocol pHit) async {
     /// Create url
     String urlString = Endpoints.ARIANE;
-
-    // print(pHit.bodyTrack);
-
-    var response = await Service.sendHttpRequest(
-        RequestType.Post, urlString, fsHeader, jsonEncode(pHit.bodyTrack));
-    switch (response.statusCode) {
-      case 200:
-      case 204:
-      case 201:
-        print("Event sent with success ");
-        break;
-      default:
-        print("Failed to send Event");
+    try {
+      var response = await Service.sendHttpRequest(
+          RequestType.Post, urlString, fsHeader, jsonEncode(pHit.bodyTrack));
+      switch (response.statusCode) {
+        case 200:
+        case 204:
+        case 201:
+          print("Event sent with success ");
+          break;
+        default:
+          print("Failed to send Event");
+      }
+    } catch (error) {
+      print("error occured when sending hit: $error");
     }
   }
 }

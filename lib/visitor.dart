@@ -38,6 +38,11 @@ class Visitor {
   }
 
   /// Update context directely with map for <String, Object>
+  void clearContext() {
+    _context.clear();
+  }
+
+  /// Update context directely with map for <String, Object>
   void updateContextWithMap(Map<String, Object> context) {
     _context.addAll(context);
 
@@ -173,7 +178,7 @@ class Visitor {
   }
 
   /// Send hit
-  Future<void> sendHit(FSHitProtocol hit) async {
+  Future<void> sendHit(HitProtocol hit) async {
     await trackingManager.sendHit(hit);
   }
 }

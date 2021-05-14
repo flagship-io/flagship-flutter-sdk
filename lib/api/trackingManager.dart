@@ -43,7 +43,7 @@ class TrackingManager {
   }
 
   /// Send Hit
-  Future<void> sendHit(FSHitProtocol pHit) async {
+  Future<void> sendHit(HitProtocol pHit) async {
     /// Create url
     String urlString = Endpoints.ARIANE;
 

@@ -14,7 +14,7 @@ void main() {
       expect(v1.getCurrentContext().length, 2);
       expect(v1.getCurrentContext()["key1"], "val1");
       expect(v1.config.decisionMode, FSMode.DECISION_API);
-      expect(v1.config.timeout, 2);
+      expect(v1.config.timeout, 2000);
     });
 
     test('update context with String ', () {

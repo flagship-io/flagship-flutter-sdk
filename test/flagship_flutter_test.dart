@@ -4,14 +4,16 @@ import 'package:flagship/utils/constants.dart';
 
 void main() {
   test('Start Client ', () {
-    Flagship.startVisitor("envId", "apiKey", "user1",
-        {"key1": "val1", "key2": 2, "key3": true, "key4": 12.01});
+    Flagship.start("envId", "apiKey");
+
+    Flagship.setCurrentVisitor(Flagship.newVisitor(
+        "user1", {"key1": "val1", "key2": 2, "key3": true, "key4": 12.01}));
     var v1 = Flagship.getCurrentVisitor();
 
     // check the user id
-    expect(v1.visitorId, "user1");
+    expect(v1?.visitorId, "user1");
     // check the mode
-    expect(v1.config.decisionMode, FSMode.DECISION_API);
-    expect(v1.getCurrentContext().length, 4);
+    expect(v1?.config.decisionMode, FSMode.DECISION_API);
+    expect(v1?.getCurrentContext().length, 4);
   });
 }
