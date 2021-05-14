@@ -7,10 +7,10 @@ First implementation of the SDK with minimal features:
 - Modification helpers
 - Hit tracking
 
-### 0.1.1
-
-Add optional constructor parameters for Hits
-
 ### 0.1.2
 
 Change `ctax` for `tax` in Transaction hit.
+
+### 0.1.1
+
+Add optional constructor parameters for Hits
