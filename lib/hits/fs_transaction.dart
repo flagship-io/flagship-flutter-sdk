@@ -14,7 +14,7 @@ class FSTransaction extends Hit {
   double? shipping;
 
   /// Specifies the total taxes of the transaction.
-  double? ctax;
+  double? tax;
 
   /// Specifies the currency used for all transaction currency values. Value should be a valid ISO 4217 currency code.
   String? currency;
@@ -36,7 +36,7 @@ class FSTransaction extends Hit {
       required this.affiliation,
       this.revenue,
       this.couponCode,
-      this.ctax,
+      this.tax,
       this.currency,
       this.itemCount,
       this.paymentMethod,
@@ -57,7 +57,7 @@ class FSTransaction extends Hit {
     // Add shipping
     if (shipping != null) customBody['ts'] = shipping ?? 0;
     // Add Tax
-    if (ctax != null) customBody['tt'] = ctax ?? 0;
+    if (tax != null) customBody['tt'] = tax ?? 0;
     // Add currency
     if (currency != null) customBody['tc'] = currency ?? "";
     // Add coupon code
