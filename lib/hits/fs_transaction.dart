@@ -31,7 +31,17 @@ class FSTransaction extends Hit {
   /// Specifies the number of items for the transaction.
   int? itemCount;
 
-  FSTransaction({required this.transactionId, required this.affiliation})
+  FSTransaction(
+      {required this.transactionId,
+      required this.affiliation,
+      this.revenue,
+      this.couponCode,
+      this.ctax,
+      this.currency,
+      this.itemCount,
+      this.paymentMethod,
+      this.shipping,
+      this.shippingMethod})
       : super() {
     type = Type.TRANSACTION;
   }

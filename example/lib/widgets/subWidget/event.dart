@@ -35,7 +35,7 @@ class _EventState extends State<Event> {
             : FSCategoryEvent.User_Engagement);
     event.label = "flutter_label";
     event.sessionNumber = 12;
-    event.eventValue = int.tryParse(_eventValueController.text) ?? 0;
+    event.value = int.tryParse(_eventValueController.text) ?? 0;
 
     var text = "Event sent";
     var subText = "Event has been sent";

@@ -19,7 +19,13 @@ class FSItem extends Hit {
   /// Specifies the item category
   String? category;
 
-  FSItem({required this.transactionId, required this.name, required this.code})
+  FSItem(
+      {required this.transactionId,
+      required this.name,
+      required this.code,
+      this.price,
+      this.category,
+      this.quantity})
       : super() {
     type = Type.ITEM;
   }

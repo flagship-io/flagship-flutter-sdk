@@ -6,3 +6,7 @@ First implementation of the SDK with minimal features:
 - Synchronization
 - Modification helpers
 - Hit tracking
+
+### 0.1.1
+
+Add optional constructor parameters for Hits

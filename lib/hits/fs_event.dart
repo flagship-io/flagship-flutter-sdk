@@ -23,9 +23,11 @@ class FSEvent extends Hit {
   String? label;
 
   /// value of the event, must be non-negative.
-  int? eventValue;
+  int? value;
 
-  FSEvent({required this.action, required this.category}) : super() {
+  FSEvent(
+      {required this.action, required this.category, this.label, this.value})
+      : super() {
     type = Type.EVENT;
   }
 
@@ -42,7 +44,7 @@ class FSEvent extends Hit {
     // Add label
     if (label != null) customBody['el'] = label ?? "";
     // Add value
-    if (eventValue != null) customBody['ev'] = eventValue ?? 0;
+    if (value != null) customBody['ev'] = value ?? 0;
     // Add commun body
     customBody.addAll(super.communBodyTrack);
     return customBody;
