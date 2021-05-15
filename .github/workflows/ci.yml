@@ -1,7 +1,7 @@
 name: CI
 on: [push]
 jobs:
-  test_build:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -24,8 +24,27 @@ jobs:
       - name: Update codecov
         run: bash <(curl -s https://codecov.io/bash)
 
+  build_qa_apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-java@v1
+        with:
+          java-version: "12.x"
+
+      - uses: subosito/flutter-action@v1
+        with:
+          flutter-version: "2.0.6"
+
       - run: flutter pub get
         working-directory: example
 
       - run: flutter build apk
         working-directory: example
+
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v2
+        with:
+          name: code-coverage-report
+          path: output/test/code-coverage.html
