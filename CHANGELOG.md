@@ -7,6 +7,12 @@ First implementation of the SDK with minimal features:
 - Modification helpers
 - Hit tracking
 
+### 0.1.3 - 2020-05-15
+
+Implement generics for visitor methods:
+- getModification
+- updateContext
+
 ### 0.1.2
 
 Change `ctax` for `tax` in Transaction hit.
