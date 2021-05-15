@@ -21,6 +21,11 @@ jobs:
       - uses: codecov/codecov-action@v1
         with:
           files: ./coverage/lcov.info
+      - name: Update codecov
+        run: bash <(curl -s https://codecov.io/bash)
+
+      - run: flutter pub get
+        working-directory: example
 
       - run: flutter build apk
         working-directory: example
