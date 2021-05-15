@@ -1,4 +1,5 @@
 import 'package:flagship/flagship_config.dart';
+import 'package:flagship/model/modification.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/visitor.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -51,9 +52,67 @@ void main() {
       expect(v1.getCurrentContext().length, 6);
     });
 
-    test('test none authoriezd type  ', () {
+    test('test none authorized type  ', () {
       v1.updateContext("valueObject", Object());
       expect(v1.getCurrentContext().length, 6);
+    });
+
+    test('test get modification ', () {
+      v1.modifications = new Map<String, Modification>();
+      expect(v1.getModification("test_missing", 10), 10);
+
+      v1.modifications["test_string"] = new Modification("test_string",
+          "campaignId", "variationGroupId", "variationId", true, "string");
+      expect(v1.getModification("test_string", "string"), "string");
+
+      v1.modifications["test_bool"] = new Modification("test_bool",
+          "campaignId", "variationGroupId", "variationId", true, true);
+      expect(v1.getModification("test_bool", false), true);
+
+      v1.modifications["test_double"] = new Modification("test_double",
+          "campaignId", "variationGroupId", "variationId", true, 23.5);
+      expect(v1.getModification("test_double", 13.5), 23.5);
+
+      v1.modifications["test_int"] = new Modification("test_int", "campaignId",
+          "variationGroupId", "variationId", true, 23);
+      expect(v1.getModification("test_int", 13), 23);
+
+      v1.modifications["test_mismatch"] = new Modification("test_mismatch",
+          "campaignId", "variationGroupId", "variationId", true, 23);
+      expect(v1.getModification("test_mismatch", "string"), "string");
+
+      expect(v1.getModification("test_not_exists", "string"), "string");
+
+      v1.modifications["test_mismatch_castable"] = new Modification(
+          "test_mismatch_castable",
+          "campaignId",
+          "variationGroupId",
+          "variationId",
+          true,
+          23);
+      expect(v1.getModification("test_mismatch_castable", 23.3), 23);
+
+      v1.modifications["test_list"] = new Modification(
+          "test_mismatch_castable",
+          "campaignId",
+          "variationGroupId",
+          "variationId",
+          true,
+          ["test1", "test2"]);
+
+      expect(v1.getModification("test_list", ["test3", "test4"]),
+          ["test1", "test2"]);
+
+      v1.modifications["test_object"] = new Modification(
+          "test_mismatch_castable",
+          "campaignId",
+          "variationGroupId",
+          "variationId",
+          true,
+          {"test1": "value1"});
+
+      expect(v1.getModification("test_object", {"test2": "value2"}),
+          {"test1": "value1"});
     });
   });
 }

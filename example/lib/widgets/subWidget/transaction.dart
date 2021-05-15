@@ -97,7 +97,7 @@ class _TransactionState extends State<Transaction> {
     transacEvent.couponCode = _textControllerCoupon.text;
     transacEvent.currency = _textControllerCoupon.text;
     transacEvent.shipping = double.tryParse(_textControllerShipping.text) ?? 0;
-    transacEvent.ctax = double.tryParse(_textControllerRevenue.text) ?? 0;
+    transacEvent.tax = double.tryParse(_textControllerRevenue.text) ?? 0;
     transacEvent.paymentMethod = _textControllerPaymentMethod.text;
     transacEvent.shippingMethod = _textControllerShippingMethod.text;
     transacEvent.itemCount = int.tryParse(_textControllerItemCount.text) ?? 0;

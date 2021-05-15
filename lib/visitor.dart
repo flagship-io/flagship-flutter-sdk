@@ -62,13 +62,13 @@ class Visitor {
   /// key the name for the context (attribut)
   /// value can be int, double, String or boolean
   /// otherwise the update context skip with warnning log
-  void updateContext(String key, Object value) {
+  void updateContext<T>(String key, T value) {
     switch (value.runtimeType) {
       case int:
       case double:
       case String:
       case bool:
-        _context.addAll({key: value});
+        _context.addAll({key: value as Object});
         break;
       default:
         print(
@@ -81,8 +81,7 @@ class Visitor {
   /// key : the name of the key relative to modification
   /// defaultValue: the returned value if the key is not found
   ///
-  dynamic getModification(String key, Object defaultValue,
-      {bool activate = false}) {
+  T getModification<T>(String key, T defaultValue, {bool activate = false}) {
     var ret = defaultValue;
 
     if (this.modifications.containsKey(key)) {
@@ -93,14 +92,29 @@ class Visitor {
           print("Modification value is null, will return default value");
           return ret;
         }
+        switch (T) {
+          case double:
+            if (modification.value is double) {
+              ret = modification.value as T;
+              break;
+            }
 
-        if (modification.value.runtimeType != defaultValue.runtimeType) {
-          print(
-              "Modification value ${modification.value} type ${modification.value.runtimeType} does not match default value type, will return default value");
-          return defaultValue;
+            if (modification.value is int) {
+              ret = (modification.value as int).toDouble() as T;
+              break;
+            }
+            print(
+                "Modification value ${modification.value} type ${modification.value.runtimeType} cannot be casted as $T, will return default value");
+            break;
+          default:
+            if (modification.value is T) {
+              ret = modification.value as T;
+              break;
+            }
+            print(
+                "Modification value ${modification.value} type ${modification.value.runtimeType} cannot be casted as $T, will return default value");
+            break;
         }
-
-        ret = modification.value;
         if (activate) {
           /// send activate later
           _sendActivate(modification);
