@@ -1,9 +1,9 @@
-import 'package:flagship/hits/fs_hit.dart';
+import 'package:flagship/hits/hit.dart';
 
-class FSScreen extends Hit {
+class Screen extends BaseHit {
   final String location;
 
-  FSScreen({required this.location}) : super() {
+  Screen({required this.location}) : super() {
     type = Type.SCREENVIEW;
   }
 

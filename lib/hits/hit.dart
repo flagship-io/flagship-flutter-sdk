@@ -2,11 +2,11 @@ import 'package:flagship/flagship.dart';
 
 enum Type { SCREENVIEW, PAGEVIEW, TRANSACTION, ITEM, EVENT, ACTIVATION, NONE }
 
-abstract class HitProtocol {
+abstract class Hit {
   Map<String, Object> get bodyTrack;
 }
 
-class Hit extends HitProtocol {
+class BaseHit extends Hit {
   // type for hit
   Type type = Type.NONE;
 
@@ -35,7 +35,7 @@ class Hit extends HitProtocol {
     return {};
   }
 
-  Hit() {
+  BaseHit() {
     this.visitorId = Flagship.getCurrentVisitor()?.visitorId ?? "";
     this.clientId = Flagship.sharedInstance().envId ?? "";
   }

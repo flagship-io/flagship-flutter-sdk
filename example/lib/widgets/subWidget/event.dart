@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flagship/flagship.dart';
-import 'package:flagship/hits/fs_event.dart';
+import 'package:flagship/hits/event.dart';
 
 import '../FSinputField.dart';
 
-class Event extends StatefulWidget {
+class EventHit extends StatefulWidget {
   @override
   _EventState createState() => _EventState();
 }
 
-class _EventState extends State<Event> {
+class _EventState extends State<EventHit> {
   late TextEditingController _eventActionController;
   late TextEditingController _eventValueController;
 
@@ -28,11 +28,11 @@ class _EventState extends State<Event> {
   _onSendEventHit() async {
     print("On send event hits");
     var currentVisitor = Flagship.getCurrentVisitor();
-    FSEvent event = FSEvent(
+    Event event = Event(
         action: _eventActionController.text,
         category: _isActionTracking
-            ? FSCategoryEvent.Action_Tracking
-            : FSCategoryEvent.User_Engagement);
+            ? EventCategory.Action_Tracking
+            : EventCategory.User_Engagement);
     event.label = "flutter_label";
     event.sessionNumber = 12;
     event.value = int.tryParse(_eventValueController.text) ?? 0;

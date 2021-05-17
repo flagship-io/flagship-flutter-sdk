@@ -1,6 +1,6 @@
-import 'fs_hit.dart';
+import 'hit.dart';
 
-class FSItem extends Hit {
+class Item extends BaseHit {
   /// Transaction unique identifier
   String transactionId;
 
@@ -19,7 +19,7 @@ class FSItem extends Hit {
   /// Specifies the item category
   String? category;
 
-  FSItem(
+  Item(
       {required this.transactionId,
       required this.name,
       required this.code,

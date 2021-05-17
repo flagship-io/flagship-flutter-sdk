@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import '../FSinputField.dart';
 import 'package:flagship/flagship.dart';
-import 'package:flagship/hits/fs_transaction.dart';
-import 'package:flagship/hits/fs_item.dart';
+import 'package:flagship/hits/transaction.dart';
+import 'package:flagship/hits/item.dart';
 
-class Transaction extends StatefulWidget {
+class TransactionHit extends StatefulWidget {
   @override
   _TransactionState createState() => _TransactionState();
 }
 
-class _TransactionState extends State<Transaction> {
+class _TransactionState extends State<TransactionHit> {
   late List<Map<String, Object>> listInputs;
 
   late TextEditingController _textControllerId;
@@ -89,7 +89,7 @@ class _TransactionState extends State<Transaction> {
   }
 
   _onSendTransaction() async {
-    var transacEvent = FSTransaction(
+    var transacEvent = Transaction(
         transactionId: _textControllerId.text,
         affiliation: _textControllerAffiliation.text);
 
@@ -111,7 +111,7 @@ class _TransactionState extends State<Transaction> {
 
       /// send item  // a revoir
       var itemEvent =
-          FSItem(transactionId: "12121212", name: "flutter_name", code: 'code');
+          Item(transactionId: "12121212", name: "flutter_name", code: 'code');
       await Flagship.getCurrentVisitor()?.sendHit(itemEvent);
     } catch (e) {
       text = "Transaction send error";

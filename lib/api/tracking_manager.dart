@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flagship/api/endpoints.dart';
 import 'package:flagship/flagship.dart';
-import 'package:flagship/hits/fs_hit.dart';
+import 'package:flagship/hits/hit.dart';
 import 'package:flagship/hits/activate.dart';
 import 'package:flagship/utils/constants.dart';
 import 'service.dart';
@@ -43,7 +43,7 @@ class TrackingManager {
   }
 
   /// Send Hit
-  Future<void> sendHit(HitProtocol pHit) async {
+  Future<void> sendHit(Hit pHit) async {
     /// Create url
     String urlString = Endpoints.ARIANE;
     try {

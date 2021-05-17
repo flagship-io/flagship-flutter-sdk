@@ -13,7 +13,7 @@ void main() {
     // check the user id
     expect(v1?.visitorId, "user1");
     // check the mode
-    expect(v1?.config.decisionMode, FSMode.DECISION_API);
+    expect(v1?.config.decisionMode, Mode.DECISION_API);
     expect(v1?.getCurrentContext().length, 4);
   });
 }

@@ -1,4 +1,4 @@
-enum FSMode {
+enum Mode {
   DECISION_API,
   BUCKETING,
 }

@@ -1,10 +1,10 @@
-import 'package:flagship/hits/fs_hit.dart';
+import 'package:flagship/hits/hit.dart';
 
 const String ActionTracking = "Action Tracking";
 const String UserEngagement = "User Engagement";
 
 /// Enumeration that represent Events type
-enum FSCategoryEvent {
+enum EventCategory {
   /// Action tracking
   Action_Tracking,
 
@@ -12,9 +12,9 @@ enum FSCategoryEvent {
   User_Engagement
 }
 
-class FSEvent extends Hit {
+class Event extends BaseHit {
   /// category of the event (Action_Tracking or User_Engagement).
-  FSCategoryEvent? category;
+  EventCategory? category;
 
   /// name of the event.
   String action;
@@ -25,8 +25,7 @@ class FSEvent extends Hit {
   /// value of the event, must be non-negative.
   int? value;
 
-  FSEvent(
-      {required this.action, required this.category, this.label, this.value})
+  Event({required this.action, required this.category, this.label, this.value})
       : super() {
     type = Type.EVENT;
   }
@@ -37,7 +36,7 @@ class FSEvent extends Hit {
     customBody.addAll({
       "t": typeOfEvent,
       "ea": this.action,
-      "ec": (this.category == FSCategoryEvent.Action_Tracking)
+      "ec": (this.category == EventCategory.Action_Tracking)
           ? ActionTracking
           : UserEngagement
     });

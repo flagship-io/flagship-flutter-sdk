@@ -1,15 +1,15 @@
 import 'package:flagship_qa/widgets/FSinputField.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flagship/hits/fs_screen.dart';
+import 'package:flagship/hits/screen.dart';
 import 'package:flagship/flagship.dart';
 
-class Screen extends StatefulWidget {
+class ScreenHit extends StatefulWidget {
   @override
   _ScreenState createState() => _ScreenState();
 }
 
-class _ScreenState extends State<Screen> {
+class _ScreenState extends State<ScreenHit> {
   late TextEditingController _textController;
 
   @override
@@ -19,7 +19,7 @@ class _ScreenState extends State<Screen> {
   }
 
   _onSendScreenHit() async {
-    FSScreen screenEvent = FSScreen(location: _textController.text);
+    Screen screenEvent = Screen(location: _textController.text);
     var text = "Screen hit sent";
     var subText = "Screen hit has been sent";
     try {

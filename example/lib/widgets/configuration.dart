@@ -15,8 +15,8 @@ class Configuration extends StatefulWidget {
 }
 
 class _ConfigurationState extends State<Configuration> with ShowDialog {
-  String envId = 'YOUR_ENV_ID';
-  String apiKey = "YOUR_API_KEY";
+  String envId = 'blvo2kijq6pg023l8edg';
+  String apiKey = "wwURPfcEB01YVMfTYWfCtaezCkXVLeFZ61FJmXtI";
 
   final envIdController = TextEditingController();
   final apiKeyController = TextEditingController();
@@ -149,7 +149,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
     /// synchronize
     currentVisitor?.synchronizeModifications().then((value) {
       String titleMsg = "SDK ready & synchronized";
-      if (value != FSStatus.Ready) {
+      if (value != Status.Ready) {
         titleMsg = "SDK not ready";
       }
 

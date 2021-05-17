@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import '../FSinputField.dart';
 import 'package:flagship/flagship.dart';
-import 'package:flagship/hits/fs_item.dart';
+import 'package:flagship/hits/item.dart';
+import '../FSinputField.dart';
 
-class Item extends StatefulWidget {
+class ItemHit extends StatefulWidget {
   @override
   _ItemState createState() => _ItemState();
 }
 
-class _ItemState extends State<Item> {
+class _ItemState extends State<ItemHit> {
   late List<Map<String, Object>> listInputs;
 
   late TextEditingController _textControllerTransactionId;
@@ -64,7 +64,7 @@ class _ItemState extends State<Item> {
   }
 
   _onSendTransaction() async {
-    var itemEvent = FSItem(
+    var itemEvent = Item(
         transactionId: _textControllerTransactionId.text,
         name: _textControllerName.text,
         code: _textControllerCode.text);

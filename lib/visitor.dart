@@ -6,7 +6,7 @@ import 'package:flagship/decision/decision_manager.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/hits/activate.dart';
-import 'package:flagship/hits/fs_hit.dart';
+import 'package:flagship/hits/hit.dart';
 
 class Visitor {
   /// VisitorId
@@ -144,9 +144,9 @@ class Visitor {
   }
 
   /// Synchronize modification for the visitor
-  Future<FSStatus> synchronizeModifications() async {
+  Future<Status> synchronizeModifications() async {
     print(" ############## synchronize Modifications ##################### ");
-    FSStatus state = FSStatus.Not_Ready;
+    Status state = Status.Not_Ready;
     try {
       var camp = await decisionManager.getCampaigns(
           Flagship.sharedInstance().envId ?? "", visitorId, _context);
@@ -156,7 +156,7 @@ class Visitor {
       var modif = decisionManager.getModifications(camp.campaigns);
       this.modifications.clear();
       this.modifications.addAll(modif);
-      state = FSStatus.Ready;
+      state = Status.Ready;
     } catch (error) {
       print(
           "################## ${error.toString()} ############################");
@@ -192,7 +192,7 @@ class Visitor {
   }
 
   /// Send hit
-  Future<void> sendHit(HitProtocol hit) async {
+  Future<void> sendHit(Hit hit) async {
     await trackingManager.sendHit(hit);
   }
 }

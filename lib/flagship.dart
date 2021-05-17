@@ -3,7 +3,7 @@ library flagship;
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/visitor.dart';
 
-enum FSStatus {
+enum Status {
   Ready,
   Not_Ready,
   Disabled,

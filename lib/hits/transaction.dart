@@ -1,6 +1,6 @@
-import 'package:flagship/hits/fs_hit.dart';
+import 'package:flagship/hits/hit.dart';
 
-class FSTransaction extends Hit {
+class Transaction extends BaseHit {
   /// Transaction unique identifier.
   String transactionId;
 
@@ -31,7 +31,7 @@ class FSTransaction extends Hit {
   /// Specifies the number of items for the transaction.
   int? itemCount;
 
-  FSTransaction(
+  Transaction(
       {required this.transactionId,
       required this.affiliation,
       this.revenue,
