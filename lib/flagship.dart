@@ -2,11 +2,19 @@ library flagship;
 
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/visitor.dart';
+import 'package:uuid/uuid.dart';
 
 enum Status {
-  Ready,
-  Not_Ready,
-  Disabled,
+  // Flagship SDK has not been started or initialized successfully.
+  NOT_INITIALIZED,
+  // Flagship SDK is starting.
+  //STARTING,
+  // Flagship SDK has been started successfully but is still polling campaigns.
+  //POLLING,
+  // Flagship SDK is ready but is running in Panic mode: All features are disabled except the one which refresh this status.
+  PANIC_ON,
+  // Flagship SDK is ready to use.
+  READY
 }
 
 class Flagship {

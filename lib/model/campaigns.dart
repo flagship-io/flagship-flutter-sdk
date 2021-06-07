@@ -7,7 +7,10 @@ class Campaigns {
 
   Campaigns.fromJson(Map<String, dynamic> json) {
     visitorId = json['visitorId'] as String;
-    // panic = json['panic']
+
+    if (json.keys.contains("panic")) {
+      panic = json['panic'] as bool;
+    }
 
     var list = json['campaigns'] as List<dynamic>;
     campaigns = list.map((e) {

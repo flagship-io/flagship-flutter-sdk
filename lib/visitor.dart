@@ -84,7 +84,8 @@ class Visitor {
   T getModification<T>(String key, T defaultValue, {bool activate = false}) {
     var ret = defaultValue;
 
-    if (this.modifications.containsKey(key)) {
+    if (!this.decisionManager.isPanic() &&
+        this.modifications.containsKey(key)) {
       try {
         var modification = this.modifications[key];
 
@@ -131,7 +132,8 @@ class Visitor {
   /// key : the name of the key relative to modification
   /// Return map {"campaignId":"xxx", "variationId" : "xxxx", "variationGroupId":"xxxxx", "isReference": true/false}
   Map<String, Object>? getModificationInfo(String key) {
-    if (this.modifications.containsKey(key)) {
+    if (!this.decisionManager.isPanic() &&
+        this.modifications.containsKey(key)) {
       try {
         var modification = this.modifications[key];
         return modification?.toJson();
@@ -146,17 +148,24 @@ class Visitor {
   /// Synchronize modification for the visitor
   Future<Status> synchronizeModifications() async {
     print(" ############## synchronize Modifications ##################### ");
-    Status state = Status.Not_Ready;
+    Status state = Status.NOT_INITIALIZED;
     try {
       var camp = await decisionManager.getCampaigns(
           Flagship.sharedInstance().envId ?? "", visitorId, _context);
 
       print(
           "################## The new modification are ${this.modifications} ############################");
-      var modif = decisionManager.getModifications(camp.campaigns);
+      // Clear the previous modifications
       this.modifications.clear();
-      this.modifications.addAll(modif);
-      state = Status.Ready;
+      // Update panic value
+      this.decisionManager.updatePanicMode(camp.panic);
+      if (camp.panic) {
+        state = Status.PANIC_ON;
+      } else {
+        var modif = decisionManager.getModifications(camp.campaigns);
+        this.modifications.addAll(modif);
+        state = Status.READY;
+      }
     } catch (error) {
       print(
           "################## ${error.toString()} ############################");
@@ -168,7 +177,8 @@ class Visitor {
 
   /// Activate modification
   Future<void> activateModification(String key) async {
-    if (this.modifications.containsKey(key)) {
+    if (!this.decisionManager.isPanic() &&
+        this.modifications.containsKey(key)) {
       try {
         var modification = this.modifications[key];
 
@@ -193,6 +203,10 @@ class Visitor {
 
   /// Send hit
   Future<void> sendHit(Hit hit) async {
+    if (this.decisionManager.isPanic()) {
+      print("panic mode no event will be sent ");
+      return;
+    }
     await trackingManager.sendHit(hit);
   }
 }

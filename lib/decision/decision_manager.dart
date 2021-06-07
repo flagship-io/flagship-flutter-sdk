@@ -23,4 +23,8 @@ abstract class DecisionManager extends IDecisionManager {
   bool isPanic() {
     return _panic;
   }
+
+  void updatePanicMode(bool newValue) {
+    _panic = newValue;
+  }
 }

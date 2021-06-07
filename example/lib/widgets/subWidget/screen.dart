@@ -21,9 +21,14 @@ class _ScreenState extends State<ScreenHit> {
   _onSendScreenHit() async {
     Screen screenEvent = Screen(location: _textController.text);
     var text = "Screen hit sent";
+    var currentVisitor = Flagship.getCurrentVisitor();
     var subText = "Screen hit has been sent";
     try {
-      await Flagship.getCurrentVisitor()?.sendHit(screenEvent);
+      if (currentVisitor != null && currentVisitor.decisionManager.isPanic()) {
+        subText = "Panic mode, screen hit is not sent";
+      } else {
+        await currentVisitor?.sendHit(screenEvent);
+      }
     } catch (e) {
       text = "Screen send error";
       subText = e.toString();
