@@ -2,7 +2,6 @@ library flagship;
 
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/visitor.dart';
-import 'package:uuid/uuid.dart';
 
 enum Status {
   // Flagship SDK has not been started or initialized successfully.
