@@ -80,11 +80,7 @@ class _ItemState extends State<ItemHit> {
     var currentVisitor = Flagship.getCurrentVisitor();
 
     try {
-      if (currentVisitor != null && currentVisitor.decisionManager.isPanic()) {
-        subText = "Panic mode, Item hit is not sent";
-      } else {
-        await currentVisitor?.sendHit(itemEvent);
-      }
+      await currentVisitor?.sendHit(itemEvent);
     } catch (e) {
       text = "Item sent error";
       subText = e.toString();

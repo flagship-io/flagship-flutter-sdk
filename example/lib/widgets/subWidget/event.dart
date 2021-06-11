@@ -40,11 +40,7 @@ class _EventState extends State<EventHit> {
     var text = "Event sent";
     var subText = "Event has been sent";
     try {
-      if (currentVisitor != null && currentVisitor.decisionManager.isPanic()) {
-        subText = "Panic mode, event hit is not sent";
-      } else {
-        await currentVisitor?.sendHit(event);
-      }
+      await currentVisitor?.sendHit(event);
     } catch (e) {
       text = "Event send error";
       subText = e.toString();

@@ -4,7 +4,7 @@ import 'package:flagship/api/endpoints.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/hits/hit.dart';
 import 'package:flagship/hits/activate.dart';
-import 'package:flagship/utils/constants.dart';
+import 'package:flagship/flagship_version.dart';
 import 'service.dart';
 
 class TrackingManager {
@@ -21,7 +21,7 @@ class TrackingManager {
     return {
       "x-api-key": this.apiKey,
       "x-sdk-client": "flutter",
-      "x-sdk-version": version,
+      "x-sdk-version": FlagShipVersion,
       "Content-type": "application/json"
     };
   }

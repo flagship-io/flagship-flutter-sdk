@@ -108,16 +108,12 @@ class _TransactionState extends State<TransactionHit> {
     var subText = "Transaction has been sent";
     var currentVisitor = Flagship.getCurrentVisitor();
     try {
-      if (currentVisitor != null && currentVisitor.decisionManager.isPanic()) {
-        subText = "Panic mode, transaction hit is not sent";
-      } else {
-        await currentVisitor?.sendHit(transacEvent);
-      }
+      await currentVisitor?.sendHit(transacEvent);
 
       /// send item  // a revoir
       var itemEvent =
           Item(transactionId: "12121212", name: "flutter_name", code: 'code');
-      await Flagship.getCurrentVisitor()?.sendHit(itemEvent);
+      await currentVisitor?.sendHit(itemEvent);
     } catch (e) {
       text = "Transaction send error";
       subText = e.toString();

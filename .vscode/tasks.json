@@ -1,0 +1,12 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "update_flagship_version",
+      "type": "shell",
+      "command": "tool/update_version.sh",
+      "group": "build",
+      "problemMatcher": []
+    }
+  ]
+}
