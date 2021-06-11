@@ -15,11 +15,11 @@ class Configuration extends StatefulWidget {
 }
 
 class _ConfigurationState extends State<Configuration> with ShowDialog {
-  // String envId = 'blvo2kijq6pg023l8edg';
-  // String apiKey = "wwURPfcEB01YVMfTYWfCtaezCkXVLeFZ61FJmXtI";
+  String envId = 'blvo2kijq6pg023l8edg';
+  String apiKey = "wwURPfcEB01YVMfTYWfCtaezCkXVLeFZ61FJmXtI";
 
-  String apiKey = "DxAcxlnRB9yFBZYtLDue1q01dcXZCw6aM49CQB23";
-  String envId = "bkk9glocmjcg0vtmdlng";
+  // String apiKey = "DxAcxlnRB9yFBZYtLDue1q01dcXZCw6aM49CQB23";
+  // String envId = "bkk9glocmjcg0vtmdlng";
 
   final envIdController = TextEditingController();
   final apiKeyController = TextEditingController();
