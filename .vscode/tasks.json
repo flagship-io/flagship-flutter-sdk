@@ -6,7 +6,6 @@
       "type": "shell",
       "command": "tool/update_version.sh",
       "group": "build"
-      // "problemMatcher": []
     }
   ]
 }
