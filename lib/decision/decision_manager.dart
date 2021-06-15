@@ -10,7 +10,7 @@ abstract class DecisionManager extends IDecisionManager {
 
   Map<String, Modification> getModifications(List<Campaign> campaigns) {
     print(
-        "#################### Get getModificationsBis #########################");
+        "#################### Get getModifications #########################");
 
     Map<String, Modification> result = new Map<String, Modification>();
 
