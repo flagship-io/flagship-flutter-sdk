@@ -77,8 +77,10 @@ class _ItemState extends State<ItemHit> {
 
     var text = "Item sent";
     var subText = "Item has been sent";
+    var currentVisitor = Flagship.getCurrentVisitor();
+
     try {
-      await Flagship.getCurrentVisitor()?.sendHit(itemEvent);
+      await currentVisitor?.sendHit(itemEvent);
     } catch (e) {
       text = "Item sent error";
       subText = e.toString();

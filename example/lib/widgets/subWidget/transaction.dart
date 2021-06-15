@@ -106,13 +106,14 @@ class _TransactionState extends State<TransactionHit> {
 
     var text = "Transaction sent";
     var subText = "Transaction has been sent";
+    var currentVisitor = Flagship.getCurrentVisitor();
     try {
-      await Flagship.getCurrentVisitor()?.sendHit(transacEvent);
+      await currentVisitor?.sendHit(transacEvent);
 
       /// send item  // a revoir
       var itemEvent =
           Item(transactionId: "12121212", name: "flutter_name", code: 'code');
-      await Flagship.getCurrentVisitor()?.sendHit(itemEvent);
+      await currentVisitor?.sendHit(itemEvent);
     } catch (e) {
       text = "Transaction send error";
       subText = e.toString();

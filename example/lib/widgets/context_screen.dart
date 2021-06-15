@@ -68,7 +68,7 @@ class _ContextScreenState extends State<ContextScreen> with ShowDialog {
 
       /// Synchronize
       currentClient.synchronizeModifications().then((state) {
-        subMsg = (state == Status.Ready)
+        subMsg = (state == Status.READY)
             ? "Context updated and synchronized"
             : "Context updated but the synchronized failed";
 
