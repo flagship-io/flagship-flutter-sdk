@@ -21,7 +21,7 @@ class TrackingManager {
     return {
       "x-api-key": this.apiKey,
       "x-sdk-client": "flutter",
-      "x-sdk-version": FlagShipVersion,
+      "x-sdk-version": FlagshipVersion,
       "Content-type": "application/json"
     };
   }

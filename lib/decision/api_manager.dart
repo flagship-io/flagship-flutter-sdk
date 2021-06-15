@@ -20,7 +20,7 @@ class ApiManager extends DecisionManager {
     Map<String, String> fsHeaders = {
       "x-api-key": Flagship.sharedInstance().apiKey ?? "",
       "x-sdk-client": "flutter",
-      "x-sdk-version": FlagShipVersion,
+      "x-sdk-version": FlagshipVersion,
       "Content-type": "application/json"
     };
 
