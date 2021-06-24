@@ -6,6 +6,7 @@ import 'dart:math';
 import '../widgets/context_screen.dart';
 // My package
 import 'package:flagship/flagship.dart';
+import 'package:flagship/utils/logger/log_manager.dart';
 
 class Configuration extends StatefulWidget {
   Configuration();
@@ -103,6 +104,13 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
 //start SDK
   _startSdk() {
     print("........Start sdk Flagship ...........");
+
+    var log = LogManager(level: Level.WARNING);
+
+    log.d("DEBUG MESSAGE");
+    log.a("ALL MESSAGE");
+    log.i("Info message");
+    log.e("Error Message");
 
     /// get the current visitor
     var currentVisitor = Flagship.getCurrentVisitor();
