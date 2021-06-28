@@ -2,7 +2,6 @@ import './log_manager.dart';
 
 abstract class FlagshipFilter {
   FlagshipFilter();
-  Level? level;
 
   bool allowDisplay(Level pLevel);
 }
@@ -10,6 +9,6 @@ abstract class FlagshipFilter {
 class FlagshipFilterDebug extends FlagshipFilter {
   @override
   bool allowDisplay(Level pLevel) {
-    return (pLevel.index <= level!.index);
+    return (pLevel.index <= LogManager.level.index);
   }
 }

@@ -1,3 +1,4 @@
+import 'package:flagship/flagship_config.dart';
 import 'package:flagship_qa/mixins/dialog.dart';
 import 'package:flutter/material.dart';
 import './FSinputField.dart';
@@ -103,26 +104,34 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   /////////////// start sdk ////////////////////
 //start SDK
   _startSdk() {
+    /// start SDK
+    Flagship.start(envIdController.text, apiKeyController.text,
+        config:
+            FlagshipConfig(2000, logLevel: Level.DEBUG, isEnableLog: false));
+
     print("........Start sdk Flagship ...........");
 
-    var log = LogManager(level: Level.WARNING);
+    Flagship.logger(Level.ALL, "All message ");
+    Flagship.logger(Level.DEBUG, "Debug message");
+    Flagship.logger(Level.WARNING, "warning message");
+    Flagship.logger(Level.INFO, "info message");
 
-    log.d("DEBUG MESSAGE");
-    log.a("ALL MESSAGE");
-    log.i("Info message");
-    log.e("Error Message");
+    /// Start visitor
+    var visitor = Flagship.newVisitor(visitorIdController.text, visitorContext);
+
+    Flagship.enableLog(true);
+
+    Flagship.logger(Level.ALL, "--------- All message ------------");
+
+    Flagship.setLoggerLevel(Level.ALL);
+
+    Flagship.logger(Level.ALL, "--------- OLA message ------------");
 
     /// get the current visitor
     var currentVisitor = Flagship.getCurrentVisitor();
     if (currentVisitor != null) {
       visitorContext = currentVisitor.getCurrentContext();
     }
-
-    /// start SDK
-    Flagship.start(envIdController.text, apiKeyController.text);
-
-    /// Start visitor
-    var visitor = Flagship.newVisitor(visitorIdController.text, visitorContext);
 
     /// Set current visitor singleton instance for future use
     Flagship.setCurrentVisitor(visitor);

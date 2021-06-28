@@ -28,7 +28,7 @@ class ApiManager extends DecisionManager {
     Object data = json.encode({"visitorId": visitorId, "context": context});
     var response = await Service.sendHttpRequest(
         RequestType.Post, urlString, fsHeaders, data,
-        timeoutMs: Flagship.sharedInstance().getConfiguration().timeout);
+        timeoutMs: Flagship.sharedInstance().getConfiguration()?.timeout ?? 2);
     switch (response.statusCode) {
       case 200:
         return Campaigns.fromJson(json.decode(response.body));

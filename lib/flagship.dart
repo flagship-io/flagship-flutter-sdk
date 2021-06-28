@@ -1,6 +1,7 @@
 library flagship;
 
 import 'package:flagship/flagship_config.dart';
+import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor.dart';
 
 enum Status {
@@ -45,9 +46,14 @@ class Flagship {
   ///
   /// envId : environement id (provided by flagship)
   /// apiKey: Api key (provided by flagship)
-  static start(String envId, String apiKey) {
+  static start(String envId, String apiKey, {FlagshipConfig? config}) {
     _singleton.apiKey = apiKey;
     _singleton.envId = envId;
+
+    if (config != null) {
+      Flagship._configuration = config;
+    }
+
     print(
         " ############# Start sdk  $envId  and  $apiKey   ######################");
   }
@@ -70,7 +76,19 @@ class Flagship {
     return _singleton.currentVisitor;
   }
 
-  FlagshipConfig getConfiguration() {
-    return _configuration;
+  FlagshipConfig? getConfiguration() {
+    return _singleton.currentVisitor?.config;
+  }
+
+  static void enableLog(bool isLogEnabled) {
+    LogManager.logEnabled = isLogEnabled;
+  }
+
+  static void logger(Level level, String message) {
+    Flagship._configuration.logManger.printLog(level, message);
+  }
+
+  static void setLoggerLevel(Level newLevel) {
+    LogManager.level = newLevel;
   }
 }

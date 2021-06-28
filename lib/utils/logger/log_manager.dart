@@ -29,49 +29,28 @@ enum Level {
 }
 
 class LogManager {
-  // Current level
-  static Level _level = Level.ALL;
+  // Default level
+  static Level level = Level.ALL;
 
-  final FlagshipFilter _filter;
+  FlagshipFilter _filter;
 
-  bool _enableLogs = true;
+  static bool logEnabled = true;
 
-  // constructor
-  LogManager({
-    FlagshipFilter? filter,
-    Level? level,
-  }) : _filter = filter ?? FlagshipFilterDebug() {
-    _filter.level = level ?? LogManager._level;
+  // Constructor
+  LogManager({FlagshipFilter? filter, Level? level, bool enableLog = true})
+      : _filter = filter ?? FlagshipFilterDebug() {
+    LogManager.logEnabled = enableLog;
   }
 
-  /// Log info message
-  void i(dynamic message) {
-    log(Level.INFO, message);
-  }
-
-  /// Log a message at level [Level.ALL].
-  void a(dynamic message) {
-    log(Level.ALL, message);
-  }
-
-  /// Log a message at level [Level.debug].
-  void d(dynamic message) {
-    log(Level.DEBUG, message);
-  }
-
-  void e(dynamic message) {
-    log(Level.ERROR, message);
-  }
-
-  void log(Level pLevel, dynamic message) {
-    if (_enableLogs) {
+  void printLog(Level pLevel, dynamic message) {
+    if (LogManager.logEnabled) {
       if (_filter.allowDisplay(pLevel)) {
         print(message);
       }
     }
   }
 
-  void close() {
-    _enableLogs = false;
-  }
+  // void enableLog(bool enbale) {
+  //   this.logEnabled = enbale;
+  // }
 }
