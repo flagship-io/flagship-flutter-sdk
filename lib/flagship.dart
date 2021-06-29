@@ -54,8 +54,7 @@ class Flagship {
       Flagship._configuration = config;
     }
 
-    print(
-        " ############# Start sdk  $envId  and  $apiKey   ######################");
+    Flagship.logger(Level.INFO, "Start sdk  $envId  and  $apiKey");
   }
 
   /// Start visitor
@@ -84,6 +83,7 @@ class Flagship {
     LogManager.logEnabled = isLogEnabled;
   }
 
+  // Display logs in debug console
   static void logger(Level level, String message) {
     Flagship._configuration.logManger.printLog(level, message);
   }

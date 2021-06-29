@@ -1,5 +1,3 @@
-import '../logger/flagship_filter.dart';
-
 enum Level {
   NONE,
   /*
@@ -32,25 +30,26 @@ class LogManager {
   // Default level
   static Level level = Level.ALL;
 
-  FlagshipFilter _filter;
-
   static bool logEnabled = true;
 
   // Constructor
-  LogManager({FlagshipFilter? filter, Level? level, bool enableLog = true})
-      : _filter = filter ?? FlagshipFilterDebug() {
+  LogManager({Level level = Level.ALL, bool enableLog = true}) {
+    // Update the logger
     LogManager.logEnabled = enableLog;
+    // Update level
+    LogManager.level = level;
   }
 
   void printLog(Level pLevel, dynamic message) {
     if (LogManager.logEnabled) {
-      if (_filter.allowDisplay(pLevel)) {
+      if (_allowDisplay(pLevel)) {
         print(message);
       }
     }
   }
 
-  // void enableLog(bool enbale) {
-  //   this.logEnabled = enbale;
-  // }
+  // Check if we can display the message
+  bool _allowDisplay(Level pLevel) {
+    return (pLevel.index <= LogManager.level.index);
+  }
 }

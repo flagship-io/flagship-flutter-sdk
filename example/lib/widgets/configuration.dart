@@ -106,8 +106,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   _startSdk() {
     /// start SDK
     Flagship.start(envIdController.text, apiKeyController.text,
-        config:
-            FlagshipConfig(2000, logLevel: Level.DEBUG, isEnableLog: false));
+        config: FlagshipConfig(2000, logLevel: Level.INFO, isEnableLog: true));
 
     print("........Start sdk Flagship ...........");
 
@@ -118,8 +117,6 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
 
     /// Start visitor
     var visitor = Flagship.newVisitor(visitorIdController.text, visitorContext);
-
-    Flagship.enableLog(true);
 
     Flagship.logger(Level.ALL, "--------- All message ------------");
 
