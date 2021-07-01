@@ -1,5 +1,9 @@
+import 'package:flagship/utils/constants.dart';
+import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+
+import '../flagship.dart';
 
 enum RequestType { Post, Get }
 
@@ -10,8 +14,8 @@ class Service {
     switch (type) {
       case RequestType.Post:
         {
-          print("################# Post: $urlString #####################");
-          print("################# Body of the post $data #################");
+          Flagship.logger(
+              Level.INFO, REQUEST_POST_BODY.replaceFirst("%s", "$data"));
           var url = Uri.parse(urlString);
           var response = await http
               .post(url, body: data, headers: headers)

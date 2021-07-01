@@ -11,7 +11,7 @@ class FlagshipConfig {
   Mode decisionMode = Mode.DECISION_API;
   // Timeout
   int timeout = TIMEOUT;
-  // Decision ManagerÒÒ
+  // Decision Manager
   DecisionManager decisionManager = ApiManager();
   // LogManager
   late LogManager logManger;

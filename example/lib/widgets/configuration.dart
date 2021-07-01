@@ -19,14 +19,14 @@ class Configuration extends StatefulWidget {
 class _ConfigurationState extends State<Configuration> with ShowDialog {
   /// ids:
   // Gilou
-  String envId = 'bkev142bl68g07m5n69g';
-  String apiKey = "YbG55489hK13O3pcfmBFy4ouGJCNdclZ2uOm9iae";
+  //String envId = 'bkev142bl68g07m5n69g';
+  //String apiKey = "YbG55489hK13O3pcfmBFy4ouGJCNdclZ2uOm9iae";
   // Guillaume
   // String envId = 'blvo2kijq6pg023l8edg';
   //String apiKey = "wwURPfcEB01YVMfTYWfCtaezCkXVLeFZ61FJmXtI";
   // Adel
-  // String apiKey = "DxAcxlnRB9yFBZYtLDue1q01dcXZCw6aM49CQB23";
-  // String envId = "bkk9glocmjcg0vtmdlng";
+  String apiKey = "DxAcxlnRB9yFBZYtLDue1q01dcXZCw6aM49CQB23";
+  String envId = "bkk9glocmjcg0vtmdlng";
 
   final envIdController = TextEditingController();
   final apiKeyController = TextEditingController();
@@ -105,24 +105,12 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
 //start SDK
   _startSdk() {
     /// start SDK
+    ///
     Flagship.start(envIdController.text, apiKeyController.text,
-        config: FlagshipConfig(2000, logLevel: Level.INFO, isEnableLog: true));
-
-    print("........Start sdk Flagship ...........");
-
-    Flagship.logger(Level.ALL, "All message ");
-    Flagship.logger(Level.DEBUG, "Debug message");
-    Flagship.logger(Level.WARNING, "warning message");
-    Flagship.logger(Level.INFO, "info message");
+        config: FlagshipConfig(2000, logLevel: Level.ALL, isEnableLog: true));
 
     /// Start visitor
     var visitor = Flagship.newVisitor(visitorIdController.text, visitorContext);
-
-    Flagship.logger(Level.ALL, "--------- All message ------------");
-
-    Flagship.setLoggerLevel(Level.ALL);
-
-    Flagship.logger(Level.ALL, "--------- OLA message ------------");
 
     /// get the current visitor
     var currentVisitor = Flagship.getCurrentVisitor();

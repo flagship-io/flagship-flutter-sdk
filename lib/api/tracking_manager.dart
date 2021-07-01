@@ -5,6 +5,8 @@ import 'package:flagship/flagship.dart';
 import 'package:flagship/hits/hit.dart';
 import 'package:flagship/hits/activate.dart';
 import 'package:flagship/flagship_version.dart';
+import 'package:flagship/utils/constants.dart';
+import 'package:flagship/utils/logger/log_manager.dart';
 import 'service.dart';
 
 class TrackingManager {
@@ -35,10 +37,10 @@ class TrackingManager {
     switch (response.statusCode) {
       case 200:
       case 204:
-        print("activate sent with success ");
+        Flagship.logger(Level.INFO, ACTIVATE_SUCCESS);
         break;
       default:
-        print("Failed to send activate");
+        Flagship.logger(Level.INFO, ACTIVATE_FAILED);
     }
   }
 
@@ -53,13 +55,13 @@ class TrackingManager {
         case 200:
         case 204:
         case 201:
-          print("Event sent with success ");
+          Flagship.logger(Level.INFO, HIT_SUCCESS);
           break;
         default:
-          print("Failed to send Event");
+          Flagship.logger(Level.INFO, HIT_FAILED);
       }
     } catch (error) {
-      print("error occured when sending hit: $error");
+      Flagship.logger(Level.EXCEPTIONS, EXCEPTION.replaceFirst("%s", "$error"));
     }
   }
 }

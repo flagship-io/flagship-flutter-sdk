@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 enum Level {
   NONE,
   /*
@@ -40,10 +42,10 @@ class LogManager {
     LogManager.level = level;
   }
 
-  void printLog(Level pLevel, dynamic message) {
+  void printLog(Level pLevel, dynamic message, bool isJsonMessage) {
     if (LogManager.logEnabled) {
       if (_allowDisplay(pLevel)) {
-        print(message);
+        _displayMessage(message, isJsonMessage);
       }
     }
   }
@@ -51,5 +53,21 @@ class LogManager {
   // Check if we can display the message
   bool _allowDisplay(Level pLevel) {
     return (pLevel.index <= LogManager.level.index);
+  }
+
+  void _displayMessage(String msg, bool isJsonString) {
+    if (isJsonString) {
+      _displayPrettyStringJson(msg);
+    } else {
+      print(msg);
+    }
+  }
+
+  void _displayPrettyStringJson(String input) {
+    const JsonDecoder decoder = JsonDecoder();
+    const JsonEncoder encoder = JsonEncoder.withIndent('  ');
+    final dynamic object = decoder.convert(input);
+    final dynamic prettyString = encoder.convert(object);
+    prettyString.split('\n').forEach((dynamic element) => print(element));
   }
 }

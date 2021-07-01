@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 class FSInputField extends StatelessWidget {
   final String label;
 
-  final TextEditingController inputController;
+  TextEditingController inputController;
 
   final TextInputType keyboardType;
 
@@ -17,6 +17,9 @@ class FSInputField extends StatelessWidget {
       placeholder: label,
       keyboardType: keyboardType,
       style: TextStyle(fontSize: 12, color: Colors.black87),
+      onChanged: (newText) {
+        inputController.text = newText;
+      },
     );
 
     return Container(
