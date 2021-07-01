@@ -3,6 +3,8 @@ import 'package:flagship/decision/decision_manager.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 
+import 'flagship.dart';
+
 // Time out 2 seconds
 const TIMEOUT = 2000;
 
@@ -19,6 +21,8 @@ class FlagshipConfig {
   FlagshipConfig(this.timeout,
       {Level logLevel = Level.ALL, bool isEnableLog = true}) {
     this.logManger = LogManager(level: logLevel, enableLog: isEnableLog);
+
+    Flagship.logger(Level.ALL, "Flagship The timeout is : $timeout ms");
   }
 
   FlagshipConfig.defaultMode(

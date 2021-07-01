@@ -2,7 +2,6 @@ import 'package:flagship/flagship_config.dart';
 import 'package:flagship_qa/mixins/dialog.dart';
 import 'package:flutter/material.dart';
 import './FSinputField.dart';
-import 'package:http/http.dart';
 import 'dart:math';
 import '../widgets/context_screen.dart';
 // My package
@@ -63,42 +62,10 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
       apiKeyController.clear();
       timeoutController.clear();
       visitorIdController.clear();
+      timeoutController.clear();
       visitorContext = initialVisitorContext;
       isApiMode = true;
     });
-  }
-
-  onSdkReady(Response response) {
-    print("im ready from the UI .............");
-
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return SimpleDialog(
-            title: const Text('Decision API Response'),
-            children: <Widget>[
-              SimpleDialogOption(
-                onPressed: () {
-                  Navigator.pop(context, null);
-                },
-                child: Container(
-                    height: (MediaQuery.of(context).size.height * 0.20),
-                    child: SingleChildScrollView(
-                        child: Container(
-                            height: 200,
-                            child: Text(
-                              (response.statusCode == 200)
-                                  ? response.body
-                                  : "Failed to get response api  ",
-                              style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.normal),
-                            )))),
-              ),
-            ],
-          );
-        });
   }
 
   /////////////// start sdk ////////////////////
@@ -107,7 +74,8 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
     /// start SDK
     ///
     Flagship.start(envIdController.text, apiKeyController.text,
-        config: FlagshipConfig(2000, logLevel: Level.ALL, isEnableLog: true));
+        config: FlagshipConfig(int.parse(timeoutController.text),
+            logLevel: Level.ALL, isEnableLog: true));
 
     /// Start visitor
     var visitor = Flagship.newVisitor(visitorIdController.text, visitorContext);
@@ -210,10 +178,12 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
 
   @override
   Widget build(BuildContext context) {
+    const int defaultTimeout = 2;
     double _spaceBetweenInput = 10;
     envIdController.text = envId;
     apiKeyController.text = apiKey;
     visitorIdController.text = _createRandomUser();
+    timeoutController.text = defaultTimeout.toString();
 
     final mediaQuery = MediaQuery.of(context);
     return Container(
@@ -249,6 +219,9 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
               SizedBox(height: _spaceBetweenInput),
               FSInputField("ApiKey", apiKeyController, TextInputType.text),
               SizedBox(height: _spaceBetweenInput),
+              FSInputField(
+                  "Timeout(ms)", timeoutController, TextInputType.number),
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
