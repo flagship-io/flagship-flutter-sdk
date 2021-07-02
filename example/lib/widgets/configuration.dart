@@ -178,7 +178,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
 
   @override
   Widget build(BuildContext context) {
-    const int defaultTimeout = 2;
+    const int defaultTimeout = 2000;
     double _spaceBetweenInput = 10;
     envIdController.text = envId;
     apiKeyController.text = apiKey;

@@ -17,10 +17,7 @@ class FSInputField extends StatelessWidget {
       placeholder: label,
       keyboardType: keyboardType,
       style: TextStyle(fontSize: 12, color: Colors.black87),
-      onChanged: (newText) {
-        print(newText);
-        inputController.text = newText;
-      },
+      onChanged: (newText) {},
     );
 
     return Container(
