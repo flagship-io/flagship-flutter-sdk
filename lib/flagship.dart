@@ -95,7 +95,7 @@ class Flagship {
   /// level : Level of details for logs
   /// message : Message to display
   static void logger(Level level, String message, {bool isJsonString = false}) {
-    Flagship._configuration.logManger.printLog(level, message, isJsonString);
+    Flagship._configuration.logManager.printLog(level, message, isJsonString);
   }
 
   /// Set the level for logger
