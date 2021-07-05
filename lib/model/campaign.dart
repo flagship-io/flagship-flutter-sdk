@@ -24,7 +24,6 @@ class Campaign {
 
     Map<String, Modification> resultMap = new Map<String, Modification>();
     ret.forEach((key, value) {
-      print("@@@@@@@@@@@@@@@@@@@@@@" + key + "@@@@@@@@@@@@@@@@@@@@@");
       resultMap.addAll({
         key: Modification(key, this.idCampaign, this.variationGroupId,
             this.variation.idVariation, this.variation.reference, value)

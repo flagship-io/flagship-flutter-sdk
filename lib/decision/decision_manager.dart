@@ -9,9 +9,6 @@ abstract class DecisionManager extends IDecisionManager {
   DecisionManager();
 
   Map<String, Modification> getModifications(List<Campaign> campaigns) {
-    print(
-        "#################### Get getModifications #########################");
-
     Map<String, Modification> result = new Map<String, Modification>();
 
     for (var itemCampaign in campaigns) {

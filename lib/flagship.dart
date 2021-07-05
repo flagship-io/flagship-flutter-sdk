@@ -1,6 +1,10 @@
 library flagship;
 
 import 'package:flagship/flagship_config.dart';
+import 'package:flagship/flagship_version.dart';
+import 'package:flagship/utils/constants.dart';
+import 'package:flagship/utils/flagship_tools.dart';
+import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor.dart';
 
 enum Status {
@@ -38,23 +42,28 @@ class Flagship {
 
   Flagship._internal() {
     /// implement later
-    print("internal init");
   }
 
   /// Start Sdk
   ///
   /// envId : environement id (provided by flagship)
   /// apiKey: Api key (provided by flagship)
-  static start(String envId, String apiKey) {
-    _singleton.apiKey = apiKey;
-    _singleton.envId = envId;
-    print(
-        " ############# Start sdk  $envId  and  $apiKey   ######################");
+  static start(String envId, String apiKey, {FlagshipConfig? config}) {
+    if (FlagshipTools.chekcXidEnvironment(envId)) {
+      _singleton.apiKey = apiKey;
+      _singleton.envId = envId;
+      if (config != null) {
+        Flagship._configuration = config;
+      }
+      Flagship.logger(Level.INFO, STARTED);
+    } else {
+      Flagship.logger(Level.INFO, (INITIALIZATION_PARAM_ERROR));
+    }
   }
 
   /// Start visitor
   ///
-  /// visitorId : Id for the visitor
+  /// visitorId : Id for the visito
   /// context : Map that represent visitor's attribut  {"isVip":true}
   static Visitor newVisitor(String visitorId, Map<String, Object> context) {
     return Visitor(_configuration, visitorId, context);
@@ -70,7 +79,30 @@ class Flagship {
     return _singleton.currentVisitor;
   }
 
-  FlagshipConfig getConfiguration() {
-    return _configuration;
+  /// Get the current configuration
+  FlagshipConfig? getConfiguration() {
+    return _singleton.currentVisitor?.config;
+  }
+
+  ///Active or desactive logger
+  ///
+  /// isLogEnabled : True to activated logger , otherwise false to deactivate
+  static void enableLog(bool isLogEnabled) {
+    LogManager.logEnabled = isLogEnabled;
+  }
+
+  /// Display message logger
+  ///
+  /// level : Level of details for logs
+  /// message : Message to display
+  static void logger(Level level, String message, {bool isJsonString = false}) {
+    Flagship._configuration.logManger.printLog(level, message, isJsonString);
+  }
+
+  /// Set the level for logger
+  ///
+  /// newLevel : Level of details for logs
+  static void setLoggerLevel(Level newLevel) {
+    LogManager.level = newLevel;
   }
 }

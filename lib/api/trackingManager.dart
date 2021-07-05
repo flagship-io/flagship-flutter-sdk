@@ -6,6 +6,8 @@ import 'package:flagship/flagship.dart';
 import 'package:flagship/hits/hit.dart';
 import 'package:flagship/hits/activate.dart';
 import 'package:flagship/flagship_version.dart';
+import 'package:flagship/utils/constants.dart';
+import 'package:flagship/utils/logger/log_manager.dart';
 
 class TrackingManager {
   late String apiKey;
@@ -35,10 +37,10 @@ class TrackingManager {
     switch (response.statusCode) {
       case 200:
       case 204:
-        print("activate sent with success ");
+        Flagship.logger(Level.INFO, ACTIVATE_SUCCESS);
         break;
       default:
-        print("Failed to send activate");
+        Flagship.logger(Level.INFO, ACTIVATE_FAILED);
     }
   }
 
@@ -46,19 +48,16 @@ class TrackingManager {
   Future<void> sendHit(Hit pHit) async {
     /// Create url
     String urlString = Endpoints.ARIANE;
-
-    // print(pHit.bodyTrack);
-
     var response = await Service.sendHttpRequest(
         RequestType.Post, urlString, fsHeader, jsonEncode(pHit.bodyTrack));
     switch (response.statusCode) {
       case 200:
       case 204:
       case 201:
-        print("Event sent with success ");
+        Flagship.logger(Level.INFO, HIT_SUCCESS);
         break;
       default:
-        print("Failed to send Event");
+        Flagship.logger(Level.INFO, HIT_FAILED);
     }
   }
 }
