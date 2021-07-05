@@ -19,14 +19,14 @@ class FlagshipConfig {
   late LogManager logManger;
 
   FlagshipConfig(this.timeout,
-      {Level logLevel = Level.ALL, bool isEnableLog = true}) {
-    this.logManger = LogManager(level: logLevel, enableLog: isEnableLog);
+      {Level logLevel = Level.ALL, bool activeLog = true}) {
+    this.logManger = LogManager(level: logLevel, enabledLog: activeLog);
 
     Flagship.logger(Level.ALL, "Flagship The timeout is : $timeout ms");
   }
 
   FlagshipConfig.defaultMode(
       {this.timeout: TIMEOUT, this.decisionMode = Mode.DECISION_API}) {
-    this.logManger = LogManager(enableLog: true, level: Level.ALL);
+    this.logManger = LogManager(enabledLog: true, level: Level.ALL);
   }
 }

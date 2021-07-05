@@ -75,7 +75,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
     ///
     Flagship.start(envIdController.text, apiKeyController.text,
         config: FlagshipConfig(int.parse(timeoutController.text),
-            logLevel: Level.ALL, isEnableLog: true));
+            logLevel: Level.ALL, activeLog: true));
 
     /// Start visitor
     var visitor = Flagship.newVisitor(visitorIdController.text, visitorContext);

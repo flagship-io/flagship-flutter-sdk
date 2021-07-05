@@ -35,9 +35,9 @@ class LogManager {
   static bool logEnabled = true;
 
   // Constructor
-  LogManager({Level level = Level.ALL, bool enableLog = true}) {
+  LogManager({Level level = Level.ALL, bool enabledLog = true}) {
     // Update the logger
-    LogManager.logEnabled = enableLog;
+    LogManager.logEnabled = enabledLog;
     // Update level
     LogManager.level = level;
   }

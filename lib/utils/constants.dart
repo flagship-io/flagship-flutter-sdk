@@ -18,24 +18,12 @@ const String CONTEXT_PARAM_ERROR =
         "following types : String, Number, Boolean.";
 const String PARSING_ERROR = "an error occured whil parsing ";
 
-// MODIFICATION synchronizeModifications
+// MODIFICATION
 const String SYNCHRONIZE_MODIFICATIONS =
     "Flagship SDK - Synchronize modifications.";
 const String SYNCHRONIZE_MODIFICATIONS_RESULTS =
     "Flagship SDK - Synchronized modifications are %s";
 
-const String PARSING_CAMPAIGN_ERROR = PARSING_ERROR + " campaign.";
-const String PARSING_VARIATIONGROUP_ERROR = PARSING_ERROR + " variation group.";
-const String PARSING_VARIATION_ERROR = PARSING_ERROR + " variation.";
-const String PARSING_MODIFICATION_ERROR = PARSING_ERROR + " modification.";
-const String PARSING_TARGETING_ERROR = PARSING_ERROR + " targeting.";
-const String PARSING_VALUE_ERROR = PARSING_ERROR + " modification.";
-const String GET_MODIFICATION_CAST_ERROR =
-    "Modification for key '%s' has a different type. Default value is returned.";
-const String GET_MODIFICATION_MISSING_ERROR =
-    "No modification for key '%s'. Default value is returned.";
-const String GET_MODIFICATION_KEY_ERROR =
-    "Key '%s' must not be null. Default value is returned.";
 const String GET_MODIFICATION_ERROR =
     "An error occured while retreiving modification for key '%s'. Default value is returned.";
 const String GET_MODIFICATION_INFO_ERROR = "No modification for key '%s'.";
