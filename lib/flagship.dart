@@ -1,7 +1,6 @@
 library flagship;
 
 import 'package:flagship/flagship_config.dart';
-import 'package:flagship/flagship_version.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
@@ -57,13 +56,13 @@ class Flagship {
       }
       Flagship.logger(Level.INFO, STARTED);
     } else {
-      Flagship.logger(Level.INFO, (INITIALIZATION_PARAM_ERROR));
+      Flagship.logger(Level.ERROR, (INITIALIZATION_PARAM_ERROR));
     }
   }
 
   /// Start visitor
   ///
-  /// visitorId : Id for the visito
+  /// visitorId : Id for the visitor
   /// context : Map that represent visitor's attribut  {"isVip":true}
   static Visitor newVisitor(String visitorId, Map<String, Object> context) {
     return Visitor(_configuration, visitorId, context);
@@ -84,7 +83,7 @@ class Flagship {
     return _singleton.currentVisitor?.config;
   }
 
-  ///Active or desactive logger
+  ///Active or deactivate logger
   ///
   /// isLogEnabled : True to activated logger , otherwise false to deactivate
   static void enableLog(bool isLogEnabled) {

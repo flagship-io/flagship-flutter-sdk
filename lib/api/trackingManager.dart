@@ -57,7 +57,7 @@ class TrackingManager {
         Flagship.logger(Level.INFO, HIT_SUCCESS);
         break;
       default:
-        Flagship.logger(Level.INFO, HIT_FAILED);
+        Flagship.logger(Level.ERROR, HIT_FAILED);
     }
   }
 }
