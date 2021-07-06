@@ -1,11 +1,12 @@
+import 'package:flagship/flagship_config.dart';
 import 'package:flagship_qa/mixins/dialog.dart';
 import 'package:flutter/material.dart';
 import './FSinputField.dart';
-import 'package:http/http.dart';
 import 'dart:math';
 import '../widgets/context_screen.dart';
 // My package
 import 'package:flagship/flagship.dart';
+import 'package:flagship/utils/logger/log_manager.dart';
 
 class Configuration extends StatefulWidget {
   Configuration();
@@ -17,14 +18,14 @@ class Configuration extends StatefulWidget {
 class _ConfigurationState extends State<Configuration> with ShowDialog {
   /// ids:
   // Gilou
-  String envId = 'bkev142bl68g07m5n69g';
-  String apiKey = "YbG55489hK13O3pcfmBFy4ouGJCNdclZ2uOm9iae";
+  //String envId = 'bkev142bl68g07m5n69g';
+  //String apiKey = "YbG55489hK13O3pcfmBFy4ouGJCNdclZ2uOm9iae";
   // Guillaume
   // String envId = 'blvo2kijq6pg023l8edg';
   //String apiKey = "wwURPfcEB01YVMfTYWfCtaezCkXVLeFZ61FJmXtI";
   // Adel
-  // String apiKey = "DxAcxlnRB9yFBZYtLDue1q01dcXZCw6aM49CQB23";
-  // String envId = "bkk9glocmjcg0vtmdlng";
+  String apiKey = "DxAcxlnRB9yFBZYtLDue1q01dcXZCw6aM49CQB23";
+  String envId = "bkk9glocmjcg0vtmdlng";
 
   final envIdController = TextEditingController();
   final apiKeyController = TextEditingController();
@@ -61,60 +62,29 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
       apiKeyController.clear();
       timeoutController.clear();
       visitorIdController.clear();
+      timeoutController.clear();
       visitorContext = initialVisitorContext;
       isApiMode = true;
     });
   }
 
-  onSdkReady(Response response) {
-    print("im ready from the UI .............");
-
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return SimpleDialog(
-            title: const Text('Decision API Response'),
-            children: <Widget>[
-              SimpleDialogOption(
-                onPressed: () {
-                  Navigator.pop(context, null);
-                },
-                child: Container(
-                    height: (MediaQuery.of(context).size.height * 0.20),
-                    child: SingleChildScrollView(
-                        child: Container(
-                            height: 200,
-                            child: Text(
-                              (response.statusCode == 200)
-                                  ? response.body
-                                  : "Failed to get response api  ",
-                              style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.normal),
-                            )))),
-              ),
-            ],
-          );
-        });
-  }
-
   /////////////// start sdk ////////////////////
 //start SDK
   _startSdk() {
-    print("........Start sdk Flagship ...........");
+    /// start SDK
+    ///
+    Flagship.start(envIdController.text, apiKeyController.text,
+        config: FlagshipConfig(int.parse(timeoutController.text),
+            logLevel: Level.ALL, activeLog: true));
+
+    /// Start visitor
+    var visitor = Flagship.newVisitor(visitorIdController.text, visitorContext);
 
     /// get the current visitor
     var currentVisitor = Flagship.getCurrentVisitor();
     if (currentVisitor != null) {
       visitorContext = currentVisitor.getCurrentContext();
     }
-
-    /// start SDK
-    Flagship.start(envIdController.text, apiKeyController.text);
-
-    /// Start visitor
-    var visitor = Flagship.newVisitor(visitorIdController.text, visitorContext);
 
     /// Set current visitor singleton instance for future use
     Flagship.setCurrentVisitor(visitor);
@@ -208,10 +178,12 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
 
   @override
   Widget build(BuildContext context) {
+    const int defaultTimeout = 2000;
     double _spaceBetweenInput = 10;
     envIdController.text = envId;
     apiKeyController.text = apiKey;
     visitorIdController.text = _createRandomUser();
+    timeoutController.text = defaultTimeout.toString();
 
     final mediaQuery = MediaQuery.of(context);
     return Container(
@@ -247,6 +219,9 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
               SizedBox(height: _spaceBetweenInput),
               FSInputField("ApiKey", apiKeyController, TextInputType.text),
               SizedBox(height: _spaceBetweenInput),
+              FSInputField(
+                  "Timeout(ms)", timeoutController, TextInputType.number),
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [

@@ -26,7 +26,6 @@ class _EventState extends State<EventHit> {
   bool _isActionTracking = true;
 
   _onSendEventHit() async {
-    print("On send event hits");
     var currentVisitor = Flagship.getCurrentVisitor();
     Event event = Event(
         action: _eventActionController.text,

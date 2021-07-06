@@ -7,6 +7,8 @@ import 'package:flagship/flagship_config.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/hits/activate.dart';
 import 'package:flagship/hits/hit.dart';
+import 'package:flagship/utils/constants.dart';
+import 'package:flagship/utils/logger/log_manager.dart';
 
 class Visitor {
   /// VisitorId
@@ -45,9 +47,7 @@ class Visitor {
   /// Update context directely with map for <String, Object>
   void updateContextWithMap(Map<String, Object> context) {
     _context.addAll(context);
-
-    print('################# The new context is ' +
-        '$_context ######################@');
+    Flagship.logger(Level.INFO, CONTEXT_UPDATE.replaceFirst("%s", "$_context"));
   }
 
   /// Get the current context for the visitor
@@ -71,8 +71,7 @@ class Visitor {
         _context.addAll({key: value as Object});
         break;
       default:
-        print(
-            "Update context manage only int , String double and boolean value in this version ");
+        Flagship.logger(Level.WARNING, CONTEXT_PARAM_ERROR);
     }
   }
 
@@ -90,7 +89,8 @@ class Visitor {
         var modification = this.modifications[key];
 
         if (modification == null) {
-          print("Modification value is null, will return default value");
+          Flagship.logger(
+              Level.INFO, GET_MODIFICATION_ERROR.replaceFirst("%s", key));
           return ret;
         }
         switch (T) {
@@ -104,7 +104,7 @@ class Visitor {
               ret = (modification.value as int).toDouble() as T;
               break;
             }
-            print(
+            Flagship.logger(Level.INFO,
                 "Modification value ${modification.value} type ${modification.value.runtimeType} cannot be casted as $T, will return default value");
             break;
           default:
@@ -112,7 +112,7 @@ class Visitor {
               ret = modification.value as T;
               break;
             }
-            print(
+            Flagship.logger(Level.INFO,
                 "Modification value ${modification.value} type ${modification.value.runtimeType} cannot be casted as $T, will return default value");
             break;
         }
@@ -121,7 +121,8 @@ class Visitor {
           _sendActivate(modification);
         }
       } catch (exp) {
-        print("an exception raised  $exp , will return a default value ");
+        Flagship.logger(Level.INFO,
+            "an exception raised  $exp , will return a default value ");
       }
     }
     return ret;
@@ -141,20 +142,19 @@ class Visitor {
         return null;
       }
     } else {
+      Flagship.logger(
+          Level.ERROR, GET_MODIFICATION_INFO_ERROR.replaceFirst("%s", key));
       return null;
     }
   }
 
   /// Synchronize modification for the visitor
   Future<Status> synchronizeModifications() async {
-    print(" ############## synchronize Modifications ##################### ");
+    Flagship.logger(Level.ALL, SYNCHRONIZE_MODIFICATIONS);
     Status state = Status.NOT_INITIALIZED;
     try {
       var camp = await decisionManager.getCampaigns(
           Flagship.sharedInstance().envId ?? "", visitorId, _context);
-
-      print(
-          "################## The new modification are ${this.modifications} ############################");
       // Clear the previous modifications
       this.modifications.clear();
       // Update panic value
@@ -164,11 +164,15 @@ class Visitor {
       } else {
         var modif = decisionManager.getModifications(camp.campaigns);
         this.modifications.addAll(modif);
+        Flagship.logger(
+            Level.INFO,
+            SYNCHRONIZE_MODIFICATIONS_RESULTS.replaceFirst(
+                "%s", "${this.modifications}"));
         state = Status.READY;
       }
     } catch (error) {
-      print(
-          "################## ${error.toString()} ############################");
+      Flagship.logger(Level.EXCEPTIONS,
+          EXCEPTION.replaceFirst("%s", "${error.toString()}"));
     }
 
     /// Return the state
@@ -186,7 +190,7 @@ class Visitor {
           await _sendActivate(modification);
         }
       } catch (exp) {
-        print("an exception raised  $exp , failed to activate ");
+        Flagship.logger(Level.EXCEPTIONS, EXCEPTION.replaceFirst("%s", "$exp"));
       }
     }
   }
@@ -204,7 +208,7 @@ class Visitor {
   /// Send hit
   Future<void> sendHit(Hit hit) async {
     if (this.decisionManager.isPanic()) {
-      print("panic mode no event will be sent ");
+      Flagship.logger(Level.INFO, PANIC_HIT);
       return;
     }
     await trackingManager.sendHit(hit);

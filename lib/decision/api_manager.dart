@@ -5,14 +5,12 @@ import 'package:flagship/api/service.dart';
 import 'package:flagship/decision/decision_manager.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/flagship_version.dart';
+import 'package:flagship/utils/logger/log_manager.dart';
 
 class ApiManager extends DecisionManager {
   @override
   Future<Campaigns> getCampaigns(
       String envId, String visitorId, Map<String, Object> context) async {
-    print(
-        " ############## GET CAMPAIGNS FOR THE DECISION API with env ID: $envId and API Key: ${Flagship.sharedInstance().apiKey} #################### ");
-
     /// Create url
     String urlString = Endpoints.DECISION_API + envId + Endpoints.CAMPAIGNS;
 
@@ -28,9 +26,10 @@ class ApiManager extends DecisionManager {
     Object data = json.encode({"visitorId": visitorId, "context": context});
     var response = await Service.sendHttpRequest(
         RequestType.Post, urlString, fsHeaders, data,
-        timeoutMs: Flagship.sharedInstance().getConfiguration().timeout);
+        timeoutMs: Flagship.sharedInstance().getConfiguration()?.timeout ?? 2);
     switch (response.statusCode) {
       case 200:
+        Flagship.logger(Level.ALL, response.body, isJsonString: true);
         return Campaigns.fromJson(json.decode(response.body));
       default:
         throw Exception('Failed to synchronize');

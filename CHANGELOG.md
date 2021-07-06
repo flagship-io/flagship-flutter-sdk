@@ -1,6 +1,11 @@
+## 0.2.1 - 2021-06-23
+
+Add [Panic Mode](https://developers.flagship.io/docs/glossary#panic-mode)
+
 ## 0.2.0 - 2021-05-17
 
 Refactor naming of the constants & hits to remove FS prefix
+
 ## 0.1.0
 
 First implementation of the SDK with minimal features:
