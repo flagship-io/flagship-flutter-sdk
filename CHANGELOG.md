@@ -1,3 +1,10 @@
+## 1.0.0 - 2021-07-19
+
+Add
+
+- logManager to manage logs
+- FlagshipConfig object to customize the timeout and the logger
+
 ## 0.2.1 - 2021-06-23
 
 Add [Panic Mode](https://developers.flagship.io/docs/glossary#panic-mode)
@@ -9,6 +16,7 @@ Refactor naming of the constants & hits to remove FS prefix
 ## 0.1.0
 
 First implementation of the SDK with minimal features:
+
 - Initialization
 - Visitor & context management
 - Synchronization
@@ -18,6 +26,7 @@ First implementation of the SDK with minimal features:
 ### 0.1.3 - 2020-05-15
 
 Implement generics for visitor methods:
+
 - getModification
 - updateContext
 
