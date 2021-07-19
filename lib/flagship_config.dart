@@ -16,17 +16,17 @@ class FlagshipConfig {
   // Decision Manager
   DecisionManager decisionManager = ApiManager();
   // LogManager
-  late LogManager logManger;
+  late LogManager logManager;
 
   FlagshipConfig(this.timeout,
       {Level logLevel = Level.ALL, bool activeLog = true}) {
-    this.logManger = LogManager(level: logLevel, enabledLog: activeLog);
+    this.logManager = LogManager(level: logLevel, enabledLog: activeLog);
 
     Flagship.logger(Level.ALL, "Flagship The timeout is : $timeout ms");
   }
 
   FlagshipConfig.defaultMode(
       {this.timeout: TIMEOUT, this.decisionMode = Mode.DECISION_API}) {
-    this.logManger = LogManager(enabledLog: true, level: Level.ALL);
+    this.logManager = LogManager(enabledLog: true, level: Level.ALL);
   }
 }

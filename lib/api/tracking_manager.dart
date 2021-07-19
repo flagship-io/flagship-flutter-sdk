@@ -40,7 +40,7 @@ class TrackingManager {
         Flagship.logger(Level.INFO, ACTIVATE_SUCCESS);
         break;
       default:
-        Flagship.logger(Level.INFO, ACTIVATE_FAILED);
+        Flagship.logger(Level.ERROR, ACTIVATE_FAILED);
     }
   }
 
@@ -58,7 +58,7 @@ class TrackingManager {
           Flagship.logger(Level.INFO, HIT_SUCCESS);
           break;
         default:
-          Flagship.logger(Level.INFO, HIT_FAILED);
+          Flagship.logger(Level.ERROR, HIT_FAILED);
       }
     } catch (error) {
       Flagship.logger(Level.EXCEPTIONS, EXCEPTION.replaceFirst("%s", "$error"));

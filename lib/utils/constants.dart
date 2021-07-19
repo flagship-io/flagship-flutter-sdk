@@ -20,27 +20,27 @@ const String PARSING_ERROR = "an error occured whil parsing ";
 
 // MODIFICATION
 const String SYNCHRONIZE_MODIFICATIONS =
-    "Flagship SDK - Synchronize modifications.";
+    "Flagship SDK - synchronize modifications.";
 const String SYNCHRONIZE_MODIFICATIONS_RESULTS =
-    "Flagship SDK - Synchronized modifications are %s";
+    "Flagship SDK - synchronized modifications are %s";
 
 const String GET_MODIFICATION_ERROR =
     "An error occured while retreiving modification for key '%s'. Default value is returned.";
 const String GET_MODIFICATION_INFO_ERROR = "No modification for key '%s'.";
 
 // HITS
-const String HIT_SUCCESS = "Flagship Hit sent with success";
-const String HIT_FAILED = "Flagship Failed to send hit";
-const String ACTIVATE_SUCCESS = "Flagship Activate sent with success";
-const String ACTIVATE_FAILED = "Flagship Failed to send activate";
+const String HIT_SUCCESS = "Flagship hit sent with success";
+const String HIT_FAILED = "Flagship failed to send hit";
+const String ACTIVATE_SUCCESS = "Flagship activate sent with success";
+const String ACTIVATE_FAILED = "Flagship failed to send activate";
 const String HIT_INVALID_DATA_ERROR = "'%s' hit invalid format error. \n %s";
 
 // PANIC
-const String PANIC = "Panic mode is on.";
-const String PANIC_HIT = "Panic mode is on, no event will be sent";
+const String PANIC = "Flagship panic mode is on.";
+const String PANIC_HIT = "Flagship panic mode is on, no event will be sent";
 
 // REQUEST
 
-const String REQUEST_POST_BODY = "Flagship Body of the POST:%s";
+const String REQUEST_POST_BODY = "Flagship body of the POST:%s";
 // EXCEPTION
 const String EXCEPTION = "An exception occurred %s";
