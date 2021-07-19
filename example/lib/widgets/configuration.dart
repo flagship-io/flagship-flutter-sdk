@@ -72,10 +72,11 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
 //start SDK
   _startSdk() {
     /// start SDK
-    ///
     Flagship.start(envIdController.text, apiKeyController.text,
-        config: FlagshipConfig(int.parse(timeoutController.text),
+        config: FlagshipConfig(double.parse(timeoutController.text),
             logLevel: Level.ALL, activeLog: true));
+
+    Flagship.setLoggerLevel(Level.INFO);
 
     /// Start visitor
     var visitor = Flagship.newVisitor(visitorIdController.text, visitorContext);

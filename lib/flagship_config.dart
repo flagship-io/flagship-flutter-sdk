@@ -6,13 +6,13 @@ import 'package:flagship/utils/logger/log_manager.dart';
 import 'flagship.dart';
 
 // Time out 2 seconds
-const TIMEOUT = 2000;
+const TIMEOUT = 2000.0;
 
 class FlagshipConfig {
   // Mode
   Mode decisionMode = Mode.DECISION_API;
   // Timeout
-  int timeout = TIMEOUT;
+  double timeout = TIMEOUT;
   // Decision Manager
   DecisionManager decisionManager = ApiManager();
   // LogManager
