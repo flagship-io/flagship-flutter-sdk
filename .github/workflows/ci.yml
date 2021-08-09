@@ -48,4 +48,5 @@ jobs:
         with:
           name: QA APK
           path: example/build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 2
 
