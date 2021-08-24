@@ -1,16 +1,17 @@
 import 'dart:async';
 
+import 'package:flagship/hits/event.dart';
 import 'package:flagship/model/modification.dart';
 import 'package:flagship/api/tracking_manager.dart';
 import 'package:flagship/decision/decision_manager.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/flagship.dart';
-import 'package:flagship/hits/activate.dart';
 import 'package:flagship/hits/hit.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
+import 'package:flagship/visitor/visitor_delegate.dart';
 
-class Visitor {
+class Visitor /*implements IVisitor */ {
   /// VisitorId
   final String visitorId;
 
@@ -19,6 +20,10 @@ class Visitor {
 
   /// Context
   Map<String, Object> _context = {};
+
+  Map<String, Object> getContext() {
+    return _context;
+  }
 
   /// Map for the modification , {"key for the flag": Modification object}
   Map<String, Modification> modifications = {};
@@ -30,6 +35,12 @@ class Visitor {
 
   TrackingManager trackingManager = TrackingManager();
 
+  //Consent
+  bool _hasConsented = true;
+
+  late VisitorDelegate _visitorDelegate;
+  //late DefaultStrategy _strategy;
+
   /// Create new instance for visitor
   ///
   /// config: this object manage the mode of the sdk and other params
@@ -37,6 +48,8 @@ class Visitor {
   /// context : Map that represent the conext for the visitor
   Visitor(this.config, this.visitorId, Map<String, Object> context) {
     this.updateContextWithMap(context);
+
+    _visitorDelegate = VisitorDelegate(this);
   }
 
   /// Update context directely with map for <String, Object>
@@ -62,17 +75,9 @@ class Visitor {
   /// key the name for the context (attribut)
   /// value can be int, double, String or boolean
   /// otherwise the update context skip with warnning log
+
   void updateContext<T>(String key, T value) {
-    switch (value.runtimeType) {
-      case int:
-      case double:
-      case String:
-      case bool:
-        _context.addAll({key: value as Object});
-        break;
-      default:
-        Flagship.logger(Level.WARNING, CONTEXT_PARAM_ERROR);
-    }
+    _visitorDelegate.updateContext(key, value);
   }
 
   /// Get Modification
@@ -80,137 +85,49 @@ class Visitor {
   /// key : the name of the key relative to modification
   /// defaultValue: the returned value if the key is not found
   ///
+
   T getModification<T>(String key, T defaultValue, {bool activate = false}) {
-    var ret = defaultValue;
-
-    if (!this.decisionManager.isPanic() &&
-        this.modifications.containsKey(key)) {
-      try {
-        var modification = this.modifications[key];
-
-        if (modification == null) {
-          Flagship.logger(
-              Level.INFO, GET_MODIFICATION_ERROR.replaceFirst("%s", key));
-          return ret;
-        }
-        switch (T) {
-          case double:
-            if (modification.value is double) {
-              ret = modification.value as T;
-              break;
-            }
-
-            if (modification.value is int) {
-              ret = (modification.value as int).toDouble() as T;
-              break;
-            }
-            Flagship.logger(Level.INFO,
-                "Modification value ${modification.value} type ${modification.value.runtimeType} cannot be casted as $T, will return default value");
-            break;
-          default:
-            if (modification.value is T) {
-              ret = modification.value as T;
-              break;
-            }
-            Flagship.logger(Level.INFO,
-                "Modification value ${modification.value} type ${modification.value.runtimeType} cannot be casted as $T, will return default value");
-            break;
-        }
-        if (activate) {
-          /// send activate later
-          _sendActivate(modification);
-        }
-      } catch (exp) {
-        Flagship.logger(Level.INFO,
-            "an exception raised  $exp , will return a default value ");
-      }
-    }
-    return ret;
+    return _visitorDelegate.getModification(key, defaultValue,
+        activate: activate);
   }
 
   /// Get the modification infos relative to flag (modification)
   ///
   /// key : the name of the key relative to modification
   /// Return map {"campaignId":"xxx", "variationId" : "xxxx", "variationGroupId":"xxxxx", "isReference": true/false}
+
   Map<String, Object>? getModificationInfo(String key) {
-    if (!this.decisionManager.isPanic() &&
-        this.modifications.containsKey(key)) {
-      try {
-        var modification = this.modifications[key];
-        return modification?.toJson();
-      } catch (exp) {
-        return null;
-      }
-    } else {
-      Flagship.logger(
-          Level.ERROR, GET_MODIFICATION_INFO_ERROR.replaceFirst("%s", key));
-      return null;
-    }
+    return _visitorDelegate.getModificationInfo(key);
   }
 
   /// Synchronize modification for the visitor
+
   Future<Status> synchronizeModifications() async {
-    Flagship.logger(Level.ALL, SYNCHRONIZE_MODIFICATIONS);
-    Status state = Status.NOT_INITIALIZED;
-    try {
-      var camp = await decisionManager.getCampaigns(
-          Flagship.sharedInstance().envId ?? "", visitorId, _context);
-      // Clear the previous modifications
-      this.modifications.clear();
-      // Update panic value
-      this.decisionManager.updatePanicMode(camp.panic);
-      if (camp.panic) {
-        state = Status.PANIC_ON;
-      } else {
-        var modif = decisionManager.getModifications(camp.campaigns);
-        this.modifications.addAll(modif);
-        Flagship.logger(
-            Level.INFO,
-            SYNCHRONIZE_MODIFICATIONS_RESULTS.replaceFirst(
-                "%s", "${this.modifications}"));
-        state = Status.READY;
-      }
-    } catch (error) {
-      Flagship.logger(Level.EXCEPTIONS,
-          EXCEPTION.replaceFirst("%s", "${error.toString()}"));
-    }
-
-    /// Return the state
-    return state;
+    return _visitorDelegate.synchronizeModifications();
   }
 
-  /// Activate modification
+  /// Activate modificationx
+
   Future<void> activateModification(String key) async {
-    if (!this.decisionManager.isPanic() &&
-        this.modifications.containsKey(key)) {
-      try {
-        var modification = this.modifications[key];
-
-        if (modification != null) {
-          await _sendActivate(modification);
-        }
-      } catch (exp) {
-        Flagship.logger(Level.EXCEPTIONS, EXCEPTION.replaceFirst("%s", "$exp"));
-      }
-    }
-  }
-
-  /// Activate
-  Future<void> _sendActivate(Modification pModification) async {
-    /// Construct the activate hit
-    /// Refractor later the envId
-    Activate activateHit = Activate(
-        pModification, this.visitorId, Flagship.sharedInstance().envId ?? "");
-
-    await trackingManager.sendActivate(activateHit);
+    _visitorDelegate.activateModification(key);
   }
 
   /// Send hit
-  Future<void> sendHit(Hit hit) async {
-    if (this.decisionManager.isPanic()) {
-      Flagship.logger(Level.INFO, PANIC_HIT);
-      return;
-    }
-    await trackingManager.sendHit(hit);
+  Future<void> sendHit(BaseHit hit) async {
+    _visitorDelegate.sendHit(hit);
+  }
+
+  // Consent
+
+  void setConsent(bool hasConsented) {
+    _hasConsented = hasConsented;
+
+    // Create hit for consent
+    Consent hitConsent = Consent(hasConsented: hasConsented);
+    _visitorDelegate.sendHit(hitConsent);
+  }
+
+  bool getConsent() {
+    return _hasConsented;
   }
 }

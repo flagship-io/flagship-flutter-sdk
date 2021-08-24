@@ -32,6 +32,8 @@ class Flagship {
   // Local visitor , see the startClient function
   Visitor? currentVisitor;
 
+  Status _status = Status.NOT_INITIALIZED;
+
   // internal Singelton
   static final Flagship _singleton = Flagship._internal();
 
@@ -41,6 +43,7 @@ class Flagship {
 
   Flagship._internal() {
     /// implement later
+    // _singleton._status = Status.NOT_INITIALIZED;
   }
 
   /// Start Sdk
@@ -51,6 +54,7 @@ class Flagship {
     if (FlagshipTools.chekcXidEnvironment(envId)) {
       _singleton.apiKey = apiKey;
       _singleton.envId = envId;
+      _singleton._status = Status.NOT_INITIALIZED;
       if (config != null) {
         Flagship._configuration = config;
       }
@@ -103,5 +107,13 @@ class Flagship {
   /// newLevel : Level of details for logs
   static void setLoggerLevel(Level newLevel) {
     LogManager.level = newLevel;
+  }
+
+  static Status getStatus() {
+    return Flagship._singleton._status;
+  }
+
+  static updateState(Status state) {
+    _singleton._status = state;
   }
 }

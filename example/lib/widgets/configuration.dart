@@ -18,14 +18,14 @@ class Configuration extends StatefulWidget {
 class _ConfigurationState extends State<Configuration> with ShowDialog {
   /// ids:
   // Gilou
-  String envId = 'bkev142bl68g07m5n69g';
-  String apiKey = "YbG55489hK13O3pcfmBFy4ouGJCNdclZ2uOm9iae";
+  //String envId = 'bkev142bl68g07m5n69g';
+  //String apiKey = "YbG55489hK13O3pcfmBFy4ouGJCNdclZ2uOm9iae";
   // Guillaume
   // String envId = 'blvo2kijq6pg023l8edg';
   //String apiKey = "wwURPfcEB01YVMfTYWfCtaezCkXVLeFZ61FJmXtI";
   // Adel
-  //String apiKey = "DxAcxlnRB9yFBZYtLDue1q01dcXZCw6aM49CQB23";
-  // String envId = "bkk9glocmjcg0vtmdlng";
+  String apiKey = "DxAcxlnRB9yFBZYtLDue1q01dcXZCw6aM49CQB23";
+  String envId = "bkk9glocmjcg0vtmdlng";
 
   final envIdController = TextEditingController();
   final apiKeyController = TextEditingController();
@@ -45,6 +45,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
 
   bool isApiMode = true;
   bool isAuthenticate = false;
+  bool isConsented = true;
 
   Map<String, Object> visitorContext = {};
 
@@ -88,6 +89,8 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
 
     /// Set current visitor singleton instance for future use
     Flagship.setCurrentVisitor(visitor);
+
+    Flagship.getCurrentVisitor()?.setConsent(true);
 
     /// get the current visitor
     currentVisitor = Flagship.getCurrentVisitor();
@@ -150,6 +153,19 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
     // setState(() {
     //   //isApiMode = !isApiMode;
     // });
+  }
+
+  // Consent Mode
+  _consent() {
+    // For now, disabled bucketing mode
+    setState(() {
+      isConsented = !isConsented;
+    });
+    Flagship.getCurrentVisitor()?.setConsent(isConsented);
+  }
+
+  _testAction() {
+    // Flagship.getCurrentVisitor()?.testAction();
   }
 
   void _onTapContext(BuildContext ctx) {
@@ -242,6 +258,38 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
               FSInputField(
                   "VisitorId", visitorIdController, TextInputType.text),
               SizedBox(height: _spaceBetweenInput),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Expanded(
+                      child: Text(
+                    "Consent",
+                    style: TextStyle(color: Colors.white),
+                  )),
+                  Expanded(
+                      child: ElevatedButton(
+                          onPressed: () => {_consent()},
+                          child: Text(
+                              isConsented ? "Consented" : "Not Consented")))
+                ],
+              ),
+              SizedBox(height: _spaceBetweenInput),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Expanded(
+                      child: Text(
+                    "Test action",
+                    style: TextStyle(color: Colors.white),
+                  )),
+                  Expanded(
+                      child: ElevatedButton(
+                          onPressed: () => {_testAction()},
+                          child: Text("Test Action")))
+                ],
+              ),
+              SizedBox(height: _spaceBetweenInput),
+
               // Row(
               //   mainAxisAlignment: MainAxisAlignment.start,
               //   children: [

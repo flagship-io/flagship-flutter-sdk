@@ -1,6 +1,15 @@
 import 'package:flagship/flagship.dart';
 
-enum Type { SCREENVIEW, PAGEVIEW, TRANSACTION, ITEM, EVENT, ACTIVATION, NONE }
+enum Type {
+  SCREENVIEW,
+  PAGEVIEW,
+  TRANSACTION,
+  ITEM,
+  EVENT,
+  ACTIVATION,
+  CONSSENT,
+  NONE
+}
 
 abstract class Hit {
   Map<String, Object> get bodyTrack;
