@@ -15,5 +15,15 @@ void main() {
     // check the mode
     expect(v1?.config.decisionMode, Mode.DECISION_API);
     expect(v1?.getCurrentContext().length, 4);
+    expect(v1?.getConsent(), true);
+
+    // create visitor v2
+    var v2 = Flagship.newVisitor(
+        "user2", {"key1": "val1", "key2": 2, "key3": true, "key4": 12.01},
+        isConsent: false);
+    expect(v2.visitorId, "user2");
+    expect(v2.getConsent(), false);
+    v2.setConsent(true);
+    expect(v2.getConsent(), true);
   });
 }

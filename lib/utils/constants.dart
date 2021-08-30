@@ -45,7 +45,13 @@ const String ACTIVTAE_NOT_READY = "Flagship not ready to send activate";
 const String PANIC = "Flagship, panic mode is on.";
 const String PANIC_HIT = "Flagship, panic mode is on, no event will be sent";
 const String PANIC_ACTIVATE =
-    "Flagship panic mode is on, the activate is not sent";
+    "Flagship, panic mode is on, the activate is not sent";
+const String PANIC_MODIFICATION_INFO =
+    "Flagship, panic mode is on, no modification infos for key '%s'.";
+const String PANIC_MODIFICATION =
+    "Flagship, panic mode is on, will return the default value";
+const String PANIC_UPDATE_CONTEXT =
+    "Flagship, panic mode is on, update context not effective";
 
 // CONSENT
 const String CONSENT_HIT = "Flagship, the user is not consented to send hit";

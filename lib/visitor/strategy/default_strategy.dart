@@ -5,10 +5,13 @@ import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/visitor.dart';
-import 'package:flagship/visitor/visitor_strategy.dart';
+import 'package:flagship/visitor/Ivisitor.dart';
 
-class DefaultStrategy extends VisitorStrategy {
-  DefaultStrategy(Visitor visitor) : super(visitor);
+// This class represent the default behaviour
+class DefaultStrategy implements IVisitor {
+  final Visitor visitor;
+
+  DefaultStrategy(this.visitor);
 
   @override
   void updateContext<T>(String key, T value) {
@@ -17,7 +20,7 @@ class DefaultStrategy extends VisitorStrategy {
       case double:
       case String:
       case bool:
-        // _context.addAll({key: value as Object});
+        visitor.getContext().addAll({key: value as Object});
         break;
       default:
         Flagship.logger(Level.WARNING, CONTEXT_PARAM_ERROR);
@@ -36,8 +39,7 @@ class DefaultStrategy extends VisitorStrategy {
 
   @override
   Future<void> activateModification(String key) async {
-    if (!visitor.decisionManager.isPanic() &&
-        visitor.modifications.containsKey(key)) {
+    if (visitor.modifications.containsKey(key)) {
       try {
         var modification = visitor.modifications[key];
 
@@ -54,8 +56,7 @@ class DefaultStrategy extends VisitorStrategy {
   T getModification<T>(String key, T defaultValue, {bool activate = false}) {
     var ret = defaultValue;
 
-    if (!visitor.decisionManager.isPanic() &&
-        visitor.modifications.containsKey(key)) {
+    if (visitor.modifications.containsKey(key)) {
       try {
         var modification = visitor.modifications[key];
 
@@ -101,8 +102,7 @@ class DefaultStrategy extends VisitorStrategy {
 
   @override
   Map<String, Object>? getModificationInfo(String key) {
-    if (!visitor.decisionManager.isPanic() &&
-        visitor.modifications.containsKey(key)) {
+    if (visitor.modifications.containsKey(key)) {
       try {
         var modification = visitor.modifications[key];
         return modification?.toJson();
@@ -155,10 +155,6 @@ class DefaultStrategy extends VisitorStrategy {
 
   @override
   Future<void> sendHit(BaseHit hit) async {
-    if (visitor.decisionManager.isPanic()) {
-      Flagship.logger(Level.INFO, PANIC_HIT);
-      return;
-    }
     await visitor.trackingManager.sendHit(hit);
   }
 }

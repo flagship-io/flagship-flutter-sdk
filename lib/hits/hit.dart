@@ -7,7 +7,7 @@ enum Type {
   ITEM,
   EVENT,
   ACTIVATION,
-  CONSSENT,
+  CONSENT,
   NONE
 }
 
@@ -83,6 +83,7 @@ class BaseHit extends Hit {
         ret = 'ITEM';
         break;
       case Type.EVENT:
+      case Type.CONSENT:
         ret = 'EVENT';
         break;
       case Type.TRANSACTION:

@@ -3,11 +3,13 @@ import 'package:flagship/model/modification.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/visitor.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flagship/flagship.dart';
 
 void main() {
   var v1 = Visitor(
       FlagshipConfig.defaultMode(), "user1", {"key1": "val1", "key2": "val2"});
-  group('Visitor ', () {
+  group('Visitor Ready ', () {
+    Flagship.updateState(Status.READY);
     test(
         'Visitor instance should match with inputs constructor and default values',
         () {

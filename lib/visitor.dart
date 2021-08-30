@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flagship/hits/event.dart';
 import 'package:flagship/model/modification.dart';
 import 'package:flagship/api/tracking_manager.dart';
@@ -11,8 +10,8 @@ import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor/visitor_delegate.dart';
 
-class Visitor /*implements IVisitor */ {
-  /// VisitorId
+class Visitor {
+  // VisitorId
   final String visitorId;
 
   /// Configuration
@@ -35,21 +34,29 @@ class Visitor /*implements IVisitor */ {
 
   TrackingManager trackingManager = TrackingManager();
 
-  //Consent
+  //Consent by default is true
   bool _hasConsented = true;
 
+  // delegate visitor
   late VisitorDelegate _visitorDelegate;
-  //late DefaultStrategy _strategy;
 
   /// Create new instance for visitor
   ///
   /// config: this object manage the mode of the sdk and other params
   /// visitorId : the user ID for the visitor
   /// context : Map that represent the conext for the visitor
-  Visitor(this.config, this.visitorId, Map<String, Object> context) {
+  Visitor(this.config, this.visitorId, Map<String, Object> context,
+      {bool isConsent = true}) {
+    // update context
     this.updateContextWithMap(context);
-
+    // set delegate
     _visitorDelegate = VisitorDelegate(this);
+    // set the consent
+    _hasConsented = isConsent;
+    // Send the consent hit on false at the start
+    if (!_hasConsented) {
+      trackingManager.sendHit(Consent(hasConsented: _hasConsented));
+    }
   }
 
   /// Update context directely with map for <String, Object>
@@ -117,16 +124,16 @@ class Visitor /*implements IVisitor */ {
     _visitorDelegate.sendHit(hit);
   }
 
-  // Consent
-
-  void setConsent(bool hasConsented) {
-    _hasConsented = hasConsented;
+  // Set Consent
+  void setConsent(bool isConsent) {
+    _hasConsented = isConsent;
 
     // Create hit for consent
-    Consent hitConsent = Consent(hasConsented: hasConsented);
+    Consent hitConsent = Consent(hasConsented: isConsent);
     _visitorDelegate.sendHit(hitConsent);
   }
 
+  // Get consent
   bool getConsent() {
     return _hasConsented;
   }

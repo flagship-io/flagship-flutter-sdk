@@ -32,6 +32,15 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   final timeoutController = TextEditingController();
   final visitorIdController = TextEditingController();
 
+  @override
+  @override
+  void initState() {
+    super.initState();
+    visitorContext = Map<String, Object>.from(initialVisitorContext);
+
+    visitorIdController.text = _createRandomUser();
+  }
+
   final Map<String, Object> initialVisitorContext = {
     "isVip": true,
     "key1": 12.5,
@@ -48,12 +57,6 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   bool isConsented = true;
 
   Map<String, Object> visitorContext = {};
-
-  @override
-  void initState() {
-    super.initState();
-    visitorContext = Map<String, Object>.from(initialVisitorContext);
-  }
 
   /// Reset filed
   _resetConfig() {
@@ -79,7 +82,8 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
             logLevel: Level.ALL, activeLog: true));
 
     /// Start visitor
-    var visitor = Flagship.newVisitor(visitorIdController.text, visitorContext);
+    var visitor = Flagship.newVisitor(visitorIdController.text, visitorContext,
+        isConsent: isConsented);
 
     /// get the current visitor
     var currentVisitor = Flagship.getCurrentVisitor();
@@ -90,7 +94,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
     /// Set current visitor singleton instance for future use
     Flagship.setCurrentVisitor(visitor);
 
-    Flagship.getCurrentVisitor()?.setConsent(true);
+    Flagship.getCurrentVisitor()?.setConsent(isConsented);
 
     /// get the current visitor
     currentVisitor = Flagship.getCurrentVisitor();
@@ -164,10 +168,6 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
     Flagship.getCurrentVisitor()?.setConsent(isConsented);
   }
 
-  _testAction() {
-    // Flagship.getCurrentVisitor()?.testAction();
-  }
-
   void _onTapContext(BuildContext ctx) {
     if (Flagship.getCurrentVisitor() == null) {
       showDialog(
@@ -198,7 +198,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
     double _spaceBetweenInput = 10;
     envIdController.text = envId;
     apiKeyController.text = apiKey;
-    visitorIdController.text = _createRandomUser();
+    // visitorIdController.text = _createRandomUser();
     timeoutController.text = defaultTimeout.toString();
 
     final mediaQuery = MediaQuery.of(context);
@@ -271,21 +271,6 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
                           onPressed: () => {_consent()},
                           child: Text(
                               isConsented ? "Consented" : "Not Consented")))
-                ],
-              ),
-              SizedBox(height: _spaceBetweenInput),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Expanded(
-                      child: Text(
-                    "Test action",
-                    style: TextStyle(color: Colors.white),
-                  )),
-                  Expanded(
-                      child: ElevatedButton(
-                          onPressed: () => {_testAction()},
-                          child: Text("Test Action")))
                 ],
               ),
               SizedBox(height: _spaceBetweenInput),

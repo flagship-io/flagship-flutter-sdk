@@ -53,7 +53,7 @@ class Event extends BaseHit {
 class Consent extends Event {
   Consent({required bool hasConsented})
       : super(action: "fs_consent", category: EventCategory.User_Engagement) {
-    type = Type.CONSSENT;
+    type = Type.CONSENT;
     label = hasConsented ? "Flutter:true" : "Flutter:flase";
   }
 }
