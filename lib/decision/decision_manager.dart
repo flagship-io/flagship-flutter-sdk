@@ -6,6 +6,8 @@ abstract class DecisionManager extends IDecisionManager {
   //panic mode
   bool _panic = false;
 
+  bool _isConsent = true;
+
   DecisionManager();
 
   Map<String, Modification> getModifications(List<Campaign> campaigns) {
@@ -23,5 +25,13 @@ abstract class DecisionManager extends IDecisionManager {
 
   void updatePanicMode(bool newValue) {
     _panic = newValue;
+  }
+
+  void updateConsent(bool newValue) {
+    _isConsent = newValue;
+  }
+
+  bool isConsent() {
+    return _isConsent;
   }
 }

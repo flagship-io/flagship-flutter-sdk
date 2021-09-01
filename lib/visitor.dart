@@ -131,6 +131,9 @@ class Visitor {
     // Create hit for consent
     Consent hitConsent = Consent(hasConsented: isConsent);
     _visitorDelegate.sendHit(hitConsent);
+
+    // update the consent for decision manager
+    decisionManager.updateConsent(isConsent);
   }
 
   // Get consent
