@@ -83,7 +83,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
 
     /// Start visitor
     var visitor = Flagship.newVisitor(visitorIdController.text, visitorContext,
-        isConsent: isConsented);
+        hasConsented: isConsented);
 
     /// get the current visitor
     var currentVisitor = Flagship.getCurrentVisitor();

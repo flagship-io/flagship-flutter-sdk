@@ -10,6 +10,8 @@ import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor/visitor_delegate.dart';
 
+import 'flagship_delegate.dart';
+
 class Visitor {
   // VisitorId
   final String visitorId;
@@ -20,6 +22,7 @@ class Visitor {
   /// Context
   Map<String, Object> _context = {};
 
+  /// Get context
   Map<String, Object> getContext() {
     return _context;
   }
@@ -39,6 +42,8 @@ class Visitor {
 
   // delegate visitor
   late VisitorDelegate _visitorDelegate;
+  // delegate to update the status
+  final FlagshipDelegate flagshipDelegate = Flagship.sharedInstance();
 
   /// Create new instance for visitor
   ///
@@ -46,13 +51,13 @@ class Visitor {
   /// visitorId : the user ID for the visitor
   /// context : Map that represent the conext for the visitor
   Visitor(this.config, this.visitorId, Map<String, Object> context,
-      {bool isConsent = true}) {
+      {bool hasConsented = true}) {
     // update context
     this.updateContextWithMap(context);
     // set delegate
     _visitorDelegate = VisitorDelegate(this);
     // set the consent
-    _hasConsented = isConsent;
+    _hasConsented = hasConsented;
     // Send the consent hit on false at the start
     if (!_hasConsented) {
       trackingManager.sendHit(Consent(hasConsented: _hasConsented));
@@ -126,14 +131,15 @@ class Visitor {
 
   // Set Consent
   void setConsent(bool isConsent) {
-    _hasConsented = isConsent;
+    if (Flagship.getStatus() != Status.PANIC_ON) {
+      _hasConsented = isConsent;
+      // Create hit for consent
+      Consent hitConsent = Consent(hasConsented: isConsent);
+      _visitorDelegate.sendHit(hitConsent);
 
-    // Create hit for consent
-    Consent hitConsent = Consent(hasConsented: isConsent);
-    _visitorDelegate.sendHit(hitConsent);
-
-    // update the consent for decision manager
-    decisionManager.updateConsent(isConsent);
+      // update the consent for decision manager
+      decisionManager.updateConsent(isConsent);
+    }
   }
 
   // Get consent

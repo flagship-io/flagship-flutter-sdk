@@ -147,7 +147,7 @@ class DefaultStrategy implements IVisitor {
     }
 
     // Update the state
-    Flagship.updateState(state);
+    visitor.flagshipDelegate.onUpdateState(state);
 
     /// Return the state
     return state;

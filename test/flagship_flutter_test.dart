@@ -20,7 +20,7 @@ void main() {
     // create visitor v2
     var v2 = Flagship.newVisitor(
         "user2", {"key1": "val1", "key2": 2, "key3": true, "key4": 12.01},
-        isConsent: false);
+        hasConsented: false);
     expect(v2.visitorId, "user2");
     expect(v2.getConsent(), false);
     v2.setConsent(true);

@@ -6,7 +6,7 @@ abstract class DecisionManager extends IDecisionManager {
   //panic mode
   bool _panic = false;
 
-  bool _isConsent = true;
+  bool _isConsent = true; // By default teh value is true
 
   DecisionManager();
 

@@ -6,6 +6,8 @@ import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor.dart';
 
+import 'flagship_delegate.dart';
+
 enum Status {
   // Flagship SDK has not been started or initialized successfully.
   NOT_INITIALIZED,
@@ -19,7 +21,7 @@ enum Status {
   READY
 }
 
-class Flagship {
+class Flagship with FlagshipDelegate {
   // environement id (provided by flagship)
   String? envId;
 
@@ -43,7 +45,6 @@ class Flagship {
 
   Flagship._internal() {
     /// implement later
-    // _singleton._status = Status.NOT_INITIALIZED;
   }
 
   /// Start Sdk
@@ -69,8 +70,9 @@ class Flagship {
   /// visitorId : Id for the visitor
   /// context : Map that represent visitor's attribut  {"isVip":true}
   static Visitor newVisitor(String visitorId, Map<String, Object> context,
-      {bool isConsent = true}) {
-    return Visitor(_configuration, visitorId, context, isConsent: isConsent);
+      {bool hasConsented = true}) {
+    return Visitor(_configuration, visitorId, context,
+        hasConsented: hasConsented);
   }
 
   /// Set the current visitor singleton
@@ -114,7 +116,8 @@ class Flagship {
     return Flagship._singleton._status;
   }
 
-  static updateState(Status state) {
+  @override
+  void onUpdateState(Status state) {
     _singleton._status = state;
   }
 }
