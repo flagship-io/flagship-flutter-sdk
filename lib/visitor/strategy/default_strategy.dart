@@ -120,7 +120,7 @@ class DefaultStrategy implements IVisitor {
   @override
   Future<Status> synchronizeModifications() async {
     Flagship.logger(Level.ALL, SYNCHRONIZE_MODIFICATIONS);
-    Status state = Status.NOT_INITIALIZED;
+    Status state = Flagship.getStatus();
     try {
       var camp = await visitor.decisionManager.getCampaigns(
           Flagship.sharedInstance().envId ?? "",
@@ -132,6 +132,8 @@ class DefaultStrategy implements IVisitor {
       visitor.decisionManager.updatePanicMode(camp.panic);
       if (camp.panic) {
         state = Status.PANIC_ON;
+        // Update the state when panic mode is ON
+        visitor.flagshipDelegate.onUpdateState(state);
       } else {
         var modif = visitor.decisionManager.getModifications(camp.campaigns);
         visitor.modifications.addAll(modif);
@@ -139,17 +141,12 @@ class DefaultStrategy implements IVisitor {
             Level.INFO,
             SYNCHRONIZE_MODIFICATIONS_RESULTS.replaceFirst(
                 "%s", "${visitor.modifications}"));
-        state = Status.READY;
       }
     } catch (error) {
       Flagship.logger(Level.EXCEPTIONS,
           EXCEPTION.replaceFirst("%s", "${error.toString()}"));
     }
-
-    // Update the state
-    visitor.flagshipDelegate.onUpdateState(state);
-
-    /// Return the state
+    // Return the state
     return state;
   }
 

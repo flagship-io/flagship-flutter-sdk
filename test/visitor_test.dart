@@ -1,4 +1,3 @@
-import 'package:flagship/flagship.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/model/modification.dart';
 import 'package:flagship/utils/constants.dart';
@@ -9,7 +8,6 @@ void main() {
   var v1 = Visitor(
       FlagshipConfig.defaultMode(), "user1", {"key1": "val1", "key2": "val2"});
   group('Visitor Ready ', () {
-    v1.flagshipDelegate.onUpdateState(Status.READY);
     test(
         'Visitor instance should match with inputs constructor and default values',
         () {

@@ -55,7 +55,7 @@ class Flagship with FlagshipDelegate {
     if (FlagshipTools.chekcXidEnvironment(envId)) {
       _singleton.apiKey = apiKey;
       _singleton.envId = envId;
-      _singleton._status = Status.NOT_INITIALIZED;
+      _singleton._status = Status.READY;
       if (config != null) {
         Flagship._configuration = config;
       }
