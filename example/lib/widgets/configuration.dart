@@ -298,7 +298,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
               Container(
                   width: double.infinity,
                   child: ElevatedButton(
-                    child: Text("Update context"),
+                    child: Text("Update context & synchronize"),
                     onPressed: () => {_onTapContext(context)},
                   )),
               SizedBox(height: _spaceBetweenInput),

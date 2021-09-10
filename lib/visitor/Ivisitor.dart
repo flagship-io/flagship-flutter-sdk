@@ -14,4 +14,6 @@ abstract class IVisitor {
   Future<void> activateModification(String key);
 // Send Hits
   Future<void> sendHit(BaseHit hit);
+// send Consent
+  void setConsent(bool isConsent);
 }

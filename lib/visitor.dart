@@ -89,6 +89,7 @@ class Visitor {
   /// otherwise the update context skip with warnning log
 
   void updateContext<T>(String key, T value) {
+    // Delegate the action to strategy
     _visitorDelegate.updateContext(key, value);
   }
 
@@ -99,6 +100,7 @@ class Visitor {
   ///
 
   T getModification<T>(String key, T defaultValue, {bool activate = false}) {
+    // Delegate the action to strategy
     return _visitorDelegate.getModification(key, defaultValue,
         activate: activate);
   }
@@ -109,37 +111,38 @@ class Visitor {
   /// Return map {"campaignId":"xxx", "variationId" : "xxxx", "variationGroupId":"xxxxx", "isReference": true/false}
 
   Map<String, Object>? getModificationInfo(String key) {
+    // Delegate the action to strategy
     return _visitorDelegate.getModificationInfo(key);
   }
 
   /// Synchronize modification for the visitor
 
   Future<Status> synchronizeModifications() async {
+    // Delegate the action to strategy
     return _visitorDelegate.synchronizeModifications();
   }
 
   /// Activate modificationx
 
   Future<void> activateModification(String key) async {
+    // Delegate the action to strategy
     _visitorDelegate.activateModification(key);
   }
 
   /// Send hit
   Future<void> sendHit(BaseHit hit) async {
+    // Delegate the action to strategy
     _visitorDelegate.sendHit(hit);
   }
 
   // Set Consent
-  void setConsent(bool isConsent) {
-    if (Flagship.getStatus() != Status.PANIC_ON) {
-      _hasConsented = isConsent;
-      // Create hit for consent
-      Consent hitConsent = Consent(hasConsented: isConsent);
-      _visitorDelegate.sendHit(hitConsent);
-
-      // update the consent for decision manager
-      decisionManager.updateConsent(isConsent);
-    }
+  void setConsent(bool newValue) {
+    // Update the state for visitor
+    _hasConsented = newValue;
+    // Update the decision manager
+    decisionManager.updateConsent(newValue);
+    // Delegate the action to strategy
+    _visitorDelegate.setConsent(_hasConsented);
   }
 
   // Get consent

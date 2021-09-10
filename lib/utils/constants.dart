@@ -53,6 +53,9 @@ const String PANIC_MODIFICATION =
 const String PANIC_UPDATE_CONTEXT =
     "Flagship, panic mode is on, update context not effective";
 
+const String PANIC_HIT_CONSENT =
+    "Flagship, panic mode is on, the hit consent is not sent";
+
 // CONSENT
 const String CONSENT_HIT = "Flagship, the user is not consented to send hit";
 const String CONSENT_ACTIVATE =

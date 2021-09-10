@@ -36,4 +36,9 @@ class PanicStrategy extends DefaultStrategy {
   Future<void> sendHit(BaseHit hit) async {
     Flagship.logger(Level.INFO, PANIC_HIT);
   }
+
+  @override
+  void setConsent(bool isConsent) {
+    Flagship.logger(Level.INFO, PANIC_HIT_CONSENT);
+  }
 }

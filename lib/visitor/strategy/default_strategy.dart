@@ -1,4 +1,5 @@
 import 'package:flagship/hits/activate.dart';
+import 'package:flagship/hits/event.dart';
 import 'package:flagship/hits/hit.dart';
 import 'package:flagship/model/modification.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
@@ -153,5 +154,13 @@ class DefaultStrategy implements IVisitor {
   @override
   Future<void> sendHit(BaseHit hit) async {
     await visitor.trackingManager.sendHit(hit);
+  }
+
+  @override
+  void setConsent(bool isConsent) {
+    // Create the hit of consent
+    Consent hitConsent = Consent(hasConsented: isConsent);
+    // Send hit ...
+    visitor.sendHit(hitConsent);
   }
 }

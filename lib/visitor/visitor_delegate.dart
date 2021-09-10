@@ -61,4 +61,9 @@ class VisitorDelegate implements IVisitor {
   Future<void> sendHit(BaseHit hit) async {
     getStrategy().sendHit(hit);
   }
+
+  @override
+  void setConsent(bool isConsent) {
+    getStrategy().setConsent(isConsent);
+  }
 }

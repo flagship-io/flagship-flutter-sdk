@@ -30,4 +30,9 @@ class NotReadyStrategy extends DefaultStrategy {
   Future<void> sendHit(Hit hit) async {
     Flagship.logger(Level.ERROR, HIT_NOT_READY);
   }
+
+  @override
+  void setConsent(bool isConsent) {
+    Flagship.logger(Level.INFO, HIT_NOT_READY);
+  }
 }
