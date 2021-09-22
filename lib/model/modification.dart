@@ -14,7 +14,7 @@ class Modification {
   final String variationGroupId;
   final String variationId;
   final bool isReference;
-  dynamic? value;
+  dynamic value;
 
   Modification(this.key, this.campaignId, this.variationGroupId,
       this.variationId, this.isReference, dynamic pValue) {

@@ -45,7 +45,7 @@ class _ContextScreenState extends State<ContextScreen> with ShowDialog {
             SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  child: Text("Validate"),
+                  child: Text("Validate & Synchronize"),
                   onPressed: _onValidate,
                 )),
           ],

@@ -6,6 +6,8 @@ import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor.dart';
 
+import 'flagship_delegate.dart';
+
 enum Status {
   // Flagship SDK has not been started or initialized successfully.
   NOT_INITIALIZED,
@@ -19,7 +21,7 @@ enum Status {
   READY
 }
 
-class Flagship {
+class Flagship with FlagshipDelegate {
   // environement id (provided by flagship)
   String? envId;
 
@@ -31,6 +33,8 @@ class Flagship {
 
   // Local visitor , see the startClient function
   Visitor? currentVisitor;
+
+  Status _status = Status.NOT_INITIALIZED;
 
   // internal Singelton
   static final Flagship _singleton = Flagship._internal();
@@ -51,6 +55,7 @@ class Flagship {
     if (FlagshipTools.chekcXidEnvironment(envId)) {
       _singleton.apiKey = apiKey;
       _singleton.envId = envId;
+      _singleton._status = Status.READY;
       if (config != null) {
         Flagship._configuration = config;
       }
@@ -64,8 +69,10 @@ class Flagship {
   ///
   /// visitorId : Id for the visitor
   /// context : Map that represent visitor's attribut  {"isVip":true}
-  static Visitor newVisitor(String visitorId, Map<String, Object> context) {
-    return Visitor(_configuration, visitorId, context);
+  static Visitor newVisitor(String visitorId, Map<String, Object> context,
+      {bool hasConsented = true}) {
+    return Visitor(_configuration, visitorId, context,
+        hasConsented: hasConsented);
   }
 
   /// Set the current visitor singleton
@@ -103,5 +110,14 @@ class Flagship {
   /// newLevel : Level of details for logs
   static void setLoggerLevel(Level newLevel) {
     LogManager.level = newLevel;
+  }
+
+  static Status getStatus() {
+    return Flagship._singleton._status;
+  }
+
+  @override
+  void onUpdateState(Status state) {
+    _singleton._status = state;
   }
 }
