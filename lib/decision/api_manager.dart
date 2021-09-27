@@ -11,10 +11,16 @@ class ApiManager extends DecisionManager {
   @override
   Future<Campaigns> getCampaigns(
       String envId, String visitorId, Map<String, Object> context) async {
-    /// Create url
+    // Create url
     String urlString = Endpoints.DECISION_API + envId + Endpoints.CAMPAIGNS;
+    // if the consent is false , we set the sendContext to false
+    if (isConsent() == false) {
+      urlString = urlString + Endpoints.DO_NOT_SEND_CONTEXT;
+    }
 
-    // create headers   /// refractor later
+    Flagship.logger(Level.INFO, 'GET CAMPAIGNS :' + urlString);
+
+    // create headers
     Map<String, String> fsHeaders = {
       "x-api-key": Flagship.sharedInstance().apiKey ?? "",
       "x-sdk-client": "flutter",
@@ -22,7 +28,7 @@ class ApiManager extends DecisionManager {
       "Content-type": "application/json"
     };
 
-    /// Create data to post
+    // Create data to post
     Object data = json.encode({"visitorId": visitorId, "context": context});
     var response = await Service.sendHttpRequest(
         RequestType.Post, urlString, fsHeaders, data,
