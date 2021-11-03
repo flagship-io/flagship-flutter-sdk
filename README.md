@@ -4,7 +4,7 @@
 
 </p>
 
-[![CI](https://github.com/ABTastyAdel/flagship-flutter-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/ABTastyAdel/flagship-flutter-sdk/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/ABTastyAdel/flagship-flutter-sdk/branch/main/graph/badge.svg?token=I4YDOMGT1Z)](https://codecov.io/gh/ABTastyAdel/flagship-flutter-sdk)
 
 <h3 align="center">Bring your features to life</h3>
 
