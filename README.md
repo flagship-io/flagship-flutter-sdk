@@ -4,6 +4,8 @@
 
 </p>
 
+[![CI](https://github.com/ABTastyAdel/flagship-flutter-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/ABTastyAdel/flagship-flutter-sdk/actions/workflows/ci.yml)
+
 <h3 align="center">Bring your features to life</h3>
 
 **Visit [https://developers.flagship.io/](https://developers.flagship.io/) to get started with Flagship.**
