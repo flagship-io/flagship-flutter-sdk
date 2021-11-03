@@ -5,7 +5,7 @@
 </p>
 
 [![codecov](https://codecov.io/gh/ABTastyAdel/flagship-flutter-sdk/branch/main/graph/badge.svg?token=I4YDOMGT1Z)](https://codecov.io/gh/ABTastyAdel/flagship-flutter-sdk)
-![Pub Version](https://img.shields.io/pub/v/flagship)(https://pub.dev/packages/flagship)
+[![Pub Version](https://img.shields.io/pub/v/flagship)](https://pub.dev/packages/flagship)
 
 <h3 align="center">Bring your features to life</h3>
 
