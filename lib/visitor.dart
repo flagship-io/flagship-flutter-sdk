@@ -9,9 +9,7 @@ import 'package:flagship/hits/hit.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor/visitor_delegate.dart';
-import 'package:http/http.dart' as http;
 import 'flagship_delegate.dart';
-import "package:flagship/api/service.dart";
 
 class Visitor {
   // VisitorId

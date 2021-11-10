@@ -8,10 +8,11 @@ class Campaign {
   Variation? variation;
 
   Campaign.fromJson(Map<String, dynamic> json) {
+    // Set the id campaign
     idCampaign = (json['id'] ?? "") as String;
-
+    // Set the variation groupId
     variationGroupId = (json['variationGroupId'] ?? "") as String;
-
+    // Set variation object
     if (json.keys.contains('variation')) {
       variation = Variation.fromJson(json['variation'] as Map<String, dynamic>);
     }
@@ -23,13 +24,12 @@ class Campaign {
     return variation?.modifications.vals ?? {};
   }
 
-  Map<String, Modification> getAllModificationBis() {
+  Map<String, Modification> getAllModification() {
     var ret = getAllModificationsValue();
 
     Map<String, Modification> resultMap = new Map<String, Modification>();
     ret.forEach((key, value) {
-      // ignore: unrelated_type_equality_checks
-      if (this.variation != Null) {
+      if (this.variation != null) {
         print("object");
         resultMap.addAll({
           key: Modification(

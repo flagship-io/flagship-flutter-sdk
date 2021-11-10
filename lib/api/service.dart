@@ -19,7 +19,7 @@ class Service {
       case RequestType.Post:
         {
           Flagship.logger(
-              Level.ALL, REQUEST_POST_BODY.replaceFirst("%s", "$data"));
+              Level.INFO, REQUEST_POST_BODY.replaceFirst("%s", "$data"));
           var url = Uri.parse(urlString);
           var response = await this
               .httpClient

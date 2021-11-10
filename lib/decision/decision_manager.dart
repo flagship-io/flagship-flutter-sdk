@@ -9,7 +9,7 @@ abstract class DecisionManager extends IDecisionManager {
 
   bool _isConsent = true; // By default teh value is true
 
-  late Service service;
+  Service service;
 
   DecisionManager(this.service);
 
@@ -17,7 +17,7 @@ abstract class DecisionManager extends IDecisionManager {
     Map<String, Modification> result = new Map<String, Modification>();
 
     for (var itemCampaign in campaigns) {
-      result.addAll(itemCampaign.getAllModificationBis());
+      result.addAll(itemCampaign.getAllModification());
     }
     return result;
   }

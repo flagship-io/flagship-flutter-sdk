@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flagship/model/campaign.dart';
 import 'package:flagship/model/campaigns.dart';
