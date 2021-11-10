@@ -9,8 +9,9 @@ import 'package:flagship/hits/hit.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor/visitor_delegate.dart';
-
+import 'package:http/http.dart' as http;
 import 'flagship_delegate.dart';
+import "package:flagship/api/service.dart";
 
 class Visitor {
   // VisitorId
@@ -35,7 +36,7 @@ class Visitor {
     return this.config.decisionManager;
   }
 
-  TrackingManager trackingManager = TrackingManager();
+  TrackingManager trackingManager = TrackingManager(Service(http.Client()));
 
   //Consent by default is true
   bool _hasConsented = true;

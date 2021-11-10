@@ -1,11 +1,16 @@
 class Modifications {
-  String type;
+  String type = "json";
 
-  Map<String, dynamic> vals;
+  Map<String, dynamic> vals = {};
 
-  Modifications.fromJson(Map<String, dynamic> json)
-      : type = json['type'] as String,
-        vals = json['value'] as Map<String, dynamic>;
+  Modifications.fromJson(Map<String, dynamic> json) {
+    type = json['type'] as String;
+    try {
+      vals = json['value'] as Map<String, dynamic>;
+    } catch (e) {
+      vals = {};
+    }
+  }
 }
 
 class Modification {
