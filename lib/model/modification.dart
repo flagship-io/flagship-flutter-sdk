@@ -4,7 +4,7 @@ class Modifications {
   Map<String, dynamic> vals = {};
 
   Modifications.fromJson(Map<String, dynamic> json) {
-    type = json['type'] as String;
+    type = (json['type'] ?? "") as String;
     try {
       vals = json['value'] as Map<String, dynamic>;
     } catch (e) {

@@ -8,17 +8,9 @@ class Campaign {
   Variation? variation;
 
   Campaign.fromJson(Map<String, dynamic> json) {
-    try {
-      idCampaign = json['id'] as String;
-    } catch (e) {
-      idCampaign = "";
-    }
+    idCampaign = (json['id'] ?? "") as String;
 
-    try {
-      variationGroupId = json['variationGroupId'] as String;
-    } catch (e) {
-      variationGroupId = "";
-    }
+    variationGroupId = (json['variationGroupId'] ?? "") as String;
 
     if (json.keys.contains('variation')) {
       variation = Variation.fromJson(json['variation'] as Map<String, dynamic>);
