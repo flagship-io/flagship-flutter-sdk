@@ -38,4 +38,15 @@ class Modification {
     if (value != null) ret['value'] = value;
     return ret;
   }
+
+  /// Used for getting modification infos
+  Map<String, Object> toJsonInformation() {
+    Map<String, Object> ret = {
+      'campaignId': campaignId,
+      'variationGroupId': variationGroupId,
+      'variationId': variationId,
+      'isReference': isReference,
+    };
+    return ret;
+  }
 }

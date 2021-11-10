@@ -14,7 +14,6 @@ import 'package:flagship/hits/event.dart';
 
 @GenerateMocks([Service])
 void main() {
-  Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey");
   Map<String, String> fsHeaders = {
     "x-api-key": "apiKey",
     "x-sdk-client": "flutter",
@@ -24,12 +23,12 @@ void main() {
 
   Object data = json.encode({"visitorId": "visitorId", "context": {}});
 
-  MockService fakePanicService = MockService();
-  ApiManager fakePanicApi = ApiManager(fakePanicService);
-  test('Test API with panic mode', () async {
+  MockService fakeService = MockService();
+  ApiManager fakeApi = ApiManager(fakeService);
+  test('Test API with no consent', () async {
     String fakeResponse =
-        await readFile('test_resources/decisionApiPanic.json') ?? "";
-    when(fakePanicService.sendHttpRequest(
+        await readFile('test_resources/decisionApi.json') ?? "";
+    when(fakeService.sendHttpRequest(
             RequestType.Post,
             'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true',
             fsHeaders,
@@ -40,30 +39,34 @@ void main() {
     });
 
     FlagshipConfig config = FlagshipConfig(2);
-    config.decisionManager = fakePanicApi;
+    config.decisionManager = fakeApi;
     Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
 
-    var v1 = Flagship.newVisitor("visitorId", {});
-
+    var v1 = Flagship.newVisitor("visitorId", {}, hasConsented: false);
+    expect(v1.getConsent(), false);
     v1.synchronizeModifications().then((value) {
-      expect(Flagship.getStatus(), Status.PANIC_ON);
+      expect(Flagship.getStatus(), Status.READY);
 
       /// Activate
       v1.activateModification("key");
 
-      expect(v1.getModification('key1', 12), 12);
+      /// Get Modification
+      expect(v1.getModification('aliasTer', 'default'), "testValue");
 
-      expect(v1.getModificationInfo('key1'), null);
-
-      v1.setConsent(false);
-      expect(v1.getConsent(), false);
-
-      v1.updateContext("newKey", 2);
-      expect(v1.getContext().keys.contains('newKey'), false);
+      /// Get infos
+      var infos = v1.getModificationInfo('alias');
+      expect(infos?.length, 4);
+      expect(infos!['campaignId'], "bsffhle242b2l3igq4dg");
+      expect(infos['variationGroupId'], "bsffhle242b2l3igq4egaa");
+      expect(infos['variationId'], "bsffhle242b2l3igq4f0");
+      expect(infos['isReference'], true);
 
       /// Send hit
       v1.sendHit(
           Event(action: "action", category: EventCategory.Action_Tracking));
+
+      /// Send consent hit
+      v1.sendHit(Consent(hasConsented: false));
     });
   });
 }
