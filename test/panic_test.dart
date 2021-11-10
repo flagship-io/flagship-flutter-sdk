@@ -11,6 +11,7 @@ import 'service_test.mocks.dart';
 import 'package:flagship/api/service.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/hits/event.dart';
+import 'test_tools.dart';
 
 @GenerateMocks([Service])
 void main() {
@@ -28,7 +29,7 @@ void main() {
   ApiManager fakePanicApi = ApiManager(fakePanicService);
   test('Test API with panic mode', () async {
     String fakeResponse =
-        await readFile('test_resources/decisionApiPanic.json') ?? "";
+        await ToolsTest.readFile('test_resources/decisionApiPanic.json') ?? "";
     when(fakePanicService.sendHttpRequest(
             RequestType.Post,
             'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true',
@@ -66,21 +67,4 @@ void main() {
           Event(action: "action", category: EventCategory.Action_Tracking));
     });
   });
-}
-
-// Read the mock response
-Future<String?> readFile(String path) async {
-  final file = new File(testPath(path));
-  final jsonString = await file.readAsString();
-  return jsonString;
-}
-
-/// https://github.com/terryx/flutter-muscle/blob/master/github_provider/test/utils/test_path.dart
-String testPath(String relativePath) {
-  //Fix vscode test path
-  Directory current = Directory.current;
-  String path =
-      current.path.endsWith('/test') ? current.path : current.path + '/test';
-
-  return path + '/' + relativePath;
 }

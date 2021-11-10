@@ -9,6 +9,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'service_test.mocks.dart';
 import 'package:flagship/api/service.dart';
+import 'test_tools.dart';
 
 // Generate a MockClient using the Mockito package.
 // Create new instances of this class in each test.
@@ -29,7 +30,7 @@ void main() {
   test('Test API manager with reponse ', () async {
     /// prepare response
     String fakeResponse =
-        await readFile('test_resources/decisionApi.json') ?? "";
+        await ToolsTest.readFile('test_resources/decisionApi.json') ?? "";
     when(fakeService.sendHttpRequest(
             RequestType.Post,
             'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true',
@@ -47,21 +48,4 @@ void main() {
       expect(fakeApi.isPanic(), false);
     });
   });
-}
-
-// Read the mock response
-Future<String?> readFile(String path) async {
-  final file = new File(testPath(path));
-  final jsonString = await file.readAsString();
-  return jsonString;
-}
-
-/// https://github.com/terryx/flutter-muscle/blob/master/github_provider/test/utils/test_path.dart
-String testPath(String relativePath) {
-  //Fix vscode test path
-  Directory current = Directory.current;
-  String path =
-      current.path.endsWith('/test') ? current.path : current.path + '/test';
-
-  return path + '/' + relativePath;
 }

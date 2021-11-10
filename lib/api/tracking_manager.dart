@@ -8,13 +8,18 @@ import 'package:flagship/flagship_version.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'service.dart';
+import 'package:http/http.dart' as http;
 
 class TrackingManager {
+  /// api key
   late String apiKey;
-  Service service;
 
-  TrackingManager(this.service) {
+  /// service
+  late Service _service;
+
+  TrackingManager() {
     this.apiKey = Flagship.sharedInstance().apiKey ?? "";
+    _service = Service(http.Client());
 
     /// Refractor later , find better way to get apikey
   }
@@ -33,7 +38,7 @@ class TrackingManager {
   Future<void> sendActivate(Activate activateHit) async {
     /// Create url
     String urlString = Endpoints.DECISION_API + Endpoints.ACTIVATION;
-    var response = await service.sendHttpRequest(RequestType.Post, urlString,
+    var response = await _service.sendHttpRequest(RequestType.Post, urlString,
         fsHeader, jsonEncode(activateHit.toJson()));
     switch (response.statusCode) {
       case 200:
@@ -50,7 +55,7 @@ class TrackingManager {
     /// Create url
     String urlString = Endpoints.ARIANE;
     try {
-      var response = await service.sendHttpRequest(
+      var response = await _service.sendHttpRequest(
           RequestType.Post, urlString, fsHeader, jsonEncode(pHit.bodyTrack));
       switch (response.statusCode) {
         case 200:

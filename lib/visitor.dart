@@ -36,7 +36,7 @@ class Visitor {
     return this.config.decisionManager;
   }
 
-  TrackingManager trackingManager = TrackingManager(Service(http.Client()));
+  TrackingManager trackingManager = TrackingManager();
 
   //Consent by default is true
   bool _hasConsented = true;

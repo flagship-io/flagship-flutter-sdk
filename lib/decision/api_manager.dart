@@ -9,7 +9,6 @@ import 'package:flagship/utils/logger/log_manager.dart';
 
 class ApiManager extends DecisionManager {
   ApiManager(Service service) : super(service);
-
   @override
   Future<Campaigns> getCampaigns(
       String envId, String visitorId, Map<String, Object> context) async {
