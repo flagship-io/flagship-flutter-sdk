@@ -23,4 +23,6 @@ comment:
   require_changes: no
 
 ignore:
-  - "test"
+  - "test/"
+  - codecov.yml
+  - lcov.info
