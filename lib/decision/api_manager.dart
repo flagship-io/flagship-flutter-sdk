@@ -31,7 +31,6 @@ class ApiManager extends DecisionManager {
 
     // Create data to post
     Object data = json.encode({"visitorId": visitorId, "context": context});
-    print(data.toString());
     var response = await service.sendHttpRequest(
         RequestType.Post, urlString, fsHeaders, data,
         timeoutMs: Flagship.sharedInstance().getConfiguration()?.timeout ?? 2);

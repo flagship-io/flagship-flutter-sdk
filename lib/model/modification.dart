@@ -1,3 +1,7 @@
+import 'package:flagship/flagship.dart';
+import 'package:flagship/utils/constants.dart';
+import 'package:flagship/utils/logger/log_manager.dart';
+
 class Modifications {
   String type = "json";
 
@@ -10,6 +14,7 @@ class Modifications {
     try {
       vals = json['value'] as Map<String, dynamic>;
     } catch (e) {
+      Flagship.logger(Level.EXCEPTIONS, EXCEPTION.replaceFirst("%s", "$e"));
       vals = {};
     }
   }

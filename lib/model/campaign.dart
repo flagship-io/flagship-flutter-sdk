@@ -30,7 +30,6 @@ class Campaign {
     Map<String, Modification> resultMap = new Map<String, Modification>();
     ret.forEach((key, value) {
       if (this.variation != null) {
-        print("object");
         resultMap.addAll({
           key: Modification(
               key,
