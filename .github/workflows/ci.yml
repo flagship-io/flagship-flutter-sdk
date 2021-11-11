@@ -12,7 +12,7 @@ jobs:
 
       - uses: subosito/flutter-action@v1
         with:
-          flutter-version: "2.0.6"
+          flutter-version: "2.5.3"
 
       - run: flutter pub get
 
@@ -35,7 +35,7 @@ jobs:
 
       - uses: subosito/flutter-action@v1
         with:
-          flutter-version: "2.0.6"
+          flutter-version: "2.5.3"
 
       - run: flutter pub get
         working-directory: example
@@ -48,4 +48,5 @@ jobs:
         with:
           name: QA APK
           path: example/build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 2
 

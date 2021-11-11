@@ -2,6 +2,8 @@ import 'package:flagship/decision/api_manager.dart';
 import 'package:flagship/decision/decision_manager.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
+import 'package:http/http.dart' as http;
+import "package:flagship/api/service.dart";
 
 import 'flagship.dart';
 
@@ -14,7 +16,7 @@ class FlagshipConfig {
   // Timeout
   int timeout = TIMEOUT;
   // Decision Manager
-  DecisionManager decisionManager = ApiManager();
+  DecisionManager decisionManager = ApiManager(Service(http.Client()));
   // LogManager
   late LogManager logManager;
 

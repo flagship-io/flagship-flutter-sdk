@@ -8,6 +8,7 @@ import 'package:flagship/flagship_version.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 
 class ApiManager extends DecisionManager {
+  ApiManager(Service service) : super(service);
   @override
   Future<Campaigns> getCampaigns(
       String envId, String visitorId, Map<String, Object> context) async {
@@ -30,7 +31,7 @@ class ApiManager extends DecisionManager {
 
     // Create data to post
     Object data = json.encode({"visitorId": visitorId, "context": context});
-    var response = await Service.sendHttpRequest(
+    var response = await service.sendHttpRequest(
         RequestType.Post, urlString, fsHeaders, data,
         timeoutMs: Flagship.sharedInstance().getConfiguration()?.timeout ?? 2);
     switch (response.statusCode) {

@@ -1,3 +1,4 @@
+import 'package:flagship/api/service.dart';
 import 'package:flagship/decision/interface_decision_manager.dart';
 import 'package:flagship/model/campaign.dart';
 import 'package:flagship/model/modification.dart';
@@ -8,13 +9,15 @@ abstract class DecisionManager extends IDecisionManager {
 
   bool _isConsent = true; // By default teh value is true
 
-  DecisionManager();
+  Service service;
+
+  DecisionManager(this.service);
 
   Map<String, Modification> getModifications(List<Campaign> campaigns) {
     Map<String, Modification> result = new Map<String, Modification>();
 
     for (var itemCampaign in campaigns) {
-      result.addAll(itemCampaign.getAllModificationBis());
+      result.addAll(itemCampaign.getAllModification());
     }
     return result;
   }

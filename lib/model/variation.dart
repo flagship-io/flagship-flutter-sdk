@@ -7,9 +7,9 @@ class Variation {
   bool reference;
 
   Variation.fromJson(Map<String, dynamic> json)
-      : idVariation = json['id'] as String,
+      : idVariation = (json['id'] ?? "") as String,
         allocation = (json['allocation'] ?? 0) as int,
-        reference = json['reference'] as bool,
+        reference = (json['reference'] ?? false) as bool,
         modifications = Modifications.fromJson(
             json['modifications'] as Map<String, dynamic>);
 }

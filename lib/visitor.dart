@@ -9,7 +9,6 @@ import 'package:flagship/hits/hit.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor/visitor_delegate.dart';
-
 import 'flagship_delegate.dart';
 
 class Visitor {
