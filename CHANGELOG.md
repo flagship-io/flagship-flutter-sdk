@@ -1,3 +1,9 @@
+## 1.1.1 - 2021-11-22
+
+Add
+
+- Unit tests and secure code
+
 ## 1.1.0 - 2021-09-29
 
 Add
@@ -13,7 +19,9 @@ Add
 
 ## 0.2.1 - 2021-06-23
 
-Add [Panic Mode](https://developers.flagship.io/docs/glossary#panic-mode)
+Add
+
+- [Panic Mode](https://developers.flagship.io/docs/glossary#panic-mode)
 
 ## 0.2.0 - 2021-05-17
 
