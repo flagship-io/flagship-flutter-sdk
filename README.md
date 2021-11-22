@@ -6,6 +6,8 @@
 
 [![CI](https://github.com/flagship-io/flagship-flutter-sdk/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/flagship-io/flagship-flutter-sdk/actions/workflows/ci.yml)
 
+[![codecov](https://codecov.io/gh/flagship-io/flagship-flutter-sdk/branch/main/graph/badge.svg?token=JXtwVuCj3s)](https://codecov.io/gh/flagship-io/flagship-flutter-sdk)
+
 [![Pub Version](https://img.shields.io/pub/v/flagship)](https://pub.dev/packages/flagship)
 
 <h3 align="center">Bring your features to life</h3>
