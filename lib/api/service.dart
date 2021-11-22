@@ -8,7 +8,11 @@ import '../flagship.dart';
 enum RequestType { Post, Get }
 
 class Service {
-  static Future<Response> sendHttpRequest(RequestType type, String urlString,
+  http.Client httpClient;
+
+  Service(this.httpClient);
+
+  Future<Response> sendHttpRequest(RequestType type, String urlString,
       Map<String, String> headers, Object data,
       {timeoutMs = 2000}) async {
     switch (type) {
@@ -17,7 +21,8 @@ class Service {
           Flagship.logger(
               Level.INFO, REQUEST_POST_BODY.replaceFirst("%s", "$data"));
           var url = Uri.parse(urlString);
-          var response = await http
+          var response = await this
+              .httpClient
               .post(url, body: data, headers: headers)
               .timeout(Duration(milliseconds: timeoutMs));
           return response;

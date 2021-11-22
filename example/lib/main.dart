@@ -19,8 +19,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: MainScreen(title: "FlagshipQA"),
       theme: ThemeData(
-        primarySwatch: Colors.pink,
-        accentColor: Colors.amber,
+        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.pink)
+            .copyWith(secondary: Colors.amber),
       ),
       initialRoute: '/',
       routes: {

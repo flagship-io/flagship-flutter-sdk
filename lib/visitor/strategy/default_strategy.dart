@@ -106,7 +106,7 @@ class DefaultStrategy implements IVisitor {
     if (visitor.modifications.containsKey(key)) {
       try {
         var modification = visitor.modifications[key];
-        return modification?.toJson();
+        return modification?.toJsonInformation();
       } catch (exp) {
         return null;
       }

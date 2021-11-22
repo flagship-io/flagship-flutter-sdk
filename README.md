@@ -4,7 +4,12 @@
 
 </p>
 
+<<<<<<< HEAD
 [![CI](https://github.com/flagship-io/flagship-flutter-sdk/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/flagship-io/flagship-flutter-sdk/actions/workflows/ci.yml)
+=======
+[![CI](https://github.com/ABTastyAdel/flagship-flutter-sdk/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ABTastyAdel/flagship-flutter-sdk/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/ABTastyAdel/flagship-flutter-sdk/branch/main/graph/badge.svg?token=I4YDOMGT1Z)](https://codecov.io/gh/ABTastyAdel/flagship-flutter-sdk)
+>>>>>>> integration
 [![Pub Version](https://img.shields.io/pub/v/flagship)](https://pub.dev/packages/flagship)
 
 <h3 align="center">Bring your features to life</h3>
