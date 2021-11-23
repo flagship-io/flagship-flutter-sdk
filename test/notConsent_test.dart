@@ -21,7 +21,8 @@ void main() {
     "Content-type": "application/json"
   };
 
-  Object data = json.encode({"visitorId": "visitorId", "context": {}});
+  Object data = json
+      .encode({"visitorId": "visitorId", "context": {}, "trigger_hit": false});
 
   MockService fakeService = MockService();
   ApiManager fakeApi = ApiManager(fakeService);
