@@ -6,6 +6,7 @@ import 'package:flagship/decision/decision_manager.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/flagship_version.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
+import 'package:flagship/flagship_config.dart';
 
 class ApiManager extends DecisionManager {
   ApiManager(Service service) : super(service);
@@ -34,7 +35,8 @@ class ApiManager extends DecisionManager {
         {"visitorId": visitorId, "context": context, "trigger_hit": false});
     var response = await service.sendHttpRequest(
         RequestType.Post, urlString, fsHeaders, data,
-        timeoutMs: Flagship.sharedInstance().getConfiguration()?.timeout ?? 2);
+        timeoutMs:
+            Flagship.sharedInstance().getConfiguration()?.timeout ?? TIMEOUT);
     switch (response.statusCode) {
       case 200:
         Flagship.logger(Level.ALL, response.body, isJsonString: true);

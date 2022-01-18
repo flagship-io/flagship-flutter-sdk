@@ -132,7 +132,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
     // });
 
     /// synchronize
-    currentVisitor?.synchronizeModifications().then((value) {
+    visitor.synchronizeModifications().then((value) {
       String titleMsg = "SDK ready & synchronized";
 
       switch (value) {

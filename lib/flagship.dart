@@ -87,7 +87,7 @@ class Flagship with FlagshipDelegate {
 
   /// Get the current configuration
   FlagshipConfig? getConfiguration() {
-    return _singleton.currentVisitor?.config;
+    return Flagship._configuration;
   }
 
   ///Active or deactivate logger
