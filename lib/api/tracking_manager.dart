@@ -67,7 +67,9 @@ class TrackingManager {
           Flagship.logger(Level.ERROR, HIT_FAILED);
       }
     } catch (error) {
-      Flagship.logger(Level.EXCEPTIONS, EXCEPTION.replaceFirst("%s", "$error"));
+      Flagship.logger(
+          Level.EXCEPTIONS, EXCEPTION.replaceFirst("%s", "$error") + urlString);
+      Flagship.logger(Level.ERROR, HIT_FAILED);
     }
   }
 }

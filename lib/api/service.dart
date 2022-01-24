@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:flagship/flagship_config.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:http/http.dart' as http;
@@ -14,22 +17,31 @@ class Service {
 
   Future<Response> sendHttpRequest(RequestType type, String urlString,
       Map<String, String> headers, Object data,
-      {timeoutMs = 2000}) async {
+      {timeoutMs = TIMEOUT}) async {
     switch (type) {
       case RequestType.Post:
         {
           Flagship.logger(
               Level.INFO, REQUEST_POST_BODY.replaceFirst("%s", "$data"));
           var url = Uri.parse(urlString);
-          var response = await this
-              .httpClient
-              .post(url, body: data, headers: headers)
-              .timeout(Duration(milliseconds: timeoutMs));
-          return response;
+          try {
+            var response = await this
+                .httpClient
+                .post(url, body: data, headers: headers)
+                .timeout(Duration(milliseconds: timeoutMs));
+            return response;
+          } on TimeoutException catch (e) {
+            Flagship.logger(
+                Level.INFO, REQUEST_TIMEOUT.replaceFirst("%s", "$e"));
+            return Response('$e', 408);
+          } on Error catch (e) {
+            Flagship.logger(Level.INFO, REQUEST_ERROR.replaceFirst("%s", "$e"));
+            return Response("Error", -1);
+          }
         }
       case RequestType.Get:
       default:
-        return Response('error', 0);
+        return Response('Error', -1);
     }
   }
 }

@@ -62,7 +62,11 @@ const String CONSENT_ACTIVATE =
     "Flagship, the user is not consented to send the actiavte hit";
 
 // REQUEST
-const String REQUEST_POST_BODY = "Flagship, body of the POST:%s";
+const String REQUEST_POST_BODY = "Flagship, body of the POST: %s";
+const String REQUEST_ERROR =
+    "Flagship, An error occured while sending the request: %s";
+
+const String REQUEST_TIMEOUT = "Flagship, Request Timeout: %s";
 
 // EXCEPTION
-const String EXCEPTION = "An exception occurred %s";
+const String EXCEPTION = "Flagship, An exception occurred %s";

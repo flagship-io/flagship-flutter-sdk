@@ -16,10 +16,6 @@ class Configuration extends StatefulWidget {
 }
 
 class _ConfigurationState extends State<Configuration> with ShowDialog {
-  /// ids:
-  // Gilou
-  //String envId = 'bkev142bl68g07m5n69g';
-  //String apiKey = "YbG55489hK13O3pcfmBFy4ouGJCNdclZ2uOm9iae";
   // Guillaume
   // String envId = 'blvo2kijq6pg023l8edg';
   //String apiKey = "wwURPfcEB01YVMfTYWfCtaezCkXVLeFZ61FJmXtI";
@@ -75,6 +71,8 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   /////////////// start sdk ////////////////////
 //start SDK
   _startSdk() {
+    String titleMsg = "The Synchronize is done";
+
     /// start SDK
     ///
     Flagship.start(envIdController.text, apiKeyController.text,
@@ -94,61 +92,61 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
     /// Set current visitor singleton instance for future use
     Flagship.setCurrentVisitor(visitor);
 
-    Flagship.getCurrentVisitor()?.setConsent(isConsented);
+    // Flagship.getCurrentVisitor()?.setConsent(isConsented);
 
     /// get the current visitor
-    currentVisitor = Flagship.getCurrentVisitor();
-
-    // /// Get modification for "btnTitle"
-    // var value = currentVisitor.getModification("btnTitle", "defaultValue");
-    // print(value);
-
-    // /// get the modification infos for "btnTitle"
-    // var infos = currentVisitor.getModificationInfos("btnTitle");
-    // print(infos);
-
-    // /// update context with bool
-    // currentVisitor.updateContext("isVip", true);
-
-    // /// update context with double
-    // currentVisitor.updateContext("key1", 12.5);
-
-    // /// update context with string
-    // currentVisitor.updateContext("key2", "title");
-
-    // /// update context with int
-    // currentVisitor.updateContext("key3", 2);
-
-    // /// update context with map
-    // currentVisitor.updateContextWithMap({
-    //   "isVip": true,
-    //   "key1": 12.5,
-    //   "key2": "title",
-    //   "key3": 2,
-    //   'key4': 22,
-    //   "key5": 4444,
-    //   "key6": true,
-    //   "key7": "ola"
-    // });
+    // currentVisitor = Flagship.getCurrentVisitor();
 
     /// synchronize
-    visitor.synchronizeModifications().then((value) {
-      String titleMsg = "SDK ready & synchronized";
 
-      switch (value) {
-        case Status.READY:
-          break;
-        case Status.NOT_INITIALIZED:
-          titleMsg = "SDK Not Ready / Sdk will return default value";
-          break;
+    // currentVisitor?.synchronizeModifications().then((_) {
+    //   print(' The status for the sdk is $Flagship.getStatus()');
+
+    //   /// Get flag
+    //   String? flagValue = currentVisitor?.getModification("btnColor", "default",
+    //       activate: true);
+
+    //   print("---- The flag value is $flagValue -----");
+
+    //   showBasicDialog(titleMsg, '');
+    // });
+
+    visitor.synchronizeModifications().whenComplete(() {
+      /// Get flag
+      String? flagValue =
+          visitor.getModification("btnColor", "default", activate: true);
+
+      print("---- The flag value is $flagValue -----");
+
+      switch (Flagship.getStatus()) {
         case Status.PANIC_ON:
-          titleMsg = "Panic Mode activated / Sdk will return default value";
+          titleMsg = "SDK is on panic mode, will use default value";
           break;
+        default:
       }
 
-      /// Show dialog
       showBasicDialog(titleMsg, '');
     });
+
+    // currentVisitor
+    //     ?.synchronizeModifications()
+    //     .whenComplete(() {})
+    //     .then((value) => print("--------OLA -------"));
+
+    //   {
+
+    //     Status s = Flagship.getStatus();
+
+    //     print(s);
+
+    //     /// Get flag
+    //     String? flagValue = currentVisitor?.getModification("btnColor", "default",
+    //         activate: true);
+
+    //     print("---- The flag value is $flagValue -----");
+
+    //     showBasicDialog(titleMsg, '');
+    //   });
   }
 
 // Change Mode
