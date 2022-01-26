@@ -29,9 +29,12 @@ enum Level {
 }
 
 class LogManager {
+  // Pefix for message log
+  String prefixLog = "Flagship, ";
+
   // Default level
   static Level level = Level.ALL;
-
+  // Enable log
   static bool logEnabled = true;
 
   // Constructor
@@ -59,7 +62,7 @@ class LogManager {
     if (isJsonString) {
       _displayPrettyStringJson(msg);
     } else {
-      print(msg);
+      print(prefixLog + msg);
     }
   }
 

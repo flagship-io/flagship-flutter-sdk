@@ -6,7 +6,7 @@ enum Mode {
 }
 
 /// START
-const String STARTED = "Flagship SDK (version: $FlagshipVersion) is started";
+const String STARTED = "SDK (version: $FlagshipVersion) is started";
 const String INITIALIZATION_PARAM_ERROR = "Params 'envId' is not valide.";
 // ToDo: update this wording when the sdk manage other type
 
@@ -15,13 +15,12 @@ const String CONTEXT_UPDATE = "Update context with Map %s";
 const String CONTEXT_PARAM_ERROR =
     "params 'key' must be a non null String, and 'value' must be one of the " +
         "following types : String, Number, Boolean.";
-const String PARSING_ERROR = "an error occured whil parsing ";
+const String PARSING_ERROR = "An error occured whil parsing ";
 
 // MODIFICATION
-const String SYNCHRONIZE_MODIFICATIONS =
-    "Flagship SDK - synchronize modifications.";
+const String SYNCHRONIZE_MODIFICATIONS = "SDK - synchronize modifications.";
 const String SYNCHRONIZE_MODIFICATIONS_RESULTS =
-    "Flagship SDK - synchronized modifications are %s";
+    "SDK - synchronized modifications are %s";
 
 const String GET_MODIFICATION_ERROR =
     "An error occured while retreiving modification for key '%s'. Default value is returned.";
@@ -29,44 +28,42 @@ const String GET_MODIFICATION_ERROR =
 const String GET_MODIFICATION_INFO_ERROR = "No modification for key '%s'.";
 
 // HITS
-const String HIT_SUCCESS = "Flagship, hit sent with success";
-const String HIT_FAILED = "Flagship, failed to send hit";
-const String ACTIVATE_SUCCESS = "Flagship, activate sent with success";
-const String ACTIVATE_FAILED = "Flagship, failed to send activate";
+const String HIT_SUCCESS = "Hit sent with success";
+const String HIT_FAILED = "Failed to send hit";
+const String ACTIVATE_SUCCESS = "Activate sent with success";
+const String ACTIVATE_FAILED = "Failed to send activate";
 const String HIT_INVALID_DATA_ERROR = "'%s' hit invalid format error. \n %s";
 const String HIT_NOT_READY = "Not ready to send hits";
 const String GETMODIFICATION_NOT_READY =
     "Not ready to get modification, sdk will return the default value";
 const String GETMODIFICATION_INFO_NOT_READY =
     "Not ready to get modification infos";
-const String ACTIVTAE_NOT_READY = "Flagship not ready to send activate";
+const String ACTIVTAE_NOT_READY = "Not ready to send activate";
 
 // PANIC
-const String PANIC = "Flagship, panic mode is on.";
-const String PANIC_HIT = "Flagship, panic mode is on, no event will be sent";
-const String PANIC_ACTIVATE =
-    "Flagship, panic mode is on, the activate is not sent";
+const String PANIC = "Panic mode is on.";
+const String PANIC_HIT = "Panic mode is on, no event will be sent";
+const String PANIC_ACTIVATE = "panic mode is on, the activate is not sent";
 const String PANIC_MODIFICATION_INFO =
-    "Flagship, panic mode is on, no modification infos for key '%s'.";
+    "Panic mode is on, no modification infos for key '%s'.";
 const String PANIC_MODIFICATION =
-    "Flagship, panic mode is on, will return the default value";
+    "panic mode is on, will return the default value";
 const String PANIC_UPDATE_CONTEXT =
-    "Flagship, panic mode is on, update context not effective";
+    "Panic mode is on, update context not effective";
 
 const String PANIC_HIT_CONSENT =
-    "Flagship, panic mode is on, the hit consent is not sent";
+    "Panic mode is on, the hit consent is not sent";
 
 // CONSENT
-const String CONSENT_HIT = "Flagship, the user is not consented to send hit";
+const String CONSENT_HIT = "The user is not consented to send hit";
 const String CONSENT_ACTIVATE =
-    "Flagship, the user is not consented to send the actiavte hit";
+    "The user is not consented to send the actiavte hit";
 
 // REQUEST
-const String REQUEST_POST_BODY = "Flagship, body of the POST: %s";
-const String REQUEST_ERROR =
-    "Flagship, An error occured while sending the request: %s";
+const String REQUEST_POST_BODY = "Body of the POST: %s";
+const String REQUEST_ERROR = "An error occured while sending the request: %s";
 
-const String REQUEST_TIMEOUT = "Flagship, Request Timeout: %s";
+const String REQUEST_TIMEOUT = "Request Timeout: %s";
 
 // EXCEPTION
-const String EXCEPTION = "Flagship, An exception occurred %s";
+const String EXCEPTION = "An exception occurred %s";

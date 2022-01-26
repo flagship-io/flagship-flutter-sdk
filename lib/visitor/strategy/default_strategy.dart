@@ -141,7 +141,7 @@ class DefaultStrategy implements IVisitor {
         Flagship.logger(
             Level.INFO,
             SYNCHRONIZE_MODIFICATIONS_RESULTS.replaceFirst(
-                "%s", "${visitor.modifications}"));
+                "%s", "${visitor.modifications.keys}"));
       }
     } catch (error) {
       Flagship.logger(Level.EXCEPTIONS,
