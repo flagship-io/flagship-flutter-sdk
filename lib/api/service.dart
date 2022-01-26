@@ -32,16 +32,17 @@ class Service {
             return response;
           } on TimeoutException catch (e) {
             Flagship.logger(
-                Level.INFO, REQUEST_TIMEOUT.replaceFirst("%s", "$e"));
+                Level.INFO, REQUEST_TIMEOUT.replaceFirst("%s", urlString));
             return Response('$e', 408);
           } on Error catch (e) {
-            Flagship.logger(Level.INFO, REQUEST_ERROR.replaceFirst("%s", "$e"));
-            return Response("Error", -1);
+            Flagship.logger(
+                Level.INFO, REQUEST_ERROR.replaceFirst("%s", urlString));
+            return Response("$e", 400);
           }
         }
       case RequestType.Get:
       default:
-        return Response('Error', -1);
+        return Response('Error', 400);
     }
   }
 }

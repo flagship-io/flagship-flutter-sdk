@@ -10,6 +10,8 @@ import 'package:flagship/utils/logger/log_manager.dart';
 import 'service.dart';
 import 'package:http/http.dart' as http;
 
+const TIMEOUT_REQUEST = 60000; // 60 seconds
+
 class TrackingManager {
   /// api key
   late String apiKey;
@@ -38,8 +40,9 @@ class TrackingManager {
   Future<void> sendActivate(Activate activateHit) async {
     /// Create url
     String urlString = Endpoints.DECISION_API + Endpoints.ACTIVATION;
-    var response = await _service.sendHttpRequest(RequestType.Post, urlString,
-        fsHeader, jsonEncode(activateHit.toJson()));
+    var response = await _service.sendHttpRequest(
+        RequestType.Post, urlString, fsHeader, jsonEncode(activateHit.toJson()),
+        timeoutMs: TIMEOUT_REQUEST);
     switch (response.statusCode) {
       case 200:
       case 204:
@@ -56,7 +59,8 @@ class TrackingManager {
     String urlString = Endpoints.ARIANE;
     try {
       var response = await _service.sendHttpRequest(
-          RequestType.Post, urlString, fsHeader, jsonEncode(pHit.bodyTrack));
+          RequestType.Post, urlString, fsHeader, jsonEncode(pHit.bodyTrack),
+          timeoutMs: TIMEOUT_REQUEST);
       switch (response.statusCode) {
         case 200:
         case 204:

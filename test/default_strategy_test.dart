@@ -34,7 +34,7 @@ void main() {
             'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true',
             fsHeaders,
             data,
-            timeoutMs: 2))
+            timeoutMs: 2000))
         .thenAnswer((_) async {
       return http.Response(fakeResponse, 200);
     });
