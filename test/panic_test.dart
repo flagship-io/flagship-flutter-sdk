@@ -40,7 +40,7 @@ void main() {
       return http.Response(fakeResponse, 200);
     });
 
-    FlagshipConfig config = FlagshipConfig(2);
+    FlagshipConfig config = FlagshipConfig(2000);
     config.decisionManager = fakePanicApi;
     Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
 
