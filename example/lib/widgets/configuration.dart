@@ -16,10 +16,7 @@ class Configuration extends StatefulWidget {
 }
 
 class _ConfigurationState extends State<Configuration> with ShowDialog {
-  // Guillaume
-  // String envId = 'blvo2kijq6pg023l8edg';
-  //String apiKey = "wwURPfcEB01YVMfTYWfCtaezCkXVLeFZ61FJmXtI";
-  // Adel
+  // keys
   String apiKey = "DxAcxlnRB9yFBZYtLDue1q01dcXZCw6aM49CQB23";
   String envId = "bkk9glocmjcg0vtmdlng";
 
@@ -92,61 +89,15 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
     /// Set current visitor singleton instance for future use
     Flagship.setCurrentVisitor(visitor);
 
-    // Flagship.getCurrentVisitor()?.setConsent(isConsented);
-
-    /// get the current visitor
-    // currentVisitor = Flagship.getCurrentVisitor();
-
-    /// synchronize
-
-    // currentVisitor?.synchronizeModifications().then((_) {
-    //   print(' The status for the sdk is $Flagship.getStatus()');
-
-    //   /// Get flag
-    //   String? flagValue = currentVisitor?.getModification("btnColor", "default",
-    //       activate: true);
-
-    //   print("---- The flag value is $flagValue -----");
-
-    //   showBasicDialog(titleMsg, '');
-    // });
-
     visitor.synchronizeModifications().whenComplete(() {
-      /// Get flag
-      String? flagValue =
-          visitor.getModification("btnColor", "default", activate: true);
-
-      print("---- The flag value is $flagValue -----");
-
       switch (Flagship.getStatus()) {
         case Status.PANIC_ON:
           titleMsg = "SDK is on panic mode, will use default value";
           break;
         default:
       }
-
       showBasicDialog(titleMsg, '');
     });
-
-    // currentVisitor
-    //     ?.synchronizeModifications()
-    //     .whenComplete(() {})
-    //     .then((value) => print("--------OLA -------"));
-
-    //   {
-
-    //     Status s = Flagship.getStatus();
-
-    //     print(s);
-
-    //     /// Get flag
-    //     String? flagValue = currentVisitor?.getModification("btnColor", "default",
-    //         activate: true);
-
-    //     print("---- The flag value is $flagValue -----");
-
-    //     showBasicDialog(titleMsg, '');
-    //   });
   }
 
 // Change Mode

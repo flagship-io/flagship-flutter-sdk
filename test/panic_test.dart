@@ -35,12 +35,12 @@ void main() {
             'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true',
             fsHeaders,
             data,
-            timeoutMs: 2000))
+            timeoutMs: TIMEOUT))
         .thenAnswer((_) async {
       return http.Response(fakeResponse, 200);
     });
 
-    FlagshipConfig config = FlagshipConfig(2000);
+    FlagshipConfig config = FlagshipConfig(TIMEOUT);
     config.decisionManager = fakePanicApi;
     Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
 
