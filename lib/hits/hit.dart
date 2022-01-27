@@ -45,7 +45,6 @@ class BaseHit extends Hit {
   }
 
   BaseHit() {
-    this.visitorId = Flagship.getCurrentVisitor()?.visitorId ?? "";
     this.clientId = Flagship.sharedInstance().envId ?? "";
   }
 

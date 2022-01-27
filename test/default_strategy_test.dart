@@ -34,12 +34,12 @@ void main() {
             'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true',
             fsHeaders,
             data,
-            timeoutMs: 2))
+            timeoutMs: TIMEOUT))
         .thenAnswer((_) async {
       return http.Response(fakeResponse, 200);
     });
 
-    FlagshipConfig config = FlagshipConfig(2);
+    FlagshipConfig config = FlagshipConfig(TIMEOUT);
     config.decisionManager = fakeApi;
     Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
 

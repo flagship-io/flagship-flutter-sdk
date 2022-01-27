@@ -59,7 +59,7 @@ class Visitor {
     _hasConsented = hasConsented;
     // Send the consent hit on false at the start
     if (!_hasConsented) {
-      trackingManager.sendHit(Consent(hasConsented: _hasConsented));
+      _visitorDelegate.sendHit(Consent(hasConsented: _hasConsented));
     }
   }
 
@@ -116,13 +116,12 @@ class Visitor {
 
   /// Synchronize modification for the visitor
 
-  Future<Status> synchronizeModifications() async {
+  Future<void> synchronizeModifications() async {
     // Delegate the action to strategy
     return _visitorDelegate.synchronizeModifications();
   }
 
   /// Activate modificationx
-
   Future<void> activateModification(String key) async {
     // Delegate the action to strategy
     _visitorDelegate.activateModification(key);

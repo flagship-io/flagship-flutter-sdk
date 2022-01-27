@@ -1,4 +1,3 @@
-import 'package:flagship/flagship.dart';
 import 'package:flagship/hits/hit.dart';
 
 abstract class IVisitor {
@@ -9,7 +8,7 @@ abstract class IVisitor {
 // Get Modificatoin info
   Map<String, Object>? getModificationInfo(String key);
 // Synchronize modifications
-  Future<Status> synchronizeModifications();
+  Future<void> synchronizeModifications();
 // Activate modification
   Future<void> activateModification(String key);
 // Send Hits

@@ -1,4 +1,9 @@
-## 1.1.2 - 2021-01-17
+## 1.1.3 - 2022-01-26
+
+- Imporove synchronize modificaation function
+- Improve logs
+
+## 1.1.2 - 2022-01-17
 
 - Fix bugs
 
