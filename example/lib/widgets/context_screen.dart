@@ -67,10 +67,10 @@ class _ContextScreenState extends State<ContextScreen> with ShowDialog {
       subMsg = "Context updated";
 
       /// Synchronize
-      currentClient.synchronizeModifications().then((state) {
-        subMsg = (state == Status.READY)
-            ? "Context updated and synchronized"
-            : "Context updated but the synchronized failed";
+      currentClient.synchronizeModifications().then((_) {
+        subMsg = "Context updated and synchronized"; //(state == Status.READY)?
+
+        // : "Context updated but the synchronized failed";
 
         showBasicDialog("Context validation", subMsg);
       });

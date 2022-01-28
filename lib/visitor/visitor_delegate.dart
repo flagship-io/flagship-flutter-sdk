@@ -46,7 +46,8 @@ class VisitorDelegate implements IVisitor {
   }
 
 // Synchronize modification
-  Future<Status> synchronizeModifications() {
+  @override
+  Future<void> synchronizeModifications() {
     return getStrategy().synchronizeModifications();
   }
 
@@ -59,6 +60,8 @@ class VisitorDelegate implements IVisitor {
 // Send hits
   @override
   Future<void> sendHit(BaseHit hit) async {
+    // set visitorId for hit
+    hit.visitorId = visitor.visitorId;
     getStrategy().sendHit(hit);
   }
 

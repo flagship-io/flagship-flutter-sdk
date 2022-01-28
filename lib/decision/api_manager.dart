@@ -42,7 +42,11 @@ class ApiManager extends DecisionManager {
         Flagship.logger(Level.ALL, response.body, isJsonString: true);
         return Campaigns.fromJson(json.decode(response.body));
       default:
-        throw Exception('Failed to synchronize');
+        Flagship.logger(
+          Level.ALL,
+          "Failed to synchronize",
+        );
+        throw Exception('Flagship, Failed to synchronize');
     }
   }
 }

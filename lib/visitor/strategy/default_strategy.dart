@@ -119,7 +119,7 @@ class DefaultStrategy implements IVisitor {
 
   /// Synchronize modification for the visitor
   @override
-  Future<Status> synchronizeModifications() async {
+  Future<void> synchronizeModifications() async {
     Flagship.logger(Level.ALL, SYNCHRONIZE_MODIFICATIONS);
     Status state = Flagship.getStatus();
     try {
@@ -141,14 +141,14 @@ class DefaultStrategy implements IVisitor {
         Flagship.logger(
             Level.INFO,
             SYNCHRONIZE_MODIFICATIONS_RESULTS.replaceFirst(
-                "%s", "${visitor.modifications}"));
+                "%s", "${visitor.modifications.keys}"));
       }
     } catch (error) {
       Flagship.logger(Level.EXCEPTIONS,
           EXCEPTION.replaceFirst("%s", "${error.toString()}"));
     }
-    // Return the state
-    return state;
+    // Return
+    return;
   }
 
   @override
