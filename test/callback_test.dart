@@ -35,7 +35,7 @@ void main() {
     expect(confBis.statusListner, null);
 
     FlagshipConfig confTer =
-        FlagshipConfig.withStatusListner(statusListner: (newState) {});
+        FlagshipConfig.withStatusListner(statusListner: (newStatus) {});
     expect((confTer.statusListner != null), true);
     confTer.statusListner = null;
     expect(confTer.statusListner, null);
@@ -55,11 +55,10 @@ void main() {
     });
 
     FlagshipConfig config = FlagshipConfig(timeout: TIMEOUT);
-    config.statusListner = (newState) {
-      if (newState == Status.PANIC_ON) {
+    config.statusListner = (newStatus) {
+      if (newStatus == Status.PANIC_ON) {
         expect(Flagship.getCurrentVisitor()?.getModification('key1', 12), 12);
-
-        expect(newState, Flagship.getStatus());
+        expect(newStatus, Flagship.getStatus());
       }
     };
 

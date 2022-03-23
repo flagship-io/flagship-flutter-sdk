@@ -114,31 +114,17 @@ class Flagship with FlagshipDelegate {
   }
 
   @override
-  // void onUpdateState(Status newState) {
-  //   // Temporary get the oldest state
-  //   var oldestState = _singleton._status;
-
-  //   // Update the state even if the same as precedent state
-  //   _singleton._status = newState;
-
-  //   // If the state hasn't changed, no need to trigger the callback
-  //   // check if the callback is not null before trigger it
-  //   if (Flagship._configuration.statusListner != null &&
-  //       newState != oldestState) {
-  //     Flagship._configuration.statusListner!(newState);
-  //   }
-  // }
-
-  void onUpdateState(Status newState) {
-    // If the state hasn't changed, no need to trigger the callback
-    // check if the callback is not null before trigger it
-    if (Flagship._configuration.statusListner != null && newState != newState) {
+  void onUpdateState(Status newStatus) {
+    // If the status hasn't changed, no need to update and trigger the callback
+    if (newStatus != _singleton._status) {
       // Update the status
-      _singleton._status = newState;
-      // trigger the callback
-      Flagship._configuration.statusListner!(newState);
-    }
+      _singleton._status = newStatus;
 
-    // Update the state even if the same as precedent state
+      // Trigger the callback
+      // Check if the callback if not null before trigger it
+      if (Flagship._configuration.statusListner != null) {
+        Flagship._configuration.statusListner!(newStatus);
+      }
+    }
   }
 }

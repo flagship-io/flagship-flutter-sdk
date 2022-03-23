@@ -70,6 +70,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
 
   _startSdk() {
     FlagshipConfig config = FlagshipConfig(statusListner: (Status newStatus) {
+      print('--------- Callback with $newStatus ---------');
       var titleMsg = '';
       if (newStatus == Status.READY) {
         /// create visitor
@@ -84,6 +85,9 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
           switch (Flagship.getStatus()) {
             case Status.PANIC_ON:
               titleMsg = "SDK is on panic mode, will use default value";
+              break;
+            case Status.READY:
+              titleMsg = "SDK is ready to use";
               break;
             default:
           }
@@ -142,7 +146,6 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
     double _spaceBetweenInput = 10;
     envIdController.text = envId;
     apiKeyController.text = apiKey;
-    // visitorIdController.text = _createRandomUser();
     timeoutController.text = defaultTimeout.toString();
 
     final mediaQuery = MediaQuery.of(context);

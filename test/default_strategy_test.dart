@@ -96,17 +96,13 @@ void main() {
       return http.Response(fakeResponse, 200);
     });
 
-    var number = 0;
-
     /// count the callback trigger
     FlagshipConfig config = FlagshipConfig(
       timeout: TIMEOUT,
-      statusListner: (newState) {
+      statusListner: (newStatus) {
         print(" ---- statusListner is trigger ---- ");
-        expect(Flagship.getStatus() != newState, true);
-        expect(newState, Flagship.getStatus());
-        number++;
-        expect(number > 0, true);
+        expect(Flagship.getStatus() == newStatus, true);
+        expect(newStatus, Flagship.getStatus());
       },
     );
 
