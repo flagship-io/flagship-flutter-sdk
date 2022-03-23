@@ -9,11 +9,11 @@ import 'package:mockito/mockito.dart';
 import 'service_test.mocks.dart';
 import 'package:flagship/api/service.dart';
 import 'package:flagship/flagship_config.dart';
-import 'package:flagship/hits/event.dart';
 import 'test_tools.dart';
 
 @GenerateMocks([Service])
 void main() {
+  Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey");
   Map<String, String> fsHeaders = {
     "x-api-key": "apiKey",
     "x-sdk-client": "flutter",
@@ -24,12 +24,27 @@ void main() {
   Object data = json
       .encode({"visitorId": "visitorId", "context": {}, "trigger_hit": false});
 
-  MockService fakeService = MockService();
-  ApiManager fakeApi = ApiManager(fakeService);
-  test('Test API with no consent', () async {
+  MockService fakePanicService = MockService();
+  ApiManager fakePanicApi = ApiManager(fakePanicService);
+
+  test('FlagshipConfig ', () async {
+    FlagshipConfig conf = FlagshipConfig(statusListner: null);
+    expect(conf.statusListner, null);
+
+    FlagshipConfig confBis = FlagshipConfig.defaultMode();
+    expect(confBis.statusListner, null);
+
+    FlagshipConfig confTer =
+        FlagshipConfig.withStatusListner(statusListner: (newState) {});
+    expect((confTer.statusListner != null), true);
+    confTer.statusListner = null;
+    expect(confTer.statusListner, null);
+  });
+
+  test('Test API with panic mode', () async {
     String fakeResponse =
-        await ToolsTest.readFile('test_resources/decisionApi.json') ?? "";
-    when(fakeService.sendHttpRequest(
+        await ToolsTest.readFile('test_resources/decisionApiPanic.json') ?? "";
+    when(fakePanicService.sendHttpRequest(
             RequestType.Post,
             'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true',
             fsHeaders,
@@ -40,34 +55,20 @@ void main() {
     });
 
     FlagshipConfig config = FlagshipConfig(timeout: TIMEOUT);
-    config.decisionManager = fakeApi;
+    config.statusListner = (newState) {
+      if (newState == Status.PANIC_ON) {
+        expect(Flagship.getCurrentVisitor()?.getModification('key1', 12), 12);
+
+        expect(newState, Flagship.getStatus());
+      }
+    };
+
+    config.decisionManager = fakePanicApi;
     Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
 
-    var v1 = Flagship.newVisitor("visitorId", {}, hasConsented: false);
-    expect(v1.getConsent(), false);
-    v1.synchronizeModifications().then((value) {
-      expect(Flagship.getStatus(), Status.READY);
+    var v1 = Flagship.newVisitor("visitorId", {});
+    Flagship.setCurrentVisitor(v1);
 
-      /// Activate
-      v1.activateModification("key");
-
-      /// Get Modification
-      expect(v1.getModification('aliasTer', 'default'), "testValue");
-
-      /// Get infos
-      var infos = v1.getModificationInfo('alias');
-      expect(infos?.length, 4);
-      expect(infos!['campaignId'], "bsffhle242b2l3igq4dg");
-      expect(infos['variationGroupId'], "bsffhle242b2l3igq4egaa");
-      expect(infos['variationId'], "bsffhle242b2l3igq4f0");
-      expect(infos['isReference'], true);
-
-      /// Send hit
-      v1.sendHit(
-          Event(action: "action", category: EventCategory.Action_Tracking));
-
-      /// Send consent hit
-      v1.sendHit(Consent(hasConsented: false));
-    });
+    v1.synchronizeModifications().whenComplete(() {});
   });
 }

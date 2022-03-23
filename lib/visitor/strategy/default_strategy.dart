@@ -136,6 +136,8 @@ class DefaultStrategy implements IVisitor {
         // Update the state when panic mode is ON
         visitor.flagshipDelegate.onUpdateState(state);
       } else {
+        state = Status.READY;
+        visitor.flagshipDelegate.onUpdateState(state);
         var modif = visitor.decisionManager.getModifications(camp.campaigns);
         visitor.modifications.addAll(modif);
         Flagship.logger(

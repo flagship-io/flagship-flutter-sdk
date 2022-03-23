@@ -40,11 +40,18 @@ void main() {
       return http.Response(fakeResponse, 200);
     });
 
-    FlagshipConfig config = FlagshipConfig(TIMEOUT);
+    FlagshipConfig config = FlagshipConfig(timeout: TIMEOUT);
+    config.statusListner = (newState) {
+      if (newState == Status.PANIC_ON) {
+        expect(Flagship.getCurrentVisitor()?.getModification('key1', 12), 12);
+      }
+    };
+
     config.decisionManager = fakePanicApi;
     Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
 
     var v1 = Flagship.newVisitor("visitorId", {});
+    Flagship.setCurrentVisitor(v1);
 
     v1.synchronizeModifications().then((value) {
       expect(Flagship.getStatus(), Status.PANIC_ON);

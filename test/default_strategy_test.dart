@@ -39,7 +39,7 @@ void main() {
       return http.Response(fakeResponse, 200);
     });
 
-    FlagshipConfig config = FlagshipConfig(TIMEOUT);
+    FlagshipConfig config = FlagshipConfig(timeout: TIMEOUT);
     config.decisionManager = fakeApi;
     Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
 
@@ -82,21 +82,44 @@ void main() {
       v1.sendHit(Consent(hasConsented: false));
     });
   });
+
+  test('Test API with default startegy and callback', () async {
+    String fakeResponse =
+        await ToolsTest.readFile('test_resources/decisionApi.json') ?? "";
+    when(fakeService.sendHttpRequest(
+            RequestType.Post,
+            'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true',
+            fsHeaders,
+            data,
+            timeoutMs: TIMEOUT))
+        .thenAnswer((_) async {
+      return http.Response(fakeResponse, 200);
+    });
+
+    var number = 0;
+
+    /// count the callback trigger
+    FlagshipConfig config = FlagshipConfig(
+      timeout: TIMEOUT,
+      statusListner: (newState) {
+        print(" ---- statusListner is trigger ---- ");
+        expect(Flagship.getStatus() != newState, true);
+        expect(newState, Flagship.getStatus());
+        number++;
+        expect(number > 0, true);
+      },
+    );
+
+    config.decisionManager = fakeApi;
+
+    Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
+
+    var v1 = Flagship.newVisitor("visitorId", {});
+    Flagship.setCurrentVisitor(v1);
+    expect(v1.getConsent(), true);
+    v1.synchronizeModifications().then((value) {
+      expect(Flagship.getStatus(), Status.READY);
+      expect(v1.getModification('aliasTer', 'default'), "testValue");
+    });
+  });
 }
-
-// // Read the mock response
-// Future<String?> readFile(String path) async {
-//   final file = new File(testPath(path));
-//   final jsonString = await file.readAsString();
-//   return jsonString;
-// }
-
-// /// https://github.com/terryx/flutter-muscle/blob/master/github_provider/test/utils/test_path.dart
-// String testPath(String relativePath) {
-//   //Fix vscode test path
-//   Directory current = Directory.current;
-//   String path =
-//       current.path.endsWith('/test') ? current.path : current.path + '/test';
-
-//   return path + '/' + relativePath;
-// }

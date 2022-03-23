@@ -6,7 +6,6 @@ import 'dart:math';
 import '../widgets/context_screen.dart';
 // My package
 import 'package:flagship/flagship.dart';
-import 'package:flagship/utils/logger/log_manager.dart';
 
 class Configuration extends StatefulWidget {
   Configuration();
@@ -42,7 +41,8 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
     'key4': 22,
     "key5": 4444,
     "key6": true,
-    "key7": "ola"
+    "key7": "ola",
+    "qa_getflag": true
   };
 
   bool isApiMode = true;
@@ -67,37 +67,32 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
 
   /////////////// start sdk ////////////////////
 //start SDK
+
   _startSdk() {
-    String titleMsg = "The Synchronize is done";
+    FlagshipConfig config = FlagshipConfig(statusListner: (Status newStatus) {
+      var titleMsg = '';
+      if (newStatus == Status.READY) {
+        /// create visitor
+        var visitor = Flagship.newVisitor(
+            visitorIdController.text, visitorContext,
+            hasConsented: isConsented);
 
-    /// start SDK
-    ///
-    Flagship.start(envIdController.text, apiKeyController.text,
-        config: FlagshipConfig(int.parse(timeoutController.text),
-            logLevel: Level.ALL, activeLog: true));
+        /// Set current visitor singleton instance for future use
+        Flagship.setCurrentVisitor(visitor);
 
-    /// Start visitor
-    var visitor = Flagship.newVisitor(visitorIdController.text, visitorContext,
-        hasConsented: isConsented);
-
-    /// get the current visitor
-    var currentVisitor = Flagship.getCurrentVisitor();
-    if (currentVisitor != null) {
-      visitorContext = currentVisitor.getCurrentContext();
-    }
-
-    /// Set current visitor singleton instance for future use
-    Flagship.setCurrentVisitor(visitor);
-
-    visitor.synchronizeModifications().whenComplete(() {
-      switch (Flagship.getStatus()) {
-        case Status.PANIC_ON:
-          titleMsg = "SDK is on panic mode, will use default value";
-          break;
-        default:
+        visitor.synchronizeModifications().whenComplete(() {
+          switch (Flagship.getStatus()) {
+            case Status.PANIC_ON:
+              titleMsg = "SDK is on panic mode, will use default value";
+              break;
+            default:
+          }
+          showBasicDialog(titleMsg, '');
+        });
       }
-      showBasicDialog(titleMsg, '');
     });
+
+    Flagship.start(envIdController.text, apiKeyController.text, config: config);
   }
 
 // Change Mode

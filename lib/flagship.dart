@@ -11,10 +11,6 @@ import 'flagship_delegate.dart';
 enum Status {
   // Flagship SDK has not been started or initialized successfully.
   NOT_INITIALIZED,
-  // Flagship SDK is starting.
-  //STARTING,
-  // Flagship SDK has been started successfully but is still polling campaigns.
-  //POLLING,
   // Flagship SDK is ready but is running in Panic mode: All features are disabled except the one which refresh this status.
   PANIC_ON,
   // Flagship SDK is ready to use.
@@ -55,12 +51,13 @@ class Flagship with FlagshipDelegate {
     if (FlagshipTools.chekcXidEnvironment(envId)) {
       _singleton.apiKey = apiKey;
       _singleton.envId = envId;
-      _singleton._status = Status.READY;
       if (config != null) {
         Flagship._configuration = config;
       }
+      _singleton.onUpdateState(Status.READY);
       Flagship.logger(Level.INFO, STARTED);
     } else {
+      _singleton.onUpdateState(Status.NOT_INITIALIZED);
       Flagship.logger(Level.ERROR, (INITIALIZATION_PARAM_ERROR));
     }
   }
@@ -117,7 +114,31 @@ class Flagship with FlagshipDelegate {
   }
 
   @override
-  void onUpdateState(Status state) {
-    _singleton._status = state;
+  // void onUpdateState(Status newState) {
+  //   // Temporary get the oldest state
+  //   var oldestState = _singleton._status;
+
+  //   // Update the state even if the same as precedent state
+  //   _singleton._status = newState;
+
+  //   // If the state hasn't changed, no need to trigger the callback
+  //   // check if the callback is not null before trigger it
+  //   if (Flagship._configuration.statusListner != null &&
+  //       newState != oldestState) {
+  //     Flagship._configuration.statusListner!(newState);
+  //   }
+  // }
+
+  void onUpdateState(Status newState) {
+    // If the state hasn't changed, no need to trigger the callback
+    // check if the callback is not null before trigger it
+    if (Flagship._configuration.statusListner != null && newState != newState) {
+      // Update the status
+      _singleton._status = newState;
+      // trigger the callback
+      Flagship._configuration.statusListner!(newState);
+    }
+
+    // Update the state even if the same as precedent state
   }
 }
