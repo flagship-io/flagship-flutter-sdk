@@ -133,11 +133,8 @@ class DefaultStrategy implements IVisitor {
       visitor.decisionManager.updatePanicMode(camp.panic);
       if (camp.panic) {
         state = Status.PANIC_ON;
-        // Update the state when panic mode is ON
-        visitor.flagshipDelegate.onUpdateState(state);
       } else {
         state = Status.READY;
-        visitor.flagshipDelegate.onUpdateState(state);
         var modif = visitor.decisionManager.getModifications(camp.campaigns);
         visitor.modifications.addAll(modif);
         Flagship.logger(
@@ -145,11 +142,12 @@ class DefaultStrategy implements IVisitor {
             SYNCHRONIZE_MODIFICATIONS_RESULTS.replaceFirst(
                 "%s", "${visitor.modifications.keys}"));
       }
+      // Update the state for Flagship
+      visitor.flagshipDelegate.onUpdateState(state);
     } catch (error) {
       Flagship.logger(Level.EXCEPTIONS,
           EXCEPTION.replaceFirst("%s", "${error.toString()}"));
     }
-    // Return
     return;
   }
 

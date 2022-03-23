@@ -10,7 +10,7 @@ import 'flagship.dart';
 // Time out 2 seconds
 const TIMEOUT = 2000;
 
-typedef StatusListener = void Function(Status newStatus)?;
+typedef StatusListner = void Function(Status newStatus)?;
 
 class FlagshipConfig {
   // Mode
@@ -22,7 +22,7 @@ class FlagshipConfig {
   // LogManager
   late LogManager logManager;
   // Status listner
-  StatusListener statusListner;
+  StatusListner statusListner;
 
   FlagshipConfig(
       {this.timeout = TIMEOUT,

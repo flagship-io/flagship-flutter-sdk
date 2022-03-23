@@ -44,6 +44,7 @@ void main() {
     Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
 
     var v1 = Flagship.newVisitor("visitorId", {});
+    v1.setConsent(true);
     expect(v1.getConsent(), true);
     v1.synchronizeModifications().then((value) {
       expect(Flagship.getStatus(), Status.READY);

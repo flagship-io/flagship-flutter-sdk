@@ -1,6 +1,8 @@
 import 'package:flagship/decision/api_manager.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/flagship_version.dart';
+import 'package:flagship/utils/constants.dart';
+import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -28,8 +30,15 @@ void main() {
   ApiManager fakePanicApi = ApiManager(fakePanicService);
 
   test('FlagshipConfig ', () async {
-    FlagshipConfig conf = FlagshipConfig(statusListner: null);
+    FlagshipConfig conf = FlagshipConfig(
+        statusListner: null,
+        timeout: 4000,
+        activeLog: false,
+        logLevel: Level.ALL);
+
     expect(conf.statusListner, null);
+    expect(conf.timeout, 4000);
+    expect(conf.decisionMode, Mode.DECISION_API);
 
     FlagshipConfig confBis = FlagshipConfig.defaultMode();
     expect(confBis.statusListner, null);
