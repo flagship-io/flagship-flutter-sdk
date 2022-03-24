@@ -1,59 +1,57 @@
 ## 1.2.0 - 2022-03-24
 
-Add
+Added
 
-- Callback (status listener), called when SDK's status is changed
+- Callback (status listener), called when SDK's status has changed
 - Improve FlagshipConfig class and manage listener status
 
 ## 1.1.3 - 2022-01-26
+
+Changed
 
 - Imporove synchronize modificaation function
 - Improve logs
 
 ## 1.1.2 - 2022-01-17
 
-- configuration when the current visitor is not Set
+Fixed
+
+- Configuration when the current visitor is not Set
 
 ## 1.1.1 - 2021-11-25
 
-Add
+Added
 
 - Unit tests and secure code
 
 ## 1.1.0 - 2021-09-29
 
-Add
+Added
 
 - Visitor consent management
 
 ## 1.0.0 - 2021-07-19
 
-Add
+Added
 
 - logManager to manage logs
 - FlagshipConfig object to customize the timeout and the logger
 
 ## 0.2.1 - 2021-06-23
 
-Add
+Added
 
 - [Panic Mode](https://developers.flagship.io/docs/glossary#panic-mode)
 
 ## 0.2.0 - 2021-05-17
 
-Refactor naming of the constants & hits to remove FS prefix
+Changed
 
-## 0.1.0
-
-First implementation of the SDK with minimal features:
-
-- Initialization
-- Visitor & context management
-- Synchronization
-- Modification helpers
-- Hit tracking
+- Refactor naming of the constants & hits to remove FS prefix
 
 ### 0.1.3 - 2020-05-15
+
+Added
 
 Implement generics for visitor methods:
 
@@ -62,8 +60,23 @@ Implement generics for visitor methods:
 
 ### 0.1.2
 
-Change `ctax` for `tax` in Transaction hit.
+Changed
+
+- `ctax` for `tax` in Transaction hit.
 
 ### 0.1.1
 
-Add optional constructor parameters for Hits
+Added
+
+- optional constructor parameters for Hits
+
+## 0.1.0
+
+First implementation of the SDK with minimal features:
+Added
+
+- Initialization
+- Visitor & context management
+- Synchronization
+- Modification helpers
+- Hit tracking
