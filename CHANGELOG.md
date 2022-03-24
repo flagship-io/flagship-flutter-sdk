@@ -2,7 +2,7 @@
 
 Added
 
-- Callback (status listener), called when SDK's status has changed
+- Callback (status listener), called when SDK status has changed
 - Improve FlagshipConfig class and manage listener status
 
 ## 1.1.3 - 2022-01-26
