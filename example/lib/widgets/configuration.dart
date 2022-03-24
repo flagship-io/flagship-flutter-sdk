@@ -72,14 +72,19 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
     FlagshipConfig config = FlagshipConfig(statusListener: (Status newStatus) {
       print('--------- Callback with $newStatus ---------');
       var titleMsg = '';
+      var visitor;
       if (newStatus == Status.READY) {
-        /// create visitor
-        var visitor = Flagship.newVisitor(
-            visitorIdController.text, visitorContext,
-            hasConsented: isConsented);
+        //Get the visitor
+        visitor = Flagship.getCurrentVisitor();
+        if (visitor == null) {
+          // Create visitor if null
+          visitor = Flagship.newVisitor(
+              visitorIdController.text, visitorContext,
+              hasConsented: isConsented);
 
-        /// Set current visitor singleton instance for future use
-        Flagship.setCurrentVisitor(visitor);
+          // Set current visitor singleton instance for future use
+          Flagship.setCurrentVisitor(visitor);
+        }
 
         visitor.synchronizeModifications().whenComplete(() {
           switch (Flagship.getStatus()) {
