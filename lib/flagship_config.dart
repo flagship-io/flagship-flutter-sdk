@@ -10,7 +10,7 @@ import 'flagship.dart';
 // Time out 2 seconds
 const TIMEOUT = 2000;
 
-typedef StatusListner = void Function(Status newStatus)?;
+typedef StatusListener = void Function(Status newStatus)?;
 
 class FlagshipConfig {
   // Mode
@@ -22,11 +22,11 @@ class FlagshipConfig {
   // LogManager
   late LogManager logManager;
   // Status listner
-  StatusListner statusListner;
+  StatusListener statusListener;
 
   FlagshipConfig(
       {this.timeout = TIMEOUT,
-      this.statusListner,
+      this.statusListener,
       Level logLevel = Level.ALL,
       bool activeLog = true}) {
     // Set the log Manager
@@ -40,12 +40,12 @@ class FlagshipConfig {
     // Log manager
     this.logManager = LogManager(enabledLog: true, level: Level.ALL);
     // Status listner null
-    this.statusListner = null;
+    this.statusListener = null;
   }
 
-  FlagshipConfig.withStatusListner(
+  FlagshipConfig.withStatusListener(
       {this.timeout = TIMEOUT,
-      required this.statusListner,
+      required this.statusListener,
       Level logLevel = Level.ALL,
       bool activeLog = true}) {
     this.logManager = LogManager(level: logLevel, enabledLog: activeLog);

@@ -69,7 +69,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
 //start SDK
 
   _startSdk() {
-    FlagshipConfig config = FlagshipConfig(statusListner: (Status newStatus) {
+    FlagshipConfig config = FlagshipConfig(statusListener: (Status newStatus) {
       print('--------- Callback with $newStatus ---------');
       var titleMsg = '';
       if (newStatus == Status.READY) {

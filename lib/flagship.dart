@@ -116,15 +116,15 @@ class Flagship with FlagshipDelegate {
   @override
   void onUpdateState(Status newStatus) {
     // If the status hasn't changed, no need to update and trigger the callback
-    if (newStatus != _singleton._status) {
-      // Update the status
-      _singleton._status = newStatus;
+    if (newStatus == _singleton._status) {
+      return;
+    }
+    _singleton._status = newStatus;
 
-      // Trigger the callback
-      // Check if the callback if not null before trigger it
-      if (Flagship._configuration.statusListner != null) {
-        Flagship._configuration.statusListner!(newStatus);
-      }
+    // Trigger the callback
+    // Check if the callback if not null before trigger it
+    if (Flagship._configuration.statusListener != null) {
+      Flagship._configuration.statusListener!(newStatus);
     }
   }
 }

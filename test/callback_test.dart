@@ -31,23 +31,23 @@ void main() {
 
   test('FlagshipConfig ', () async {
     FlagshipConfig conf = FlagshipConfig(
-        statusListner: null,
+        statusListener: null,
         timeout: 4000,
         activeLog: false,
         logLevel: Level.ALL);
 
-    expect(conf.statusListner, null);
+    expect(conf.statusListener, null);
     expect(conf.timeout, 4000);
     expect(conf.decisionMode, Mode.DECISION_API);
 
     FlagshipConfig confBis = FlagshipConfig.defaultMode();
-    expect(confBis.statusListner, null);
+    expect(confBis.statusListener, null);
 
     FlagshipConfig confTer =
-        FlagshipConfig.withStatusListner(statusListner: (newStatus) {});
-    expect((confTer.statusListner != null), true);
-    confTer.statusListner = null;
-    expect(confTer.statusListner, null);
+        FlagshipConfig.withStatusListener(statusListener: (newStatus) {});
+    expect((confTer.statusListener != null), true);
+    confTer.statusListener = null;
+    expect(confTer.statusListener, null);
   });
 
   test('Test API with panic mode', () async {
@@ -64,7 +64,7 @@ void main() {
     });
 
     FlagshipConfig config = FlagshipConfig(timeout: TIMEOUT);
-    config.statusListner = (newStatus) {
+    config.statusListener = (newStatus) {
       if (newStatus == Status.PANIC_ON) {
         expect(Flagship.getCurrentVisitor()?.getModification('key1', 12), 12);
         expect(newStatus, Flagship.getStatus());

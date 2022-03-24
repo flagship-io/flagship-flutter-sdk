@@ -100,7 +100,7 @@ void main() {
     /// count the callback trigger
     FlagshipConfig config = FlagshipConfig(
       timeout: TIMEOUT,
-      statusListner: (newStatus) {
+      statusListener: (newStatus) {
         print(" ---- statusListner is trigger ---- ");
         expect(Flagship.getStatus() == newStatus, true);
         expect(newStatus, Flagship.getStatus());

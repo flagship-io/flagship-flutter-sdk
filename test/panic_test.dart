@@ -41,7 +41,7 @@ void main() {
     });
 
     FlagshipConfig config = FlagshipConfig(timeout: TIMEOUT);
-    config.statusListner = (newState) {
+    config.statusListener = (newState) {
       if (newState == Status.PANIC_ON) {
         expect(Flagship.getCurrentVisitor()?.getModification('key1', 12), 12);
       }
