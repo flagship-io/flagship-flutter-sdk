@@ -1,3 +1,10 @@
+## 1.2.0 - 2022-03-24
+
+Add
+
+- Callback (status listener), called when SDK's status is changed
+- Improve FlagshipConfig class and manage listener status
+
 ## 1.1.3 - 2022-01-26
 
 - Imporove synchronize modificaation function
@@ -5,7 +12,7 @@
 
 ## 1.1.2 - 2022-01-17
 
-- Fix bugs
+- configuration when the current visitor is not Set
 
 ## 1.1.1 - 2021-11-25
 
