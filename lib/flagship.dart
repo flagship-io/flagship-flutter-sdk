@@ -43,10 +43,10 @@ class Flagship with FlagshipDelegate {
     /// implement later
   }
 
-  /// Start Sdk
-  ///
-  /// envId : environement id (provided by flagship)
-  /// apiKey: Api key (provided by flagship)
+  // Start Sdk
+  //
+  // envId : environement id (provided by flagship)
+  // apiKey: Api key (provided by flagship)
   static start(String envId, String apiKey, {FlagshipConfig? config}) {
     if (FlagshipTools.chekcXidEnvironment(envId)) {
       _singleton.apiKey = apiKey;
@@ -62,53 +62,53 @@ class Flagship with FlagshipDelegate {
     }
   }
 
-  /// Start visitor
-  ///
-  /// visitorId : Id for the visitor
-  /// context : Map that represent visitor's attribut  {"isVip":true}
+  // Start visitor
+  //
+  // visitorId : Id for the visitor
+  // context : Map that represent visitor's attribut  {"isVip":true}
   static Visitor newVisitor(String visitorId, Map<String, Object> context,
       {bool hasConsented = true}) {
     return Visitor(_configuration, visitorId, context,
         hasConsented: hasConsented);
   }
 
-  /// Set the current visitor singleton
+  // Set the current visitor singleton
   static setCurrentVisitor(Visitor visitor) {
     _singleton.currentVisitor = visitor;
   }
 
-  /// Return the current visitor
+  // Return the current visitor
   static Visitor? getCurrentVisitor() {
     return _singleton.currentVisitor;
   }
 
-  /// Get the current configuration
+  // Get the current configuration
   FlagshipConfig? getConfiguration() {
     return Flagship._configuration;
   }
 
-  ///Active or deactivate logger
-  ///
-  /// isLogEnabled : True to activated logger , otherwise false to deactivate
+  // Active or deactivate logger
+  //
+  // isLogEnabled : True to activated logger , otherwise false to deactivate
   static void enableLog(bool isLogEnabled) {
     LogManager.logEnabled = isLogEnabled;
   }
 
-  /// Display message logger
-  ///
-  /// level : Level of details for logs
-  /// message : Message to display
+  // Display message logger
+  //
+  // level : Level of details for logs
+  // message : Message to display
   static void logger(Level level, String message, {bool isJsonString = false}) {
     Flagship._configuration.logManager.printLog(level, message, isJsonString);
   }
 
-  /// Set the level for logger
-  ///
-  /// newLevel : Level of details for logs
+  // Set the level for logger
+  // newLevel : Level of details for logs
   static void setLoggerLevel(Level newLevel) {
     LogManager.level = newLevel;
   }
 
+  // Get Status
   static Status getStatus() {
     return Flagship._singleton._status;
   }
