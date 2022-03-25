@@ -1,6 +1,7 @@
 import 'package:flagship/decision/api_manager.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/flagship_version.dart';
+import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -42,6 +43,8 @@ void main() {
     FlagshipConfig config = FlagshipConfig(timeout: TIMEOUT);
     config.decisionManager = fakeApi;
     Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
+    Flagship.enableLog(true);
+    Flagship.setLoggerLevel(Level.WARNING);
 
     var v1 = Flagship.newVisitor("visitorId", {});
     v1.setConsent(true);
