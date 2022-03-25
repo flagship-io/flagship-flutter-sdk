@@ -53,9 +53,10 @@ void main() {
       v1.activateModification("aliasTer");
 
       /// Get Modification
-      expect(v1.getModification('aliasTer', 'default'), "testValue");
+      expect(v1.getModification('aliasTer', 'default', activate: true),
+          "testValue");
 
-      expect(v1.getModification('aliasDouble', 100.0), 12.0);
+      expect(v1.getModification('aliasDouble', 100.0, activate: true), 12.0);
 
       //
 
@@ -117,6 +118,9 @@ void main() {
     v1.synchronizeModifications().then((value) {
       expect(Flagship.getStatus(), Status.READY);
       expect(v1.getModification('aliasTer', 'default'), "testValue");
+      // Test the case when the modificattion is empty
+      v1.modifications.clear();
+      expect(v1.getModification('aliasTer', 'default'), "default");
     });
   });
 }
