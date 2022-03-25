@@ -1,6 +1,8 @@
 import 'package:flagship/decision/api_manager.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/flagship_version.dart';
+import 'package:flagship/utils/constants.dart';
+import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -9,7 +11,6 @@ import 'package:mockito/mockito.dart';
 import 'service_test.mocks.dart';
 import 'package:flagship/api/service.dart';
 import 'package:flagship/flagship_config.dart';
-import 'package:flagship/hits/event.dart';
 import 'test_tools.dart';
 
 @GenerateMocks([Service])
@@ -27,6 +28,28 @@ void main() {
 
   MockService fakePanicService = MockService();
   ApiManager fakePanicApi = ApiManager(fakePanicService);
+
+  test('FlagshipConfig ', () async {
+    FlagshipConfig conf = FlagshipConfig(
+        statusListener: null,
+        timeout: 4000,
+        activeLog: false,
+        logLevel: Level.ALL);
+
+    expect(conf.statusListener, null);
+    expect(conf.timeout, 4000);
+    expect(conf.decisionMode, Mode.DECISION_API);
+
+    FlagshipConfig confBis = FlagshipConfig.defaultMode();
+    expect(confBis.statusListener, null);
+
+    FlagshipConfig confTer =
+        FlagshipConfig.withStatusListener(statusListener: (newStatus) {});
+    expect((confTer.statusListener != null), true);
+    confTer.statusListener = null;
+    expect(confTer.statusListener, null);
+  });
+
   test('Test API with panic mode', () async {
     String fakeResponse =
         await ToolsTest.readFile('test_resources/decisionApiPanic.json') ?? "";
@@ -41,9 +64,10 @@ void main() {
     });
 
     FlagshipConfig config = FlagshipConfig(timeout: TIMEOUT);
-    config.statusListener = (newState) {
-      if (newState == Status.PANIC_ON) {
+    config.statusListener = (newStatus) {
+      if (newStatus == Status.PANIC_ON) {
         expect(Flagship.getCurrentVisitor()?.getModification('key1', 12), 12);
+        expect(newStatus, Flagship.getStatus());
       }
     };
 
@@ -53,25 +77,6 @@ void main() {
     var v1 = Flagship.newVisitor("visitorId", {});
     Flagship.setCurrentVisitor(v1);
 
-    v1.synchronizeModifications().then((value) {
-      expect(Flagship.getStatus(), Status.PANIC_ON);
-
-      /// Activate
-      v1.activateModification("key");
-
-      expect(v1.getModification('key1', 12), 12);
-
-      expect(v1.getModificationInfo('key1'), null);
-
-      v1.setConsent(false);
-      expect(v1.getConsent(), false);
-
-      v1.updateContext("newKey", 2);
-      expect(v1.getContext().keys.contains('newKey'), false);
-
-      /// Send hit
-      v1.sendHit(
-          Event(action: "action", category: EventCategory.Action_Tracking));
-    });
+    v1.synchronizeModifications().whenComplete(() {});
   });
 }

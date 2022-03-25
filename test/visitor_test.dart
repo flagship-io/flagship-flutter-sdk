@@ -57,6 +57,8 @@ void main() {
     test('test none authorized type  ', () {
       v1.updateContext("valueObject", Object());
       expect(v1.getCurrentContext().length, 6);
+      v1.clearContext();
+      expect(v1.getCurrentContext().length, 0);
     });
 
     test('test get modification ', () {

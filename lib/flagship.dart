@@ -11,10 +11,6 @@ import 'flagship_delegate.dart';
 enum Status {
   // Flagship SDK has not been started or initialized successfully.
   NOT_INITIALIZED,
-  // Flagship SDK is starting.
-  //STARTING,
-  // Flagship SDK has been started successfully but is still polling campaigns.
-  //POLLING,
   // Flagship SDK is ready but is running in Panic mode: All features are disabled except the one which refresh this status.
   PANIC_ON,
   // Flagship SDK is ready to use.
@@ -55,12 +51,13 @@ class Flagship with FlagshipDelegate {
     if (FlagshipTools.chekcXidEnvironment(envId)) {
       _singleton.apiKey = apiKey;
       _singleton.envId = envId;
-      _singleton._status = Status.READY;
       if (config != null) {
         Flagship._configuration = config;
       }
+      _singleton.onUpdateState(Status.READY);
       Flagship.logger(Level.INFO, STARTED);
     } else {
+      _singleton.onUpdateState(Status.NOT_INITIALIZED);
       Flagship.logger(Level.ERROR, (INITIALIZATION_PARAM_ERROR));
     }
   }
@@ -117,7 +114,17 @@ class Flagship with FlagshipDelegate {
   }
 
   @override
-  void onUpdateState(Status state) {
-    _singleton._status = state;
+  void onUpdateState(Status newStatus) {
+    // If the status hasn't changed, no need to update and trigger the callback
+    if (newStatus == _singleton._status) {
+      return;
+    }
+    _singleton._status = newStatus;
+
+    // Trigger the callback
+    // Check if the callback if not null before trigger it
+    if (Flagship._configuration.statusListener != null) {
+      Flagship._configuration.statusListener!(newStatus);
+    }
   }
 }

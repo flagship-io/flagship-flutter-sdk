@@ -10,6 +10,8 @@ import 'flagship.dart';
 // Time out 2 seconds
 const TIMEOUT = 2000;
 
+typedef StatusListener = void Function(Status newStatus)?;
+
 class FlagshipConfig {
   // Mode
   Mode decisionMode = Mode.DECISION_API;
@@ -19,16 +21,34 @@ class FlagshipConfig {
   DecisionManager decisionManager = ApiManager(Service(http.Client()));
   // LogManager
   late LogManager logManager;
+  // Status listner
+  StatusListener statusListener;
 
-  FlagshipConfig(this.timeout,
-      {Level logLevel = Level.ALL, bool activeLog = true}) {
+  FlagshipConfig(
+      {this.timeout = TIMEOUT,
+      this.statusListener,
+      Level logLevel = Level.ALL,
+      bool activeLog = true}) {
+    // Set the log Manager
     this.logManager = LogManager(level: logLevel, enabledLog: activeLog);
-
+    // Log the timeout value in ms
     Flagship.logger(Level.ALL, "Flagship The timeout is : $timeout ms");
   }
 
   FlagshipConfig.defaultMode(
       {this.timeout: TIMEOUT, this.decisionMode = Mode.DECISION_API}) {
+    // Log manager
     this.logManager = LogManager(enabledLog: true, level: Level.ALL);
+    // Status listner null
+    this.statusListener = null;
+  }
+
+  FlagshipConfig.withStatusListener(
+      {this.timeout = TIMEOUT,
+      required this.statusListener,
+      Level logLevel = Level.ALL,
+      bool activeLog = true}) {
+    this.logManager = LogManager(level: logLevel, enabledLog: activeLog);
+    Flagship.logger(Level.ALL, "Flagship The timeout is : $timeout ms");
   }
 }

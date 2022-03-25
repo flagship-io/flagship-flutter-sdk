@@ -39,7 +39,7 @@ void main() {
       return http.Response(fakeResponse, 200);
     });
 
-    FlagshipConfig config = FlagshipConfig(TIMEOUT);
+    FlagshipConfig config = FlagshipConfig(timeout: TIMEOUT);
     config.decisionManager = fakeApi;
     Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
 
