@@ -54,6 +54,7 @@ class DefaultStrategy implements IVisitor {
   }
 
   @override
+  // Get Modification object, this object will be used by the flag class
   Modification? getFlagModification(String key) {
     return visitor.modifications[key];
   }
@@ -63,7 +64,7 @@ class DefaultStrategy implements IVisitor {
     var ret = defaultValue;
 
     bool hasSameType =
-        false; // In case when the Type is not the same then the activate will not be send
+        false; // When the Type is not the same the activate won't be sent
 
     if (visitor.modifications.containsKey(key)) {
       try {

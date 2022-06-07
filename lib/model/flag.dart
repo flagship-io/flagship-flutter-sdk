@@ -14,6 +14,8 @@ class Flag<T> {
   Flag(this._key, this._defaultValue, this._visitorDelegate);
 
 // Get value for flag
+//
+// userExposed is true by default
   T value({bool userExposed: true}) {
     Modification? modif = this._visitorDelegate.getFlagModification(this._key);
     if (modif != null) {
@@ -61,7 +63,7 @@ class Flag<T> {
     }
   }
 
-  //_ Check the type of flag's value with the default value
+  // Check the type of flag's value with the default value
   bool _isSameType(dynamic value) {
     return (value is T);
   }
@@ -75,6 +77,7 @@ class FlagMetadata {
   late String campaignType = "";
   late String slug = "";
 
+// Create metadata from map entry
   FlagMetadata.withMap(Map<String, Object>? infos) {
     if (infos != null) {
       this.campaignId = (infos['campaignId'] as String);
@@ -86,6 +89,7 @@ class FlagMetadata {
     }
   }
 
+// Get the json format
   Map<String, dynamic> toJson() {
     return {
       "campaignId": this.campaignId,
