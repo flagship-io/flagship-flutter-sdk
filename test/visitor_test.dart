@@ -151,6 +151,28 @@ void main() {
 
       expect(v1.getModification("test_object", {"test2": "value2"}),
           {"test1": "value1"});
+
+      v1.modifications["badType"] = new Modification(
+          "test_mismatch_castable",
+          "campaignId",
+          "variationGroupId",
+          "variationId",
+          true,
+          "ab",
+          "slug",
+          "value1");
+      expect(v1.getModification("test_object", 13), 13);
+
+      v1.modifications["null"] = new Modification(
+          "test_mismatch_castable",
+          "campaignId",
+          "variationGroupId",
+          "variationId",
+          true,
+          "ab",
+          "slug",
+          null);
+      expect(v1.getModification("null", "null"), "null");
     });
   });
 }
