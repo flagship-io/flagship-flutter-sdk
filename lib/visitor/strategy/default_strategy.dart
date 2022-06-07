@@ -64,8 +64,7 @@ class DefaultStrategy implements IVisitor {
     var ret = defaultValue;
 
     bool hasSameType =
-        false; // When the Type is not the same the activate won't be sent
-
+        true; // When the Type is not the same the activate won't be sent
     if (visitor.modifications.containsKey(key)) {
       try {
         var modification = visitor.modifications[key];
@@ -79,13 +78,11 @@ class DefaultStrategy implements IVisitor {
           case double:
             if (modification.value is double) {
               ret = modification.value as T;
-              hasSameType = true;
               break;
             }
 
             if (modification.value is int) {
               ret = (modification.value as int).toDouble() as T;
-              hasSameType = true;
               break;
             }
             Flagship.logger(Level.INFO,
@@ -94,9 +91,9 @@ class DefaultStrategy implements IVisitor {
           default:
             if (modification.value is T) {
               ret = modification.value as T;
-              hasSameType = true;
               break;
             }
+            hasSameType = false;
             Flagship.logger(Level.INFO,
                 "Modification value ${modification.value} type ${modification.value.runtimeType} cannot be casted as $T, will return default value");
             break;

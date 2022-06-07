@@ -162,4 +162,19 @@ void main() async {
       expect(metadata.campaignType, "ab");
     });
   });
+
+  test("Flag value & default value = null", () {
+    v1.fetchFlags().whenComplete(() {
+      Flag myFlag = v1.getFlag("keyNull", null);
+      expect(myFlag.value(), null);
+      expect(myFlag.exists(), true);
+      FlagMetadata metadata = myFlag.metaData();
+      expect(metadata.campaignId, "bsffhle242b2l3igq4dg");
+      expect(metadata.variationGroupId, "bsffhle242b2l3igq4egaa");
+      expect(metadata.variationId, "bsffhle242b2l3igq4f0");
+      expect(metadata.isReference, true);
+      expect(metadata.slug, "flutter");
+      expect(metadata.campaignType, "ab");
+    });
+  });
 }

@@ -36,12 +36,13 @@ class Flag<T> {
     Modification? modif = this._visitorDelegate.getFlagModification(this._key);
     if (modif != null) {
       if (modif.value == null || _isSameType(modif.value)) {
-        Flagship.logger(Level.DEBUG, "Send activate for " + _key);
+        Flagship.logger(Level.DEBUG, "Send activate for the flag: " + _key);
 
         this._visitorDelegate.activateModification(this._key);
       }
     } else {
-      Flagship.logger(Level.DEBUG, "Activate failed for " + _key);
+      Flagship.logger(Level.DEBUG,
+          "Flag: " + _key + "not found, the activate won't be sent");
     }
   }
 
