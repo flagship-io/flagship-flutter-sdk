@@ -25,9 +25,9 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   final visitorIdController = TextEditingController();
 
   @override
-  @override
   void initState() {
     super.initState();
+
     visitorContext = Map<String, Object>.from(initialVisitorContext);
 
     visitorIdController.text = _createRandomUser();
@@ -86,7 +86,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
           Flagship.setCurrentVisitor(visitor);
         }
 
-        visitor.synchronizeModifications().whenComplete(() {
+        visitor.fetchFlags().whenComplete(() {
           switch (Flagship.getStatus()) {
             case Status.PANIC_ON:
               titleMsg = "SDK is on panic mode, will use default value";

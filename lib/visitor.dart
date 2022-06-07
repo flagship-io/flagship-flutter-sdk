@@ -93,9 +93,13 @@ class Visitor {
     _visitorDelegate.updateContext(key, value);
   }
 
-  // Get Flag object
-  Flag getFlag(String key, dynamic defaultValue) {
-    return Flag();
+  /// Get Flag object
+  ///
+  /// key : the name of the key relative to modification
+  /// defaultValue: the returned value if the key is not found
+  /// return Flag object. See Flag class
+  Flag getFlag<T>(String key, T defaultValue) {
+    return Flag<T>(key, defaultValue, this._visitorDelegate);
   }
 
   /// Get Modification
@@ -114,7 +118,6 @@ class Visitor {
   ///
   /// key : the name of the key relative to modification
   /// Return map {"campaignId":"xxx", "variationId" : "xxxx", "variationGroupId":"xxxxx", "isReference": true/false}
-
   @Deprecated('Use metadata() in Flag class instead')
   Map<String, Object>? getModificationInfo(String key) {
     // Delegate the action to strategy

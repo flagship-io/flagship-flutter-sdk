@@ -65,24 +65,52 @@ void main() {
       v1.modifications = new Map<String, Modification>();
       expect(v1.getModification("test_missing", 10), 10);
 
-      v1.modifications["test_string"] = new Modification("test_string",
-          "campaignId", "variationGroupId", "variationId", true, "string");
+      v1.modifications["test_string"] = new Modification(
+          "test_string",
+          "campaignId",
+          "variationGroupId",
+          "variationId",
+          true,
+          "ab",
+          "slug",
+          "string");
       expect(v1.getModification("test_string", "string"), "string");
 
-      v1.modifications["test_bool"] = new Modification("test_bool",
-          "campaignId", "variationGroupId", "variationId", true, true);
+      v1.modifications["test_bool"] = new Modification(
+          "test_bool",
+          "campaignId",
+          "variationGroupId",
+          "variationId",
+          true,
+          "ab",
+          "slug",
+          true);
       expect(v1.getModification("test_bool", false), true);
 
-      v1.modifications["test_double"] = new Modification("test_double",
-          "campaignId", "variationGroupId", "variationId", true, 23.5);
+      v1.modifications["test_double"] = new Modification(
+          "test_double",
+          "campaignId",
+          "variationGroupId",
+          "variationId",
+          true,
+          "ab",
+          "slug",
+          23.5);
       expect(v1.getModification("test_double", 13.5), 23.5);
 
       v1.modifications["test_int"] = new Modification("test_int", "campaignId",
-          "variationGroupId", "variationId", true, 23);
+          "variationGroupId", "variationId", true, "ab", "slug", 23);
       expect(v1.getModification("test_int", 13), 23);
 
-      v1.modifications["test_mismatch"] = new Modification("test_mismatch",
-          "campaignId", "variationGroupId", "variationId", true, 23);
+      v1.modifications["test_mismatch"] = new Modification(
+          "test_mismatch",
+          "campaignId",
+          "variationGroupId",
+          "variationId",
+          true,
+          "ab",
+          "slug",
+          23);
       expect(v1.getModification("test_mismatch", "string"), "string");
 
       expect(v1.getModification("test_not_exists", "string"), "string");
@@ -93,6 +121,8 @@ void main() {
           "variationGroupId",
           "variationId",
           true,
+          "ab",
+          "slug",
           23);
       expect(v1.getModification("test_mismatch_castable", 23.3), 23);
 
@@ -102,6 +132,8 @@ void main() {
           "variationGroupId",
           "variationId",
           true,
+          "ab",
+          "slug",
           ["test1", "test2"]);
 
       expect(v1.getModification("test_list", ["test3", "test4"]),
@@ -113,6 +145,8 @@ void main() {
           "variationGroupId",
           "variationId",
           true,
+          "ab",
+          "slug",
           {"test1": "value1"});
 
       expect(v1.getModification("test_object", {"test2": "value2"}),

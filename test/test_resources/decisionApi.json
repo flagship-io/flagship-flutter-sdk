@@ -4,6 +4,8 @@
     {
       "id": "bsffhle242b2l3igq4dg",
       "variationGroupId": "bsffhle242b2l3igq4egaa",
+      "type":"ab",
+      "slug":"flutter",
       "variation": {
         "id": "bsffhle242b2l3igq4f0",
         "modifications": {
@@ -27,7 +29,12 @@
             },
             "object": {
               "value": 123456
-            }
+            },
+            "key_A":"val_A",
+            "key_B":3.14,
+            "key_C": 2,
+            "key_D":true,
+            "keyNull":null
           }
         },
         "reference": true
@@ -36,6 +43,8 @@
     {
       "id": "bsffhle242b2l3igq4dgb",
       "variationGroupId": "bsffhle242b2l3igq4egaab",
+      "type":"ab",
+      "slug":"flutter",
       "variation": {
         "id": "bsffhle242b2l3igq4f0b",
         "modifications": {

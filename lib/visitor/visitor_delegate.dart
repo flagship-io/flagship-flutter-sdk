@@ -1,4 +1,5 @@
 import 'package:flagship/hits/hit.dart';
+import 'package:flagship/model/modification.dart';
 import 'package:flagship/visitor/Ivisitor.dart';
 import 'package:flagship/visitor/strategy/default_strategy.dart';
 import 'package:flagship/visitor/strategy/no_consent_strategy.dart';
@@ -37,6 +38,11 @@ class VisitorDelegate implements IVisitor {
   @override
   T getModification<T>(String key, T defaultValue, {bool activate = false}) {
     return getStrategy().getModification(key, defaultValue, activate: activate);
+  }
+
+  @override
+  Modification? getFlagModification(String key) {
+    return getStrategy().getFlagModification(key);
   }
 
 // Get modification info

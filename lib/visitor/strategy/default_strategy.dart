@@ -54,8 +54,16 @@ class DefaultStrategy implements IVisitor {
   }
 
   @override
+  Modification? getFlagModification(String key) {
+    return visitor.modifications[key];
+  }
+
+  @override
   T getModification<T>(String key, T defaultValue, {bool activate = false}) {
     var ret = defaultValue;
+
+    bool hasSameType =
+        false; // In case when the Type is not the same then the activate will not be send
 
     if (visitor.modifications.containsKey(key)) {
       try {
@@ -70,11 +78,13 @@ class DefaultStrategy implements IVisitor {
           case double:
             if (modification.value is double) {
               ret = modification.value as T;
+              hasSameType = true;
               break;
             }
 
             if (modification.value is int) {
               ret = (modification.value as int).toDouble() as T;
+              hasSameType = true;
               break;
             }
             Flagship.logger(Level.INFO,
@@ -83,14 +93,15 @@ class DefaultStrategy implements IVisitor {
           default:
             if (modification.value is T) {
               ret = modification.value as T;
+              hasSameType = true;
               break;
             }
             Flagship.logger(Level.INFO,
                 "Modification value ${modification.value} type ${modification.value.runtimeType} cannot be casted as $T, will return default value");
             break;
         }
-        if (activate) {
-          /// send activate later
+        if (activate && hasSameType) {
+          // Send activate later
           _sendActivate(modification);
         }
       } catch (exp) {

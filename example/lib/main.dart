@@ -1,3 +1,4 @@
+import 'package:flagship_qa/widgets/httpLoggerScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import './widgets/configuration.dart';
@@ -5,6 +6,7 @@ import './widgets/Modifications.dart';
 import './widgets/Hits.dart';
 import './widgets/context_screen.dart';
 import './widgets/modifications_json_screen.dart';
+import './widgets/httpLoggerScreen.dart';
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
@@ -38,6 +40,7 @@ class MainScreen extends StatefulWidget {
     // User(),
     Modifications(),
     Hits(),
+    HttpLoggerScreen()
   ];
 
   MainScreen({title = ""});
@@ -67,7 +70,11 @@ class MainScreenState extends State<MainScreen> {
         label: "Modifications",
         backgroundColor: Colors.blueGrey),
     BottomNavigationBarItem(
-        icon: Icon(Icons.api), label: "Hits", backgroundColor: Colors.blueGrey)
+        icon: Icon(Icons.api), label: "Hits", backgroundColor: Colors.blueGrey),
+    BottomNavigationBarItem(
+        icon: Icon(Icons.terminal),
+        label: "Http",
+        backgroundColor: Colors.blueGrey)
   ];
 
   @override
