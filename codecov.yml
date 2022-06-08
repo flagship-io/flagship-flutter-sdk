@@ -23,6 +23,12 @@ comment:
   require_changes: no
 
 ignore:
+  - "*.md"
+  - "*.yaml"
+  - "*.lock"
   - "test/"
-  - codecov.yml
-  - lcov.info
+  - "example/"
+  - "tool/"
+  - "test_resources/"
+  - "build/"
+  - "coverage/"

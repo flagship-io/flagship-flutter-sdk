@@ -1,4 +1,5 @@
 import 'package:flagship/hits/hit.dart';
+import 'package:flagship/model/modification.dart';
 
 abstract class IVisitor {
 // Update Context
@@ -15,4 +16,7 @@ abstract class IVisitor {
   Future<void> sendHit(BaseHit hit);
 // send Consent
   void setConsent(bool isConsent);
+
+// Get Modification object, use for Flag class
+  Modification? getFlagModification(String key);
 }
