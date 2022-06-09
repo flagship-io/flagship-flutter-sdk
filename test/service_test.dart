@@ -23,20 +23,15 @@ void main() {
     "Content-type": "application/json"
   };
 
-  Object data = json
-      .encode({"visitorId": "visitorId", "context": {}, "trigger_hit": false});
+  Object data = json.encode({"visitorId": "visitorId", "context": {}, "trigger_hit": false});
 
   MockService fakeService = MockService();
   ApiManager fakeApi = ApiManager(fakeService);
   test('Test API manager with reponse ', () async {
     /// prepare response
-    String fakeResponse =
-        await ToolsTest.readFile('test_resources/decisionApi.json') ?? "";
-    when(fakeService.sendHttpRequest(
-            RequestType.Post,
-            'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true',
-            fsHeaders,
-            data,
+    String fakeResponse = await ToolsTest.readFile('test_resources/decisionApi.json') ?? "";
+    when(fakeService.sendHttpRequest(RequestType.Post,
+            'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true', fsHeaders, data,
             timeoutMs: TIMEOUT))
         .thenAnswer((_) async {
       return http.Response(fakeResponse, 200);

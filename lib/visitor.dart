@@ -50,8 +50,7 @@ class Visitor {
   /// config: this object manage the mode of the sdk and other params
   /// visitorId : the user ID for the visitor
   /// context : Map that represent the conext for the visitor
-  Visitor(this.config, this.visitorId, Map<String, Object> context,
-      {bool hasConsented = true}) {
+  Visitor(this.config, this.visitorId, Map<String, Object> context, {bool hasConsented = true}) {
     // update context
     this.updateContextWithMap(context);
     // set delegate
@@ -110,8 +109,7 @@ class Visitor {
   @Deprecated('Use value() in Flag class instead')
   T getModification<T>(String key, T defaultValue, {bool activate = false}) {
     // Delegate the action to strategy
-    return _visitorDelegate.getModification(key, defaultValue,
-        activate: activate);
+    return _visitorDelegate.getModification(key, defaultValue, activate: activate);
   }
 
   /// Get the modification infos relative to flag (modification)

@@ -66,10 +66,8 @@ class Flagship with FlagshipDelegate {
   //
   // visitorId : Id for the visitor
   // context : Map that represent visitor's attribut  {"isVip":true}
-  static Visitor newVisitor(String visitorId, Map<String, Object> context,
-      {bool hasConsented = true}) {
-    return Visitor(_configuration, visitorId, context,
-        hasConsented: hasConsented);
+  static Visitor newVisitor(String visitorId, Map<String, Object> context, {bool hasConsented = true}) {
+    return Visitor(_configuration, visitorId, context, hasConsented: hasConsented);
   }
 
   // Set the current visitor singleton
