@@ -1,4 +1,5 @@
 import 'package:flagship/flagship_config.dart';
+import 'package:flagship/utils/constants.dart';
 import 'package:flagship_qa/mixins/dialog.dart';
 import 'package:flutter/material.dart';
 import './FSinputField.dart';
@@ -69,37 +70,37 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
 //start SDK
 
   _startSdk() {
-    FlagshipConfig config = FlagshipConfig(statusListener: (Status newStatus) {
-      print('--------- Callback with $newStatus ---------');
-      var titleMsg = '';
-      var visitor;
-      if (newStatus == Status.READY) {
-        //Get the visitor
-        visitor = Flagship.getCurrentVisitor();
-        if (visitor == null) {
-          // Create visitor if null
-          visitor = Flagship.newVisitor(
-              visitorIdController.text, visitorContext,
-              hasConsented: isConsented);
+    FlagshipConfig config = FlagshipConfig(
+        decisionMode: Mode.BUCKETING,
+        statusListener: (Status newStatus) {
+          print('--------- Callback with $newStatus ---------');
+          var titleMsg = '';
+          var visitor;
+          if (newStatus == Status.READY) {
+            //Get the visitor
+            visitor = Flagship.getCurrentVisitor();
+            if (visitor == null) {
+              // Create visitor if null
+              visitor = Flagship.newVisitor(visitorIdController.text, visitorContext, hasConsented: isConsented);
 
-          // Set current visitor singleton instance for future use
-          Flagship.setCurrentVisitor(visitor);
-        }
+              // Set current visitor singleton instance for future use
+              Flagship.setCurrentVisitor(visitor);
+            }
 
-        visitor.fetchFlags().whenComplete(() {
-          switch (Flagship.getStatus()) {
-            case Status.PANIC_ON:
-              titleMsg = "SDK is on panic mode, will use default value";
-              break;
-            case Status.READY:
-              titleMsg = "SDK is ready to use";
-              break;
-            default:
+            visitor.fetchFlags().whenComplete(() {
+              switch (Flagship.getStatus()) {
+                case Status.PANIC_ON:
+                  titleMsg = "SDK is on panic mode, will use default value";
+                  break;
+                case Status.READY:
+                  titleMsg = "SDK is ready to use";
+                  break;
+                default:
+              }
+              showBasicDialog(titleMsg, '');
+            });
           }
-          showBasicDialog(titleMsg, '');
         });
-      }
-    });
 
     Flagship.start(envIdController.text, apiKeyController.text, config: config);
   }
@@ -170,10 +171,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
               ),
               Text(
                 "Configuration",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 25),
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 25),
               ),
               Container(
                 child: ElevatedButton(
@@ -187,8 +185,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
               SizedBox(height: _spaceBetweenInput),
               FSInputField("ApiKey", apiKeyController, TextInputType.text),
               SizedBox(height: _spaceBetweenInput),
-              FSInputField(
-                  "Timeout(ms)", timeoutController, TextInputType.number),
+              FSInputField("Timeout(ms)", timeoutController, TextInputType.number),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -200,15 +197,13 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
                   )),
                   Expanded(
                       child: ElevatedButton(
-                          onPressed: () => {_changeMode()},
-                          child: Text(isApiMode ? "API" : "BUCKETING")))
+                          onPressed: () => {_changeMode()}, child: Text(isApiMode ? "API" : "BUCKETING")))
                 ],
               ),
               // SizedBox(height: _spaceBetweenInput),
               // FSInputField("Timeout", timeoutController, TextInputType.number),
               SizedBox(height: _spaceBetweenInput),
-              FSInputField(
-                  "VisitorId", visitorIdController, TextInputType.text),
+              FSInputField("VisitorId", visitorIdController, TextInputType.text),
               SizedBox(height: _spaceBetweenInput),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -220,9 +215,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
                   )),
                   Expanded(
                       child: ElevatedButton(
-                          onPressed: () => {_consent()},
-                          child: Text(
-                              isConsented ? "Consented" : "Not Consented")))
+                          onPressed: () => {_consent()}, child: Text(isConsented ? "Consented" : "Not Consented")))
                 ],
               ),
               SizedBox(height: _spaceBetweenInput),
