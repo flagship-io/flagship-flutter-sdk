@@ -4,6 +4,12 @@ codecov:
 coverage:
   status:
     patch: false
+    project:
+      default:
+        # basic
+        informational: true
+        target: auto
+        threshold: 100%
     
   precision: 2
   round: down
@@ -23,12 +29,8 @@ comment:
   require_changes: no
 
 ignore:
-  - "*.md"
-  - "*.yaml"
-  - "*.lock"
   - "test/"
   - "example/"
   - "tool/"
   - "test_resources/"
   - "build/"
-  - "coverage/"
