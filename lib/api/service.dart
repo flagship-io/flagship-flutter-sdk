@@ -15,15 +15,14 @@ class Service {
 
   Service(this.httpClient);
 
-  Future<Response> sendHttpRequest(RequestType type, String urlString,
-      Map<String, String> headers, Object data,
+  Future<Response> sendHttpRequest(RequestType type, String urlString, Map<String, String> headers, Object data,
       {timeoutMs = TIMEOUT}) async {
+    var url = Uri.parse(urlString);
     switch (type) {
       case RequestType.Post:
         {
-          Flagship.logger(
-              Level.INFO, REQUEST_POST_BODY.replaceFirst("%s", "$data"));
-          var url = Uri.parse(urlString);
+          Flagship.logger(Level.INFO, REQUEST_POST_BODY.replaceFirst("%s", "$data"));
+
           try {
             var response = await this
                 .httpClient
@@ -31,16 +30,20 @@ class Service {
                 .timeout(Duration(milliseconds: timeoutMs));
             return response;
           } on TimeoutException catch (e) {
-            Flagship.logger(
-                Level.INFO, REQUEST_TIMEOUT.replaceFirst("%s", urlString));
+            Flagship.logger(Level.INFO, REQUEST_TIMEOUT.replaceFirst("%s", urlString));
             return Response('$e', 408);
           } on Error catch (e) {
-            Flagship.logger(
-                Level.INFO, REQUEST_ERROR.replaceFirst("%s", urlString));
+            Flagship.logger(Level.INFO, REQUEST_ERROR.replaceFirst("%s", urlString));
             return Response("$e", 400);
           }
         }
       case RequestType.Get:
+        try {
+          var response = await this.httpClient.get(url);
+          return response;
+        } on Error catch (e) {
+          return Response("$e", 400);
+        }
       default:
         return Response('Error', 400);
     }
