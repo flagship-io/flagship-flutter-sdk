@@ -8,8 +8,8 @@ import 'package:flagship/decision/polling/polling.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/model/campaigns.dart';
-
 import '../utils/logger/log_manager.dart';
+import 'package:path_provider/path_provider.dart';
 
 class BucketingManager extends DecisionManager {
   late Polling polling;
@@ -53,5 +53,9 @@ class BucketingManager extends DecisionManager {
       await _downloadScript();
     });
     this.polling.start();
+  }
+
+  _saveFile() async {
+    final directory = await getApplicationDocumentsDirectory();
   }
 }
