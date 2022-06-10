@@ -10,5 +10,5 @@ class Endpoints {
   static const String DO_NOT_SEND_CONTEXT = "&sendContextEvent=false";
 
 // Bucketing
-  static const String BucketingScript = "https://cdn.flagship.io/%@/bucketing.json";
+  static const String BucketingScript = "https://cdn.flagship.io/%s/bucketing.json";
 }

@@ -15,7 +15,7 @@ class Service {
 
   Service(this.httpClient);
 
-  Future<Response> sendHttpRequest(RequestType type, String urlString, Map<String, String> headers, Object data,
+  Future<Response> sendHttpRequest(RequestType type, String urlString, Map<String, String> headers, Object? data,
       {timeoutMs = TIMEOUT}) async {
     var url = Uri.parse(urlString);
     switch (type) {

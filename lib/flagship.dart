@@ -54,6 +54,7 @@ class Flagship with FlagshipDelegate {
       if (config != null) {
         Flagship._configuration = config;
       }
+      Flagship._configuration.decisionManager.startPolling();
       _singleton.onUpdateState(Status.READY);
       Flagship.logger(Level.INFO, STARTED);
     } else {

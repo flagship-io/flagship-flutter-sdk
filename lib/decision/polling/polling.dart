@@ -1,17 +1,18 @@
 import 'dart:async';
 
+import 'package:flagship/model/campaign.dart';
 import 'package:flutter/animation.dart';
+
+import '../../model/campaigns.dart';
 
 class Polling {
   final int intervalTimePolling;
 
-  Future<void> Function() getScript;
+  Function() getScript;
 
   late Timer timer;
 
-  Polling(this.intervalTimePolling, this.getScript) {
-    start();
-  }
+  Polling(this.intervalTimePolling, this.getScript);
 
   start() {
     getScript().whenComplete(() {
