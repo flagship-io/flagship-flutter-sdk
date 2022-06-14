@@ -24,11 +24,14 @@ class FlagshipConfig {
   late LogManager logManager;
   // Status listner
   StatusListener statusListener;
+  // Interval polling time
+  int pollingTime = 60; // every 60 seconds will download the script bucketing.
 
   FlagshipConfig(
       {this.timeout = TIMEOUT,
       this.decisionMode = Mode.DECISION_API,
       this.statusListener,
+      this.pollingTime = 60,
       Level logLevel = Level.ALL,
       bool activeLog = true}) {
     // Set the log Manager

@@ -39,13 +39,15 @@ class Service {
         }
       case RequestType.Get:
         try {
-          var response = await this.httpClient.get(url);
+          var response = await this.httpClient.get(url, headers: headers);
           return response;
         } on Error catch (e) {
           return Response("$e", 400);
         }
       default:
         return Response('Error', 400);
+
+      /// Refracotor this later
     }
   }
 }
