@@ -1,15 +1,9 @@
 import 'dart:async';
 
-import 'package:flagship/model/campaign.dart';
-import 'package:flutter/animation.dart';
-
-import '../../model/campaigns.dart';
-
 class Polling {
   final int intervalTimePolling;
 
   Function() getScript;
-
   late Timer timer;
 
   Polling(this.intervalTimePolling, this.getScript);
@@ -24,6 +18,8 @@ class Polling {
 
   stop() {
     print("stop polling");
-    timer.cancel();
+    if (timer.isActive) {
+      timer.cancel();
+    }
   }
 }

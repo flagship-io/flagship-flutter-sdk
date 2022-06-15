@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flagship/api/Targeting/targeting_manager.dart';
 import 'package:flagship/api/endpoints.dart';
 import 'package:flagship/api/service.dart';
 import 'package:flagship/decision/decision_manager.dart';
@@ -15,8 +16,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class BucketingManager extends DecisionManager {
-  late Polling polling;
-  int intervalPolling = 60;
+  Polling? polling;
+  final int intervalPolling;
   bool fileExists = true;
   String fileName = "bucketing.json";
   late Future<SharedPreferences> _prefs;
@@ -27,7 +28,7 @@ class BucketingManager extends DecisionManager {
 
   String lastModfiedKey = "FSLastModifiedScript";
 
-  BucketingManager(Service service) : super(service) {
+  BucketingManager(Service service, this.intervalPolling) : super(service) {
     _prefs = SharedPreferences.getInstance();
   }
 
@@ -35,11 +36,14 @@ class BucketingManager extends DecisionManager {
   Future<Campaigns> getCampaigns(String envId, String visitorId, Map<String, Object> context) async {
     /// Read File before
     ///
-    String result = await _readFile().catchError((error) {
+    String jsonString = await _readFile().catchError((error) {
       print("Error on read file from cache");
     });
 
-    Bucketing object = convertToBuckeitng(result);
+    Bucketing bucketingObject = Bucketing.fromJson(json.decode(jsonString));
+
+    /// process the targeting
+    TargetingManager(visitorId).process(bucketingObject);
 
     /// Here we have to run the targeting
     return campaigns;
@@ -53,13 +57,15 @@ class BucketingManager extends DecisionManager {
     String urlString = Endpoints.BucketingScript.replaceFirst("%s", Flagship.sharedInstance().envId ?? "");
 
     var response = await this.service.sendHttpRequest(
-        RequestType.Get, urlString, {"if-modified-since": prefs.getString(lastModfiedKey) ?? ""}, null,
+        // {"if-modified-since": prefs.getString(lastModfiedKey) ?? ""}
+        RequestType.Get,
+        urlString,
+        {},
+        null,
         timeoutMs: Flagship.sharedInstance().getConfiguration()?.timeout ?? TIMEOUT);
     switch (response.statusCode) {
       case 200:
         Flagship.logger(Level.ALL, response.body, isJsonString: true);
-        // Retreive the last update
-
         String? lastModified = response.headers["last-modified"];
         if (lastModified != null) {
           prefs.setString(lastModfiedKey, lastModified);
@@ -85,9 +91,10 @@ class BucketingManager extends DecisionManager {
     this.polling = Polling(intervalPolling, () async {
       await _downloadScript();
     });
-    this.polling.start();
+    this.polling?.start();
   }
 
+  // Save the response into the file
   _saveFile(String body) async {
     final directory = await getApplicationDocumentsDirectory();
     Directory bucketingDirectory = await Directory.fromUri(Uri.file(directory.path + "/flagship/Bucketing"))
@@ -101,6 +108,7 @@ class BucketingManager extends DecisionManager {
     jsonFile.writeAsString(body);
   }
 
+// Read the file saved
   Future<String> _readFile() async {
     final directory = await getApplicationDocumentsDirectory();
     File jsonFile = File(directory.path + "/flagship/Bucketing/" + fileName);
@@ -109,10 +117,5 @@ class BucketingManager extends DecisionManager {
     } else {
       throw Exception('Flagship, Failed to read bucketing script');
     }
-  }
-
-  Bucketing convertToBuckeitng(String jsonString) {
-    Bucketing result = Bucketing.fromJson(json.decode(jsonString));
-    return result;
   }
 }

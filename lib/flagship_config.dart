@@ -8,6 +8,7 @@ import "package:flagship/api/service.dart";
 
 import 'flagship.dart';
 
+/// Will refarctor this class by using a builder
 // Time out 2 seconds
 const TIMEOUT = 2000;
 
@@ -15,7 +16,7 @@ typedef StatusListener = void Function(Status newStatus)?;
 
 class FlagshipConfig {
   // Mode
-  Mode decisionMode; // = Mode.DECISION_API;
+  Mode decisionMode;
   // Timeout
   int timeout = TIMEOUT;
   // Decision Manager
@@ -25,7 +26,7 @@ class FlagshipConfig {
   // Status listner
   StatusListener statusListener;
   // Interval polling time
-  int pollingTime = 60; // every 60 seconds will download the script bucketing.
+  int pollingTime = 5; // 60; // every 60 seconds will download the script bucketing.
 
   FlagshipConfig(
       {this.timeout = TIMEOUT,
@@ -41,14 +42,14 @@ class FlagshipConfig {
 
     decisionManager = (decisionMode == Mode.DECISION_API)
         ? ApiManager(Service(http.Client()))
-        : BucketingManager(Service(http.Client()));
+        : BucketingManager(Service(http.Client()), this.pollingTime);
   }
 
   FlagshipConfig.defaultMode({this.timeout: TIMEOUT, this.decisionMode = Mode.DECISION_API}) {
     // Decisoin manager
     decisionManager = (decisionMode == Mode.DECISION_API)
         ? ApiManager(Service(http.Client()))
-        : BucketingManager(Service(http.Client()));
+        : BucketingManager(Service(http.Client()), this.pollingTime);
     // Log manager
     this.logManager = LogManager(enabledLog: true, level: Level.ALL);
     // Status listner null
@@ -66,6 +67,6 @@ class FlagshipConfig {
 
     decisionManager = (decisionMode == Mode.DECISION_API)
         ? ApiManager(Service(http.Client()))
-        : BucketingManager(Service(http.Client()));
+        : BucketingManager(Service(http.Client()), this.pollingTime);
   }
 }
