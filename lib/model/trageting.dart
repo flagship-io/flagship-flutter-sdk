@@ -20,8 +20,8 @@ class TargetingGroup {
 
 class ItemTarget {
   /// To complete later
-  String? targetOperator; // operator
-  String? tragetKey; // key
+  String targetOperator = ""; // operator
+  String tragetKey = ""; // key
   dynamic targetValue; // value
 
   ItemTarget.fromJson(Map<String, dynamic> json) {

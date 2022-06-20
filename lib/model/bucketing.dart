@@ -26,6 +26,7 @@ class Bucketing {
 class BucketCampaign {
   String idCampaign = "";
   String type = "";
+  String slug = "";
   List<VariationGroup> variationGroups = [];
 
   BucketCampaign.fromJson(Map<String, dynamic> json) {
@@ -37,6 +38,11 @@ class BucketCampaign {
     // Set idCampaign
     if (json.keys.contains("type")) {
       type = json['type'] as String;
+    }
+
+    // Set slug
+    if (json.keys.contains("slug")) {
+      slug = json['slug'] as String;
     }
 
     var list = (json['variationGroups'] ?? []) as List<dynamic>;

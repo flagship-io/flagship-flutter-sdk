@@ -35,7 +35,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   }
 
   final Map<String, Object> initialVisitorContext = {
-    "isVip": true,
+    "isVipClient": true,
     "key1": 12.5,
     "key2": "title",
     "key3": 2,
@@ -43,7 +43,11 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
     "key5": 4444,
     "key6": true,
     "key7": "ola",
-    "qa_getflag": true
+    "qa_getflag": true,
+    "bK1": "flutter",
+    "bk2": 13,
+    "bk3": true,
+    // "condition1": "condition1"
   };
 
   bool isApiMode = true;

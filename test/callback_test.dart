@@ -23,18 +23,13 @@ void main() {
     "Content-type": "application/json"
   };
 
-  Object data = json
-      .encode({"visitorId": "visitorId", "context": {}, "trigger_hit": false});
+  Object data = json.encode({"visitorId": "visitorId", "context": {}, "trigger_hit": false});
 
   MockService fakePanicService = MockService();
   ApiManager fakePanicApi = ApiManager(fakePanicService);
 
   test('FlagshipConfig ', () async {
-    FlagshipConfig conf = FlagshipConfig(
-        statusListener: null,
-        timeout: 4000,
-        activeLog: false,
-        logLevel: Level.ALL);
+    FlagshipConfig conf = FlagshipConfig(statusListener: null, timeout: 4000, activeLog: false, logLevel: Level.ALL);
 
     expect(conf.statusListener, null);
     expect(conf.timeout, 4000);
@@ -43,21 +38,16 @@ void main() {
     FlagshipConfig confBis = FlagshipConfig.defaultMode();
     expect(confBis.statusListener, null);
 
-    FlagshipConfig confTer =
-        FlagshipConfig.withStatusListener(statusListener: (newStatus) {});
+    FlagshipConfig confTer = FlagshipConfig.withStatusListener(statusListener: (newStatus) {});
     expect((confTer.statusListener != null), true);
     confTer.statusListener = null;
     expect(confTer.statusListener, null);
   });
 
   test('Test API with panic mode', () async {
-    String fakeResponse =
-        await ToolsTest.readFile('test_resources/decisionApiPanic.json') ?? "";
-    when(fakePanicService.sendHttpRequest(
-            RequestType.Post,
-            'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true',
-            fsHeaders,
-            data,
+    String fakeResponse = await ToolsTest.readFile('test_resources/decisionApiPanic.json') ?? "";
+    when(fakePanicService.sendHttpRequest(RequestType.Post,
+            'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true', fsHeaders, data,
             timeoutMs: TIMEOUT))
         .thenAnswer((_) async {
       return http.Response(fakeResponse, 200);
@@ -66,6 +56,7 @@ void main() {
     FlagshipConfig config = FlagshipConfig(timeout: TIMEOUT);
     config.statusListener = (newStatus) {
       if (newStatus == Status.PANIC_ON) {
+        // ignore: deprecated_member_use_from_same_package
         expect(Flagship.getCurrentVisitor()?.getModification('key1', 12), 12);
         expect(newStatus, Flagship.getStatus());
       }
@@ -77,6 +68,7 @@ void main() {
     var v1 = Flagship.newVisitor("visitorId", {});
     Flagship.setCurrentVisitor(v1);
 
+    // ignore: deprecated_member_use_from_same_package
     v1.synchronizeModifications().whenComplete(() {});
   });
 }

@@ -44,20 +44,25 @@ void main() {
     var v1 = Flagship.newVisitor("visitorId", {});
     v1.setConsent(true);
     expect(v1.getConsent(), true);
+    // ignore: deprecated_member_use_from_same_package
     v1.synchronizeModifications().then((value) {
       expect(Flagship.getStatus(), Status.READY);
 
       /// Activate
+      // ignore: deprecated_member_use_from_same_package
       v1.activateModification("aliasTer");
 
       /// Get Modification
+      // ignore: deprecated_member_use_from_same_package
       expect(v1.getModification('aliasTer', 'default', activate: true), "testValue");
 
+      // ignore: deprecated_member_use_from_same_package
       expect(v1.getModification('aliasDouble', 100.0, activate: true), 12.0);
 
       //
 
       /// Get infos
+      // ignore: deprecated_member_use_from_same_package
       var infos = v1.getModificationInfo('alias');
       expect(infos?.length, 6);
       expect(infos!['campaignId'], "bsffhle242b2l3igq4dg");
@@ -66,11 +71,14 @@ void main() {
       expect(infos['isReference'], true);
 
       /// Get info for none exting key
+      // ignore: deprecated_member_use_from_same_package
       var infosBis = v1.getModificationInfo('noKey');
       expect(infosBis, null);
 
       /// Wrong type
+      // ignore: deprecated_member_use_from_same_package
       expect(v1.getModification('aliasTer', 12), 12);
+      // ignore: deprecated_member_use_from_same_package
       expect(v1.getModification('aliasDouble', "default"), "default");
 
       /// Send hit
@@ -107,11 +115,14 @@ void main() {
     var v1 = Flagship.newVisitor("visitorId", {});
     Flagship.setCurrentVisitor(v1);
     expect(v1.getConsent(), true);
+    // ignore: deprecated_member_use_from_same_package
     v1.synchronizeModifications().then((value) {
       expect(Flagship.getStatus(), Status.READY);
+      // ignore: deprecated_member_use_from_same_package
       expect(v1.getModification('aliasTer', 'default'), "testValue");
       // Test the case when the modificattion is empty
       v1.modifications.clear();
+      // ignore: deprecated_member_use_from_same_package
       expect(v1.getModification('aliasTer', 'default'), "default");
     });
   });
