@@ -115,22 +115,10 @@ class BucketingManager extends DecisionManager {
       return Campaigns(visitorId, true, []);
     }
 
-    // check if the user exist in the cache , if yes then read his own modification from the cache
-
-    // If not extract the variations
-
     // check the targetings and filter the variation he can run
-
-    // Match before
     Campaigns result = processBucketing(visitorId, scriptBucket, context);
 
     return result;
-
-    // Save My bucketing
-    // resultBucketCache.saveMe()
-
-    // Fill Campaign with value to be read by singleton
-    // return FSCampaigns(resultBucketCache);
   }
 
   Campaigns processBucketing(String visitorId, Bucketing scriptBucket, Map<String, dynamic> context) {
