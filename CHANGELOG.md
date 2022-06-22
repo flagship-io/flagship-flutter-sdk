@@ -1,3 +1,13 @@
+## 1.3.0 - 2022-06-22
+
+Added
+- Flag class to manipulate Flag
+
+Changed
+- synchronizeModification is now deprecated, use fetchFlags function through the visitor instance
+- getModification / getModificationInfo / activateModification are now obsolete and have been replaced by Flag class
+
+
 ## 1.2.0 - 2022-03-24
 
 Added

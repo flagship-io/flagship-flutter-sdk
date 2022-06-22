@@ -22,19 +22,14 @@ void main() {
     "Content-type": "application/json"
   };
 
-  Object data = json
-      .encode({"visitorId": "visitorId", "context": {}, "trigger_hit": false});
+  Object data = json.encode({"visitorId": "visitorId", "context": {}, "trigger_hit": false});
 
   MockService fakeService = MockService();
   ApiManager fakeApi = ApiManager(fakeService);
   test('Test API with default startegy', () async {
-    String fakeResponse =
-        await ToolsTest.readFile('test_resources/decisionApi.json') ?? "";
-    when(fakeService.sendHttpRequest(
-            RequestType.Post,
-            'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true',
-            fsHeaders,
-            data,
+    String fakeResponse = await ToolsTest.readFile('test_resources/decisionApi.json') ?? "";
+    when(fakeService.sendHttpRequest(RequestType.Post,
+            'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true', fsHeaders, data,
             timeoutMs: TIMEOUT))
         .thenAnswer((_) async {
       return http.Response(fakeResponse, 200);
@@ -49,21 +44,25 @@ void main() {
     var v1 = Flagship.newVisitor("visitorId", {});
     v1.setConsent(true);
     expect(v1.getConsent(), true);
+    // ignore: deprecated_member_use_from_same_package
     v1.synchronizeModifications().then((value) {
       expect(Flagship.getStatus(), Status.READY);
 
       /// Activate
+      // ignore: deprecated_member_use_from_same_package
       v1.activateModification("aliasTer");
 
       /// Get Modification
-      expect(v1.getModification('aliasTer', 'default', activate: true),
-          "testValue");
+      // ignore: deprecated_member_use_from_same_package
+      expect(v1.getModification('aliasTer', 'default', activate: true), "testValue");
 
+      // ignore: deprecated_member_use_from_same_package
       expect(v1.getModification('aliasDouble', 100.0, activate: true), 12.0);
 
       //
 
       /// Get infos
+      // ignore: deprecated_member_use_from_same_package
       var infos = v1.getModificationInfo('alias');
       expect(infos?.length, 6);
       expect(infos!['campaignId'], "bsffhle242b2l3igq4dg");
@@ -72,16 +71,18 @@ void main() {
       expect(infos['isReference'], true);
 
       /// Get info for none exting key
+      // ignore: deprecated_member_use_from_same_package
       var infosBis = v1.getModificationInfo('noKey');
       expect(infosBis, null);
 
       /// Wrong type
+      // ignore: deprecated_member_use_from_same_package
       expect(v1.getModification('aliasTer', 12), 12);
+      // ignore: deprecated_member_use_from_same_package
       expect(v1.getModification('aliasDouble', "default"), "default");
 
       /// Send hit
-      v1.sendHit(
-          Event(action: "action", category: EventCategory.Action_Tracking));
+      v1.sendHit(Event(action: "action", category: EventCategory.Action_Tracking));
 
       /// Send consent hit
       v1.sendHit(Consent(hasConsented: false));
@@ -89,13 +90,9 @@ void main() {
   });
 
   test('Test API with default startegy and callback', () async {
-    String fakeResponse =
-        await ToolsTest.readFile('test_resources/decisionApi.json') ?? "";
-    when(fakeService.sendHttpRequest(
-            RequestType.Post,
-            'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true',
-            fsHeaders,
-            data,
+    String fakeResponse = await ToolsTest.readFile('test_resources/decisionApi.json') ?? "";
+    when(fakeService.sendHttpRequest(RequestType.Post,
+            'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true', fsHeaders, data,
             timeoutMs: TIMEOUT))
         .thenAnswer((_) async {
       return http.Response(fakeResponse, 200);
@@ -118,11 +115,14 @@ void main() {
     var v1 = Flagship.newVisitor("visitorId", {});
     Flagship.setCurrentVisitor(v1);
     expect(v1.getConsent(), true);
+    // ignore: deprecated_member_use_from_same_package
     v1.synchronizeModifications().then((value) {
       expect(Flagship.getStatus(), Status.READY);
+      // ignore: deprecated_member_use_from_same_package
       expect(v1.getModification('aliasTer', 'default'), "testValue");
       // Test the case when the modificattion is empty
       v1.modifications.clear();
+      // ignore: deprecated_member_use_from_same_package
       expect(v1.getModification('aliasTer', 'default'), "default");
     });
   });

@@ -35,8 +35,7 @@ class _ContextScreenState extends State<ContextScreen> with ShowDialog {
             Container(
                 color: Colors.black,
                 child: TextField(
-                  style: TextStyle(
-                      color: Colors.white, backgroundColor: Colors.black),
+                  style: TextStyle(color: Colors.white, backgroundColor: Colors.black),
                   controller: ctxInput,
                   decoration: null,
                   keyboardType: TextInputType.multiline,
@@ -67,6 +66,7 @@ class _ContextScreenState extends State<ContextScreen> with ShowDialog {
       subMsg = "Context updated";
 
       /// Synchronize
+      // ignore: deprecated_member_use
       currentClient.synchronizeModifications().then((_) {
         subMsg = "Context updated and synchronized"; //(state == Status.READY)?
 
