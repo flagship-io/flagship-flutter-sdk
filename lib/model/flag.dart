@@ -41,8 +41,7 @@ class Flag<T> {
         this._visitorDelegate.activateModification(this._key);
       }
     } else {
-      Flagship.logger(Level.DEBUG,
-          "Flag: " + _key + "not found, the activate won't be sent");
+      Flagship.logger(Level.DEBUG, "Flag: " + _key + "not found, the activate won't be sent");
     }
   }
 
@@ -52,13 +51,12 @@ class Flag<T> {
   }
 
   // Get metadata
-  FlagMetadata metaData() {
+  FlagMetadata metadata() {
     // Before expose whe should check the Type
     Modification? modif = this._visitorDelegate.getFlagModification(this._key);
     if (modif != null && (modif.value == null || _isSameType(modif.value))) {
       // when the flag value is null we provide the metadata
-      return FlagMetadata.withMap(
-          this._visitorDelegate.getModificationInfo(this._key));
+      return FlagMetadata.withMap(this._visitorDelegate.getModificationInfo(this._key));
     } else {
       return FlagMetadata.withMap(null);
     }

@@ -1,6 +1,5 @@
 import 'package:flagship_qa/widgets/FSinputField.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flagship/hits/screen.dart';
 import 'package:flagship/flagship.dart';
 

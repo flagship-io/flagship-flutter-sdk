@@ -21,18 +21,13 @@ void main() async {
     "x-sdk-version": FlagshipVersion,
     "Content-type": "application/json"
   };
-  Object data = json.encode(
-      {"visitorId": "flagVisitor", "context": {}, "trigger_hit": false});
+  Object data = json.encode({"visitorId": "flagVisitor", "context": {}, "trigger_hit": false});
   MockService fakeService = MockService();
   ApiManager fakeApi = ApiManager(fakeService);
 
-  String fakeResponse =
-      await ToolsTest.readFile('test_resources/decisionApi.json') ?? "";
-  when(fakeService.sendHttpRequest(
-          RequestType.Post,
-          'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true',
-          fsHeaders,
-          data,
+  String fakeResponse = await ToolsTest.readFile('test_resources/decisionApi.json') ?? "";
+  when(fakeService.sendHttpRequest(RequestType.Post,
+          'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true', fsHeaders, data,
           timeoutMs: TIMEOUT))
       .thenAnswer((_) async {
     return http.Response(fakeResponse, 200);
@@ -55,27 +50,9 @@ void main() async {
           "existingFlag": true,
           "shouldHaveMetadata": true
         },
-        {
-          "key": "key_B",
-          "dfltValue": 2.14,
-          "expectedValue": 3.14,
-          "existingFlag": true,
-          "shouldHaveMetadata": true
-        },
-        {
-          "key": "key_C",
-          "dfltValue": 4,
-          "expectedValue": 2,
-          "existingFlag": true,
-          "shouldHaveMetadata": true
-        },
-        {
-          "key": "key_D",
-          "dfltValue": false,
-          "expectedValue": true,
-          "existingFlag": true,
-          "shouldHaveMetadata": true
-        },
+        {"key": "key_B", "dfltValue": 2.14, "expectedValue": 3.14, "existingFlag": true, "shouldHaveMetadata": true},
+        {"key": "key_C", "dfltValue": 4, "expectedValue": 2, "existingFlag": true, "shouldHaveMetadata": true},
+        {"key": "key_D", "dfltValue": false, "expectedValue": true, "existingFlag": true, "shouldHaveMetadata": true},
         // array
         {
           "key": "array",
@@ -108,7 +85,7 @@ void main() async {
         expect(myFlag.value(), item['expectedValue']);
         expect(myFlag.exists(), item['existingFlag']);
 
-        FlagMetadata metadata = myFlag.metaData();
+        FlagMetadata metadata = myFlag.metadata();
 
         if (item['shouldHaveMetadata']) {
           expect(metadata.campaignId, "bsffhle242b2l3igq4dg");
@@ -126,7 +103,7 @@ void main() async {
           expect(metadata.campaignType, "");
         }
         // Check lentgh for metedata json
-        expect(myFlag.metaData().toJson().keys.length, 6);
+        expect(myFlag.metadata().toJson().keys.length, 6);
         // Expose
         myFlag.userExposed();
       }
@@ -138,7 +115,7 @@ void main() async {
       Flag myFlag = v1.getFlag("key_A", 3.14);
       expect(myFlag.value(), 3.14);
       expect(myFlag.exists(), true);
-      FlagMetadata metadata = myFlag.metaData();
+      FlagMetadata metadata = myFlag.metadata();
       expect(metadata.campaignId, "");
       expect(metadata.variationGroupId, "");
       expect(metadata.variationId, "");
@@ -153,7 +130,7 @@ void main() async {
       Flag myFlag = v1.getFlag("keyNull", "nullValue");
       expect(myFlag.value(), "nullValue");
       expect(myFlag.exists(), true);
-      FlagMetadata metadata = myFlag.metaData();
+      FlagMetadata metadata = myFlag.metadata();
       expect(metadata.campaignId, "bsffhle242b2l3igq4dg");
       expect(metadata.variationGroupId, "bsffhle242b2l3igq4egaa");
       expect(metadata.variationId, "bsffhle242b2l3igq4f0");
@@ -168,7 +145,7 @@ void main() async {
       Flag myFlag = v1.getFlag("keyNull", null);
       expect(myFlag.value(), null);
       expect(myFlag.exists(), true);
-      FlagMetadata metadata = myFlag.metaData();
+      FlagMetadata metadata = myFlag.metadata();
       expect(metadata.campaignId, "bsffhle242b2l3igq4dg");
       expect(metadata.variationGroupId, "bsffhle242b2l3igq4egaa");
       expect(metadata.variationId, "bsffhle242b2l3igq4f0");

@@ -22,19 +22,14 @@ void main() {
     "Content-type": "application/json"
   };
 
-  Object data = json
-      .encode({"visitorId": "visitorId", "context": {}, "trigger_hit": false});
+  Object data = json.encode({"visitorId": "visitorId", "context": {}, "trigger_hit": false});
 
   MockService fakePanicService = MockService();
   ApiManager fakePanicApi = ApiManager(fakePanicService);
   test('Test API with panic mode', () async {
-    String fakeResponse =
-        await ToolsTest.readFile('test_resources/decisionApiPanic.json') ?? "";
-    when(fakePanicService.sendHttpRequest(
-            RequestType.Post,
-            'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true',
-            fsHeaders,
-            data,
+    String fakeResponse = await ToolsTest.readFile('test_resources/decisionApiPanic.json') ?? "";
+    when(fakePanicService.sendHttpRequest(RequestType.Post,
+            'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true', fsHeaders, data,
             timeoutMs: TIMEOUT))
         .thenAnswer((_) async {
       return http.Response(fakeResponse, 200);
@@ -43,6 +38,7 @@ void main() {
     FlagshipConfig config = FlagshipConfig(timeout: TIMEOUT);
     config.statusListener = (newState) {
       if (newState == Status.PANIC_ON) {
+        // ignore: deprecated_member_use_from_same_package
         expect(Flagship.getCurrentVisitor()?.getModification('key1', 12), 12);
       }
     };
@@ -53,14 +49,18 @@ void main() {
     var v1 = Flagship.newVisitor("visitorId", {});
     Flagship.setCurrentVisitor(v1);
 
+    // ignore: deprecated_member_use_from_same_package
     v1.synchronizeModifications().then((value) {
       expect(Flagship.getStatus(), Status.PANIC_ON);
 
       /// Activate
+      // ignore: deprecated_member_use_from_same_package
       v1.activateModification("key");
 
+      // ignore: deprecated_member_use_from_same_package
       expect(v1.getModification('key1', 12), 12);
 
+      // ignore: deprecated_member_use_from_same_package
       expect(v1.getModificationInfo('key1'), null);
 
       v1.setConsent(false);
@@ -70,8 +70,7 @@ void main() {
       expect(v1.getContext().keys.contains('newKey'), false);
 
       /// Send hit
-      v1.sendHit(
-          Event(action: "action", category: EventCategory.Action_Tracking));
+      v1.sendHit(Event(action: "action", category: EventCategory.Action_Tracking));
     });
   });
 }
