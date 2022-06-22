@@ -16,8 +16,8 @@ class Configuration extends StatefulWidget {
 
 class _ConfigurationState extends State<Configuration> with ShowDialog {
   // keys
-  String apiKey = "DxAcxlnRB9yFBZYtLDue1q01dcXZCw6aM49CQB23";
-  String envId = "bkk9glocmjcg0vtmdlng";
+  String apiKey = "";
+  String envId = "";
 
   final envIdController = TextEditingController();
   final apiKeyController = TextEditingController();
@@ -78,9 +78,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
         visitor = Flagship.getCurrentVisitor();
         if (visitor == null) {
           // Create visitor if null
-          visitor = Flagship.newVisitor(
-              visitorIdController.text, visitorContext,
-              hasConsented: isConsented);
+          visitor = Flagship.newVisitor(visitorIdController.text, visitorContext, hasConsented: isConsented);
 
           // Set current visitor singleton instance for future use
           Flagship.setCurrentVisitor(visitor);
@@ -170,10 +168,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
               ),
               Text(
                 "Configuration",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 25),
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 25),
               ),
               Container(
                 child: ElevatedButton(
@@ -187,8 +182,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
               SizedBox(height: _spaceBetweenInput),
               FSInputField("ApiKey", apiKeyController, TextInputType.text),
               SizedBox(height: _spaceBetweenInput),
-              FSInputField(
-                  "Timeout(ms)", timeoutController, TextInputType.number),
+              FSInputField("Timeout(ms)", timeoutController, TextInputType.number),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -200,15 +194,13 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
                   )),
                   Expanded(
                       child: ElevatedButton(
-                          onPressed: () => {_changeMode()},
-                          child: Text(isApiMode ? "API" : "BUCKETING")))
+                          onPressed: () => {_changeMode()}, child: Text(isApiMode ? "API" : "BUCKETING")))
                 ],
               ),
               // SizedBox(height: _spaceBetweenInput),
               // FSInputField("Timeout", timeoutController, TextInputType.number),
               SizedBox(height: _spaceBetweenInput),
-              FSInputField(
-                  "VisitorId", visitorIdController, TextInputType.text),
+              FSInputField("VisitorId", visitorIdController, TextInputType.text),
               SizedBox(height: _spaceBetweenInput),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -220,9 +212,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
                   )),
                   Expanded(
                       child: ElevatedButton(
-                          onPressed: () => {_consent()},
-                          child: Text(
-                              isConsented ? "Consented" : "Not Consented")))
+                          onPressed: () => {_consent()}, child: Text(isConsented ? "Consented" : "Not Consented")))
                 ],
               ),
               SizedBox(height: _spaceBetweenInput),
