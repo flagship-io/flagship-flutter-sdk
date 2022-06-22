@@ -13,12 +13,15 @@ void main() {
     // v1.synchronizeModifications().then((value) {
 
     /// Activate
+    // ignore: deprecated_member_use_from_same_package
     v1.activateModification("key");
 
     /// Get Modification with default value   "aliasTer": "testValue"
+    // ignore: deprecated_member_use_from_same_package
     expect(v1.getModification('key1', 12), 12);
 
     /// Get modification infos
+    // ignore: deprecated_member_use_from_same_package
     expect(v1.getModificationInfo('key1'), null);
 
     /// Set consent
@@ -30,7 +33,6 @@ void main() {
     expect(v1.getContext().keys.contains('newKey'), true);
 
     /// Send hit
-    v1.sendHit(
-        Event(action: "action", category: EventCategory.Action_Tracking));
+    v1.sendHit(Event(action: "action", category: EventCategory.Action_Tracking));
   });
 }

@@ -4,6 +4,12 @@ codecov:
 coverage:
   status:
     patch: false
+    project:
+      default:
+        # basic
+        informational: true
+        target: auto
+        threshold: 100%
     
   precision: 2
   round: down
@@ -24,5 +30,7 @@ comment:
 
 ignore:
   - "test/"
-  - codecov.yml
-  - lcov.info
+  - "example/"
+  - "tool/"
+  - "test_resources/"
+  - "build/"

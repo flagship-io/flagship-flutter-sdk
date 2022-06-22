@@ -37,7 +37,7 @@ class MainScreen extends StatefulWidget {
     Configuration(),
     // User(),
     Modifications(),
-    Hits(),
+    Hits()
   ];
 
   MainScreen({title = ""});
