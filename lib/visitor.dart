@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flagship/hits/event.dart';
+import 'package:flagship/model/flag.dart';
 import 'package:flagship/model/modification.dart';
 import 'package:flagship/api/tracking_manager.dart';
 import 'package:flagship/decision/decision_manager.dart';
@@ -92,12 +93,21 @@ class Visitor {
     _visitorDelegate.updateContext(key, value);
   }
 
+  /// Get Flag object
+  ///
+  /// key : the name of the key relative to modification
+  /// defaultValue: the returned value if the key is not found
+  /// return Flag object. See Flag class
+  Flag getFlag<T>(String key, T defaultValue) {
+    return Flag<T>(key, defaultValue, this._visitorDelegate);
+  }
+
   /// Get Modification
   ///
   /// key : the name of the key relative to modification
   /// defaultValue: the returned value if the key is not found
   ///
-
+  @Deprecated('Use value() in Flag class instead')
   T getModification<T>(String key, T defaultValue, {bool activate = false}) {
     // Delegate the action to strategy
     return _visitorDelegate.getModification(key, defaultValue,
@@ -108,20 +118,26 @@ class Visitor {
   ///
   /// key : the name of the key relative to modification
   /// Return map {"campaignId":"xxx", "variationId" : "xxxx", "variationGroupId":"xxxxx", "isReference": true/false}
-
+  @Deprecated('Use metadata() in Flag class instead')
   Map<String, Object>? getModificationInfo(String key) {
     // Delegate the action to strategy
     return _visitorDelegate.getModificationInfo(key);
   }
 
   /// Synchronize modification for the visitor
-
+  @Deprecated('Use fetchFlags instead')
   Future<void> synchronizeModifications() async {
     // Delegate the action to strategy
     return _visitorDelegate.synchronizeModifications();
   }
 
+  Future<void> fetchFlags() async {
+    // Delegate the action to strategy
+    return _visitorDelegate.synchronizeModifications();
+  }
+
   /// Activate modificationx
+  @Deprecated('Use userExposed() in Flag class instead')
   Future<void> activateModification(String key) async {
     // Delegate the action to strategy
     _visitorDelegate.activateModification(key);

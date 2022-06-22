@@ -26,10 +26,19 @@ class Modification {
   final String variationGroupId;
   final String variationId;
   final bool isReference;
+  final String campaignType;
+  final String slug;
   dynamic value;
 
-  Modification(this.key, this.campaignId, this.variationGroupId,
-      this.variationId, this.isReference, dynamic pValue) {
+  Modification(
+      this.key,
+      this.campaignId,
+      this.variationGroupId,
+      this.variationId,
+      this.isReference,
+      this.campaignType,
+      this.slug,
+      dynamic pValue) {
     value = pValue;
   }
 
@@ -53,6 +62,8 @@ class Modification {
       'variationGroupId': variationGroupId,
       'variationId': variationId,
       'isReference': isReference,
+      'campaignType': campaignType,
+      'slug': slug
     };
     return ret;
   }
