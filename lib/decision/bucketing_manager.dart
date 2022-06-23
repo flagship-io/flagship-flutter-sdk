@@ -32,9 +32,10 @@ class BucketingManager extends DecisionManager {
 
   @override
   Future<Campaigns> getCampaigns(String envId, String visitorId, Map<String, Object> context) async {
-    /// Read File before
+    // Read File before
     String jsonString = await _readFile().catchError((error) {
       Flagship.logger(Level.ALL, "Error on reading the saved bucketing file");
+      throw Exception('Flagship, Failed to synchronize');
     });
 
     Bucketing bucketingObject = Bucketing.fromJson(json.decode(jsonString));
@@ -88,11 +89,11 @@ class BucketingManager extends DecisionManager {
   }
 
   _sendKeyContext(String envId, String visitorId, Map<String, dynamic> currentContext) async {
+    // Url string for the /event
     String urlString = Endpoints.DECISION_API + envId + Endpoints.EVENTS;
-
     Flagship.logger(Level.INFO, 'Send Context :' + urlString);
 
-    // Create headers
+    // Create header  /// Refractor later , the same code exist
     Map<String, String> headers = {
       "x-api-key": Flagship.sharedInstance().apiKey ?? "",
       "x-sdk-client": "flutter",

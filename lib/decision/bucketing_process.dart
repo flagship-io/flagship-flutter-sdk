@@ -12,17 +12,14 @@ extension BucketingProcess on BucketingManager {
     if (scriptBucket.panic == true) {
       return Campaigns(visitorId, true, []);
     }
-
-    // check the targetings and filter the variation he can run
+    // Check the targeting and filter the variation he can run
     Campaigns result = processBucketing(visitorId, scriptBucket, context);
-
     return result;
   }
 
   Campaigns processBucketing(String visitorId, Bucketing scriptBucket, Map<String, dynamic> context) {
     Campaigns result = Campaigns(visitorId, false, []);
     TargetingManager targetManager = TargetingManager(visitorId, context);
-
     // Campaign
     for (BucketCampaign itemCamp in scriptBucket.campaigns) {
       // Variation group
@@ -61,10 +58,12 @@ extension BucketingProcess on BucketingManager {
     String combinedId = varGroup.idVariationGroup + visitorId;
 
     // Calculate the murmurHash algorithm
-
-    print(" ########## ${MurmurHash.v3(combinedId, 0)} ############");
     hashAlloc = (MurmurHash.v3(combinedId, 0) % 100);
-    print("########### The MurMur fot the combined " + combinedId + " is : $hashAlloc #############");
+    print("########### The MurMurHash for the combined " +
+        varGroup.idVariationGroup +
+        " " +
+        visitorId +
+        " is : $hashAlloc #############");
 
     int offsetAlloc = 0;
     for (Variation itemVar in varGroup.variations) {
