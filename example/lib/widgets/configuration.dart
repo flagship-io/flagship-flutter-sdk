@@ -47,7 +47,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
     "bK1": "flutter",
     "bk2": 13,
     "bk3": true,
-    // "condition1": "condition1"
+    "bucketingKey": "condition1"
   };
 
   bool isApiMode = true;
