@@ -85,7 +85,10 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
             visitor = Flagship.getCurrentVisitor();
             if (visitor == null) {
               // Create visitor if null
-              visitor = Flagship.newVisitor(visitorIdController.text, visitorContext, hasConsented: isConsented);
+              visitor = Flagship.newVisitor(visitorIdController.text)
+                  .withContext(visitorContext)
+                  .hasConsented(isConsented)
+                  .build();
 
               // Set current visitor singleton instance for future use
               Flagship.setCurrentVisitor(visitor);

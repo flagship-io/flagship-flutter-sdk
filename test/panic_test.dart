@@ -46,7 +46,7 @@ void main() {
     config.decisionManager = fakePanicApi;
     Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
 
-    var v1 = Flagship.newVisitor("visitorId", {});
+    var v1 = Flagship.newVisitor("visitorId").build();
     Flagship.setCurrentVisitor(v1);
 
     // ignore: deprecated_member_use_from_same_package

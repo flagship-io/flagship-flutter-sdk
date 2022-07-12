@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flagship/flagship_config.dart';
 import 'package:flagship/model/campaigns.dart';
 import 'package:flagship/api/endpoints.dart';
 import 'package:flagship/api/service.dart';
@@ -6,7 +7,6 @@ import 'package:flagship/decision/decision_manager.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/flagship_version.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
-import 'package:flagship/flagship_config.dart';
 
 class ApiManager extends DecisionManager {
   ApiManager(Service service) : super(service);

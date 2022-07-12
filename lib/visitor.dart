@@ -162,3 +162,37 @@ class Visitor {
     return _hasConsented;
   }
 }
+
+class VisitorBuilder {
+  final String visitorId;
+
+  /// Context
+  Map<String, Object> _context = {};
+
+  /// Has consented
+  bool _hasConsented = true;
+
+  // bool _isAuthenticated = false; later when implement xpc
+  VisitorBuilder(this.visitorId);
+
+// Context
+  VisitorBuilder withContext(Map<String, Object> context) {
+    _context = context;
+    return this;
+  }
+
+  VisitorBuilder hasConsented(bool hasConsented) {
+    _hasConsented = hasConsented;
+    return this;
+  }
+
+  // isAuthenticated(bool autenticated) {
+  //   _isAuthenticated = autenticated;
+  //   return this;
+  // }
+
+  Visitor build() {
+    return Visitor(Flagship.sharedInstance().getConfiguration() ?? FlagshipConfig.defaultMode(), visitorId, _context,
+        hasConsented: _hasConsented);
+  }
+}

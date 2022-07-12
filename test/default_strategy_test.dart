@@ -41,7 +41,10 @@ void main() {
     Flagship.enableLog(true);
     Flagship.setLoggerLevel(Level.WARNING);
 
-    var v1 = Flagship.newVisitor("visitorId", {});
+    //var v1 = Flagship.createVisitor("visitorId", {});
+
+    var v1 = Flagship.newVisitor("visitorId").withContext({}).build();
+
     v1.setConsent(true);
     expect(v1.getConsent(), true);
     // ignore: deprecated_member_use_from_same_package
@@ -112,7 +115,7 @@ void main() {
 
     Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
 
-    var v1 = Flagship.newVisitor("visitorId", {});
+    var v1 = Flagship.newVisitor("visitorId").build();
     Flagship.setCurrentVisitor(v1);
     expect(v1.getConsent(), true);
     // ignore: deprecated_member_use_from_same_package
@@ -148,7 +151,7 @@ void main() {
 
     Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
 
-    var v1 = Flagship.newVisitor("visitorId", {});
+    var v1 = Flagship.newVisitor("visitorId").build();
     Flagship.setCurrentVisitor(v1);
     expect(v1.getConsent(), true);
   });

@@ -21,18 +21,13 @@ void main() async {
     "x-sdk-version": FlagshipVersion,
     "Content-type": "application/json"
   };
-  Object data = json.encode(
-      {"visitorId": "flagVisitor", "context": {}, "trigger_hit": false});
+  Object data = json.encode({"visitorId": "flagVisitor", "context": {}, "trigger_hit": false});
   MockService fakeService = MockService();
   ApiManager fakeApi = ApiManager(fakeService);
 
-  String fakeResponse =
-      await ToolsTest.readFile('test_resources/decisionApi.json') ?? "";
-  when(fakeService.sendHttpRequest(
-          RequestType.Post,
-          'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true',
-          fsHeaders,
-          data,
+  String fakeResponse = await ToolsTest.readFile('test_resources/decisionApi.json') ?? "";
+  when(fakeService.sendHttpRequest(RequestType.Post,
+          'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true', fsHeaders, data,
           timeoutMs: TIMEOUT))
       .thenAnswer((_) async {
     return http.Response(fakeResponse, 200);
@@ -41,7 +36,7 @@ void main() async {
   FlagshipConfig config = FlagshipConfig(timeout: TIMEOUT);
   config.decisionManager = fakeApi;
   Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
-  var v1 = Flagship.newVisitor("flagVisitor", {});
+  var v1 = Flagship.newVisitor("flagVisitor").build();
 
   test("Test Flag class", (() async {
     v1.fetchFlags().whenComplete(() {
@@ -55,27 +50,9 @@ void main() async {
           "existingFlag": true,
           "shouldHaveMetadata": true
         },
-        {
-          "key": "key_B",
-          "dfltValue": 2.14,
-          "expectedValue": 3.14,
-          "existingFlag": true,
-          "shouldHaveMetadata": true
-        },
-        {
-          "key": "key_C",
-          "dfltValue": 4,
-          "expectedValue": 2,
-          "existingFlag": true,
-          "shouldHaveMetadata": true
-        },
-        {
-          "key": "key_D",
-          "dfltValue": false,
-          "expectedValue": true,
-          "existingFlag": true,
-          "shouldHaveMetadata": true
-        },
+        {"key": "key_B", "dfltValue": 2.14, "expectedValue": 3.14, "existingFlag": true, "shouldHaveMetadata": true},
+        {"key": "key_C", "dfltValue": 4, "expectedValue": 2, "existingFlag": true, "shouldHaveMetadata": true},
+        {"key": "key_D", "dfltValue": false, "expectedValue": true, "existingFlag": true, "shouldHaveMetadata": true},
         // array
         {
           "key": "array",
