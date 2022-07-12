@@ -54,7 +54,10 @@ class TargetingManager {
       // Special treatment for array
       bool isOkay = false;
 
-      if ((audienceValue is List<String>) || (audienceValue is List<int>) || (audienceValue is List<double>)) {
+      if ((audienceValue is List<String>) ||
+          (audienceValue is List<int>) ||
+          (audienceValue is List<double>) ||
+          (audienceValue is List<dynamic>)) {
         isOkay = checkTargetingForList(currentContextValue, opType, audienceValue);
       } else {
         isOkay = checkCondition(currentContextValue, opType, audienceValue);
@@ -96,7 +99,7 @@ class TargetingManager {
       case FSOperator.EQUALS:
         return isCurrentValueEqualToAudienceValue(cuurentValue, audienceValue);
       case FSOperator.NOT_EQUALS:
-        return isCurrentValueEqualToAudienceValue(cuurentValue, audienceValue);
+        return !isCurrentValueEqualToAudienceValue(cuurentValue, audienceValue);
       case FSOperator.GREATER_THAN:
         return isCurrentValueIsGreaterThanAudience(cuurentValue, audienceValue);
       case FSOperator.GREATER_THAN_OR_EQUALS:
@@ -121,61 +124,55 @@ class TargetingManager {
 
   /// Compare greater than
   bool isCurrentValueIsGreaterThanAudience(dynamic currentValue, dynamic audienceValue) {
-    return (currentValue > audienceValue);
+    if (currentValue is num && audienceValue is num) {
+      return (currentValue > audienceValue);
+    } else if (currentValue is String && audienceValue is String) {
+      return (currentValue.compareTo(audienceValue) == 1);
+    } else {
+      return false;
+    }
   }
 
   /// Compare greater than or equal
   bool isCurrentValueIsGreaterThanOrEqualAudience(dynamic currentValue, dynamic audienceValue) {
-    return (currentValue >= audienceValue);
+    if (currentValue is num && audienceValue is num) {
+      return (currentValue >= audienceValue);
+    } else if (currentValue is String && audienceValue is String) {
+      return (currentValue.compareTo(audienceValue) == 1 || currentValue.compareTo(audienceValue) == 0);
+    } else {
+      return false;
+    }
   }
 
   /// Compare lower than
   bool isCurrentValueIsLowerThanAudience(dynamic currentValue, dynamic audienceValue) {
-    return (currentValue < audienceValue);
+    if (currentValue is num && audienceValue is num) {
+      return (currentValue < audienceValue);
+    } else if (currentValue is String && audienceValue is String) {
+      return (currentValue.compareTo(audienceValue) == -1);
+    } else {
+      return false;
+    }
   }
 
   /// Compare lower than or equal
   bool isCurrentValueIsLowerThanOrEqualAudience(dynamic currentValue, dynamic audienceValue) {
-    return (currentValue <= audienceValue);
+    if (currentValue is num && audienceValue is num) {
+      return (currentValue <= audienceValue);
+    } else if (currentValue is String && audienceValue is String) {
+      return (currentValue.compareTo(audienceValue) == -1 || currentValue.compareTo(audienceValue) == 0);
+    } else {
+      return false;
+    }
   }
 
   /// Compare contain
   bool isCurrentValueContainAudience(dynamic currentValue, dynamic audienceValue) {
-    if (currentValue.runtimeType is String && audienceValue.runtimeType is String) {
-      return (currentValue as String).contains(audienceValue as String);
+    if (currentValue is String && audienceValue is String) {
+      return (currentValue).contains(audienceValue);
     }
     return false;
   }
-
-  //   ////// Toools ///////
-  // bool isEqual<T: Equatable>(type: T.Type, a: Any, b: Any)  {
-
-  //     return a == b
-  // }
-
-  // func isGreatherThan<T: Comparable>(type: T.Type, a: Any, b: Any) -> Bool {
-  //     guard let a = a as? T, let b = b as? T else { return false }
-
-  //     return a > b
-  // }
-
-  // func isGreatherThanorEqual<T: Comparable>(type: T.Type, a: Any, b: Any) -> Bool {
-  //     guard let a = a as? T, let b = b as? T else { return false }
-
-  //     return a >= b
-  // }
-
-  // func isLowerThan<T: Comparable>(type: T.Type, a: Any, b: Any) -> Bool {
-  //     guard let a = a as? T, let b = b as? T else { return false }
-
-  //     return a < b
-  // }
-
-  // func isLowerThanorEqual<T: Comparable>(type: T.Type, a: Any, b: Any) -> Bool {
-  //     guard let a = a as? T, let b = b as? T else { return false }
-
-  //     return a <= b
-  // }
 
   dynamic getCurrentValueFromCtx(String targetKey) {
     if (targetKey == FS_USERS) {
@@ -207,3 +204,10 @@ class TargetingManager {
     }
   }
 }
+
+
+// 0 − when the strings are equal.
+
+// 1 − when the first string is greater than the second
+
+// -1 − when the first string is smaller than the second

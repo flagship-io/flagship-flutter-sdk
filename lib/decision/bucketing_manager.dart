@@ -19,16 +19,14 @@ class BucketingManager extends DecisionManager {
   Polling? polling;
   bool fileExists = true;
 
-  late Future<SharedPreferences> _prefs;
+  late Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   late Campaigns campaigns;
 
   String lastModfiedKey = "FSLastModifiedScript";
   String bucketingFolder = "/flagship/Bucketing/";
   String fileName = "bucketing.json";
 
-  BucketingManager(Service service, this.intervalPolling) : super(service) {
-    _prefs = SharedPreferences.getInstance();
-  }
+  BucketingManager(Service service, this.intervalPolling) : super(service);
 
   @override
   Future<Campaigns> getCampaigns(String envId, String visitorId, Map<String, Object> context) async {
