@@ -35,7 +35,7 @@ void main() {
       return http.Response(fakeResponse, 200);
     });
 
-    FlagshipConfig config = FlagshipConfig(timeout: TIMEOUT);
+    FlagshipConfig config = ConfigBuilder().withTimeout(TIMEOUT).build();
     config.statusListener = (newState) {
       if (newState == Status.PANIC_ON) {
         // ignore: deprecated_member_use_from_same_package

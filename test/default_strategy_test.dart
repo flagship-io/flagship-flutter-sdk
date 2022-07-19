@@ -35,7 +35,7 @@ void main() {
       return http.Response(fakeResponse, 200);
     });
 
-    FlagshipConfig config = FlagshipConfig(timeout: TIMEOUT);
+    FlagshipConfig config = ConfigBuilder().withTimeout(TIMEOUT).build();
     config.decisionManager = fakeApi;
     Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
     Flagship.enableLog(true);
@@ -102,14 +102,12 @@ void main() {
     });
 
     /// count the callback trigger
-    FlagshipConfig config = FlagshipConfig(
-      timeout: TIMEOUT,
-      statusListener: (newStatus) {
-        print(" ---- statusListner is trigger ---- ");
-        expect(Flagship.getStatus() == newStatus, true);
-        expect(newStatus, Flagship.getStatus());
-      },
-    );
+
+    FlagshipConfig config = ConfigBuilder().withTimeout(TIMEOUT).withStatusListener((newStatus) {
+      print(" ---- statusListner is trigger ---- ");
+      expect(Flagship.getStatus() == newStatus, true);
+      expect(newStatus, Flagship.getStatus());
+    }).build();
 
     config.decisionManager = fakeApi;
 
@@ -138,14 +136,12 @@ void main() {
         .thenAnswer((_) async {
       return http.Response(fakeResponse, 408);
     });
-    FlagshipConfig config = FlagshipConfig(
-      timeout: TIMEOUT,
-      statusListener: (newStatus) {
-        print(" ---- statusListner is trigger ---- ");
-        expect(Flagship.getStatus() == newStatus, true);
-        expect(newStatus, Flagship.getStatus());
-      },
-    );
+
+    FlagshipConfig config = ConfigBuilder().withTimeout(TIMEOUT).withStatusListener((newStatus) {
+      print(" ---- statusListner is trigger ---- ");
+      expect(Flagship.getStatus() == newStatus, true);
+      expect(newStatus, Flagship.getStatus());
+    }).build();
 
     config.decisionManager = fakeApi;
 

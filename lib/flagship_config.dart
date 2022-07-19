@@ -3,6 +3,7 @@ import 'package:flagship/decision/bucketing_manager.dart';
 import 'package:flagship/decision/decision_manager.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import "package:flagship/api/service.dart";
 
@@ -14,6 +15,7 @@ const TIMEOUT = 2000;
 
 typedef StatusListener = void Function(Status newStatus)?;
 
+@protected
 class FlagshipConfig {
   // Mode
   Mode decisionMode;
@@ -26,47 +28,115 @@ class FlagshipConfig {
   // Status listner
   StatusListener statusListener;
   // Interval polling time
-  int pollingTime = 5; // 60; // every 60 seconds will download the script bucketing.
+  int pollingTime = 60; // every 60 seconds will download the script bucketing.
 
-  FlagshipConfig(
-      {this.timeout = TIMEOUT,
-      this.decisionMode = Mode.DECISION_API,
-      this.statusListener,
-      this.pollingTime = 60,
-      Level logLevel = Level.ALL,
-      bool activeLog = true}) {
+  Level _logLevel;
+
+  FlagshipConfig(this.decisionMode, this.timeout, this.pollingTime, this._logLevel, {this.statusListener}) {
     // Set the log Manager
-    this.logManager = LogManager(level: logLevel, enabledLog: activeLog);
+    this.logManager = LogManager(level: _logLevel);
     // Log the timeout value in ms
-    Flagship.logger(Level.ALL, "Flagship The timeout is : $timeout ms");
+    this.logManager.printLog(Level.ALL, "Flagship The $timeout is : ms", false);
 
     decisionManager = (decisionMode == Mode.DECISION_API)
         ? ApiManager(Service(http.Client()))
         : BucketingManager(Service(http.Client()), this.pollingTime);
+
+    // decisionManager.startPolling();
   }
 
-  FlagshipConfig.defaultMode({this.timeout: TIMEOUT, this.decisionMode = Mode.DECISION_API}) {
-    // Decisoin manager
-    decisionManager = (decisionMode == Mode.DECISION_API)
-        ? ApiManager(Service(http.Client()))
-        : BucketingManager(Service(http.Client()), this.pollingTime);
-    // Log manager
-    this.logManager = LogManager(enabledLog: true, level: Level.ALL);
-    // Status listner null
-    this.statusListener = null;
+  // FlagshipConfig({
+  //   this.decisionMode = Mode.DECISION_API,
+  //   this.timeout = TIMEOUT,
+  //   this.statusListener,
+  //   this.pollingTime = 60,
+  //   Level logLevel = Level.ALL,
+  //   /*bool activeLog = true*/
+  // }) {
+  //   // Set the log Manager
+  //   this.logManager = LogManager(level: logLevel);
+  //   // Log the timeout value in ms
+  //   Flagship.logger(Level.ALL, "Flagship The timeout is : $timeout ms");
+
+  //   decisionManager = (decisionMode == Mode.DECISION_API)
+  //       ? ApiManager(Service(http.Client()))
+  //       : BucketingManager(Service(http.Client()), this.pollingTime);
+  // }
+
+  // FlagshipConfig.defaultMode({this.timeout: TIMEOUT, this.decisionMode = Mode.DECISION_API}) {
+  //   // Decisoin manager
+  //   decisionManager = (decisionMode == Mode.DECISION_API)
+  //       ? ApiManager(Service(http.Client()))
+  //       : BucketingManager(Service(http.Client()), this.pollingTime);
+  //   // Log manager
+  //   this.logManager = LogManager(enabledLog: true, level: Level.ALL);
+  //   // Status listner null
+  //   this.statusListener = null;
+  // }
+
+  // FlagshipConfig.withStatusListener(
+  //     {this.timeout = TIMEOUT,
+  //     this.decisionMode = Mode.DECISION_API,
+  //     required this.statusListener,
+  //     Level logLevel = Level.ALL,
+  //     bool activeLog = true}) {
+  //   this.logManager = LogManager(level: logLevel, enabledLog: activeLog);
+  //   Flagship.logger(Level.ALL, "Flagship The timeout is : $timeout ms");
+
+  //   decisionManager = (decisionMode == Mode.DECISION_API)
+  //       ? ApiManager(Service(http.Client()))
+  //       : BucketingManager(Service(http.Client()), this.pollingTime);
+  // }
+}
+
+class ConfigBuilder {
+  // _ Mode
+  Mode _mode = Mode.DECISION_API;
+
+  // _timeout
+  int _timeout = TIMEOUT;
+
+  // _logLevel
+  Level _logLevel = Level.ALL;
+
+  // _pollingTime
+  int _pollingTime = 60;
+
+  // StatusListener
+  StatusListener? _statusListener;
+
+  ConfigBuilder();
+
+  ConfigBuilder withMode(Mode newMode) {
+    _mode = newMode;
+    return this;
   }
 
-  FlagshipConfig.withStatusListener(
-      {this.timeout = TIMEOUT,
-      this.decisionMode = Mode.DECISION_API,
-      required this.statusListener,
-      Level logLevel = Level.ALL,
-      bool activeLog = true}) {
-    this.logManager = LogManager(level: logLevel, enabledLog: activeLog);
-    Flagship.logger(Level.ALL, "Flagship The timeout is : $timeout ms");
+  // TimeOut
+  ConfigBuilder withTimeout(int newTimeout) {
+    _timeout = newTimeout;
+    return this;
+  }
 
-    decisionManager = (decisionMode == Mode.DECISION_API)
-        ? ApiManager(Service(http.Client()))
-        : BucketingManager(Service(http.Client()), this.pollingTime);
+  // LogLevel
+  ConfigBuilder withLogLevel(Level newLevel) {
+    _logLevel = newLevel;
+    return this;
+  }
+
+  // Polling Time
+  ConfigBuilder withBucketingPollingIntervals(int newPollingTime) {
+    _pollingTime = newPollingTime;
+    return this;
+  }
+
+  // StatusListener
+  ConfigBuilder withStatusListener(StatusListener listener) {
+    _statusListener = listener;
+    return this;
+  }
+
+  FlagshipConfig build() {
+    return FlagshipConfig(_mode, _timeout, _pollingTime, _logLevel, statusListener: _statusListener);
   }
 }

@@ -25,7 +25,7 @@ class Flagship with FlagshipDelegate {
   String? apiKey;
 
   // Default configuration DECISION_API
-  static FlagshipConfig _configuration = FlagshipConfig.defaultMode();
+  static FlagshipConfig _configuration = ConfigBuilder().build();
 
   // Local visitor , see the startClient function
   Visitor? currentVisitor;
@@ -54,7 +54,9 @@ class Flagship with FlagshipDelegate {
       if (config != null) {
         Flagship._configuration = config;
       }
-      Flagship._configuration.decisionManager.startPolling();
+      if (_configuration.decisionMode == Mode.BUCKETING) {
+        Flagship._configuration.decisionManager.startPolling();
+      }
       _singleton.onUpdateState(Status.READY);
       Flagship.logger(Level.INFO, STARTED);
     } else {

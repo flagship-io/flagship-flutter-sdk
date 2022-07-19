@@ -74,50 +74,47 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
 //start SDK
 
   _startSdk() {
-    FlagshipConfig config = FlagshipConfig(
-        decisionMode: Mode.BUCKETING,
-        statusListener: (Status newStatus) {
-          print('--------- Callback with $newStatus ---------');
-          var titleMsg = '';
-          var visitor;
-          if (newStatus == Status.READY) {
-            //Get the visitor
-            visitor = Flagship.getCurrentVisitor();
-            if (visitor == null) {
-              // Create visitor if null
-              visitor = Flagship.newVisitor(visitorIdController.text)
-                  .withContext(visitorContext)
-                  .hasConsented(isConsented)
-                  .build();
+    FlagshipConfig config =
+        ConfigBuilder().withMode(isApiMode ? Mode.DECISION_API : Mode.BUCKETING).withStatusListener((newStatus) {
+      print('--------- Callback with $newStatus ---------');
+      var titleMsg = '';
+      var visitor;
+      if (newStatus == Status.READY) {
+        //Get the visitor
+        visitor = Flagship.getCurrentVisitor();
+        if (visitor == null) {
+          // Create visitor if null
+          visitor = Flagship.newVisitor(visitorIdController.text)
+              .withContext(visitorContext)
+              .hasConsented(isConsented)
+              .build();
 
-              // Set current visitor singleton instance for future use
-              Flagship.setCurrentVisitor(visitor);
-            }
+          // Set current visitor singleton instance for future use
+          Flagship.setCurrentVisitor(visitor);
+        }
 
-            visitor.fetchFlags().whenComplete(() {
-              switch (Flagship.getStatus()) {
-                case Status.PANIC_ON:
-                  titleMsg = "SDK is on panic mode, will use default value";
-                  break;
-                case Status.READY:
-                  titleMsg = "SDK is ready to use";
-                  break;
-                default:
-              }
-              showBasicDialog(titleMsg, '');
-            });
+        visitor.fetchFlags().whenComplete(() {
+          switch (Flagship.getStatus()) {
+            case Status.PANIC_ON:
+              titleMsg = "SDK is on panic mode, will use default value";
+              break;
+            case Status.READY:
+              titleMsg = "SDK is ready to use";
+              break;
+            default:
           }
+          showBasicDialog(titleMsg, '');
         });
-
+      }
+    }).build();
     Flagship.start(envIdController.text, apiKeyController.text, config: config);
   }
 
 // Change Mode
   _changeMode() {
-    // For now, disabled bucketing mode
-    // setState(() {
-    //   //isApiMode = !isApiMode;
-    // });
+    setState(() {
+      isApiMode = !isApiMode;
+    });
   }
 
   // Consent Mode

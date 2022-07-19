@@ -33,7 +33,7 @@ void main() async {
     return http.Response(fakeResponse, 200);
   });
 
-  FlagshipConfig config = FlagshipConfig(timeout: TIMEOUT);
+  FlagshipConfig config = ConfigBuilder().withTimeout(TIMEOUT).build();
   config.decisionManager = fakeApi;
   Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
   var v1 = Flagship.newVisitor("flagVisitor").build();

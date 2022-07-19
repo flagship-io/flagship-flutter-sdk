@@ -26,7 +26,9 @@ class BucketingManager extends DecisionManager {
   String bucketingFolder = "/flagship/Bucketing/";
   String fileName = "bucketing.json";
 
-  BucketingManager(Service service, this.intervalPolling) : super(service);
+  BucketingManager(Service service, this.intervalPolling) : super(service) {
+    startPolling();
+  }
 
   @override
   Future<Campaigns> getCampaigns(String envId, String visitorId, Map<String, Object> context) async {

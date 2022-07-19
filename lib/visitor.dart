@@ -192,7 +192,7 @@ class VisitorBuilder {
   // }
 
   Visitor build() {
-    return Visitor(Flagship.sharedInstance().getConfiguration() ?? FlagshipConfig.defaultMode(), visitorId, _context,
+    return Visitor(Flagship.sharedInstance().getConfiguration() ?? ConfigBuilder().build(), visitorId, _context,
         hasConsented: _hasConsented);
   }
 }
