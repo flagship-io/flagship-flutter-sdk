@@ -20,6 +20,9 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   String apiKey = "DxAcxlnRB9yFBZYtLDue1q01dcXZCw6aM49CQB23";
   String envId = "bkk9glocmjcg0vtmdlng";
 
+  final int defaultTimeout = 2000;
+  final int defaultPollingTime = 60;
+
   final envIdController = TextEditingController();
   final apiKeyController = TextEditingController();
   final timeoutController = TextEditingController();
@@ -109,7 +112,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
             });
           }
         })
-        .withTimeout(int.parse(timeoutController.text))
+        .withTimeout(int.tryParse(timeoutController.text) ?? defaultTimeout)
         .build();
     Flagship.start(envIdController.text, apiKeyController.text, config: config);
   }
@@ -156,9 +159,6 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
 
   @override
   Widget build(BuildContext context) {
-    const int defaultTimeout = 2000;
-    const int defaultPollingTime = 60;
-
     double _spaceBetweenInput = 10;
     envIdController.text = envId;
     apiKeyController.text = apiKey;
