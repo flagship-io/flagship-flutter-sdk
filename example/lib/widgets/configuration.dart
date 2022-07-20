@@ -24,6 +24,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   final apiKeyController = TextEditingController();
   final timeoutController = TextEditingController();
   final visitorIdController = TextEditingController();
+  final pollingTimeController = TextEditingController();
 
   @override
   void initState() {
@@ -74,39 +75,42 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
 //start SDK
 
   _startSdk() {
-    FlagshipConfig config =
-        ConfigBuilder().withMode(isApiMode ? Mode.DECISION_API : Mode.BUCKETING).withStatusListener((newStatus) {
-      print('--------- Callback with $newStatus ---------');
-      var titleMsg = '';
-      var visitor;
-      if (newStatus == Status.READY) {
-        //Get the visitor
-        visitor = Flagship.getCurrentVisitor();
-        if (visitor == null) {
-          // Create visitor if null
-          visitor = Flagship.newVisitor(visitorIdController.text)
-              .withContext(visitorContext)
-              .hasConsented(isConsented)
-              .build();
+    FlagshipConfig config = ConfigBuilder()
+        .withMode(isApiMode ? Mode.DECISION_API : Mode.BUCKETING)
+        .withStatusListener((newStatus) {
+          print('--------- Callback with $newStatus ---------');
+          var titleMsg = '';
+          var visitor;
+          if (newStatus == Status.READY) {
+            //Get the visitor
+            visitor = Flagship.getCurrentVisitor();
+            if (visitor == null) {
+              // Create visitor if null
+              visitor = Flagship.newVisitor(visitorIdController.text)
+                  .withContext(visitorContext)
+                  .hasConsented(isConsented)
+                  .build();
 
-          // Set current visitor singleton instance for future use
-          Flagship.setCurrentVisitor(visitor);
-        }
+              // Set current visitor singleton instance for future use
+              Flagship.setCurrentVisitor(visitor);
+            }
 
-        visitor.fetchFlags().whenComplete(() {
-          switch (Flagship.getStatus()) {
-            case Status.PANIC_ON:
-              titleMsg = "SDK is on panic mode, will use default value";
-              break;
-            case Status.READY:
-              titleMsg = "SDK is ready to use";
-              break;
-            default:
+            visitor.fetchFlags().whenComplete(() {
+              switch (Flagship.getStatus()) {
+                case Status.PANIC_ON:
+                  titleMsg = "SDK is on panic mode, will use default value";
+                  break;
+                case Status.READY:
+                  titleMsg = "SDK is ready to use";
+                  break;
+                default:
+              }
+              showBasicDialog(titleMsg, '');
+            });
           }
-          showBasicDialog(titleMsg, '');
-        });
-      }
-    }).build();
+        })
+        .withTimeout(int.parse(timeoutController.text))
+        .build();
     Flagship.start(envIdController.text, apiKeyController.text, config: config);
   }
 
@@ -153,10 +157,13 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   @override
   Widget build(BuildContext context) {
     const int defaultTimeout = 2000;
+    const int defaultPollingTime = 60;
+
     double _spaceBetweenInput = 10;
     envIdController.text = envId;
     apiKeyController.text = apiKey;
     timeoutController.text = defaultTimeout.toString();
+    pollingTimeController.text = defaultPollingTime.toString();
 
     final mediaQuery = MediaQuery.of(context);
     return Container(
@@ -190,7 +197,6 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
               FSInputField("ApiKey", apiKeyController, TextInputType.text),
               SizedBox(height: _spaceBetweenInput),
               FSInputField("Timeout(ms)", timeoutController, TextInputType.number),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -204,6 +210,10 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
                           onPressed: () => {_changeMode()}, child: Text(isApiMode ? "API" : "BUCKETING")))
                 ],
               ),
+              (isApiMode == true)
+                  ? SizedBox(height: _spaceBetweenInput)
+                  : FSInputField("Timeout(ms)", pollingTimeController, TextInputType.number),
+
               // SizedBox(height: _spaceBetweenInput),
               // FSInputField("Timeout", timeoutController, TextInputType.number),
               SizedBox(height: _spaceBetweenInput),
