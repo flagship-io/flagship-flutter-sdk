@@ -27,14 +27,14 @@ class BucketingManager extends DecisionManager {
   String fileName = "bucketing.json";
 
   BucketingManager(Service service, this.intervalPolling) : super(service) {
-    startPolling();
+    // startPolling();
   }
 
   @override
   Future<Campaigns> getCampaigns(String envId, String visitorId, Map<String, Object> context) async {
     // Read File before
     String jsonString = await _readFile().catchError((error) {
-      Flagship.logger(Level.ALL, "Error on reading the saved bucketing file");
+      Flagship.logger(Level.ALL, "Error on reading the saved bucketing or the file doesn't exist");
       throw Exception('Flagship, Failed to synchronize');
     });
 

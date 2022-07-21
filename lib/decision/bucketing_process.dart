@@ -28,7 +28,7 @@ extension BucketingProcess on BucketingManager {
       for (VariationGroup itemVarGroup in itemCamp.variationGroups) {
         // Check the targeting
         if (targetManager.isTargetingGroupIsOkay(itemVarGroup.targeting) == true) {
-          Flagship.logger(Level.DEBUG, "The Targeting for " + itemVarGroup.idVariationGroup + "is OKAY 👍");
+          Flagship.logger(Level.DEBUG, "The Targeting for " + itemVarGroup.idVariationGroup + "is OK 👍");
 
           String? varId = selectVariationWithMurMurHash(visitorId, itemVarGroup);
 
@@ -47,7 +47,7 @@ extension BucketingProcess on BucketingManager {
             result.campaigns.add(camp);
           }
         } else {
-          Flagship.logger(Level.DEBUG, "The Targeting for " + itemVarGroup.idVariationGroup + "is KO 👎 ");
+          Flagship.logger(Level.DEBUG, "The Targeting for " + itemVarGroup.idVariationGroup + "is NOT OK 👎 ");
         }
       }
     }
@@ -56,7 +56,7 @@ extension BucketingProcess on BucketingManager {
 
   String? selectVariationWithMurMurHash(String visitorId, VariationGroup varGroup) {
     int hashAlloc;
-    // We calculate the Hash allocation by the combonation of : visitorId + idVariationGroup
+    // We calculate the Hash allocation by the combination of : visitorId + idVariationGroup
     String combinedId = varGroup.idVariationGroup + visitorId;
 
     // Calculate the murmurHash algorithm

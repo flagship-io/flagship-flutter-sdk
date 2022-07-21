@@ -4,16 +4,10 @@ import 'package:flagship/model/variation.dart';
 class Bucketing {
   bool panic = false;
   List<BucketCampaign> campaigns = [];
-  bool visitorConsolidation = false;
-
   Bucketing.fromJson(Map<String, dynamic> json) {
     // Set panic
     if (json.keys.contains("panic")) {
       panic = json['panic'] as bool;
-    }
-    // Set the xpc
-    if (json.keys.contains("visitorConsolidation")) {
-      visitorConsolidation = json['visitorConsolidation'] as bool;
     }
     // Construct bucketing object
     var list = (json['campaigns'] ?? []) as List<dynamic>;

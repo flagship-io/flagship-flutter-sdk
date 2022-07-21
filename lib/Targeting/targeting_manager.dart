@@ -204,10 +204,3 @@ class TargetingManager {
     }
   }
 }
-
-
-// 0 − when the strings are equal.
-
-// 1 − when the first string is greater than the second
-
-// -1 − when the first string is smaller than the second
