@@ -34,11 +34,11 @@ void main() {
       return http.Response(fakeResponse, 200);
     });
 
-    FlagshipConfig config = FlagshipConfig(timeout: TIMEOUT);
+    FlagshipConfig config = ConfigBuilder().withTimeout(TIMEOUT).build();
     config.decisionManager = fakeApi;
     Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
 
-    var v1 = Flagship.newVisitor("visitorId", {}, hasConsented: false);
+    var v1 = Flagship.newVisitor("visitorId").hasConsented(false).build();
     expect(v1.getConsent(), false);
     // ignore: deprecated_member_use_from_same_package
     v1.synchronizeModifications().then((value) {

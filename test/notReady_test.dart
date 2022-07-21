@@ -6,7 +6,7 @@ void main() {
   test('Test API with bad envId format', () async {
     Flagship.start("bkk9g", "apiKey");
 
-    var v1 = Flagship.newVisitor("visitorId", {});
+    var v1 = Flagship.newVisitor("visitorId").build();
 
     expect(Flagship.getStatus(), Status.NOT_INITIALIZED);
 

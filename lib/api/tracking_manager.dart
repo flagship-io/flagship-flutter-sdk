@@ -58,8 +58,7 @@ class TrackingManager {
     /// Create url
     String urlString = Endpoints.ARIANE;
     try {
-      var response = await _service.sendHttpRequest(
-          RequestType.Post, urlString, fsHeader, jsonEncode(pHit.bodyTrack),
+      var response = await _service.sendHttpRequest(RequestType.Post, urlString, fsHeader, jsonEncode(pHit.bodyTrack),
           timeoutMs: TIMEOUT_REQUEST);
       switch (response.statusCode) {
         case 200:
@@ -71,8 +70,7 @@ class TrackingManager {
           Flagship.logger(Level.ERROR, HIT_FAILED);
       }
     } catch (error) {
-      Flagship.logger(
-          Level.EXCEPTIONS, EXCEPTION.replaceFirst("%s", "$error") + urlString);
+      Flagship.logger(Level.EXCEPTIONS, EXCEPTION.replaceFirst("%s", "$error") + urlString);
       Flagship.logger(Level.ERROR, HIT_FAILED);
     }
   }

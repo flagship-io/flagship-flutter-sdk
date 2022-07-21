@@ -19,8 +19,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: MainScreen(title: "FlagshipQA"),
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.pink)
-            .copyWith(secondary: Colors.amber),
+        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.pink).copyWith(secondary: Colors.amber),
       ),
       initialRoute: '/',
       routes: {
@@ -62,12 +61,8 @@ class MainScreenState extends State<MainScreen> {
       backgroundColor: Colors.blueGrey,
     ),
     // BottomNavigationBarItem(icon: Icon(Icons.person), label: "User", backgroundColor: Colors.blueGrey),
-    BottomNavigationBarItem(
-        icon: Icon(Icons.flag),
-        label: "Modifications",
-        backgroundColor: Colors.blueGrey),
-    BottomNavigationBarItem(
-        icon: Icon(Icons.api), label: "Hits", backgroundColor: Colors.blueGrey)
+    BottomNavigationBarItem(icon: Icon(Icons.flag), label: "Modifications", backgroundColor: Colors.blueGrey),
+    BottomNavigationBarItem(icon: Icon(Icons.api), label: "Hits", backgroundColor: Colors.blueGrey)
   ];
 
   @override

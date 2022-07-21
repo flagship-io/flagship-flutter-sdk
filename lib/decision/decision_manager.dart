@@ -37,4 +37,6 @@ abstract class DecisionManager extends IDecisionManager {
   bool isConsent() {
     return _isConsent;
   }
+
+  void startPolling() {} // used by the bucketing
 }

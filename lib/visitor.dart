@@ -50,8 +50,7 @@ class Visitor {
   /// config: this object manage the mode of the sdk and other params
   /// visitorId : the user ID for the visitor
   /// context : Map that represent the conext for the visitor
-  Visitor(this.config, this.visitorId, Map<String, Object> context,
-      {bool hasConsented = true}) {
+  Visitor(this.config, this.visitorId, Map<String, Object> context, {bool hasConsented = true}) {
     // update context
     this.updateContextWithMap(context);
     // set delegate
@@ -110,8 +109,7 @@ class Visitor {
   @Deprecated('Use value() in Flag class instead')
   T getModification<T>(String key, T defaultValue, {bool activate = false}) {
     // Delegate the action to strategy
-    return _visitorDelegate.getModification(key, defaultValue,
-        activate: activate);
+    return _visitorDelegate.getModification(key, defaultValue, activate: activate);
   }
 
   /// Get the modification infos relative to flag (modification)
@@ -162,5 +160,39 @@ class Visitor {
   // Get consent
   bool getConsent() {
     return _hasConsented;
+  }
+}
+
+class VisitorBuilder {
+  final String visitorId;
+
+  /// Context
+  Map<String, Object> _context = {};
+
+  /// Has consented
+  bool _hasConsented = true;
+
+  // bool _isAuthenticated = false; later when implement xpc
+  VisitorBuilder(this.visitorId);
+
+// Context
+  VisitorBuilder withContext(Map<String, Object> context) {
+    _context = context;
+    return this;
+  }
+
+  VisitorBuilder hasConsented(bool hasConsented) {
+    _hasConsented = hasConsented;
+    return this;
+  }
+
+  // isAuthenticated(bool autenticated) {
+  //   _isAuthenticated = autenticated;
+  //   return this;
+  // }
+
+  Visitor build() {
+    return Visitor(Flagship.sharedInstance().getConfiguration() ?? ConfigBuilder().build(), visitorId, _context,
+        hasConsented: _hasConsented);
   }
 }

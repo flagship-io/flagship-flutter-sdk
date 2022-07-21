@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flagship/flagship_config.dart';
 import 'package:flagship/model/campaigns.dart';
 import 'package:flagship/api/endpoints.dart';
 import 'package:flagship/api/service.dart';
@@ -6,13 +7,11 @@ import 'package:flagship/decision/decision_manager.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/flagship_version.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
-import 'package:flagship/flagship_config.dart';
 
 class ApiManager extends DecisionManager {
   ApiManager(Service service) : super(service);
   @override
-  Future<Campaigns> getCampaigns(
-      String envId, String visitorId, Map<String, Object> context) async {
+  Future<Campaigns> getCampaigns(String envId, String visitorId, Map<String, Object> context) async {
     // Create url
     String urlString = Endpoints.DECISION_API + envId + Endpoints.CAMPAIGNS;
     // if the consent is false , we set the sendContext to false
@@ -31,12 +30,9 @@ class ApiManager extends DecisionManager {
     };
 
     // Create data to post
-    Object data = json.encode(
-        {"visitorId": visitorId, "context": context, "trigger_hit": false});
-    var response = await service.sendHttpRequest(
-        RequestType.Post, urlString, fsHeaders, data,
-        timeoutMs:
-            Flagship.sharedInstance().getConfiguration()?.timeout ?? TIMEOUT);
+    Object data = json.encode({"visitorId": visitorId, "context": context, "trigger_hit": false});
+    var response = await service.sendHttpRequest(RequestType.Post, urlString, fsHeaders, data,
+        timeoutMs: Flagship.sharedInstance().getConfiguration()?.timeout ?? TIMEOUT);
     switch (response.statusCode) {
       case 200:
         Flagship.logger(Level.ALL, response.body, isJsonString: true);

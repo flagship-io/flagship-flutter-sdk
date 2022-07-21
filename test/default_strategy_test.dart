@@ -35,13 +35,16 @@ void main() {
       return http.Response(fakeResponse, 200);
     });
 
-    FlagshipConfig config = FlagshipConfig(timeout: TIMEOUT);
+    FlagshipConfig config = ConfigBuilder().withTimeout(TIMEOUT).build();
     config.decisionManager = fakeApi;
     Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
     Flagship.enableLog(true);
     Flagship.setLoggerLevel(Level.WARNING);
 
-    var v1 = Flagship.newVisitor("visitorId", {});
+    //var v1 = Flagship.createVisitor("visitorId", {});
+
+    var v1 = Flagship.newVisitor("visitorId").withContext({}).build();
+
     v1.setConsent(true);
     expect(v1.getConsent(), true);
     // ignore: deprecated_member_use_from_same_package
@@ -99,20 +102,18 @@ void main() {
     });
 
     /// count the callback trigger
-    FlagshipConfig config = FlagshipConfig(
-      timeout: TIMEOUT,
-      statusListener: (newStatus) {
-        print(" ---- statusListner is trigger ---- ");
-        expect(Flagship.getStatus() == newStatus, true);
-        expect(newStatus, Flagship.getStatus());
-      },
-    );
+
+    FlagshipConfig config = ConfigBuilder().withTimeout(TIMEOUT).withStatusListener((newStatus) {
+      print(" ---- statusListner is trigger ---- ");
+      expect(Flagship.getStatus() == newStatus, true);
+      expect(newStatus, Flagship.getStatus());
+    }).build();
 
     config.decisionManager = fakeApi;
 
     Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
 
-    var v1 = Flagship.newVisitor("visitorId", {});
+    var v1 = Flagship.newVisitor("visitorId").build();
     Flagship.setCurrentVisitor(v1);
     expect(v1.getConsent(), true);
     // ignore: deprecated_member_use_from_same_package
@@ -125,5 +126,29 @@ void main() {
       // ignore: deprecated_member_use_from_same_package
       expect(v1.getModification('aliasTer', 'default'), "default");
     });
+  });
+
+  test('Test API with timeout', () async {
+    String fakeResponse = await ToolsTest.readFile('test_resources/decisionApi.json') ?? "";
+    when(fakeService.sendHttpRequest(RequestType.Post,
+            'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true', fsHeaders, data,
+            timeoutMs: TIMEOUT))
+        .thenAnswer((_) async {
+      return http.Response(fakeResponse, 408);
+    });
+
+    FlagshipConfig config = ConfigBuilder().withTimeout(TIMEOUT).withStatusListener((newStatus) {
+      print(" ---- statusListner is trigger ---- ");
+      expect(Flagship.getStatus() == newStatus, true);
+      expect(newStatus, Flagship.getStatus());
+    }).build();
+
+    config.decisionManager = fakeApi;
+
+    Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
+
+    var v1 = Flagship.newVisitor("visitorId").build();
+    Flagship.setCurrentVisitor(v1);
+    expect(v1.getConsent(), true);
   });
 }

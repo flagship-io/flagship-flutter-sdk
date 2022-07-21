@@ -58,19 +58,19 @@ class LogManager {
     return (pLevel.index <= LogManager.level.index);
   }
 
-  void _displayMessage(String msg, bool isJsonString) {
-    if (isJsonString) {
-      _displayPrettyStringJson(msg);
-    } else {
-      print(prefixLog + msg);
-    }
-  }
-
   void _displayPrettyStringJson(String input) {
     const JsonDecoder decoder = JsonDecoder();
     const JsonEncoder encoder = JsonEncoder.withIndent('  ');
     final dynamic object = decoder.convert(input);
     final dynamic prettyString = encoder.convert(object);
     prettyString.split('\n').forEach((dynamic element) => print(element));
+  }
+
+  void _displayMessage(String msg, bool isJsonString) {
+    if (isJsonString) {
+      _displayPrettyStringJson(msg);
+    } else {
+      print(prefixLog + msg);
+    }
   }
 }
