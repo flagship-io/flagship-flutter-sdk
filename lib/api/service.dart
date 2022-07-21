@@ -12,16 +12,14 @@ enum RequestType { Post, Get }
 
 class Service {
   http.Client httpClient;
-
   Service(this.httpClient);
-
-  Future<Response> sendHttpRequest(RequestType type, String urlString, Map<String, String> headers, Object data,
+  Future<Response> sendHttpRequest(RequestType type, String urlString, Map<String, String> headers, Object? data,
       {timeoutMs = TIMEOUT}) async {
+    var url = Uri.parse(urlString);
     switch (type) {
       case RequestType.Post:
         {
           Flagship.logger(Level.INFO, REQUEST_POST_BODY.replaceFirst("%s", "$data"));
-          var url = Uri.parse(urlString);
           try {
             var response = await this
                 .httpClient
@@ -37,6 +35,12 @@ class Service {
           }
         }
       case RequestType.Get:
+        try {
+          var response = await this.httpClient.get(url, headers: headers);
+          return response;
+        } on Error catch (e) {
+          return Response("$e", 400);
+        }
       default:
         return Response('Error', 400);
     }

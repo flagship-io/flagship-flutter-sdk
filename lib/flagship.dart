@@ -25,7 +25,7 @@ class Flagship with FlagshipDelegate {
   String? apiKey;
 
   // Default configuration DECISION_API
-  static FlagshipConfig _configuration = FlagshipConfig.defaultMode();
+  static FlagshipConfig _configuration = ConfigBuilder().build();
 
   // Local visitor , see the startClient function
   Visitor? currentVisitor;
@@ -54,6 +54,9 @@ class Flagship with FlagshipDelegate {
       if (config != null) {
         Flagship._configuration = config;
       }
+      if (_configuration.decisionMode == Mode.BUCKETING) {
+        Flagship._configuration.decisionManager.startPolling();
+      }
       _singleton.onUpdateState(Status.READY);
       Flagship.logger(Level.INFO, STARTED);
     } else {
@@ -66,10 +69,13 @@ class Flagship with FlagshipDelegate {
   //
   // visitorId : Id for the visitor
   // context : Map that represent visitor's attribut  {"isVip":true}
-  static Visitor newVisitor(String visitorId, Map<String, Object> context,
-      {bool hasConsented = true}) {
-    return Visitor(_configuration, visitorId, context,
-        hasConsented: hasConsented);
+  // static Visitor createVisitor(String visitorId, Map<String, Object> context, {bool hasConsented = true}) {
+  //   return Visitor(_configuration, visitorId, context, hasConsented: hasConsented);
+  // }
+
+  /// Create new visitor
+  static VisitorBuilder newVisitor(String visitorId) {
+    return VisitorBuilder(visitorId);
   }
 
   // Set the current visitor singleton

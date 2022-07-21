@@ -29,19 +29,11 @@ void main() {
   ApiManager fakePanicApi = ApiManager(fakePanicService);
 
   test('FlagshipConfig ', () async {
-    FlagshipConfig conf = FlagshipConfig(statusListener: null, timeout: 4000, activeLog: false, logLevel: Level.ALL);
+    FlagshipConfig conf = ConfigBuilder().withTimeout(4000).withLogLevel(Level.ALL).build();
 
     expect(conf.statusListener, null);
     expect(conf.timeout, 4000);
     expect(conf.decisionMode, Mode.DECISION_API);
-
-    FlagshipConfig confBis = FlagshipConfig.defaultMode();
-    expect(confBis.statusListener, null);
-
-    FlagshipConfig confTer = FlagshipConfig.withStatusListener(statusListener: (newStatus) {});
-    expect((confTer.statusListener != null), true);
-    confTer.statusListener = null;
-    expect(confTer.statusListener, null);
   });
 
   test('Test API with panic mode', () async {
@@ -53,7 +45,7 @@ void main() {
       return http.Response(fakeResponse, 200);
     });
 
-    FlagshipConfig config = FlagshipConfig(timeout: TIMEOUT);
+    FlagshipConfig config = ConfigBuilder().withTimeout(TIMEOUT).build();
     config.statusListener = (newStatus) {
       if (newStatus == Status.PANIC_ON) {
         // ignore: deprecated_member_use_from_same_package
@@ -65,7 +57,7 @@ void main() {
     config.decisionManager = fakePanicApi;
     Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
 
-    var v1 = Flagship.newVisitor("visitorId", {});
+    var v1 = Flagship.newVisitor("visitorId").withContext({}).build();
     Flagship.setCurrentVisitor(v1);
 
     // ignore: deprecated_member_use_from_same_package
