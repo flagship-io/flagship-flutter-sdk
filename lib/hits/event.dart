@@ -25,7 +25,7 @@ class Event extends BaseHit {
   String? label;
 
   /// value of the event, must be non-negative.
-  Uint32? value;
+  int? value;
 
   Event({required this.action, required this.category, this.label, this.value}) : super() {
     type = Type.EVENT;
