@@ -1,9 +1,11 @@
 import 'package:flagship/Targeting/targeting_manager.dart';
 import 'package:flagship/decision/bucketing_manager.dart';
+import 'package:flagship/flagship.dart';
 import 'package:flagship/model/bucketing.dart';
 import 'package:flagship/model/campaign.dart';
 import 'package:flagship/model/campaigns.dart';
 import 'package:flagship/model/variation.dart';
+import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:murmurhash/murmurhash.dart';
 
 extension BucketingProcess on BucketingManager {
@@ -26,14 +28,14 @@ extension BucketingProcess on BucketingManager {
       for (VariationGroup itemVarGroup in itemCamp.variationGroups) {
         // Check the targeting
         if (targetManager.isTargetingGroupIsOkay(itemVarGroup.targeting) == true) {
-          print("The Targeting for " + itemVarGroup.idVariationGroup + "is OKAY 👍");
+          Flagship.logger(Level.DEBUG, "The Targeting for " + itemVarGroup.idVariationGroup + "is OKAY 👍");
 
           String? varId = selectVariationWithMurMurHash(visitorId, itemVarGroup);
 
           if (varId != null) {
             // Create variation group
             Campaign camp = Campaign(itemCamp.idCampaign, itemVarGroup.idVariationGroup, itemCamp.type, itemCamp.slug);
-            print("##### The variation choosen is $varId ###########");
+            Flagship.logger(Level.DEBUG, "#### The variation choosen is $varId ###########");
 
             for (Variation itemVar in itemVarGroup.variations) {
               if (itemVar.idVariation == varId) {
@@ -45,7 +47,7 @@ extension BucketingProcess on BucketingManager {
             result.campaigns.add(camp);
           }
         } else {
-          print("The Targeting for " + itemVarGroup.idVariationGroup + "is KO 👎");
+          Flagship.logger(Level.DEBUG, "The Targeting for " + itemVarGroup.idVariationGroup + "is KO 👎 ");
         }
       }
     }
@@ -59,11 +61,13 @@ extension BucketingProcess on BucketingManager {
 
     // Calculate the murmurHash algorithm
     hashAlloc = (MurmurHash.v3(combinedId, 0) % 100);
-    print("########### The MurMurHash for the combined " +
-        varGroup.idVariationGroup +
-        " " +
-        visitorId +
-        " is : $hashAlloc #############");
+    Flagship.logger(
+        Level.DEBUG,
+        "########### The MurMurHash for the combined " +
+            varGroup.idVariationGroup +
+            " " +
+            visitorId +
+            " is : $hashAlloc #############");
 
     int offsetAlloc = 0;
     for (Variation itemVar in varGroup.variations) {

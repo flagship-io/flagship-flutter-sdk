@@ -54,11 +54,7 @@ class BucketingManager extends DecisionManager {
     String urlString = Endpoints.BucketingScript.replaceFirst("%s", Flagship.sharedInstance().envId ?? "");
 
     var response = await this.service.sendHttpRequest(
-        // {"if-modified-since": prefs.getString(lastModfiedKey) ?? ""}
-        RequestType.Get,
-        urlString,
-        {},
-        null,
+        RequestType.Get, urlString, {"if-modified-since": prefs.getString(lastModfiedKey) ?? ""}, null,
         timeoutMs: Flagship.sharedInstance().getConfiguration()?.timeout ?? TIMEOUT);
     switch (response.statusCode) {
       case 200:
