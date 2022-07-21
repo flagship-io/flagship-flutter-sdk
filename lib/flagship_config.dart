@@ -22,7 +22,7 @@ class FlagshipConfig {
   // Timeout
   int timeout = TIMEOUT;
   // Decision Manager
-  late DecisionManager decisionManager; // = ApiManager(Service(http.Client()));
+  late DecisionManager decisionManager;
   // LogManager
   late LogManager logManager;
   // Status listner
@@ -41,52 +41,7 @@ class FlagshipConfig {
     decisionManager = (decisionMode == Mode.DECISION_API)
         ? ApiManager(Service(http.Client()))
         : BucketingManager(Service(http.Client()), this.pollingTime);
-
-    // decisionManager.startPolling();
   }
-
-  // FlagshipConfig({
-  //   this.decisionMode = Mode.DECISION_API,
-  //   this.timeout = TIMEOUT,
-  //   this.statusListener,
-  //   this.pollingTime = 60,
-  //   Level logLevel = Level.ALL,
-  //   /*bool activeLog = true*/
-  // }) {
-  //   // Set the log Manager
-  //   this.logManager = LogManager(level: logLevel);
-  //   // Log the timeout value in ms
-  //   Flagship.logger(Level.ALL, "Flagship The timeout is : $timeout ms");
-
-  //   decisionManager = (decisionMode == Mode.DECISION_API)
-  //       ? ApiManager(Service(http.Client()))
-  //       : BucketingManager(Service(http.Client()), this.pollingTime);
-  // }
-
-  // FlagshipConfig.defaultMode({this.timeout: TIMEOUT, this.decisionMode = Mode.DECISION_API}) {
-  //   // Decisoin manager
-  //   decisionManager = (decisionMode == Mode.DECISION_API)
-  //       ? ApiManager(Service(http.Client()))
-  //       : BucketingManager(Service(http.Client()), this.pollingTime);
-  //   // Log manager
-  //   this.logManager = LogManager(enabledLog: true, level: Level.ALL);
-  //   // Status listner null
-  //   this.statusListener = null;
-  // }
-
-  // FlagshipConfig.withStatusListener(
-  //     {this.timeout = TIMEOUT,
-  //     this.decisionMode = Mode.DECISION_API,
-  //     required this.statusListener,
-  //     Level logLevel = Level.ALL,
-  //     bool activeLog = true}) {
-  //   this.logManager = LogManager(level: logLevel, enabledLog: activeLog);
-  //   Flagship.logger(Level.ALL, "Flagship The timeout is : $timeout ms");
-
-  //   decisionManager = (decisionMode == Mode.DECISION_API)
-  //       ? ApiManager(Service(http.Client()))
-  //       : BucketingManager(Service(http.Client()), this.pollingTime);
-  // }
 }
 
 class ConfigBuilder {
