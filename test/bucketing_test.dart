@@ -10,17 +10,6 @@ import 'test_tools.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  test("Bucketing test with empty context", () async {
-    MockService fakeService = MockService();
-    String fakeResponse = await ToolsTest.readFile('test_resources/bucketMock.json') ?? "";
-    BucketingManager bkManager = BucketingManager(fakeService, 60);
-    Bucketing bucketingObject = Bucketing.fromJson(json.decode(fakeResponse));
-    Campaigns result = bkManager.bucketVariations('visitorId', bucketingObject, {});
-    expect(result.campaigns.length, 0);
-    expect(result.panic, false);
-    expect(result.visitorId, "visitorId");
-  });
-
   test("Bucketing test with context", () async {
     MockService fakeService = MockService();
     String fakeResponse = await ToolsTest.readFile('test_resources/bucketMock.json') ?? "";
