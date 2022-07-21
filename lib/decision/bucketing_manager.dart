@@ -108,7 +108,7 @@ class BucketingManager extends DecisionManager {
     final directory = await getApplicationDocumentsDirectory();
     Directory bucketingDirectory =
         await Directory.fromUri(Uri.file(directory.path + bucketingFolder)).create(recursive: true).catchError((error) {
-      print("Enable to create the directory to save the buckting file ");
+      Flagship.logger(Level.DEBUG, "Enable to create the directory to save the buckting file ");
     });
     // We got the path to save the json file
     File jsonFile = File(bucketingDirectory.path + fileName);
