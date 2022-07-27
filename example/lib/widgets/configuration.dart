@@ -1,5 +1,6 @@
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/utils/constants.dart';
+import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship_qa/mixins/dialog.dart';
 import 'package:flutter/material.dart';
 import './FSinputField.dart';
@@ -17,9 +18,12 @@ class Configuration extends StatefulWidget {
 
 class _ConfigurationState extends State<Configuration> with ShowDialog {
   // keys
-  String apiKey = "DxAcxlnRB9yFBZYtLDue1q01dcXZCw6aM49CQB23";
-  String envId = "bkk9glocmjcg0vtmdlng";
+  // String apiKey = "DxAcxlnRB9yFBZYtLDue1q01dcXZCw6aM49CQB23";
+  // String envId = "bkk9glocmjcg0vtmdlng";
 
+  // Raph
+  String apiKey = "Q6FDmj6F188nh75lhEato2MwoyXDS7y34VrAL4Aa";
+  String envId = "bkk4s7gcmjcg07fke9dg";
   final int defaultTimeout = 2000;
   final int defaultPollingTime = 60;
 
@@ -40,21 +44,11 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
 
   final Map<String, Object> initialVisitorContext = {
     "isVipClient": true,
-    "key1": 12.5,
-    "key2": "title",
-    "key3": 2,
-    'key4': 22,
-    "key5": 4444,
-    "key6": true,
-    "key7": "ola",
     "qa_getflag": true,
-    "bK1": "flutter",
-    "bk2": 13,
-    "bk3": true,
     "bucketingKey": "condition1"
   };
 
-  bool isApiMode = true;
+  bool isApiMode = false;
   bool isAuthenticate = false;
   bool isConsented = true;
 
@@ -63,14 +57,13 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   /// Reset filed
   _resetConfig() {
     setState(() {
-      print("reset fields");
-      envIdController.clear();
-      apiKeyController.clear();
-      timeoutController.clear();
-      visitorIdController.clear();
-      timeoutController.clear();
+      print("Reset to default values fields");
+      timeoutController.text = defaultTimeout.toString();
+      pollingTimeController.text = defaultPollingTime.toString();
+      visitorIdController.text = _createRandomUser();
       visitorContext = initialVisitorContext;
       isApiMode = true;
+      Flagship.sharedInstance().onUpdateState(Status.NOT_INITIALIZED);
     });
   }
 
@@ -78,26 +71,31 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
 //start SDK
 
   _startSdk() {
+    Flagship.sharedInstance().onUpdateState(Status.NOT_INITIALIZED);
+
+    /// we did this to allow start(S)
+    Flagship.logger(Level.ALL, '--------- Start with $visitorIdController.text ---------');
+
     FlagshipConfig config = ConfigBuilder()
         .withMode(isApiMode ? Mode.DECISION_API : Mode.BUCKETING)
         .withStatusListener((newStatus) {
           print('--------- Callback with $newStatus ---------');
           var titleMsg = '';
-          var visitor;
+          var newVisitor;
           if (newStatus == Status.READY) {
             //Get the visitor
-            visitor = Flagship.getCurrentVisitor();
-            if (visitor == null) {
-              // Create visitor if null
-              visitor = Flagship.newVisitor(visitorIdController.text)
-                  .withContext(visitorContext)
-                  .hasConsented(isConsented)
-                  .build();
-              // Set current visitor singleton instance for future use
-              Flagship.setCurrentVisitor(visitor);
-            }
+            // visitor = Flagship.getCurrentVisitor();
+            // if (visitor == null) {
+            // Create visitor if null
+            newVisitor = Flagship.newVisitor(visitorIdController.text)
+                .withContext(visitorContext)
+                .hasConsented(isConsented)
+                .build();
+            // Set current visitor singleton instance for future use
+            Flagship.setCurrentVisitor(newVisitor);
+            // }
 
-            visitor.fetchFlags().whenComplete(() {
+            newVisitor.fetchFlags().whenComplete(() {
               switch (Flagship.getStatus()) {
                 case Status.PANIC_ON:
                   titleMsg = "SDK is on panic mode, will use default value";
@@ -211,10 +209,8 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
               ),
               (isApiMode == true)
                   ? SizedBox(height: _spaceBetweenInput)
-                  : FSInputField("Timeout(ms)", pollingTimeController, TextInputType.number),
-
-              // SizedBox(height: _spaceBetweenInput),
-              // FSInputField("Timeout", timeoutController, TextInputType.number),
+                  : FSInputField("Polling Interval(s)", pollingTimeController, TextInputType.number),
+              SizedBox(height: _spaceBetweenInput),
               SizedBox(height: _spaceBetweenInput),
               FSInputField("VisitorId", visitorIdController, TextInputType.text),
               SizedBox(height: _spaceBetweenInput),
@@ -253,19 +249,19 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
               //   ],
               // ),
               SizedBox(height: _spaceBetweenInput * 10),
+              SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    child: Text("START"),
+                    onPressed: () => {_startSdk()},
+                  )),
+              SizedBox(height: _spaceBetweenInput),
               Container(
                   width: double.infinity,
                   child: ElevatedButton(
                     child: Text("Update context & synchronize"),
                     onPressed: () => {_onTapContext(context)},
                   )),
-              SizedBox(height: _spaceBetweenInput),
-              SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    child: Text("START"),
-                    onPressed: () => {_startSdk()},
-                  ))
             ],
           ),
         ),
