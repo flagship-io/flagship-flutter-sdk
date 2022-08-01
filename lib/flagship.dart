@@ -2,9 +2,11 @@ library flagship;
 
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/utils/constants.dart';
+import 'package:flagship/utils/device_tools.dart';
 import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'flagship_delegate.dart';
 
@@ -47,7 +49,8 @@ class Flagship with FlagshipDelegate {
   //
   // envId : environement id (provided by flagship)
   // apiKey: Api key (provided by flagship)
-  static start(String envId, String apiKey, {FlagshipConfig? config}) {
+  static start(String envId, String apiKey, {FlagshipConfig? config}) async {
+    await FSDevice.loadDeviceInfo();
     if (FlagshipTools.chekcXidEnvironment(envId)) {
       _singleton.apiKey = apiKey;
       _singleton.envId = envId;

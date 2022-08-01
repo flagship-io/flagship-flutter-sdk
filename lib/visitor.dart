@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flagship/flagshipContext/flagship_context_manager.dart';
 import 'package:flagship/hits/event.dart';
 import 'package:flagship/model/flag.dart';
 import 'package:flagship/model/modification.dart';
@@ -51,6 +52,10 @@ class Visitor {
   /// visitorId : the user ID for the visitor
   /// context : Map that represent the conext for the visitor
   Visitor(this.config, this.visitorId, Map<String, Object> context, {bool hasConsented = true}) {
+    // Load preset_Context
+
+    this.updateContextWithMap(FlagshipContextManager.getPresetContextForApp());
+
     // update context
     this.updateContextWithMap(context);
     // set delegate
