@@ -19,4 +19,9 @@ abstract class IVisitor {
 
 // Get Modification object, use for Flag class
   Modification? getFlagModification(String key);
+// authenticateVisitor
+  authenticateVisitor(String visitorId);
+
+// unAuthenticateVisitor
+  unAuthenticateVisitor();
 }

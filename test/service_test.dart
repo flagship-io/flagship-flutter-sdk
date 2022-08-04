@@ -36,7 +36,7 @@ void main() {
         .thenAnswer((_) async {
       return http.Response(fakeResponse, 200);
     });
-    fakeApi.getCampaigns("bkk9glocmjcg0vtmdlrr", "visitorId", {}).then((value) {
+    fakeApi.getCampaigns("bkk9glocmjcg0vtmdlrr", "visitorId", null, {}).then((value) {
       fakeApi.getModifications(value.campaigns);
       expect(fakeApi.isConsent(), true);
       fakeApi.updateConsent(false);

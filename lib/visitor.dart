@@ -9,13 +9,16 @@ import 'package:flagship/flagship_config.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/hits/hit.dart';
 import 'package:flagship/utils/constants.dart';
+import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor/visitor_delegate.dart';
 import 'flagship_delegate.dart';
 
 class Visitor {
   // VisitorId
-  final String visitorId;
+  String visitorId;
+
+  String? anonymousId;
 
   /// Configuration
   final FlagshipConfig config;
@@ -41,6 +44,9 @@ class Visitor {
   //Consent by default is true
   bool _hasConsented = true;
 
+  // Xpc
+  bool _isAuthenticated;
+
   // delegate visitor
   late VisitorDelegate _visitorDelegate;
   // delegate to update the status
@@ -51,9 +57,14 @@ class Visitor {
   /// config: this object manage the mode of the sdk and other params
   /// visitorId : the user ID for the visitor
   /// context : Map that represent the conext for the visitor
-  Visitor(this.config, this.visitorId, Map<String, Object> context, {bool hasConsented = true}) {
-    // Load preset_Context
+  Visitor(this.config, this.visitorId, this._isAuthenticated, Map<String, Object> context, {bool hasConsented = true}) {
+    if (_isAuthenticated == true) {
+      this.anonymousId = FlagshipTools.generateFlagshipId(); // TODO implement generateFlagshipId()
+    } else {
+      anonymousId = null;
+    }
 
+    // Load preset_Context
     this.updateContextWithMap(FlagshipContextManager.getPresetContextForApp());
 
     // update context
@@ -166,18 +177,38 @@ class Visitor {
   bool getConsent() {
     return _hasConsented;
   }
+
+  ///   Use authenticate methode to go from Logged-out session to logged-in session
+  ///
+  /// - Parameters:
+  ///      - visitorId: newVisitorId to authenticate
+  /// - Important: After using this method, you should use Flagship.fetchFlags method to update the visitor informations
+  /// - Requires: Make sure that the experience continuity option is enabled on the flagship platform before using this method
+
+  authenticate(String visitorId) {
+    _visitorDelegate.getStrategy().authenticateVisitor(visitorId);
+  }
+
+  /// Use authenticate methode to go from Logged in  session to logged out session
+  unauthenticate() {
+    _visitorDelegate.getStrategy().unAuthenticateVisitor();
+  }
 }
+
+//// Builder
 
 class VisitorBuilder {
   final String visitorId;
 
-  /// Context
+// Context
   Map<String, Object> _context = {};
 
-  /// Has consented
+// Has consented
   bool _hasConsented = true;
 
-  // bool _isAuthenticated = false; later when implement xpc
+// Xpc by default false
+  bool _isAuthenticated = false;
+
   VisitorBuilder(this.visitorId);
 
 // Context
@@ -191,13 +222,14 @@ class VisitorBuilder {
     return this;
   }
 
-  // isAuthenticated(bool autenticated) {
-  //   _isAuthenticated = autenticated;
-  //   return this;
-  // }
+  isAuthenticated(bool autenticated) {
+    _isAuthenticated = autenticated;
+    return this;
+  }
 
   Visitor build() {
-    return Visitor(Flagship.sharedInstance().getConfiguration() ?? ConfigBuilder().build(), visitorId, _context,
+    return Visitor(
+        Flagship.sharedInstance().getConfiguration() ?? ConfigBuilder().build(), visitorId, _isAuthenticated, _context,
         hasConsented: _hasConsented);
   }
 }

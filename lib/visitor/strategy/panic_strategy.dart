@@ -27,8 +27,7 @@ class PanicStrategy extends DefaultStrategy {
 
   @override
   Map<String, Object>? getModificationInfo(String key) {
-    Flagship.logger(
-        Level.ERROR, PANIC_MODIFICATION_INFO.replaceFirst("%s", key));
+    Flagship.logger(Level.ERROR, PANIC_MODIFICATION_INFO.replaceFirst("%s", key));
     return null;
   }
 
@@ -40,5 +39,15 @@ class PanicStrategy extends DefaultStrategy {
   @override
   void setConsent(bool isConsent) {
     Flagship.logger(Level.INFO, PANIC_HIT_CONSENT);
+  }
+
+  @override
+  authenticateVisitor(String visitorId) {
+    // TODO: add logs
+  }
+
+  @override
+  unAuthenticateVisitor() {
+    // TODO: add logs
   }
 }

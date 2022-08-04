@@ -31,7 +31,8 @@ class BucketingManager extends DecisionManager {
   }
 
   @override
-  Future<Campaigns> getCampaigns(String envId, String visitorId, Map<String, Object> context) async {
+  Future<Campaigns> getCampaigns(
+      String envId, String visitorId, String? anonymousId, Map<String, Object> context) async {
     // Read File before
     String jsonString = await _readFile().catchError((error) {
       Flagship.logger(Level.ALL, "Error on reading the saved bucketing or the file doesn't exist");

@@ -6,7 +6,7 @@ import 'package:flagship/visitor.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  var v1 = Visitor(ConfigBuilder().build(), "user1", {"key1": "val1", "key2": "val2"});
+  var v1 = Visitor(ConfigBuilder().build(), "user1", true, {"key1": "val1", "key2": "val2"});
 
   v1.flagshipDelegate.onUpdateState(Status.READY);
   group('Visitor Ready ', () {

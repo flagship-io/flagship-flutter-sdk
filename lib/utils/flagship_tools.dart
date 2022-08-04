@@ -17,4 +17,8 @@ class FlagshipTools {
       return false;
     }
   }
+
+  static generateFlagshipId() {
+    return "azazazazazaz";
+  }
 }
