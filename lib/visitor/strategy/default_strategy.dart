@@ -1,5 +1,3 @@
-import 'dart:html';
-
 import 'package:flagship/hits/activate.dart';
 import 'package:flagship/hits/event.dart';
 import 'package:flagship/hits/hit.dart';

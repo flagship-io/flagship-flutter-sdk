@@ -48,7 +48,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
     "bucketingKey": "condition1"
   };
 
-  bool isApiMode = false;
+  bool isApiMode = true;
   bool isAuthenticate = false;
   bool isConsented = true;
 
@@ -90,6 +90,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
             newVisitor = Flagship.newVisitor(visitorIdController.text)
                 .withContext(visitorContext)
                 .hasConsented(isConsented)
+                .isAuthenticated(this.isAuthenticate)
                 .build();
             // Set current visitor singleton instance for future use
             Flagship.setCurrentVisitor(newVisitor);
@@ -228,26 +229,25 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
                 ],
               ),
               SizedBox(height: _spaceBetweenInput),
-
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.start,
-              //   children: [
-              //     Expanded(
-              //         child: Text(
-              //       "Authenticate",
-              //       style: TextStyle(color: Colors.white),
-              //     )),
-              //     Container(
-              //         child: Switch.adaptive(
-              //       value: isAuthenticate,
-              //       onChanged: (val) {
-              //         setState(() {
-              //           isAuthenticate = val;
-              //         });
-              //       },
-              //     )),
-              //   ],
-              // ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Expanded(
+                      child: Text(
+                    "Authenticate",
+                    style: TextStyle(color: Colors.white),
+                  )),
+                  Container(
+                      child: Switch.adaptive(
+                    value: isAuthenticate,
+                    onChanged: (val) {
+                      setState(() {
+                        isAuthenticate = val;
+                      });
+                    },
+                  )),
+                ],
+              ),
               SizedBox(height: _spaceBetweenInput * 10),
               SizedBox(
                   width: double.infinity,

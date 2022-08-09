@@ -1,3 +1,5 @@
+import 'package:flagship/flagship.dart';
+import 'package:flagship_qa/widgets/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import './widgets/configuration.dart';
@@ -31,14 +33,6 @@ class MyApp extends StatelessWidget {
 }
 
 class MainScreen extends StatefulWidget {
-  /// List of widget
-  final List<Widget> listWidgets = [
-    Configuration(),
-    // User(),
-    Modifications(),
-    Hits()
-  ];
-
   MainScreen({title = ""});
 
   @override
@@ -46,21 +40,36 @@ class MainScreen extends StatefulWidget {
 }
 
 class MainScreenState extends State<MainScreen> {
+  User xpcUser = User(null);
+
+  /// List of widget
+  late List<Widget> listWidgets;
+  @override
+  void initState() {
+    listWidgets = [Configuration(), xpcUser, Modifications(), Hits()];
+    super.initState();
+  }
+
   int _selectedIndex = 0;
 
   void _onTap(int newIndex) {
     setState(() {
       _selectedIndex = newIndex;
+
+      if (_selectedIndex == 1) {
+        /// The user item for xpc
+        xpcUser.update(Flagship.sharedInstance().currentVisitor);
+      }
     });
   }
 
-  final List<BottomNavigationBarItem> items = [
+  List<BottomNavigationBarItem> items = [
     BottomNavigationBarItem(
       icon: Icon(Icons.settings),
       label: "configuration",
       backgroundColor: Colors.blueGrey,
     ),
-    // BottomNavigationBarItem(icon: Icon(Icons.person), label: "User", backgroundColor: Colors.blueGrey),
+    BottomNavigationBarItem(icon: Icon(Icons.person), label: "User", backgroundColor: Colors.blueGrey),
     BottomNavigationBarItem(icon: Icon(Icons.flag), label: "Modifications", backgroundColor: Colors.blueGrey),
     BottomNavigationBarItem(icon: Icon(Icons.api), label: "Hits", backgroundColor: Colors.blueGrey)
   ];
@@ -76,12 +85,12 @@ class MainScreenState extends State<MainScreen> {
         selectedItemColor: Colors.red[800],
         onTap: _onTap,
       ),
-      body: Center(
-        child: IndexedStack(
-          children: widget.listWidgets,
-          index: _selectedIndex,
-        ),
-      ),
+      body: Center(child: listWidgets.elementAt(_selectedIndex)
+          // child: IndexedStack(
+          //   children: listWidgets,
+          //   index: _selectedIndex,
+          // ),
+          ),
     );
   }
 }
