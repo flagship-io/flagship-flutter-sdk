@@ -43,11 +43,11 @@ class PanicStrategy extends DefaultStrategy {
 
   @override
   authenticateVisitor(String visitorId) {
-    // TODO: add logs
+    Flagship.logger(Level.INFO, PANIC_AUTHENTICATE);
   }
 
   @override
   unAuthenticateVisitor() {
-    // TODO: add logs
+    Flagship.logger(Level.INFO, PANIC_UNAUTHENTICATE);
   }
 }

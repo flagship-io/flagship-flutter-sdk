@@ -34,7 +34,7 @@ class ApiManager extends DecisionManager {
     Map<String, Object> params = {"visitorId": visitorId, "context": context, "trigger_hit": false};
     // add xpc inofs if needed
     if (anonymousId != null) {
-      params.addEntries({anonymousId: "anonymousId"}.entries);
+      params.addEntries({"anonymousId": anonymousId}.entries);
     }
     // Create data to post
     Object data = json.encode(params);

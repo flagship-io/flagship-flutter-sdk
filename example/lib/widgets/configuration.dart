@@ -270,6 +270,6 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   }
 
   String _createRandomUser() {
-    return Random().nextInt(100000).toString() + 'user';
+    return 'user_' + Random().nextInt(100).toString();
   }
 }

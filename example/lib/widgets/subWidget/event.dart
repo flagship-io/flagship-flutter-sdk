@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/hits/event.dart';

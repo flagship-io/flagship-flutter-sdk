@@ -32,7 +32,8 @@ class DefaultStrategy implements IVisitor {
   Future<void> _sendActivate(Modification pModification) async {
     // Construct the activate hit
     // Refractor later the envId
-    Activate activateHit = Activate(pModification, visitor.visitorId, Flagship.sharedInstance().envId ?? "");
+    Activate activateHit =
+        Activate(pModification, visitor.visitorId, visitor.anonymousId, Flagship.sharedInstance().envId ?? "");
 
     await visitor.trackingManager.sendActivate(activateHit);
   }
@@ -171,7 +172,7 @@ class DefaultStrategy implements IVisitor {
         visitor.visitorId = pVisitorId;
       }
     } else {
-      /// TODO add logs
+      Flagship.logger(Level.ALL, "AuthenticateVisitor method will be ignored in Bucketing configuration");
     }
   }
 
@@ -183,7 +184,7 @@ class DefaultStrategy implements IVisitor {
         visitor.anonymousId = null;
       }
     } else {
-      /// TODO add logs
+      Flagship.logger(Level.ALL, "unAuthenticateVisitor method will be ignored in Bucketing configuration");
     }
   }
 }
