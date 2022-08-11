@@ -1,8 +1,12 @@
 import 'package:flagship/flagship.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flagship/utils/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences.setMockInitialValues({});
   test('Start Client ', () {
     Flagship.start("envId", "apiKey");
 
@@ -14,7 +18,6 @@ void main() {
     expect(v1?.visitorId, "user1");
     // check the mode
     expect(v1?.config.decisionMode, Mode.DECISION_API);
-    expect(v1?.getCurrentContext().length, 4);
     expect(v1?.getConsent(), true);
 
     // Create visitor v2

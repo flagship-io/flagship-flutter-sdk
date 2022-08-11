@@ -1,11 +1,14 @@
 import 'package:flagship/decision/api_manager.dart';
 import 'package:flagship/flagship.dart';
+import 'package:flagship/flagshipContext/flagship_context_manager.dart';
 import 'package:flagship/flagship_version.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'service_test.mocks.dart';
 import 'package:flagship/api/service.dart';
 import 'package:flagship/flagship_config.dart';
@@ -14,6 +17,8 @@ import 'test_tools.dart';
 
 @GenerateMocks([Service])
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences.setMockInitialValues({});
   Map<String, String> fsHeaders = {
     "x-api-key": "apiKey",
     "x-sdk-client": "flutter",
@@ -21,7 +26,11 @@ void main() {
     "Content-type": "application/json"
   };
 
-  Object data = json.encode({"visitorId": "visitorId", "context": {}, "trigger_hit": false});
+  Map<String, dynamic> presetContext = FlagshipContextManager.getPresetContextForApp();
+  Map<String, dynamic> jsonData = {"visitorId": "visitorId", "context": presetContext, "trigger_hit": false};
+  Object data = json.encode(jsonData);
+
+  //Object data = json.encode({"visitorId": "visitorId", "context": {}, "trigger_hit": false});
 
   MockService fakeService = MockService();
   ApiManager fakeApi = ApiManager(fakeService);

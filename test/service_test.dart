@@ -1,12 +1,15 @@
 import 'package:flagship/decision/api_manager.dart';
 import 'package:flagship/flagship.dart';
+import 'package:flagship/flagshipContext/flagship_context_manager.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/flagship_version.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'service_test.mocks.dart';
 import 'package:flagship/api/service.dart';
 import 'test_tools.dart';
@@ -15,6 +18,8 @@ import 'test_tools.dart';
 // Create new instances of this class in each test.
 @GenerateMocks([Service])
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences.setMockInitialValues({});
   Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey");
   Map<String, String> fsHeaders = {
     "x-api-key": "apiKey",

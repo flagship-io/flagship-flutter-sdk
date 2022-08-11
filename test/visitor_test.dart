@@ -3,16 +3,19 @@ import 'package:flagship/flagship_config.dart';
 import 'package:flagship/model/modification.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/visitor.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences.setMockInitialValues({});
   var v1 = Visitor(ConfigBuilder().build(), "user1", true, {"key1": "val1", "key2": "val2"});
 
   v1.flagshipDelegate.onUpdateState(Status.READY);
   group('Visitor Ready ', () {
     test('Visitor instance should match with inputs constructor and default values', () {
       expect(v1.visitorId, "user1");
-      expect(v1.getCurrentContext().length, 2);
       expect(v1.getCurrentContext()["key1"], "val1");
       expect(v1.config.decisionMode, Mode.DECISION_API);
       expect(v1.config.timeout, 2000);
@@ -48,13 +51,10 @@ void main() {
       expect(v1.getCurrentContext()["valueDouble"], 12.6);
     });
 
-    test('length for context ', () {
-      expect(v1.getCurrentContext().length, 6);
-    });
-
     test('test none authorized type  ', () {
+      int oldLength = v1.getContext().length;
       v1.updateContext("valueObject", Object());
-      expect(v1.getCurrentContext().length, 6);
+      expect(v1.getCurrentContext().length, oldLength);
       v1.clearContext();
       expect(v1.getCurrentContext().length, 0);
     });

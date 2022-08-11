@@ -1,8 +1,12 @@
 import 'package:flagship/flagship.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flagship/hits/event.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences.setMockInitialValues({});
   test('Test API with bad envId format', () async {
     Flagship.start("bkk9g", "apiKey");
 
