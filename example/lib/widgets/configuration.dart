@@ -18,12 +18,12 @@ class Configuration extends StatefulWidget {
 
 class _ConfigurationState extends State<Configuration> with ShowDialog {
   // keys
-  // String apiKey = "DxAcxlnRB9yFBZYtLDue1q01dcXZCw6aM49CQB23";
-  // String envId = "bkk9glocmjcg0vtmdlng";
+  String apiKey = "FARqsfSheNoWjPPuMmmosdXcxixwUctiNbrfbPBz";
+  String envId = "c99tlv98gt6g16r9pu60";
 
   // Raph
-  String apiKey = "Q6FDmj6F188nh75lhEato2MwoyXDS7y34VrAL4Aa";
-  String envId = "bkk4s7gcmjcg07fke9dg";
+  //String apiKey = "Q6FDmj6F188nh75lhEato2MwoyXDS7y34VrAL4Aa";
+  //String envId = "bkk4s7gcmjcg07fke9dg";
   final int defaultTimeout = 2000;
   final int defaultPollingTime = 60;
 
@@ -45,10 +45,11 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   final Map<String, Object> initialVisitorContext = {
     "isVipClient": true,
     "qa_getflag": true,
-    "bucketingKey": "condition1"
+    "bucketingKey": "condition1",
+    "QA": true
   };
 
-  bool isApiMode = true;
+  bool isApiMode = false;
   bool isAuthenticate = false;
   bool isConsented = true;
 

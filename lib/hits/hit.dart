@@ -93,10 +93,10 @@ class BaseHit extends Hit {
     Map<String, String> tupleId = new Map<String, String>();
     if (this.anonymousId != null) {
       // envoyer: cuid = visitorId, et vid=anonymousId
-      tupleId.addEntries({this.visitorId: "cuid"}.entries);
-      tupleId.addEntries({this.anonymousId ?? "": "vid"}.entries);
+      tupleId.addEntries({"cuid": this.visitorId}.entries);
+      tupleId.addEntries({"vid": this.anonymousId ?? ""}.entries);
     } else {
-      tupleId.addEntries({this.visitorId: "vid"}.entries);
+      tupleId.addEntries({"vid": this.visitorId}.entries);
     }
     return tupleId;
   }
