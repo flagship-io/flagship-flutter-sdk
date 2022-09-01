@@ -71,26 +71,30 @@ class TargetingManager {
   }
 
   bool checkTargetingForList(dynamic currentValue, FSOperator opType, List<dynamic> listAudience) {
-    // Chekc the type list before
+    // Check the type list before
     bool isOkay = false;
-    int result = 0;
+    bool isTargetingOkayForList = true;
     for (dynamic subAudienceValue in listAudience) {
       isOkay = checkCondition(currentValue, opType, subAudienceValue);
       // For those operator, we use  --- OR ---
       if (opType == FSOperator.CONTAINS || opType == FSOperator.EQUALS) {
         if (isOkay == true) {
-          return true;
+          return true; // Exit no need to check others
         } else {
-          result = 1;
+          isTargetingOkayForList = false;
         }
+        // For those operator, we use  --- AND ---
       } else if (opType == FSOperator.NOT_EQUALS || opType == FSOperator.NOT_CONTAINS) {
-        result += isOkay ? 0 : 1;
+        if (isOkay == false) {
+          return false; // Exit No need to chekc others
+        }
       } else {
-        //  eturn false for others operator
-        return false;
+        // Return false for others operator
+        isTargetingOkayForList = false;
       }
     }
-    return (result == 0);
+    return isTargetingOkayForList;
+    //  return (result == 0);
   }
 
   //... CONDITIONS ...//
@@ -183,24 +187,11 @@ class TargetingManager {
   }
 
   static FSOperator createOperator(String raw) {
-    if (raw == 'EQUALS') {
-      return FSOperator.EQUALS;
-    } else if (raw == "NOT_EQUALS") {
-      return FSOperator.NOT_EQUALS;
-    } else if (raw == "GREATER_THAN") {
-      return FSOperator.GREATER_THAN;
-    } else if (raw == "GREATER_THAN_OR_EQUALS") {
-      return FSOperator.GREATER_THAN_OR_EQUALS;
-    } else if (raw == "LOWER_THAN") {
-      return FSOperator.LOWER_THAN;
-    } else if (raw == "LOWER_THAN_OR_EQUALS") {
-      return FSOperator.LOWER_THAN_OR_EQUALS;
-    } else if (raw == "CONTAINS") {
-      return FSOperator.CONTAINS;
-    } else if (raw == "NOT_CONTAINS") {
-      return FSOperator.NOT_CONTAINS;
-    } else {
-      return FSOperator.Unknown;
+    for (var value in FSOperator.values) {
+      if (value.toString().toString().split('.').last == raw) {
+        return value;
+      }
     }
+    return FSOperator.Unknown;
   }
 }

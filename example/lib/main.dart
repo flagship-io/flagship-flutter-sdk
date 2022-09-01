@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flagship/flagship.dart';
 import 'package:flagship_qa/widgets/user.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +12,7 @@ import './widgets/modifications_json_screen.dart';
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
+  HttpOverrides.global = MyHttpOverrides();
   runApp(MyApp());
 }
 
@@ -92,5 +95,14 @@ class MainScreenState extends State<MainScreen> {
           // ),
           ),
     );
+  }
+}
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    HttpClient htClient = super.createHttpClient(context)
+      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+    return htClient;
   }
 }

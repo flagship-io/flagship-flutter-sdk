@@ -7,6 +7,7 @@ import 'package:flagship/model/campaigns.dart';
 import 'package:flagship/model/variation.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:murmurhash/murmurhash.dart';
+import 'package:collection/collection.dart';
 
 extension BucketingProcess on BucketingManager {
   Campaigns bucketVariations(String visitorId, Bucketing scriptBucket, Map<String, dynamic> context) {
@@ -30,21 +31,26 @@ extension BucketingProcess on BucketingManager {
         if (targetManager.isTargetingGroupIsOkay(itemVarGroup.targeting) == true) {
           Flagship.logger(Level.DEBUG, "The Targeting for " + itemVarGroup.idVariationGroup + "is OK 👍");
 
-          String? varId = selectVariationWithMurMurHash(visitorId, itemVarGroup);
+          String? varId = selectIdVariationWithMurMurHash(visitorId, itemVarGroup);
 
           if (varId != null) {
             // Create variation group
             Campaign camp = Campaign(itemCamp.idCampaign, itemVarGroup.idVariationGroup, itemCamp.type, itemCamp.slug);
             Flagship.logger(Level.DEBUG, "#### The variation choosen is $varId ###########");
 
-            for (Variation itemVar in itemVarGroup.variations) {
-              if (itemVar.idVariation == varId) {
-                camp.variation = itemVar;
-              }
-            }
+            var matchedVariation = itemVarGroup.variations.firstWhereOrNull((v) => v.idVariation == varId);
 
-            /// Add this camp to the result
-            result.campaigns.add(camp);
+            if (matchedVariation != null) {
+              camp.variation = matchedVariation;
+
+              /// Add this camp to the result
+              result.campaigns.add(camp);
+            }
+            // for (Variation itemVar in itemVarGroup.variations) {
+            //   if (itemVar.idVariation == varId) {
+            //     camp.variation = itemVar;
+            //   }
+            // }
           }
         } else {
           Flagship.logger(Level.DEBUG, "The Targeting for " + itemVarGroup.idVariationGroup + "is NOT OK 👎 ");
@@ -54,7 +60,7 @@ extension BucketingProcess on BucketingManager {
     return result;
   }
 
-  String? selectVariationWithMurMurHash(String visitorId, VariationGroup varGroup) {
+  String? selectIdVariationWithMurMurHash(String visitorId, VariationGroup varGroup) {
     int hashAlloc;
     // We calculate the Hash allocation by the combination of : visitorId + idVariationGroup
     String combinedId = varGroup.idVariationGroup + visitorId;

@@ -34,25 +34,29 @@ class BucketingManager extends DecisionManager {
   Future<Campaigns> getCampaigns(
       String envId, String visitorId, String? anonymousId, Map<String, Object> context) async {
     // Read File before
-    String jsonString = await _readFile().catchError((error) {
+    String? jsonString = await _readFile().catchError((error) {
       Flagship.logger(Level.ALL, "Error on reading the saved bucketing or the file doesn't exist");
-      throw Exception('Flagship, Failed to synchronize');
+      return null;
     });
+    if (jsonString != null) {
+      Bucketing bucketingObject = Bucketing.fromJson(json.decode(jsonString));
 
-    Bucketing bucketingObject = Bucketing.fromJson(json.decode(jsonString));
-
-    // Send Keys context when the consent is true && the panic mode is not activated
-    if (isConsent() && bucketingObject.panic == false) {
-      // Send the context
-      _sendKeyContext(envId, visitorId, context);
+      // Send Keys context when the consent is true && the panic mode is not activated
+      if (isConsent() && bucketingObject.panic == false) {
+        // Send the context
+        _sendKeyContext(envId, visitorId, context);
+      }
+      return bucketVariations(visitorId, bucketingObject, context);
+    } else {
+      Flagship.logger(Level.ALL, "Flagship, Failed to synchronize");
+      return Campaigns(visitorId, false, []);
     }
-    return bucketVariations(visitorId, bucketingObject, context);
   }
 
   _downloadScript() async {
     SharedPreferences prefs = await _prefs;
     // Create url
-    String urlString = Endpoints.BucketingScript.replaceFirst("%s", Flagship.sharedInstance().envId ?? "");
+    String urlString = Endpoints.BUCKETING_SCRIPT.replaceFirst("%s", Flagship.sharedInstance().envId ?? "");
 
     var response = await this.service.sendHttpRequest(
         RequestType.Get, urlString, {"if-modified-since": prefs.getString(lastModfiedKey) ?? ""}, null,
@@ -117,7 +121,7 @@ class BucketingManager extends DecisionManager {
   }
 
 // Read the saved file
-  Future<String> _readFile() async {
+  Future<String?> _readFile() async {
     final directory = await getApplicationDocumentsDirectory();
     File jsonFile = File(directory.path + bucketingFolder + fileName);
     if (jsonFile.existsSync() == true) {
