@@ -86,7 +86,7 @@ class TargetingManager {
         // For those operator, we use  --- AND ---
       } else if (opType == FSOperator.NOT_EQUALS || opType == FSOperator.NOT_CONTAINS) {
         if (isOkay == false) {
-          return false; // Exit No need to chekc others
+          return false; // Exit No need to check others
         }
       } else {
         // Return false for others operator
@@ -94,7 +94,6 @@ class TargetingManager {
       }
     }
     return isTargetingOkayForList;
-    //  return (result == 0);
   }
 
   //... CONDITIONS ...//
