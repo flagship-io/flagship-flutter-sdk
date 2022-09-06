@@ -48,7 +48,7 @@ class FlagshipContextManager {
     }
   }
 
-  bool chekcValidity(dynamic valueToSet) {
-    return true;
-  }
+  // bool chekcValidity(dynamic valueToSet) {
+  //   Implement later
+  // }
 }

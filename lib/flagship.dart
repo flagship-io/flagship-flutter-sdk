@@ -6,8 +6,6 @@ import 'package:flagship/utils/device_tools.dart';
 import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import 'flagship_delegate.dart';
 
 enum Status {
@@ -51,7 +49,7 @@ class Flagship with FlagshipDelegate {
   // apiKey: Api key (provided by flagship)
   static start(String envId, String apiKey, {FlagshipConfig? config}) async {
     _singleton._status = Status.NOT_INITIALIZED;
-    FSDevice.loadDeviceInfo();
+    await FSDevice.loadDeviceInfo();
     if (FlagshipTools.chekcXidEnvironment(envId)) {
       _singleton.apiKey = apiKey;
       _singleton.envId = envId;

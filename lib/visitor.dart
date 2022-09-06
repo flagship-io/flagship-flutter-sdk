@@ -59,7 +59,7 @@ class Visitor {
   /// context : Map that represent the conext for the visitor
   Visitor(this.config, this.visitorId, this._isAuthenticated, Map<String, Object> context, {bool hasConsented = true}) {
     if (_isAuthenticated == true) {
-      this.anonymousId = FlagshipTools.generateFlagshipId(); // TODO implement generateFlagshipId()
+      this.anonymousId = FlagshipTools.generateFlagshipId();
     } else {
       anonymousId = null;
     }
