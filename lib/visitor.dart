@@ -234,8 +234,8 @@ class VisitorBuilder {
     return this;
   }
 
-  isAuthenticated(bool autenticated) {
-    _isAuthenticated = autenticated;
+  isAuthenticated(bool authenticated) {
+    _isAuthenticated = authenticated;
     return this;
   }
 
