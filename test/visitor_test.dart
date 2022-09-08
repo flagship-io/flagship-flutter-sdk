@@ -119,5 +119,17 @@ void main() {
       // ignore: deprecated_member_use_from_same_package
       expect(v1.getModification("null", "null"), "null");
     });
+
+    test("Shred visitor", () {
+      Flagship.newVisitor("shared").build();
+      expect(Flagship.getCurrentVisitor()?.visitorId, "shared");
+
+      Flagship.newVisitor("sharedBis", instanceType: Instance.SHARED_INSTANCE).build();
+      expect(Flagship.getCurrentVisitor()?.visitorId, "sharedBis");
+
+      Visitor notShared = Flagship.newVisitor("notShared", instanceType: Instance.NEW_INSTANCE).build();
+      expect(Flagship.getCurrentVisitor()?.visitorId, "sharedBis");
+      expect(notShared.visitorId, "notShared");
+    });
   });
 }

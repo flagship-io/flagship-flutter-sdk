@@ -68,8 +68,8 @@ class Flagship with FlagshipDelegate {
   }
 
   /// Create new visitor
-  static VisitorBuilder newVisitor(String visitorId) {
-    return VisitorBuilder(visitorId);
+  static VisitorBuilder newVisitor(String visitorId, {Instance instanceType = Instance.SHARED_INSTANCE}) {
+    return VisitorBuilder(visitorId, instanceType: instanceType);
   }
 
   // Set the current visitor singleton

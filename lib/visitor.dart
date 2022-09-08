@@ -14,6 +14,16 @@ import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor/visitor_delegate.dart';
 import 'flagship_delegate.dart';
 
+enum Instance {
+  // The  newly created visitor instance will be returned and saved into the Flagship singleton. Call `Flagship.getVisitor()` to retrieve the instance.
+  // This option should be adopted on applications that handle only one visitor at the same time.
+  SHARED_INSTANCE,
+
+  // The newly created visitor instance wont be saved and will simply be returned. Any previous visitor instance will have to be recreated.
+  //  This option should be adopted on applications that handle multiple visitors at the same time.
+  NEW_INSTANCE
+}
+
 class Visitor {
   // VisitorId
   String visitorId;
@@ -200,6 +210,8 @@ class Visitor {
 class VisitorBuilder {
   final String visitorId;
 
+  final Instance instanceType;
+
 // Context
   Map<String, Object> _context = {};
 
@@ -209,7 +221,7 @@ class VisitorBuilder {
 // Xpc by default false
   bool _isAuthenticated = false;
 
-  VisitorBuilder(this.visitorId);
+  VisitorBuilder(this.visitorId, {this.instanceType = Instance.SHARED_INSTANCE});
 
 // Context
   VisitorBuilder withContext(Map<String, Object> context) {
@@ -228,8 +240,13 @@ class VisitorBuilder {
   }
 
   Visitor build() {
-    return Visitor(
+    Visitor newVisitor = Visitor(
         Flagship.sharedInstance().getConfiguration() ?? ConfigBuilder().build(), visitorId, _isAuthenticated, _context,
         hasConsented: _hasConsented);
+    if (this.instanceType == Instance.SHARED_INSTANCE) {
+      //Set this visitor as shared instance
+      Flagship.setCurrentVisitor(newVisitor);
+    }
+    return newVisitor;
   }
 }
