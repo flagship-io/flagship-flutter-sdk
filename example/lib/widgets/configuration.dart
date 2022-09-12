@@ -1,6 +1,8 @@
+import 'package:flagship/flagshipContext/flagship_context.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
+import 'package:flagship/visitor.dart';
 import 'package:flagship_qa/mixins/dialog.dart';
 import 'package:flutter/material.dart';
 import './FSinputField.dart';
@@ -21,9 +23,9 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   String apiKey = "FARqsfSheNoWjPPuMmmosdXcxixwUctiNbrfbPBz";
   String envId = "c99tlv98gt6g16r9pu60";
 
-  // Raph
-  //String apiKey = "Q6FDmj6F188nh75lhEato2MwoyXDS7y34VrAL4Aa";
-  //String envId = "bkk4s7gcmjcg07fke9dg";
+  // adel
+  //String apiKey = "DxAcxlnRB9yFBZYtLDue1q01dcXZCw6aM49CQB23";
+  //String envId = "bkk9glocmjcg0vtmdlng";
   final int defaultTimeout = 2000;
   final int defaultPollingTime = 60;
 
@@ -46,7 +48,9 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
     "isVipClient": true,
     "qa_getflag": true,
     "bucketingKey": "condition1",
-    "QA": true
+    "QA": true,
+    "qaKeyString": "fffffaaa",
+    "qaKeyNumber": 40
   };
 
   bool isApiMode = false;
@@ -272,5 +276,68 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
 
   String _createRandomUser() {
     return 'user_' + Random().nextInt(100).toString();
+  }
+
+  doMe() {
+// Create a visitor
+
+    Visitor visitor = Flagship.newVisitor("random_Id").withContext({"isVip": true}).build();
+
+// Call the authenticate function
+
+    visitor.authenticate("random_Id");
+
+// Fetch the flags to update the visitor decision
+
+    visitor.fetchFlags().whenComplete(() {
+      // ... Do things ....
+    });
+
+// If you want to unauthenticate the visitor
+
+    visitor.unauthenticate();
+
+// Fetch the flags to update the visitor decision
+
+    visitor.fetchFlags().whenComplete(() {
+      // ... Do things ....
+    });
+
+//////////////////////////////////////////////
+/////// Start sdk with default options ///////
+//////////////////////////////////////////////
+
+    Flagship.start("your_env_id", "your_api_key");
+
+//////////////////////////////////////////////
+/////// Start sdk with custom options  ///////
+//////////////////////////////////////////////
+
+// - timeout   = 1500 ms
+// - level     = warning message
+// - activated = true
+// - statusListener callback
+
+// create a config :
+
+//////////////////////////////////////////////
+/////// Start SDK with custom options  ///////
+//////////////////////////////////////////////
+
+// - timeout   = 1500 ms
+// - level     = warning message
+// - statusListener callback
+
+    FlagshipConfig customConfig = ConfigBuilder()
+        .withMode(Mode.DECISION_API)
+        .withStatusListener((newStatus) {
+          // Do things when status change ...
+        })
+        .withTimeout(1500)
+        .withLogLevel(Level.WARNING)
+        .build();
+
+// Start SDK
+    Flagship.start("envId", "apiKey", config: customConfig);
   }
 }

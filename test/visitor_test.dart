@@ -1,4 +1,5 @@
 import 'package:flagship/flagship.dart';
+import 'package:flagship/flagshipContext/flagship_context.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/model/modification.dart';
 import 'package:flagship/utils/constants.dart';
@@ -57,6 +58,22 @@ void main() {
       expect(v1.getCurrentContext().length, oldLength);
       v1.clearContext();
       expect(v1.getCurrentContext().length, 0);
+    });
+
+    test('test with predefined context', () {
+      v1.updateFlagshipContext(FlagshipContext.DEVICE_TYPE, "QA_Type");
+      int l1 = v1.getContext().length;
+      v1.updateFlagshipContext(FlagshipContext.DEVICE_MODEL, 23);
+      v1.updateFlagshipContext(FlagshipContext.LOCATION_LAT, "1234");
+      v1.updateFlagshipContext(FlagshipContext.FIRST_TIME_INIT, 1);
+      expect(v1.getContext().length, l1); //The length still the same as before, because the update is not valide
+
+      var c = v1.getContext();
+
+      expect(v1.getContext()["sdk_deviceType"], "QA_Type"); //The value still the same
+      // Update with valide value
+      v1.updateFlagshipContext(FlagshipContext.DEVICE_TYPE, "QA_TypelBis");
+      expect(v1.getContext()["sdk_deviceType"], "QA_TypelBis"); //The value should be updated
     });
 
     test('test get modification ', () {
@@ -124,7 +141,7 @@ void main() {
       Flagship.newVisitor("shared").build();
       expect(Flagship.getCurrentVisitor()?.visitorId, "shared");
 
-      Flagship.newVisitor("sharedBis", instanceType: Instance.SHARED_INSTANCE).build();
+      Flagship.newVisitor("sharedBis", instanceType: Instance.SINGLE_INSTANCE).build();
       expect(Flagship.getCurrentVisitor()?.visitorId, "sharedBis");
 
       Visitor notShared = Flagship.newVisitor("notShared", instanceType: Instance.NEW_INSTANCE).build();

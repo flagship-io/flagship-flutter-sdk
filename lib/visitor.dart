@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flagship/flagshipContext/flagship_context.dart';
 import 'package:flagship/flagshipContext/flagship_context_manager.dart';
 import 'package:flagship/hits/event.dart';
 import 'package:flagship/model/flag.dart';
@@ -17,7 +18,7 @@ import 'flagship_delegate.dart';
 enum Instance {
   // The  newly created visitor instance will be returned and saved into the Flagship singleton. Call `Flagship.getVisitor()` to retrieve the instance.
   // This option should be adopted on applications that handle only one visitor at the same time.
-  SHARED_INSTANCE,
+  SINGLE_INSTANCE,
 
   // The newly created visitor instance wont be saved and will simply be returned. Any previous visitor instance will have to be recreated.
   //  This option should be adopted on applications that handle multiple visitors at the same time.
@@ -116,6 +117,16 @@ class Visitor {
   void updateContext<T>(String key, T value) {
     // Delegate the action to strategy
     _visitorDelegate.updateContext(key, value);
+  }
+
+  /// Update with predefined context
+  void updateFlagshipContext<T>(FlagshipContext flagshipContext, T value) {
+    if (FlagshipContextManager.chekcValidity(flagshipContext, value)) {
+      _visitorDelegate.updateContext(rawValue(flagshipContext), value);
+    } else {
+      Flagship.logger(Level.ERROR,
+          "Skip updating the context with predefined context ${flagshipContext.name} ..... the value is not valid");
+    }
   }
 
   /// Get Flag object
@@ -221,7 +232,7 @@ class VisitorBuilder {
 // Xpc by default false
   bool _isAuthenticated = false;
 
-  VisitorBuilder(this.visitorId, {this.instanceType = Instance.SHARED_INSTANCE});
+  VisitorBuilder(this.visitorId, {this.instanceType = Instance.SINGLE_INSTANCE});
 
 // Context
   VisitorBuilder withContext(Map<String, Object> context) {
@@ -243,7 +254,7 @@ class VisitorBuilder {
     Visitor newVisitor = Visitor(
         Flagship.sharedInstance().getConfiguration() ?? ConfigBuilder().build(), visitorId, _isAuthenticated, _context,
         hasConsented: _hasConsented);
-    if (this.instanceType == Instance.SHARED_INSTANCE) {
+    if (this.instanceType == Instance.SINGLE_INSTANCE) {
       //Set this visitor as shared instance
       Flagship.setCurrentVisitor(newVisitor);
     }

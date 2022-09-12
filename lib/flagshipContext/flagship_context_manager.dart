@@ -48,7 +48,34 @@ class FlagshipContextManager {
     }
   }
 
-  // bool chekcValidity(dynamic valueToSet) {
-  //   Implement later
-  // }
+  static bool chekcValidity<T>(FlagshipContext type, T value) {
+    switch (type) {
+      // bool
+      case FlagshipContext.FIRST_TIME_INIT:
+        return (value is bool);
+      // String
+      case FlagshipContext.DEVICE_LOCALE:
+      case FlagshipContext.DEVICE_TYPE:
+      case FlagshipContext.DEVICE_MODEL:
+      case FlagshipContext.LOCATION_CITY:
+      case FlagshipContext.LOCATION_REGION:
+      case FlagshipContext.LOCATION_COUNTRY:
+      case FlagshipContext.OS_NAME:
+      case FlagshipContext.OS_VERSION_NAME:
+      case FlagshipContext.OS_VERSION_CODE:
+      case FlagshipContext.CARRIER_NAME:
+      case FlagshipContext.DEV_MODE:
+      case FlagshipContext.INTERNET_CONNECTION:
+      case FlagshipContext.APP_VERSION_NAME:
+      case FlagshipContext.FLAGSHIP_VERSION:
+      case FlagshipContext.INTERFACE_NAME:
+      case FlagshipContext.IP:
+        return (value is String);
+      // double
+      case FlagshipContext.LOCATION_LAT:
+      case FlagshipContext.LOCATION_LONG:
+      case FlagshipContext.APP_VERSION_CODE:
+        return (value is double);
+    }
+  }
 }
