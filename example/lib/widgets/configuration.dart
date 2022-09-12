@@ -49,7 +49,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
     "qa_getflag": true,
     "bucketingKey": "condition1",
     "QA": true,
-    "qaKeyString": "fffffaaa",
+    "qaKeyString": "beta",
     "qaKeyNumber": 40
   };
 
