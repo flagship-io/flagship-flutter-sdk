@@ -1,4 +1,6 @@
+import 'package:flagship/flagship.dart';
 import 'package:flagship/model/trageting.dart';
+import 'package:flagship/utils/logger/log_manager.dart';
 
 /// :nodoc:
 const String FS_USERS = "fs_users";
@@ -50,10 +52,9 @@ class TargetingManager {
 
       // Create the type operator
       FSOperator opType = createOperator(itemTarget.targetOperator);
-
-      // Special treatment for array
       bool isOkay = false;
 
+      // Special treatment for array
       if ((audienceValue is List<String>) ||
           (audienceValue is List<int>) ||
           (audienceValue is List<double>) ||
@@ -63,8 +64,11 @@ class TargetingManager {
         isOkay = checkCondition(currentContextValue, opType, audienceValue);
       }
 
+      Flagship.logger(Level.DEBUG,
+          "For the key \"${itemTarget.tragetKey}\" the condition: ( $currentContextValue ${opType.name} $audienceValue )${isOkay ? " is " : " is not "} satisfied");
+
       if (isOkay == false) {
-        return false;
+        return false; // if false no need to check others
       }
     }
     return true;

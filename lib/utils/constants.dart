@@ -17,8 +17,8 @@ const String CONTEXT_PARAM_ERROR = "params 'key' must be a non null String, and 
 const String PARSING_ERROR = "An error occured whil parsing ";
 
 // MODIFICATION
-const String SYNCHRONIZE_MODIFICATIONS = "SDK - synchronize modifications.";
-const String SYNCHRONIZE_MODIFICATIONS_RESULTS = "SDK - synchronized modifications are %s";
+const String SYNCHRONIZE_MODIFICATIONS = "SDK - Fetch flags.";
+const String SYNCHRONIZE_MODIFICATIONS_RESULTS = "SDK - fetched flags are %s";
 
 const String GET_MODIFICATION_ERROR =
     "An error occured while retreiving modification for key '%s'. Default value is returned.";

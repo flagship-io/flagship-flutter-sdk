@@ -50,7 +50,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
     "bucketingKey": "condition1",
     "QA": true,
     "qaKeyString": "beta",
-    "qaKeyNumber": 40
+    "qaKeyNumber": 2222
   };
 
   bool isApiMode = false;
@@ -302,6 +302,11 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
     visitor.fetchFlags().whenComplete(() {
       // ... Do things ....
     });
+
+    // Update the location country
+    visitor.updateFlagshipContext(FlagshipContext.LOCATION_COUNTRY, "FRANCE");
+    // Update the carrier name
+    visitor.updateFlagshipContext(FlagshipContext.CARRIER_NAME, "SFR");
 
 //////////////////////////////////////////////
 /////// Start sdk with default options ///////

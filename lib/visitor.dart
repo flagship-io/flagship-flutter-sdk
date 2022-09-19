@@ -119,7 +119,7 @@ class Visitor {
     _visitorDelegate.updateContext(key, value);
   }
 
-  /// Update with predefined context
+  // Update with predefined context
   void updateFlagshipContext<T>(FlagshipContext flagshipContext, T value) {
     if (FlagshipContextManager.chekcValidity(flagshipContext, value)) {
       _visitorDelegate.updateContext(rawValue(flagshipContext), value);
