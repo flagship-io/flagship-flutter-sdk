@@ -12,7 +12,9 @@ import '../widgets/context_screen.dart';
 import 'package:flagship/flagship.dart';
 
 class Configuration extends StatefulWidget {
-  Configuration();
+  bool isApiMode = true;
+  bool isAuthenticate = false;
+  bool isConsented = true;
 
   @override
   _ConfigurationState createState() => _ConfigurationState();
@@ -38,9 +40,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   @override
   void initState() {
     super.initState();
-
     visitorContext = Map<String, Object>.from(initialVisitorContext);
-
     visitorIdController.text = _createRandomUser();
   }
 
@@ -53,10 +53,6 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
     "qaKeyNumber": 2222
   };
 
-  bool isApiMode = false;
-  bool isAuthenticate = false;
-  bool isConsented = true;
-
   Map<String, Object> visitorContext = {};
 
   /// Reset filed
@@ -67,7 +63,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
       pollingTimeController.text = defaultPollingTime.toString();
       visitorIdController.text = _createRandomUser();
       visitorContext = initialVisitorContext;
-      isApiMode = true;
+      widget.isApiMode = true;
       Flagship.sharedInstance().onUpdateState(Status.NOT_INITIALIZED);
     });
   }
@@ -82,7 +78,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
     Flagship.logger(Level.ALL, '--------- Start with $visitorIdController.text ---------');
 
     FlagshipConfig config = ConfigBuilder()
-        .withMode(isApiMode ? Mode.DECISION_API : Mode.BUCKETING)
+        .withMode(widget.isApiMode ? Mode.DECISION_API : Mode.BUCKETING)
         .withStatusListener((newStatus) {
           print('--------- Callback with $newStatus ---------');
           var titleMsg = '';
@@ -94,8 +90,8 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
             // Create visitor if null
             newVisitor = Flagship.newVisitor(visitorIdController.text)
                 .withContext(visitorContext)
-                .hasConsented(isConsented)
-                .isAuthenticated(this.isAuthenticate)
+                .hasConsented(widget.isConsented)
+                .isAuthenticated(widget.isAuthenticate)
                 .build();
             // Set current visitor singleton instance for future use
             Flagship.setCurrentVisitor(newVisitor);
@@ -123,7 +119,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
 // Change Mode
   _changeMode() {
     setState(() {
-      isApiMode = !isApiMode;
+      widget.isApiMode = !widget.isApiMode;
     });
   }
 
@@ -131,9 +127,9 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   _consent() {
     // For now, disabled bucketing mode
     setState(() {
-      isConsented = !isConsented;
+      widget.isConsented = !widget.isConsented;
     });
-    Flagship.getCurrentVisitor()?.setConsent(isConsented);
+    Flagship.getCurrentVisitor()?.setConsent(widget.isConsented);
   }
 
   void _onTapContext(BuildContext ctx) {
@@ -210,10 +206,10 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
                   )),
                   Expanded(
                       child: ElevatedButton(
-                          onPressed: () => {_changeMode()}, child: Text(isApiMode ? "API" : "BUCKETING")))
+                          onPressed: () => {_changeMode()}, child: Text(widget.isApiMode ? "API" : "BUCKETING")))
                 ],
               ),
-              (isApiMode == true)
+              (widget.isApiMode == true)
                   ? SizedBox(height: _spaceBetweenInput)
                   : FSInputField("Polling Interval(s)", pollingTimeController, TextInputType.number),
               SizedBox(height: _spaceBetweenInput),
@@ -230,7 +226,8 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
                   )),
                   Expanded(
                       child: ElevatedButton(
-                          onPressed: () => {_consent()}, child: Text(isConsented ? "Consented" : "Not Consented")))
+                          onPressed: () => {_consent()},
+                          child: Text(widget.isConsented ? "Consented" : "Not Consented")))
                 ],
               ),
               SizedBox(height: _spaceBetweenInput),
@@ -244,10 +241,10 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
                   )),
                   Container(
                       child: Switch.adaptive(
-                    value: isAuthenticate,
+                    value: widget.isAuthenticate,
                     onChanged: (val) {
                       setState(() {
-                        isAuthenticate = val;
+                        widget.isAuthenticate = val;
                       });
                     },
                   )),
