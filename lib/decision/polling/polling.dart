@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:flagship/flagship.dart';
+import 'package:flagship/utils/logger/log_manager.dart';
+
 class Polling {
   final int intervalTimePolling;
 
@@ -17,7 +20,7 @@ class Polling {
   }
 
   stop() {
-    print("stop polling");
+    Flagship.logger(Level.DEBUG, "Stop polling");
     if (timer.isActive) {
       timer.cancel();
     }
