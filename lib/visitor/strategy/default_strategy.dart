@@ -32,8 +32,8 @@ class DefaultStrategy implements IVisitor {
   Future<void> _sendActivate(Modification pModification) async {
     // Construct the activate hit
     // Refractor later the envId
-    Activate activateHit = Activate(pModification, visitor.visitorId,
-        Flagship.sharedInstance().envId ?? "");
+    Activate activateHit =
+        Activate(pModification, visitor.visitorId, visitor.anonymousId, Flagship.sharedInstance().envId ?? "");
 
     await visitor.trackingManager.sendActivate(activateHit);
   }
@@ -63,15 +63,13 @@ class DefaultStrategy implements IVisitor {
   T getModification<T>(String key, T defaultValue, {bool activate = false}) {
     var ret = defaultValue;
 
-    bool hasSameType =
-        true; // When the Type is not the same the activate won't be sent
+    bool hasSameType = true; // When the Type is not the same the activate won't be sent
     if (visitor.modifications.containsKey(key)) {
       try {
         var modification = visitor.modifications[key];
 
         if (modification == null) {
-          Flagship.logger(
-              Level.INFO, GET_MODIFICATION_ERROR.replaceFirst("%s", key));
+          Flagship.logger(Level.INFO, GET_MODIFICATION_ERROR.replaceFirst("%s", key));
           return ret;
         }
         switch (T) {
@@ -103,8 +101,7 @@ class DefaultStrategy implements IVisitor {
           _sendActivate(modification);
         }
       } catch (exp) {
-        Flagship.logger(Level.INFO,
-            "an exception raised  $exp , will return a default value ");
+        Flagship.logger(Level.INFO, "an exception raised  $exp , will return a default value ");
       }
     }
     return ret;
@@ -120,8 +117,7 @@ class DefaultStrategy implements IVisitor {
         return null;
       }
     } else {
-      Flagship.logger(
-          Level.ERROR, GET_MODIFICATION_INFO_ERROR.replaceFirst("%s", key));
+      Flagship.logger(Level.ERROR, GET_MODIFICATION_INFO_ERROR.replaceFirst("%s", key));
       return null;
     }
   }
@@ -133,9 +129,7 @@ class DefaultStrategy implements IVisitor {
     Status state = Flagship.getStatus();
     try {
       var camp = await visitor.decisionManager.getCampaigns(
-          Flagship.sharedInstance().envId ?? "",
-          visitor.visitorId,
-          visitor.getContext());
+          Flagship.sharedInstance().envId ?? "", visitor.visitorId, visitor.anonymousId, visitor.getContext());
       // Clear the previous modifications
       visitor.modifications.clear();
       // Update panic value
@@ -147,15 +141,12 @@ class DefaultStrategy implements IVisitor {
         var modif = visitor.decisionManager.getModifications(camp.campaigns);
         visitor.modifications.addAll(modif);
         Flagship.logger(
-            Level.INFO,
-            SYNCHRONIZE_MODIFICATIONS_RESULTS.replaceFirst(
-                "%s", "${visitor.modifications.keys}"));
+            Level.INFO, SYNCHRONIZE_MODIFICATIONS_RESULTS.replaceFirst("%s", "${visitor.modifications.keys}"));
       }
       // Update the state for Flagship
       visitor.flagshipDelegate.onUpdateState(state);
     } catch (error) {
-      Flagship.logger(Level.EXCEPTIONS,
-          EXCEPTION.replaceFirst("%s", "${error.toString()}"));
+      Flagship.logger(Level.EXCEPTIONS, EXCEPTION.replaceFirst("%s", "${error.toString()}"));
     }
     return;
   }
@@ -171,5 +162,29 @@ class DefaultStrategy implements IVisitor {
     Consent hitConsent = Consent(hasConsented: isConsent);
     // Send hit ...
     visitor.sendHit(hitConsent);
+  }
+
+  @override
+  authenticateVisitor(String pVisitorId) {
+    if (visitor.config.decisionMode == Mode.DECISION_API) {
+      if (visitor.anonymousId == null) {
+        visitor.anonymousId = visitor.visitorId;
+        visitor.visitorId = pVisitorId;
+      }
+    } else {
+      Flagship.logger(Level.ALL, "AuthenticateVisitor method will be ignored in Bucketing configuration");
+    }
+  }
+
+  @override
+  unAuthenticateVisitor() {
+    if (visitor.config.decisionMode == Mode.DECISION_API) {
+      if (visitor.anonymousId != null) {
+        visitor.visitorId = visitor.anonymousId as String;
+        visitor.anonymousId = null;
+      }
+    } else {
+      Flagship.logger(Level.ALL, "unAuthenticateVisitor method will be ignored in Bucketing configuration");
+    }
   }
 }

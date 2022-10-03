@@ -68,11 +68,22 @@ class VisitorDelegate implements IVisitor {
   Future<void> sendHit(BaseHit hit) async {
     // set visitorId for hit
     hit.visitorId = visitor.visitorId;
+    hit.anonymousId = visitor.anonymousId;
     getStrategy().sendHit(hit);
   }
 
   @override
   void setConsent(bool isConsent) {
     getStrategy().setConsent(isConsent);
+  }
+
+  @override
+  authenticateVisitor(String visitorId) {
+    getStrategy().authenticateVisitor(visitorId);
+  }
+
+  @override
+  unAuthenticateVisitor() {
+    getStrategy().unAuthenticateVisitor();
   }
 }

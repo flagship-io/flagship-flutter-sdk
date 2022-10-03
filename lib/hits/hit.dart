@@ -1,15 +1,6 @@
 import 'package:flagship/flagship.dart';
 
-enum Type {
-  SCREENVIEW,
-  PAGEVIEW,
-  TRANSACTION,
-  ITEM,
-  EVENT,
-  ACTIVATION,
-  CONSENT,
-  NONE
-}
+enum Type { SCREENVIEW, PAGEVIEW, TRANSACTION, ITEM, EVENT, ACTIVATION, CONSENT, NONE }
 
 abstract class Hit {
   Map<String, Object> get bodyTrack;
@@ -22,6 +13,8 @@ class BaseHit extends Hit {
   // Required
   late String clientId;
   late String visitorId;
+  late String? anonymousId;
+
   String dataSource = "APP";
 
   /// User Ip
@@ -51,10 +44,13 @@ class BaseHit extends Hit {
   Map<String, Object> get communBodyTrack {
     var result = new Map<String, Object>();
 
-    result.addAll({"cid": clientId, "vid": visitorId, "ds": dataSource});
+    result.addAll({"cid": clientId, /*"vid": visitorId,*/ "ds": dataSource});
+
+    // ad xcpc informations
+    result.addEntries(_createTuple().entries);
 
     /// Refracto later
-    /// user ip
+    /// user ipx
     if (userIp != null) result["uip"] = dataSource;
 
     /// ScreenResolution
@@ -91,5 +87,17 @@ class BaseHit extends Hit {
       default:
     }
     return ret;
+  }
+
+  Map<String, String> _createTuple() {
+    Map<String, String> tupleId = new Map<String, String>();
+    if (this.anonymousId != null) {
+      // envoyer: cuid = visitorId, et vid=anonymousId
+      tupleId.addEntries({"cuid": this.visitorId}.entries);
+      tupleId.addEntries({"vid": this.anonymousId ?? ""}.entries);
+    } else {
+      tupleId.addEntries({"vid": this.visitorId}.entries);
+    }
+    return tupleId;
   }
 }

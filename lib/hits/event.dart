@@ -25,8 +25,7 @@ class Event extends BaseHit {
   /// value of the event, must be non-negative.
   int? value;
 
-  Event({required this.action, required this.category, this.label, this.value})
-      : super() {
+  Event({required this.action, required this.category, this.label, this.value}) : super() {
     type = Type.EVENT;
   }
 
@@ -36,9 +35,7 @@ class Event extends BaseHit {
     customBody.addAll({
       "t": typeOfEvent,
       "ea": this.action,
-      "ec": (this.category == EventCategory.Action_Tracking)
-          ? ActionTracking
-          : UserEngagement
+      "ec": (this.category == EventCategory.Action_Tracking) ? ActionTracking : UserEngagement
     });
     // Add label
     if (label != null) customBody['el'] = label ?? "";
@@ -51,8 +48,7 @@ class Event extends BaseHit {
 }
 
 class Consent extends Event {
-  Consent({required bool hasConsented})
-      : super(action: "fs_consent", category: EventCategory.User_Engagement) {
+  Consent({required bool hasConsented}) : super(action: "fs_consent", category: EventCategory.User_Engagement) {
     type = Type.CONSENT;
     label = hasConsented ? "Flutter:true" : "Flutter:false";
   }

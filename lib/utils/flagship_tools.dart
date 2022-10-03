@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:intl/intl.dart';
 import '../flagship.dart';
 import 'logger/log_manager.dart';
 
@@ -16,5 +19,14 @@ class FlagshipTools {
       Flagship.logger(Level.INFO, "The environmentId : \(xid) is not valide ");
       return false;
     }
+  }
+
+  static generateFlagshipId() {
+    int min = 10000;
+    int max = 99999;
+    // Set format
+    final format = new DateFormat('yyyyMMddhhmss');
+    // Return the uuid
+    return format.format(DateTime.now()) + (min + Random().nextInt(max - min)).toString();
   }
 }

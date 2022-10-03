@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:flagship/flagshipContext/flagship_context.dart';
+import 'package:flagship/flagshipContext/flagship_context_manager.dart';
 import 'package:flagship/hits/event.dart';
 import 'package:flagship/model/flag.dart';
 import 'package:flagship/model/modification.dart';
@@ -8,13 +10,26 @@ import 'package:flagship/flagship_config.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/hits/hit.dart';
 import 'package:flagship/utils/constants.dart';
+import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor/visitor_delegate.dart';
 import 'flagship_delegate.dart';
 
+enum Instance {
+  // The  newly created visitor instance will be returned and saved into the Flagship singleton. Call `Flagship.getVisitor()` to retrieve the instance.
+  // This option should be adopted on applications that handle only one visitor at the same time.
+  SINGLE_INSTANCE,
+
+  // The newly created visitor instance wont be saved and will simply be returned. Any previous visitor instance will have to be recreated.
+  //  This option should be adopted on applications that handle multiple visitors at the same time.
+  NEW_INSTANCE
+}
+
 class Visitor {
   // VisitorId
-  final String visitorId;
+  String visitorId;
+
+  String? anonymousId;
 
   /// Configuration
   final FlagshipConfig config;
@@ -40,6 +55,9 @@ class Visitor {
   //Consent by default is true
   bool _hasConsented = true;
 
+  // Xpc
+  bool _isAuthenticated;
+
   // delegate visitor
   late VisitorDelegate _visitorDelegate;
   // delegate to update the status
@@ -50,8 +68,16 @@ class Visitor {
   /// config: this object manage the mode of the sdk and other params
   /// visitorId : the user ID for the visitor
   /// context : Map that represent the conext for the visitor
-  Visitor(this.config, this.visitorId, Map<String, Object> context,
-      {bool hasConsented = true}) {
+  Visitor(this.config, this.visitorId, this._isAuthenticated, Map<String, Object> context, {bool hasConsented = true}) {
+    if (_isAuthenticated == true) {
+      this.anonymousId = FlagshipTools.generateFlagshipId();
+    } else {
+      anonymousId = null;
+    }
+
+    // Load preset_Context
+    this.updateContextWithMap(FlagshipContextManager.getPresetContextForApp());
+
     // update context
     this.updateContextWithMap(context);
     // set delegate
@@ -93,6 +119,16 @@ class Visitor {
     _visitorDelegate.updateContext(key, value);
   }
 
+  // Update with predefined context
+  void updateFlagshipContext<T>(FlagshipContext flagshipContext, T value) {
+    if (FlagshipContextManager.chekcValidity(flagshipContext, value)) {
+      _visitorDelegate.updateContext(rawValue(flagshipContext), value);
+    } else {
+      Flagship.logger(Level.ERROR,
+          "Skip updating the context with predefined context ${flagshipContext.name} ..... the value is not valid");
+    }
+  }
+
   /// Get Flag object
   ///
   /// key : the name of the key relative to modification
@@ -110,8 +146,7 @@ class Visitor {
   @Deprecated('Use value() in Flag class instead')
   T getModification<T>(String key, T defaultValue, {bool activate = false}) {
     // Delegate the action to strategy
-    return _visitorDelegate.getModification(key, defaultValue,
-        activate: activate);
+    return _visitorDelegate.getModification(key, defaultValue, activate: activate);
   }
 
   /// Get the modification infos relative to flag (modification)
@@ -162,5 +197,67 @@ class Visitor {
   // Get consent
   bool getConsent() {
     return _hasConsented;
+  }
+
+  ///   Use authenticate methode to go from Logged-out session to logged-in session
+  ///
+  /// - Parameters:
+  ///      - visitorId: newVisitorId to authenticate
+  /// - Important: After using this method, you should use Flagship.fetchFlags method to update the visitor informations
+  /// - Requires: Make sure that the experience continuity option is enabled on the flagship platform before using this method
+
+  authenticate(String visitorId) {
+    _visitorDelegate.getStrategy().authenticateVisitor(visitorId);
+  }
+
+  /// Use authenticate methode to go from Logged in  session to logged out session
+  unauthenticate() {
+    _visitorDelegate.getStrategy().unAuthenticateVisitor();
+  }
+}
+
+//// Builder
+
+class VisitorBuilder {
+  final String visitorId;
+
+  final Instance instanceType;
+
+// Context
+  Map<String, Object> _context = {};
+
+// Has consented
+  bool _hasConsented = true;
+
+// Xpc by default false
+  bool _isAuthenticated = false;
+
+  VisitorBuilder(this.visitorId, {this.instanceType = Instance.SINGLE_INSTANCE});
+
+// Context
+  VisitorBuilder withContext(Map<String, Object> context) {
+    _context = context;
+    return this;
+  }
+
+  VisitorBuilder hasConsented(bool hasConsented) {
+    _hasConsented = hasConsented;
+    return this;
+  }
+
+  isAuthenticated(bool authenticated) {
+    _isAuthenticated = authenticated;
+    return this;
+  }
+
+  Visitor build() {
+    Visitor newVisitor = Visitor(
+        Flagship.sharedInstance().getConfiguration() ?? ConfigBuilder().build(), visitorId, _isAuthenticated, _context,
+        hasConsented: _hasConsented);
+    if (this.instanceType == Instance.SINGLE_INSTANCE) {
+      //Set this visitor as shared instance
+      Flagship.setCurrentVisitor(newVisitor);
+    }
+    return newVisitor;
   }
 }

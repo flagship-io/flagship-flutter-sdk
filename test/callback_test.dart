@@ -1,13 +1,16 @@
 import 'package:flagship/decision/api_manager.dart';
 import 'package:flagship/flagship.dart';
+import 'package:flagship/flagshipContext/flagship_context_manager.dart';
 import 'package:flagship/flagship_version.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'service_test.mocks.dart';
 import 'package:flagship/api/service.dart';
 import 'package:flagship/flagship_config.dart';
@@ -15,6 +18,9 @@ import 'test_tools.dart';
 
 @GenerateMocks([Service])
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences.setMockInitialValues({});
+
   Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey");
   Map<String, String> fsHeaders = {
     "x-api-key": "apiKey",
@@ -23,25 +29,20 @@ void main() {
     "Content-type": "application/json"
   };
 
-  Object data = json.encode({"visitorId": "visitorId", "context": {}, "trigger_hit": false});
+  Map<String, dynamic> presetContext = FlagshipContextManager.getPresetContextForApp();
+  Map<String, dynamic> jsonData = {"visitorId": "visitorId", "context": presetContext, "trigger_hit": false};
+  Object data = json.encode(jsonData);
+  // Object data = json.encode({"visitorId": "visitorId", "context": {}, "trigger_hit": false});
 
   MockService fakePanicService = MockService();
   ApiManager fakePanicApi = ApiManager(fakePanicService);
 
   test('FlagshipConfig ', () async {
-    FlagshipConfig conf = FlagshipConfig(statusListener: null, timeout: 4000, activeLog: false, logLevel: Level.ALL);
+    FlagshipConfig conf = ConfigBuilder().withTimeout(4000).withLogLevel(Level.ALL).build();
 
     expect(conf.statusListener, null);
     expect(conf.timeout, 4000);
     expect(conf.decisionMode, Mode.DECISION_API);
-
-    FlagshipConfig confBis = FlagshipConfig.defaultMode();
-    expect(confBis.statusListener, null);
-
-    FlagshipConfig confTer = FlagshipConfig.withStatusListener(statusListener: (newStatus) {});
-    expect((confTer.statusListener != null), true);
-    confTer.statusListener = null;
-    expect(confTer.statusListener, null);
   });
 
   test('Test API with panic mode', () async {
@@ -53,7 +54,7 @@ void main() {
       return http.Response(fakeResponse, 200);
     });
 
-    FlagshipConfig config = FlagshipConfig(timeout: TIMEOUT);
+    FlagshipConfig config = ConfigBuilder().withTimeout(TIMEOUT).build();
     config.statusListener = (newStatus) {
       if (newStatus == Status.PANIC_ON) {
         // ignore: deprecated_member_use_from_same_package
@@ -63,9 +64,10 @@ void main() {
     };
 
     config.decisionManager = fakePanicApi;
+    Flagship.sharedInstance().onUpdateState(Status.NOT_INITIALIZED);
     Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
 
-    var v1 = Flagship.newVisitor("visitorId", {});
+    var v1 = Flagship.newVisitor("visitorId").withContext({}).build();
     Flagship.setCurrentVisitor(v1);
 
     // ignore: deprecated_member_use_from_same_package
