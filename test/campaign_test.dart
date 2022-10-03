@@ -1,9 +1,13 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flagship/model/campaign.dart';
 import 'package:flagship/model/campaigns.dart';
 import 'package:flagship/model/modification.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences.setMockInitialValues({});
   test("Campaign", () {
     Map<String, dynamic> inputs = {};
 
@@ -50,8 +54,8 @@ void main() {
   });
 
   test("Modification", () {
-    Modification itemModif = Modification("key1", "campaignId",
-        "variationGroupId", "variationId", true, "ab", "slug", 12);
+    Modification itemModif =
+        Modification("key1", "campaignId", "variationGroupId", "variationId", true, "ab", "slug", 12);
 
     expect(itemModif.toJson().length, 6);
     expect(itemModif.value, 12);

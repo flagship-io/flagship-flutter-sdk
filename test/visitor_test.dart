@@ -1,17 +1,22 @@
 import 'package:flagship/flagship.dart';
+import 'package:flagship/flagshipContext/flagship_context.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/model/modification.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/visitor.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  var v1 = Visitor(FlagshipConfig.defaultMode(), "user1", {"key1": "val1", "key2": "val2"});
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences.setMockInitialValues({});
+  var v1 = Visitor(ConfigBuilder().build(), "user1", true, {"key1": "val1", "key2": "val2"});
+
   v1.flagshipDelegate.onUpdateState(Status.READY);
   group('Visitor Ready ', () {
     test('Visitor instance should match with inputs constructor and default values', () {
       expect(v1.visitorId, "user1");
-      expect(v1.getCurrentContext().length, 2);
       expect(v1.getCurrentContext()["key1"], "val1");
       expect(v1.config.decisionMode, Mode.DECISION_API);
       expect(v1.config.timeout, 2000);
@@ -47,15 +52,28 @@ void main() {
       expect(v1.getCurrentContext()["valueDouble"], 12.6);
     });
 
-    test('length for context ', () {
-      expect(v1.getCurrentContext().length, 6);
-    });
-
     test('test none authorized type  ', () {
+      int oldLength = v1.getContext().length;
       v1.updateContext("valueObject", Object());
-      expect(v1.getCurrentContext().length, 6);
+      expect(v1.getCurrentContext().length, oldLength);
       v1.clearContext();
       expect(v1.getCurrentContext().length, 0);
+    });
+
+    test('test with predefined context', () {
+      v1.updateFlagshipContext(FlagshipContext.DEVICE_TYPE, "QA_Type");
+      int l1 = v1.getContext().length;
+      v1.updateFlagshipContext(FlagshipContext.DEVICE_MODEL, 23);
+      v1.updateFlagshipContext(FlagshipContext.LOCATION_LAT, "1234");
+      v1.updateFlagshipContext(FlagshipContext.FIRST_TIME_INIT, 1);
+      expect(v1.getContext().length, l1); //The length still the same as before, because the update is not valide
+
+      var c = v1.getContext();
+
+      expect(v1.getContext()["sdk_deviceType"], "QA_Type"); //The value still the same
+      // Update with valide value
+      v1.updateFlagshipContext(FlagshipContext.DEVICE_TYPE, "QA_TypelBis");
+      expect(v1.getContext()["sdk_deviceType"], "QA_TypelBis"); //The value should be updated
     });
 
     test('test get modification ', () {
@@ -117,6 +135,18 @@ void main() {
           "test_mismatch_castable", "campaignId", "variationGroupId", "variationId", true, "ab", "slug", null);
       // ignore: deprecated_member_use_from_same_package
       expect(v1.getModification("null", "null"), "null");
+    });
+
+    test("Shred visitor", () {
+      Flagship.newVisitor("shared").build();
+      expect(Flagship.getCurrentVisitor()?.visitorId, "shared");
+
+      Flagship.newVisitor("sharedBis", instanceType: Instance.SINGLE_INSTANCE).build();
+      expect(Flagship.getCurrentVisitor()?.visitorId, "sharedBis");
+
+      Visitor notShared = Flagship.newVisitor("notShared", instanceType: Instance.NEW_INSTANCE).build();
+      expect(Flagship.getCurrentVisitor()?.visitorId, "sharedBis");
+      expect(notShared.visitorId, "notShared");
     });
   });
 }

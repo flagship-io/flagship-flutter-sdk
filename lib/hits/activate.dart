@@ -7,14 +7,20 @@ class Activate {
   // final bool isReference;
   final Modification modification;
   final String visitorId;
+  final String? anonymousId;
+
   final String envId;
 
-  Activate(this.modification, this.visitorId, this.envId);
+  Activate(this.modification, this.visitorId, this.anonymousId, this.envId);
 
-  Map<String, Object> toJson() => {
-        "vaid": modification.variationId,
-        "caid": modification.variationGroupId,
-        "vid": visitorId,
-        "cid": envId
-      };
+  Map<String, Object> toJson() {
+    Map<String, String> result;
+
+    result = {"vaid": modification.variationId, "caid": modification.variationGroupId, "vid": visitorId, "cid": envId};
+
+    if (this.anonymousId != null) {
+      result.addEntries({"aid": anonymousId ?? ""}.entries);
+    }
+    return result;
+  }
 }

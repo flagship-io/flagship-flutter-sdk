@@ -2,10 +2,10 @@ library flagship;
 
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/utils/constants.dart';
+import 'package:flagship/utils/device_tools.dart';
 import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor.dart';
-
 import 'flagship_delegate.dart';
 
 enum Status {
@@ -25,7 +25,7 @@ class Flagship with FlagshipDelegate {
   String? apiKey;
 
   // Default configuration DECISION_API
-  static FlagshipConfig _configuration = FlagshipConfig.defaultMode();
+  static FlagshipConfig _configuration = ConfigBuilder().build();
 
   // Local visitor , see the startClient function
   Visitor? currentVisitor;
@@ -47,12 +47,17 @@ class Flagship with FlagshipDelegate {
   //
   // envId : environement id (provided by flagship)
   // apiKey: Api key (provided by flagship)
-  static start(String envId, String apiKey, {FlagshipConfig? config}) {
+  static start(String envId, String apiKey, {FlagshipConfig? config}) async {
+    _singleton._status = Status.NOT_INITIALIZED;
+    await FSDevice.loadDeviceInfo();
     if (FlagshipTools.chekcXidEnvironment(envId)) {
       _singleton.apiKey = apiKey;
       _singleton.envId = envId;
       if (config != null) {
         Flagship._configuration = config;
+      }
+      if (_configuration.decisionMode == Mode.BUCKETING) {
+        Flagship._configuration.decisionManager.startPolling();
       }
       _singleton.onUpdateState(Status.READY);
       Flagship.logger(Level.INFO, STARTED);
@@ -62,14 +67,9 @@ class Flagship with FlagshipDelegate {
     }
   }
 
-  // Start visitor
-  //
-  // visitorId : Id for the visitor
-  // context : Map that represent visitor's attribut  {"isVip":true}
-  static Visitor newVisitor(String visitorId, Map<String, Object> context,
-      {bool hasConsented = true}) {
-    return Visitor(_configuration, visitorId, context,
-        hasConsented: hasConsented);
+  /// Create new visitor
+  static VisitorBuilder newVisitor(String visitorId, {Instance instanceType = Instance.SINGLE_INSTANCE}) {
+    return VisitorBuilder(visitorId, instanceType: instanceType);
   }
 
   // Set the current visitor singleton

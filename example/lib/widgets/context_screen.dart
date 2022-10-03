@@ -71,7 +71,6 @@ class _ContextScreenState extends State<ContextScreen> with ShowDialog {
         subMsg = "Context updated and synchronized"; //(state == Status.READY)?
 
         // : "Context updated but the synchronized failed";
-
         showBasicDialog("Context validation", subMsg);
       });
     } catch (error) {

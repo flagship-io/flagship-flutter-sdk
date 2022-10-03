@@ -5,6 +5,8 @@ class Campaigns {
   bool panic = false;
   List<Campaign> campaigns = [];
 
+  Campaigns(this.visitorId, this.panic, this.campaigns);
+
   Campaigns.fromJson(Map<String, dynamic> json) {
     // Set visitorId
     visitorId = (json['visitorId'] ?? "") as String;
