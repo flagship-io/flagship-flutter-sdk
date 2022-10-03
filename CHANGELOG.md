@@ -1,6 +1,17 @@
+## 2.0.0 - 2022-10-03
+
+Added
+
+- Bucketing Mode
+- Experience Continuity
+- Predefined context
+- VisitorBuilder class to manage options
+- ConfigBuilder class to create a FlagshipConfig instance and manage options
+
 ## 1.3.0 - 2022-06-22
 
 Added
+
 - Flag class to manipulate Flag
 
 Changed
