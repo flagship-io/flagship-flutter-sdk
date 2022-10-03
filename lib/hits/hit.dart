@@ -1,8 +1,10 @@
 import 'package:flagship/flagship.dart';
+import 'package:flagship/utils/flagship_tools.dart';
 
 enum Type { SCREENVIEW, PAGEVIEW, TRANSACTION, ITEM, EVENT, ACTIVATION, CONSENT, NONE }
 
 abstract class Hit {
+  late String id;
   Map<String, Object> get bodyTrack;
 }
 

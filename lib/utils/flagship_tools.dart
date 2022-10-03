@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:intl/intl.dart';
 import '../flagship.dart';
 import 'logger/log_manager.dart';
+import 'package:uuid/uuid.dart';
 
 // length for the envId
 const int LengthId = 20;
@@ -28,5 +29,9 @@ class FlagshipTools {
     final format = new DateFormat('yyyyMMddhhmss');
     // Return the uuid
     return format.format(DateTime.now()) + (min + Random().nextInt(max - min)).toString();
+  }
+
+  static generateUuidv4() {
+    return Uuid().v4();
   }
 }
