@@ -14,13 +14,14 @@
 
 ## Docs
 
-- [Get Started](https://docs.developers.flagship.io/docs/flutter-v12x#getting-started)
-- [Initialize and start](https://docs.developers.flagship.io/docs/flutter-v12x#initialization)
-- [Campaign integration](https://docs.developers.flagship.io/docs/flutter-v12x#managing-visitor-campaigns)
-- [Hit tracking](https://docs.developers.flagship.io/docs/flutter-v12x#hit-tracking)
+- [Get Started](https://docs.developers.flagship.io/docs/flutter-v20x#getting-started)
+- [Initialize and start](https://docs.developers.flagship.io/docs/flutter-v20x#initialization)
+- [Campaign integration](https://docs.developers.flagship.io/docs/flutter-v20x#managing-visitor-campaigns)
+- [Hit tracking](https://docs.developers.flagship.io/docs/flutter-v20x#hit-tracking)
 - [Release Notes](https://docs.developers.flagship.io/docs/flutter-sdk)
 
 ## Contributors
+
  - Adel FERGUEN [@ABTastyAdel](https://github.com/ABTastyAdel)
  - Guillaume Jacquart [@guillaumejacquart](https://github.com/guillaumejacquart)
 
