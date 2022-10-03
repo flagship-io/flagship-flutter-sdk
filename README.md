@@ -21,6 +21,7 @@
 - [Release Notes](https://docs.developers.flagship.io/docs/flutter-sdk)
 
 ## Contributors
+
  - Adel FERGUEN [@ABTastyAdel](https://github.com/ABTastyAdel)
  - Guillaume Jacquart [@guillaumejacquart](https://github.com/guillaumejacquart)
 
