@@ -4,11 +4,11 @@ import 'package:flagship/flagshipContext/flagship_context_manager.dart';
 import 'package:flagship/hits/event.dart';
 import 'package:flagship/model/flag.dart';
 import 'package:flagship/model/modification.dart';
-import 'package:flagship/api/tracking_manager.dart';
 import 'package:flagship/decision/decision_manager.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/hits/hit.dart';
+import 'package:flagship/tracking/tracking_manager.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
@@ -50,7 +50,7 @@ class Visitor {
     return this.config.decisionManager;
   }
 
-  TrackingManager trackingManager = TrackingManager();
+  late TrackingManager trackingManager;
 
   //Consent by default is true
   bool _hasConsented = true;
@@ -74,6 +74,9 @@ class Visitor {
     } else {
       anonymousId = null;
     }
+
+    // Init tracking manager
+    trackingManager = TrackingManager(config.trackingMangerConfig);
 
     // Load preset_Context
     this.updateContextWithMap(FlagshipContextManager.getPresetContextForApp());

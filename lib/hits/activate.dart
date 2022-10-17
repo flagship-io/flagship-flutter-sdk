@@ -1,17 +1,21 @@
+import 'package:flagship/hits/hit.dart';
 import 'package:flagship/model/modification.dart';
+import 'package:flagship/visitor.dart';
 
-class Activate {
+class Activate extends Hit {
   // final String campaignId;
   // final String variationId;
   // final String variationGroupId;
   // final bool isReference;
   final Modification modification;
-  final String visitorId;
+  //final String visitorId;
   final String? anonymousId;
 
   final String envId;
 
-  Activate(this.modification, this.visitorId, this.anonymousId, this.envId);
+  Activate(this.modification, String visitorId, this.anonymousId, this.envId) : super() {
+    this.visitorId = visitorId;
+  }
 
   Map<String, Object> toJson() {
     Map<String, String> result;
@@ -22,5 +26,15 @@ class Activate {
       result.addEntries({"aid": anonymousId ?? ""}.entries);
     }
     return result;
+  }
+
+  @override
+  Map<String, Object> get bodyTrack {
+    return toJson();
+  }
+
+  @override
+  bool isValid() {
+    return true;
   }
 }

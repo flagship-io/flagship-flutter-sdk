@@ -1,20 +1,24 @@
 import 'package:flagship/flagship.dart';
 import 'package:flagship/utils/flagship_tools.dart';
+import 'package:flutter/material.dart';
 
-enum Type { SCREENVIEW, PAGEVIEW, TRANSACTION, ITEM, EVENT, ACTIVATION, CONSENT, NONE }
+enum Type { SCREENVIEW, PAGEVIEW, TRANSACTION, ITEM, EVENT, ACTIVATION, CONSENT, BATCH, NONE }
 
 abstract class Hit {
   late String id;
   Map<String, Object> get bodyTrack;
+  late String visitorId;
+  bool isValid();
+  // type for hit
+  Type type = Type.NONE;
 }
 
 class BaseHit extends Hit {
   // type for hit
-  Type type = Type.NONE;
+  // Type type = Type.NONE;
 
   // Required
   late String clientId;
-  late String visitorId;
   late String? anonymousId;
 
   String dataSource = "APP";
@@ -101,5 +105,10 @@ class BaseHit extends Hit {
       tupleId.addEntries({"vid": this.visitorId}.entries);
     }
     return tupleId;
+  }
+
+  @override
+  bool isValid() {
+    return true; // Todo implement later
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flagship/decision/api_manager.dart';
 import 'package:flagship/decision/bucketing_manager.dart';
 import 'package:flagship/decision/decision_manager.dart';
+import 'package:flagship/tracking/tracking_manager_config.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +32,8 @@ class FlagshipConfig {
   int pollingTime = 60; // every 60 seconds will download the script bucketing.
 
   Level _logLevel;
+
+  TrackingManagerConfig trackingMangerConfig = TrackingManagerConfig();
 
   FlagshipConfig(this.decisionMode, this.timeout, this.pollingTime, this._logLevel, {this.statusListener}) {
     // Set the log Manager
