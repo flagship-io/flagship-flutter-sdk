@@ -11,6 +11,9 @@ abstract class Hit {
   bool isValid();
   // type for hit
   Type type = Type.NONE;
+
+  // Is less than 4h
+  bool isLessThan4H();
 }
 
 class BaseHit extends Hit {
@@ -38,6 +41,9 @@ class BaseHit extends Hit {
   /// Session Number
   int? sessionNumber;
 
+  /// QT time
+  late DateTime qt;
+
   @override
   Map<String, Object> get bodyTrack {
     return {};
@@ -45,6 +51,7 @@ class BaseHit extends Hit {
 
   BaseHit() {
     this.clientId = Flagship.sharedInstance().envId ?? "";
+    qt = DateTime.now();
   }
 
   Map<String, Object> get communBodyTrack {
@@ -70,6 +77,9 @@ class BaseHit extends Hit {
 
     /// Session number
     if (sessionNumber != null) result["sn"] = sessionNumber ?? 0;
+
+    // Add qt entries
+    result.addEntries({"qt": qt.second}.entries);
 
     return result;
   }
@@ -110,5 +120,10 @@ class BaseHit extends Hit {
   @override
   bool isValid() {
     return true; // Todo implement later
+  }
+
+  @override
+  bool isLessThan4H() {
+    return (qt.difference(DateTime.now()).inHours <= 4);
   }
 }

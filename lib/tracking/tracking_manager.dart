@@ -75,6 +75,7 @@ class TrackingManager {
     if (activatePool.isEmpty()) {
       objectToSend = jsonEncode(activateHit.toJson());
     } else {
+      urlString = Endpoints.DECISION_API + Endpoints.ACTIVATION;
       var listOfActivate = activatePool.extractHitsWithVisitorId(activateHit.visitorId);
       // Add the current activate
       listOfActivate.add(activateHit);
@@ -99,7 +100,7 @@ class TrackingManager {
     }
   }
 
-  // Send Hit
+  //Send Hit
   Future<void> sendHit(BaseHit pHit) async {
     if (batchManager.cronTimer.isPaused) {
       batchManager.startCron();
@@ -140,7 +141,7 @@ class TrackingManager {
 
   Future<void> sendBatch(List<Hit> listOfHitToSend) async {
     /// Create url
-    String urlString = Endpoints.ARIANE;
+    String urlString = Endpoints.BATCH;
     try {
       var response = await _service.sendHttpRequest(
           RequestType.Post, urlString, fsHeader, jsonEncode(Batch(listOfHitToSend).bodyTrack),

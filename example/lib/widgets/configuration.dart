@@ -25,7 +25,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   String apiKey = "DxAcxlnRB9yFBZYtLDue1q01dcXZCw6aM49CQB23";
   String envId = "bkk9glocmjcg0vtmdlng";
 
-  final int defaultTimeout = 2000;
+  final int defaultTimeout = 4000;
   final int defaultPollingTime = 60;
 
   final envIdController = TextEditingController();
@@ -269,7 +269,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   }
 
   String _createRandomUser() {
-    return 'user_' + Random().nextInt(100).toString();
+    return 'userPoolManager_' + Random().nextInt(1000).toString();
   }
 
   doMe() {

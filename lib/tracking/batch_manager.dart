@@ -38,7 +38,8 @@ class BatchManager with TrackingManagerDelegate {
       // Stop the cron may be ....
       print("--------- Pause the cron because the queue is empty -----------");
     } else {
-      //var batchToSend = this.createBatch(listToSend);
+      // var batchToSend = this.createBatch(listToSend);
+      // Before send this batch will check the validity
       sendBatch(listToSend);
     }
   }
@@ -61,7 +62,6 @@ class BatchManager with TrackingManagerDelegate {
     fsPool.addListOfElementsToTheBottom(listOfHitToSend);
   }
 }
-
 
 //   void batchingContinousstrategy(BaseHit newHit) {
 //     // It must check the hit validation

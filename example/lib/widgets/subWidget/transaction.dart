@@ -26,9 +26,8 @@ class _TransactionState extends State<TransactionHit> {
   @override
   void initState() {
     super.initState();
-    _textControllerId = TextEditingController(text: 'flutter_TransactioId');
-    _textControllerAffiliation =
-        TextEditingController(text: 'flutter_transaction');
+    _textControllerId = TextEditingController(text: 'transactPool');
+    _textControllerAffiliation = TextEditingController(text: 'transactPool');
     _textControllerCoupon = TextEditingController(text: 'coupon');
     _textControllerCurrency = TextEditingController(text: 'EUR');
     _textControllerItemCount = TextEditingController(text: '5');
@@ -40,58 +39,20 @@ class _TransactionState extends State<TransactionHit> {
 
     listInputs = [
       {"label": "id", "type": TextInputType.text, 'ctrl': _textControllerId},
-      {
-        "label": "Affiliation",
-        "type": TextInputType.text,
-        'ctrl': _textControllerAffiliation
-      },
-      {
-        "label": "Revenue",
-        "type": TextInputType.number,
-        'ctrl': _textControllerRevenue
-      },
-      {
-        "label": "Shipping",
-        "type": TextInputType.number,
-        'ctrl': _textControllerShipping
-      },
-      {
-        "label": "Tax",
-        "type": TextInputType.number,
-        'ctrl': _textControllerTax
-      },
-      {
-        "label": "Currency",
-        "type": TextInputType.text,
-        'ctrl': _textControllerCurrency
-      },
-      {
-        "label": "Coupon",
-        "type": TextInputType.text,
-        'ctrl': _textControllerCoupon
-      },
-      {
-        "label": "Payment Method",
-        "type": TextInputType.text,
-        'ctrl': _textControllerPaymentMethod
-      },
-      {
-        "label": "Shipping Method",
-        "type": TextInputType.text,
-        'ctrl': _textControllerShippingMethod
-      },
-      {
-        "label": "Item Count",
-        "type": TextInputType.number,
-        'ctrl': _textControllerItemCount
-      },
+      {"label": "Affiliation", "type": TextInputType.text, 'ctrl': _textControllerAffiliation},
+      {"label": "Revenue", "type": TextInputType.number, 'ctrl': _textControllerRevenue},
+      {"label": "Shipping", "type": TextInputType.number, 'ctrl': _textControllerShipping},
+      {"label": "Tax", "type": TextInputType.number, 'ctrl': _textControllerTax},
+      {"label": "Currency", "type": TextInputType.text, 'ctrl': _textControllerCurrency},
+      {"label": "Coupon", "type": TextInputType.text, 'ctrl': _textControllerCoupon},
+      {"label": "Payment Method", "type": TextInputType.text, 'ctrl': _textControllerPaymentMethod},
+      {"label": "Shipping Method", "type": TextInputType.text, 'ctrl': _textControllerShippingMethod},
+      {"label": "Item Count", "type": TextInputType.number, 'ctrl': _textControllerItemCount},
     ];
   }
 
   _onSendTransaction() async {
-    var transacEvent = Transaction(
-        transactionId: _textControllerId.text,
-        affiliation: _textControllerAffiliation.text);
+    var transacEvent = Transaction(transactionId: _textControllerId.text, affiliation: _textControllerAffiliation.text);
 
     transacEvent.revenue = double.tryParse(_textControllerRevenue.text) ?? 0;
     transacEvent.couponCode = _textControllerCoupon.text;
@@ -111,8 +72,7 @@ class _TransactionState extends State<TransactionHit> {
       await currentVisitor?.sendHit(transacEvent);
 
       /// send item  // a revoir
-      var itemEvent =
-          Item(transactionId: "12121212", name: "flutter_name", code: 'code');
+      var itemEvent = Item(transactionId: "12121212", name: "flutter_name", code: 'code');
       await currentVisitor?.sendHit(itemEvent);
     } catch (e) {
       text = "Transaction send error";
@@ -159,10 +119,8 @@ class _TransactionState extends State<TransactionHit> {
           children: listInputs.map((e) {
             return Container(
                 padding: EdgeInsets.all(10),
-                child: FSInputField(
-                    e["label"] as String,
-                    e['ctrl'] as TextEditingController,
-                    e['type'] as TextInputType));
+                child:
+                    FSInputField(e["label"] as String, e['ctrl'] as TextEditingController, e['type'] as TextInputType));
           }).toList(),
         ),
         SizedBox(height: _verticalSpace),
