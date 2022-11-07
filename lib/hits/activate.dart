@@ -41,7 +41,5 @@ class Activate extends Hit {
   @override
   bool isLessThan4H() {
     return false;
-    // TODO: implement isLessThan4H
-    throw UnimplementedError();
   }
 }

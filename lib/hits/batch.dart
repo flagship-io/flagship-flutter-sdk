@@ -16,12 +16,15 @@ class Batch extends BaseHit {
   // Body to send through the batch script
   Map<String, Object> get bodyTrack {
     var batchEvent = new Map<String, Object>();
-    batchEvent.addEntries({"type": "BATCH", "visitorId": this.visitorId}.entries);
+    batchEvent.addEntries({
+      "t": "BATCH",
+      "ds": "APP", /*"visitorId": this.visitorId*/
+    }.entries);
     List<Map<String, Object>> ret = [];
     this.listOfHits.forEach((element) {
       ret.add(element.bodyTrack);
     });
-    batchEvent.addEntries({"hits": ret}.entries);
+    batchEvent.addEntries({"h": ret}.entries);
     return batchEvent;
   }
 

@@ -108,8 +108,11 @@ class TrackingManager {
     // Add to pool
     if (pHit.isValid() == true) {
       fsPool.addTrackElement(pHit);
-      // It must cache the hit in the database by calling the cacheHit method of the cache manager
-      fsCacheHit.cacheHit(pHit.bodyTrack);
+
+      if (configTracking.batchStrategy == BatchCachingStrategy.BATCH_CONTINUOUS_CACHING) {
+        // It must cache the hit in the database by calling the cacheHit method of the cache manager
+        fsCacheHit.cacheHit(pHit.bodyTrack);
+      }
     } else {
       // When the hit is not valid
       Flagship.logger(Level.ERROR, "Hit not valid");
@@ -152,6 +155,7 @@ class TrackingManager {
         case 201:
           Flagship.logger(Level.INFO, HIT_SUCCESS);
           Flagship.logger(Level.INFO, jsonEncode(Batch(listOfHitToSend).bodyTrack), isJsonString: true);
+          fsCacheHit.flushHits();
           delegate?.onSendBatchWithSucess();
           break;
         default:

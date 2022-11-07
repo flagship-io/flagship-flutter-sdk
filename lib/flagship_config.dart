@@ -33,9 +33,10 @@ class FlagshipConfig {
 
   Level _logLevel;
 
-  TrackingManagerConfig trackingMangerConfig = TrackingManagerConfig();
+  TrackingManagerConfig trackingMangerConfig;
 
-  FlagshipConfig(this.decisionMode, this.timeout, this.pollingTime, this._logLevel, {this.statusListener}) {
+  FlagshipConfig(this.decisionMode, this.timeout, this.pollingTime, this._logLevel, this.trackingMangerConfig,
+      {this.statusListener}) {
     // Set the log Manager
     this.logManager = LogManager(level: _logLevel);
     // Log the timeout value in ms
@@ -62,6 +63,9 @@ class ConfigBuilder {
 
   // StatusListener
   StatusListener? _statusListener;
+
+// Tracking Config
+  TrackingManagerConfig _trackingManagerConfig = TrackingManagerConfig();
 
   ConfigBuilder();
 
@@ -94,7 +98,13 @@ class ConfigBuilder {
     return this;
   }
 
+  ConfigBuilder withTrackingConfig(TrackingManagerConfig trackingManagerConfig) {
+    _trackingManagerConfig = trackingManagerConfig;
+    return this;
+  }
+
   FlagshipConfig build() {
-    return FlagshipConfig(_mode, _timeout, _pollingTime, _logLevel, statusListener: _statusListener);
+    return FlagshipConfig(_mode, _timeout, _pollingTime, _logLevel,
+        statusListener: _statusListener, trackingMangerConfig: _trackingManagerConfig);
   }
 }
