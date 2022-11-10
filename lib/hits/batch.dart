@@ -11,7 +11,7 @@ class Batch extends BaseHit {
   }
 
   // Special hit for batch
-  Type type = Type.BATCH;
+  HitCategory type = HitCategory.BATCH;
 
   // Body to send through the batch script
   Map<String, Object> get bodyTrack {

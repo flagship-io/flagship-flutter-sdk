@@ -1,5 +1,6 @@
 import 'package:flagship/flagshipContext/flagship_context.dart';
 import 'package:flagship/flagship_config.dart';
+import 'package:flagship/tracking/tracking_manager_config.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor.dart';
@@ -109,6 +110,8 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
           }
         })
         .withTimeout(int.tryParse(timeoutController.text) ?? defaultTimeout)
+        .withTrackingConfig(TrackingManagerConfig(
+            batchIntervals: 60, poolMaxSize: 10, batchStrategy: BatchCachingStrategy.BATCH_PERIODIC_CACHING))
         .build();
     Flagship.start(envIdController.text, apiKeyController.text, config: config);
   }

@@ -19,7 +19,7 @@ class NoConsentStrategy extends DefaultStrategy {
   @override
   Future<void> sendHit(BaseHit hit) async {
     switch (hit.type) {
-      case Type.CONSENT:
+      case HitCategory.CONSENT:
         {
           visitor.trackingManager.sendHit(hit);
         }

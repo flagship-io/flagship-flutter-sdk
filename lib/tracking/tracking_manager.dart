@@ -46,14 +46,14 @@ class TrackingManager {
     this.apiKey = Flagship.sharedInstance().apiKey ?? "";
     _service = Service(http.Client());
 
-    // Temporary create a pool
-    fsPool = FlagshipPoolQueue();
+    // Temporary create a pool  /// TO REVIEW
+    fsPool = FlagshipPoolQueue(configTracking.poolMaxSize);
 
     // Activate poool
-    activatePool = FlagshipPoolQueue();
+    activatePool = FlagshipPoolQueue(configTracking.poolMaxSize);
 
     /// Create batch manager
-    batchManager = BatchManager(fsPool, configTracking.batchLength, configTracking.batchIntervals, sendBatch);
+    batchManager = BatchManager(fsPool, sendBatch, configTracking, fsCacheHit);
     this.delegate = batchManager;
   }
 
@@ -108,7 +108,6 @@ class TrackingManager {
     // Add to pool
     if (pHit.isValid() == true) {
       fsPool.addTrackElement(pHit);
-
       if (configTracking.batchStrategy == BatchCachingStrategy.BATCH_CONTINUOUS_CACHING) {
         // It must cache the hit in the database by calling the cacheHit method of the cache manager
         fsCacheHit.cacheHit(pHit.bodyTrack);
@@ -155,7 +154,6 @@ class TrackingManager {
         case 201:
           Flagship.logger(Level.INFO, HIT_SUCCESS);
           Flagship.logger(Level.INFO, jsonEncode(Batch(listOfHitToSend).bodyTrack), isJsonString: true);
-          fsCacheHit.flushHits();
           delegate?.onSendBatchWithSucess();
           break;
         default:

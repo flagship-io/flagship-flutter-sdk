@@ -40,6 +40,7 @@ class Activate extends Hit {
 
   @override
   bool isLessThan4H() {
-    return false;
+    // return (qt.difference(DateTime.now()).inHours <= 4);
+    return true; // see later
   }
 }

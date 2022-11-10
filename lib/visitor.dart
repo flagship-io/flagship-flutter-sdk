@@ -189,6 +189,10 @@ class Visitor {
 
   // Set Consent
   void setConsent(bool newValue) {
+    // flush the hits from the pool
+    if (newValue == false) {
+      trackingManager.fsPool.flushTrackQueue(flushingConsentHits: false);
+    }
     // Update the state for visitor
     _hasConsented = newValue;
     // Update the decision manager

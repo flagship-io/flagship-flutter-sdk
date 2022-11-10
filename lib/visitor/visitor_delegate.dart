@@ -68,6 +68,7 @@ class VisitorDelegate implements IVisitor {
   Future<void> sendHit(BaseHit hit) async {
     // set visitorId for hit
     hit.visitorId = visitor.visitorId;
+    // set anonymousId for hit
     hit.anonymousId = visitor.anonymousId;
     hit.qt = DateTime.now();
     getStrategy().sendHit(hit);

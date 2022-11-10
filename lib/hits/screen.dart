@@ -4,7 +4,7 @@ class Screen extends BaseHit {
   final String location;
 
   Screen({required this.location}) : super() {
-    type = Type.SCREENVIEW;
+    type = HitCategory.SCREENVIEW;
   }
 
   @override

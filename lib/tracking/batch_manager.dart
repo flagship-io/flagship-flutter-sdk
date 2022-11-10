@@ -6,10 +6,10 @@ import 'package:flagship/tracking/tracking_manager.dart';
 import 'package:flagship/tracking/tracking_manager_config.dart';
 import 'package:pausable_timer/pausable_timer.dart';
 
-class BatchManager with TrackingManagerDelegate {
-  int lengthOfBatch;
+class BatchManager with TrackingManagerDelegate, FlagshipPoolQueueDelegate {
+  //int lengthOfBatch;
 
-  int batchIntervals;
+  //int batchIntervals;
 
   late PausableTimer cronTimer;
 
@@ -25,11 +25,12 @@ class BatchManager with TrackingManagerDelegate {
     return cronTimer.isPaused;
   }
 
-  BatchManager(
-      this.fsPool, this.lengthOfBatch, this.batchIntervals, this.sendBatch, this.configTracking, this.fsCacheHit) {
+  BatchManager(this.fsPool, this.sendBatch, this.configTracking, this.fsCacheHit) {
     // Timer for cron
-    cronTimer = PausableTimer(Duration(seconds: batchIntervals), batchFromQueue);
+    cronTimer = PausableTimer(Duration(seconds: configTracking.batchIntervals), batchFromQueue);
     cronTimer.start();
+    // Set the delegate
+    this.fsPool.delegate = this;
   }
 
   void startCron() {
@@ -39,7 +40,7 @@ class BatchManager with TrackingManagerDelegate {
   void batchFromQueue() {
     cronTimer.reset();
     print(" ------ Create a batch from a queue and send it ------");
-    var listToSend = fsPool.extractXElementFromQueue(this.lengthOfBatch);
+    var listToSend = fsPool.extractXElementFromQueue(configTracking.poolMaxSize);
 
     if (listToSend.isEmpty) {
       // Stop the cron may be ....
@@ -59,6 +60,7 @@ class BatchManager with TrackingManagerDelegate {
 
   @override
   onSendBatchWithSucess() {
+    // Remove old cache before save a fresh data
     fsCacheHit.flushHits();
     switch (configTracking.batchStrategy) {
       case BatchCachingStrategy.BATCH_CONTINUOUS_CACHING:
@@ -69,7 +71,6 @@ class BatchManager with TrackingManagerDelegate {
         });
         break;
     }
-
     cronTimer.start();
   }
 
@@ -78,6 +79,11 @@ class BatchManager with TrackingManagerDelegate {
     cronTimer.start();
     // Save again in pool queue at the bottom
     fsPool.addListOfElementsToTheBottom(listOfHitToSend);
+  }
+
+  @override
+  void onPoolSizeMaxReached() {
+    batchFromQueue();
   }
 }
 

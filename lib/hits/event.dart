@@ -26,7 +26,7 @@ class Event extends BaseHit {
   int? value;
 
   Event({required this.action, required this.category, this.label, this.value}) : super() {
-    type = Type.EVENT;
+    type = HitCategory.EVENT;
   }
 
   @override
@@ -49,7 +49,7 @@ class Event extends BaseHit {
 
 class Consent extends Event {
   Consent({required bool hasConsented}) : super(action: "fs_consent", category: EventCategory.User_Engagement) {
-    type = Type.CONSENT;
+    type = HitCategory.CONSENT;
     label = hasConsented ? "Flutter:true" : "Flutter:false";
   }
 }

@@ -2,18 +2,26 @@ import 'package:flagship/flagship.dart';
 import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flutter/material.dart';
 
-enum Type { SCREENVIEW, PAGEVIEW, TRANSACTION, ITEM, EVENT, ACTIVATION, CONSENT, BATCH, NONE }
+enum HitCategory { SCREENVIEW, PAGEVIEW, TRANSACTION, ITEM, EVENT, ACTIVATION, CONSENT, BATCH, NONE }
 
 abstract class Hit {
+  // id for the hit
   late String id;
-  Map<String, Object> get bodyTrack;
+
+  // Visitor id
   late String visitorId;
+
+  // Check the validity
   bool isValid();
-  // type for hit
-  Type type = Type.NONE;
+
+  // Type for hit
+  HitCategory type = HitCategory.NONE;
 
   // Is less than 4h
   bool isLessThan4H();
+
+  // Body used on posting data
+  Map<String, Object> get bodyTrack;
 }
 
 class BaseHit extends Hit {
@@ -87,17 +95,17 @@ class BaseHit extends Hit {
   String get typeOfEvent {
     String ret = "None";
     switch (type) {
-      case Type.SCREENVIEW:
+      case HitCategory.SCREENVIEW:
         ret = 'SCREENVIEW';
         break;
-      case Type.ITEM:
+      case HitCategory.ITEM:
         ret = 'ITEM';
         break;
-      case Type.EVENT:
-      case Type.CONSENT:
+      case HitCategory.EVENT:
+      case HitCategory.CONSENT:
         ret = 'EVENT';
         break;
-      case Type.TRANSACTION:
+      case HitCategory.TRANSACTION:
         ret = 'TRANSACTION';
         break;
       default:

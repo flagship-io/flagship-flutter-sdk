@@ -104,7 +104,7 @@ class ConfigBuilder {
   }
 
   FlagshipConfig build() {
-    return FlagshipConfig(_mode, _timeout, _pollingTime, _logLevel,
-        statusListener: _statusListener, trackingMangerConfig: _trackingManagerConfig);
+    return FlagshipConfig(_mode, _timeout, _pollingTime, _logLevel, _trackingManagerConfig,
+        statusListener: _statusListener);
   }
 }
