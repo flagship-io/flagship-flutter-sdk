@@ -110,7 +110,7 @@ class TrackingManager {
       fsPool.addTrackElement(pHit);
       if (configTracking.batchStrategy == BatchCachingStrategy.BATCH_CONTINUOUS_CACHING) {
         // It must cache the hit in the database by calling the cacheHit method of the cache manager
-        fsCacheHit.cacheHit(pHit.bodyTrack);
+        fsCacheHit.cacheHits(pHit.bodyTrack);
       }
     } else {
       // When the hit is not valid

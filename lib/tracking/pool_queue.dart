@@ -13,24 +13,11 @@ class FlagshipPoolQueue {
 
   final sizelimitation;
 
-  FlagshipPoolQueue(this.sizelimitation) {
-    /// Remove later
-    // for (int i = 0; i < 100; i++) {
-    //   Event fakeEvent = Event(action: "fake_+$i", category: EventCategory.Action_Tracking);
-    //   fakeEvent.id = FlagshipTools.generateUuidv4();
-    //   fsQueue.add(fakeEvent);
-    // }
-  }
+  FlagshipPoolQueue(this.sizelimitation);
 
   void addTrackElement(Hit newHit) {
     // Set id for the hit
-    switch (newHit.type) {
-      case HitCategory.CONSENT:
-        newHit.id = newHit.visitorId + "_GRPD:" + FlagshipTools.generateUuidv4();
-        break;
-      default:
-        newHit.id = newHit.visitorId + ":" + FlagshipTools.generateUuidv4();
-    }
+    newHit.id = newHit.visitorId + ":" + FlagshipTools.generateUuidv4();
     // Add hit to queue
     fsQueue.add(newHit);
     // check the limitation
@@ -56,14 +43,22 @@ class FlagshipPoolQueue {
   }
 
   /// Clear all the hit in the queue
-  void flushTrackQueue({bool flushingConsentHits = false}) {
+  List<String> flushTrackQueue({bool flushingConsentHits = false}) {
+    List<String> ret = [];
     if (flushingConsentHits == true) {
       Flagship.logger(Level.DEBUG, "Remove hits from the pool excpet the consent tracking");
-      fsQueue.removeWhere((element) => !element.id.contains("GRPD"));
+      fsQueue.removeWhere((element) {
+        if (element.type != HitCategory.CONSENT) {
+          ret.add(element.id);
+          return true;
+        }
+        return false;
+      });
     } else {
       Flagship.logger(Level.DEBUG, "Remove all hits from the pool");
       fsQueue.clear();
     }
+    return ret;
   }
 
   /// Extract the hits // Hits must be deleted from the pool (expect the Consent type ones).

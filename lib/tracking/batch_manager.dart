@@ -61,13 +61,13 @@ class BatchManager with TrackingManagerDelegate, FlagshipPoolQueueDelegate {
   @override
   onSendBatchWithSucess() {
     // Remove old cache before save a fresh data
-    fsCacheHit.flushHits();
+    fsCacheHit.flushAllHits();
     switch (configTracking.batchStrategy) {
       case BatchCachingStrategy.BATCH_CONTINUOUS_CACHING:
         break;
       case BatchCachingStrategy.BATCH_PERIODIC_CACHING:
         fsPool.fsQueue.forEach((element) {
-          fsCacheHit.cacheHit(element.bodyTrack);
+          fsCacheHit.cacheHits(element.bodyTrack);
         });
         break;
     }

@@ -191,7 +191,8 @@ class Visitor {
   void setConsent(bool newValue) {
     // flush the hits from the pool
     if (newValue == false) {
-      trackingManager.fsPool.flushTrackQueue(flushingConsentHits: false);
+      var listToremove = trackingManager.fsPool.flushTrackQueue(flushingConsentHits: false);
+      this.trackingManager.fsCacheHit.flushHits(listToremove);
     }
     // Update the state for visitor
     _hasConsented = newValue;
