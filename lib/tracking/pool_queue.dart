@@ -29,7 +29,7 @@ class FlagshipPoolQueue {
   }
 
 // Add elements to the bottom
-  void addListOfElementsToTheBottom(List<Hit> list) {
+  void addListOfElements(List<Hit> list) {
     list.forEach((element) {
       fsQueue.add(element);
     });
