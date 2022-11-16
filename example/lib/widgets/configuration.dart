@@ -1,5 +1,6 @@
 import 'package:flagship/flagshipContext/flagship_context.dart';
 import 'package:flagship/flagship_config.dart';
+import 'package:flagship/tracking/tracking_manager_config.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor.dart';
@@ -22,10 +23,10 @@ class Configuration extends StatefulWidget {
 
 class _ConfigurationState extends State<Configuration> with ShowDialog {
   // keys
-  String apiKey = "";
-  String envId = "";
+  String apiKey = "DxAcxlnRB9yFBZYtLDue1q01dcXZCw6aM49CQB23";
+  String envId = "bkk9glocmjcg0vtmdlng";
 
-  final int defaultTimeout = 2000;
+  final int defaultTimeout = 4000;
   final int defaultPollingTime = 60;
 
   final envIdController = TextEditingController();
@@ -109,6 +110,8 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
           }
         })
         .withTimeout(int.tryParse(timeoutController.text) ?? defaultTimeout)
+        .withTrackingConfig(TrackingManagerConfig(
+            batchIntervals: 60, poolMaxSize: 10, batchStrategy: BatchCachingStrategy.BATCH_PERIODIC_CACHING))
         .build();
     Flagship.start(envIdController.text, apiKeyController.text, config: config);
   }
@@ -269,7 +272,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   }
 
   String _createRandomUser() {
-    return 'user_' + Random().nextInt(100).toString();
+    return 'userPoolManager_' + Random().nextInt(1000).toString();
   }
 
   doMe() {

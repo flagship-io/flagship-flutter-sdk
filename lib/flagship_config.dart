@@ -1,6 +1,7 @@
 import 'package:flagship/decision/api_manager.dart';
 import 'package:flagship/decision/bucketing_manager.dart';
 import 'package:flagship/decision/decision_manager.dart';
+import 'package:flagship/tracking/tracking_manager_config.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +33,10 @@ class FlagshipConfig {
 
   Level _logLevel;
 
-  FlagshipConfig(this.decisionMode, this.timeout, this.pollingTime, this._logLevel, {this.statusListener}) {
+  TrackingManagerConfig trackingMangerConfig;
+
+  FlagshipConfig(this.decisionMode, this.timeout, this.pollingTime, this._logLevel, this.trackingMangerConfig,
+      {this.statusListener}) {
     // Set the log Manager
     this.logManager = LogManager(level: _logLevel);
     // Log the timeout value in ms
@@ -59,6 +63,9 @@ class ConfigBuilder {
 
   // StatusListener
   StatusListener? _statusListener;
+
+// Tracking Config
+  TrackingManagerConfig _trackingManagerConfig = TrackingManagerConfig();
 
   ConfigBuilder();
 
@@ -91,7 +98,13 @@ class ConfigBuilder {
     return this;
   }
 
+  ConfigBuilder withTrackingConfig(TrackingManagerConfig trackingManagerConfig) {
+    _trackingManagerConfig = trackingManagerConfig;
+    return this;
+  }
+
   FlagshipConfig build() {
-    return FlagshipConfig(_mode, _timeout, _pollingTime, _logLevel, statusListener: _statusListener);
+    return FlagshipConfig(_mode, _timeout, _pollingTime, _logLevel, _trackingManagerConfig,
+        statusListener: _statusListener);
   }
 }

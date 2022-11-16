@@ -11,4 +11,7 @@ class Endpoints {
 
 // Bucketing
   static const String BUCKETING_SCRIPT = "https://cdn.flagship.io/%s/bucketing.json";
+
+  // Batch events
+  static const String BATCH = "https://events.flagship.io";
 }

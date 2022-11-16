@@ -1,18 +1,35 @@
 import 'package:flagship/flagship.dart';
+import 'package:flagship/utils/flagship_tools.dart';
+import 'package:flutter/material.dart';
 
-enum Type { SCREENVIEW, PAGEVIEW, TRANSACTION, ITEM, EVENT, ACTIVATION, CONSENT, NONE }
+enum HitCategory { SCREENVIEW, PAGEVIEW, TRANSACTION, ITEM, EVENT, ACTIVATION, CONSENT, BATCH, NONE }
 
 abstract class Hit {
+  // id for the hit
+  late String id;
+
+  // Visitor id
+  late String visitorId;
+
+  // Check the validity
+  bool isValid();
+
+  // Type for hit
+  HitCategory type = HitCategory.NONE;
+
+  // Is less than 4h
+  bool isLessThan4H();
+
+  // Body used on posting data
   Map<String, Object> get bodyTrack;
 }
 
 class BaseHit extends Hit {
   // type for hit
-  Type type = Type.NONE;
+  // Type type = Type.NONE;
 
   // Required
   late String clientId;
-  late String visitorId;
   late String? anonymousId;
 
   String dataSource = "APP";
@@ -32,6 +49,9 @@ class BaseHit extends Hit {
   /// Session Number
   int? sessionNumber;
 
+  /// QT time
+  late DateTime qt;
+
   @override
   Map<String, Object> get bodyTrack {
     return {};
@@ -39,6 +59,7 @@ class BaseHit extends Hit {
 
   BaseHit() {
     this.clientId = Flagship.sharedInstance().envId ?? "";
+    qt = DateTime.now();
   }
 
   Map<String, Object> get communBodyTrack {
@@ -65,23 +86,26 @@ class BaseHit extends Hit {
     /// Session number
     if (sessionNumber != null) result["sn"] = sessionNumber ?? 0;
 
+    // Add qt entries
+    result.addEntries({"qt": qt.second}.entries);
+
     return result;
   }
 
   String get typeOfEvent {
     String ret = "None";
     switch (type) {
-      case Type.SCREENVIEW:
+      case HitCategory.SCREENVIEW:
         ret = 'SCREENVIEW';
         break;
-      case Type.ITEM:
+      case HitCategory.ITEM:
         ret = 'ITEM';
         break;
-      case Type.EVENT:
-      case Type.CONSENT:
+      case HitCategory.EVENT:
+      case HitCategory.CONSENT:
         ret = 'EVENT';
         break;
-      case Type.TRANSACTION:
+      case HitCategory.TRANSACTION:
         ret = 'TRANSACTION';
         break;
       default:
@@ -99,5 +123,15 @@ class BaseHit extends Hit {
       tupleId.addEntries({"vid": this.visitorId}.entries);
     }
     return tupleId;
+  }
+
+  @override
+  bool isValid() {
+    return true; // Todo implement later
+  }
+
+  @override
+  bool isLessThan4H() {
+    return (qt.difference(DateTime.now()).inHours <= 4);
   }
 }

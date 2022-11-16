@@ -43,14 +43,13 @@ class Transaction extends BaseHit {
       this.shipping,
       this.shippingMethod})
       : super() {
-    type = Type.TRANSACTION;
+    type = HitCategory.TRANSACTION;
   }
 
   @override
   Map<String, Object> get bodyTrack {
     var customBody = new Map<String, Object>();
-    customBody
-        .addAll({"t": typeOfEvent, 'tid': transactionId, 'ta': affiliation});
+    customBody.addAll({"t": typeOfEvent, 'tid': transactionId, 'ta': affiliation});
 
     // Add revenue
     if (revenue != null) customBody['tr'] = revenue ?? 0;

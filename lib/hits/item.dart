@@ -19,22 +19,15 @@ class Item extends BaseHit {
   /// Specifies the item category
   String? category;
 
-  Item(
-      {required this.transactionId,
-      required this.name,
-      required this.code,
-      this.price,
-      this.category,
-      this.quantity})
+  Item({required this.transactionId, required this.name, required this.code, this.price, this.category, this.quantity})
       : super() {
-    type = Type.ITEM;
+    type = HitCategory.ITEM;
   }
 
   @override
   Map<String, Object> get bodyTrack {
     var customBody = new Map<String, Object>();
-    customBody.addAll(
-        {"t": typeOfEvent, "tid": transactionId, "in": name, "ic": code});
+    customBody.addAll({"t": typeOfEvent, "tid": transactionId, "in": name, "ic": code});
 
     // Add price
     if (price != null) customBody['ip'] = price ?? 0;
