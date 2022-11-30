@@ -7,7 +7,7 @@ abstract class DecisionManager extends IDecisionManager {
   //panic mode
   bool _panic = false;
 
-  bool _isConsent = true; // By default teh value is true
+  // bool _isConsent = true; // By default the value is true
 
   Service service;
 
@@ -30,13 +30,13 @@ abstract class DecisionManager extends IDecisionManager {
     _panic = newValue;
   }
 
-  void updateConsent(bool newValue) {
-    _isConsent = newValue;
-  }
+  // void updateConsent(bool newValue) {
+  //   _isConsent = newValue;
+  // }
 
-  bool isConsent() {
-    return _isConsent;
-  }
+  // bool isConsent() {
+  //   return _isConsent;
+  // }
 
   void startPolling() {} // used by the bucketing
 }
