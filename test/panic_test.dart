@@ -47,7 +47,7 @@ void main() {
     config.statusListener = (newState) {
       if (newState == Status.PANIC_ON) {
         // ignore: deprecated_member_use_from_same_package
-        expect(Flagship.getCurrentVisitor()?.getModification('key1', 12), 12);
+        expect(Flagship.getCurrentVisitor()?.getModification('key1', 12), 2);
       }
     };
 
