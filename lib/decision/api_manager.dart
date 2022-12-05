@@ -12,7 +12,11 @@ class ApiManager extends DecisionManager {
   ApiManager(Service service) : super(service);
   @override
   Future<Campaigns> getCampaigns(
-      String envId, String visitorId, String? anonymousId, bool hasConsented, Map<String, Object> context) async {
+      String envId,
+      String visitorId,
+      String? anonymousId,
+      bool hasConsented,
+      Map<String, Object> context) async {
     // Create url
     String urlString = Endpoints.DECISION_API + envId + Endpoints.CAMPAIGNS;
 
@@ -39,8 +43,10 @@ class ApiManager extends DecisionManager {
     }
     // Create data to post
     Object data = json.encode(params);
-    var response = await service.sendHttpRequest(RequestType.Post, urlString, fsHeaders, data,
-        timeoutMs: Flagship.sharedInstance().getConfiguration()?.timeout ?? TIMEOUT);
+    var response = await service.sendHttpRequest(
+        RequestType.Post, urlString, fsHeaders, data,
+        timeoutMs:
+            Flagship.sharedInstance().getConfiguration()?.timeout ?? TIMEOUT);
     switch (response.statusCode) {
       case 200:
         Flagship.logger(Level.ALL, response.body, isJsonString: true);
@@ -48,7 +54,7 @@ class ApiManager extends DecisionManager {
       default:
         Flagship.logger(
           Level.ALL,
-          "Failed to synchronize",
+          "Failed to synchronize + ${response.body}",
         );
         throw Exception('Flagship, Failed to synchronize');
     }
