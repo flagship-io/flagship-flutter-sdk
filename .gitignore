@@ -69,7 +69,7 @@ coverage/
 **/ios/Flutter/flutter_export_environment.sh
 **/ios/ServiceDefinitions.json
 **/ios/Runner/GeneratedPluginRegistrant.*
-**/pubspec.lock
+pubspec.lock
 **/ios/Podfile.lock
 
 # Exceptions to above rules.
