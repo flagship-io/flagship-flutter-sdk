@@ -2,7 +2,18 @@ import 'package:flagship/flagship.dart';
 import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flutter/material.dart';
 
-enum HitCategory { SCREENVIEW, PAGEVIEW, TRANSACTION, ITEM, EVENT, ACTIVATION, CONSENT, BATCH, NONE }
+enum HitCategory {
+  SCREENVIEW,
+  PAGEVIEW,
+  TRANSACTION,
+  ITEM,
+  EVENT,
+  ACTIVATION,
+  CONSENT,
+  BATCH,
+  SEGMENT,
+  NONE
+}
 
 abstract class Hit {
   // id for the hit
