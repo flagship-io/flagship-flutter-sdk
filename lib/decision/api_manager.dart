@@ -53,9 +53,9 @@ class ApiManager extends DecisionManager {
       default:
         Flagship.logger(
           Level.ALL,
-          "Failed to synchronize",
+          "Failed to synchronize : ${response.body}",
         );
-        throw Exception('Flagship, Failed to synchronize + ${null}');
+        throw Exception('Flagship, Failed to synchronize ');
     }
   }
 }
