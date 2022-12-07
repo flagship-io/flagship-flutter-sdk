@@ -26,18 +26,16 @@ void main() {
     "Content-type": "application/json"
   };
 
-  Map<String, dynamic> presetContext = FlagshipContextManager.getPresetContextForApp();
-  Map<String, dynamic> jsonData = {"visitorId": "visitorId", "context": presetContext, "trigger_hit": false};
-  Object data = json.encode(jsonData);
-
-  //Object data = json.encode({"visitorId": "visitorId", "context": {}, "trigger_hit": false});
-
   MockService fakeService = MockService();
   ApiManager fakeApi = ApiManager(fakeService);
   test('Test API with no consent', () async {
-    String fakeResponse = await ToolsTest.readFile('test_resources/decisionApi.json') ?? "";
-    when(fakeService.sendHttpRequest(RequestType.Post,
-            'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true', fsHeaders, data,
+    String fakeResponse =
+        await ToolsTest.readFile('test_resources/decisionApi.json') ?? "";
+    when(fakeService.sendHttpRequest(
+            RequestType.Post,
+            'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true',
+            fsHeaders,
+            any,
             timeoutMs: TIMEOUT))
         .thenAnswer((_) async {
       return http.Response(fakeResponse, 200);
@@ -45,7 +43,7 @@ void main() {
 
     FlagshipConfig config = ConfigBuilder().withTimeout(TIMEOUT).build();
     config.decisionManager = fakeApi;
-    Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
+    await Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
 
     var v1 = Flagship.newVisitor("visitorId").hasConsented(false).build();
     expect(v1.getConsent(), false);
@@ -71,7 +69,8 @@ void main() {
       expect(infos['isReference'], true);
 
       /// Send hit
-      v1.sendHit(Event(action: "action", category: EventCategory.Action_Tracking));
+      v1.sendHit(
+          Event(action: "action", category: EventCategory.Action_Tracking));
 
       /// Send consent hit
       v1.sendHit(Consent(hasConsented: false));

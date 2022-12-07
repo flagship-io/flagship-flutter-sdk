@@ -28,16 +28,16 @@ void main() {
     "Content-type": "application/json"
   };
 
-  // Map<String, dynamic> presetContext = FlagshipContextManager.getPresetContextForApp();
-  // Map<String, dynamic> jsonData = {"visitorId": "visitorId", "context": presetContext, "trigger_hit": false};
-  // Object data = json.encode(jsonData);
-
   MockService fakeService = MockService();
   ApiManager fakeApi = ApiManager(fakeService);
   test('Test API with default startegy', () async {
-    String fakeResponse = await ToolsTest.readFile('test_resources/decisionApi.json') ?? "";
-    when(fakeService.sendHttpRequest(RequestType.Post,
-            'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlng/campaigns/?exposeAllKeys=true', fsHeaders, any,
+    String fakeResponse =
+        await ToolsTest.readFile('test_resources/decisionApi.json') ?? "";
+    when(fakeService.sendHttpRequest(
+            RequestType.Post,
+            'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlng/campaigns/?exposeAllKeys=true',
+            fsHeaders,
+            any,
             timeoutMs: TIMEOUT))
         .thenAnswer((_) async {
       return http.Response(fakeResponse, 200);
@@ -45,7 +45,7 @@ void main() {
 
     FlagshipConfig config = ConfigBuilder().withTimeout(TIMEOUT).build();
     config.decisionManager = fakeApi;
-    Flagship.start("bkk9glocmjcg0vtmdlng", "apiKey", config: config);
+    await Flagship.start("bkk9glocmjcg0vtmdlng", "apiKey", config: config);
     Flagship.enableLog(true);
     Flagship.setLoggerLevel(Level.WARNING);
 
@@ -65,7 +65,8 @@ void main() {
 
       /// Get Modification
       // ignore: deprecated_member_use_from_same_package
-      expect(v1.getModification('aliasTer', 'default', activate: true), "testValue");
+      expect(v1.getModification('aliasTer', 'default', activate: true),
+          "testValue");
 
       // ignore: deprecated_member_use_from_same_package
       expect(v1.getModification('aliasDouble', 100.0, activate: true), 12.0);
@@ -93,7 +94,8 @@ void main() {
       expect(v1.getModification('aliasDouble', "default"), "default");
 
       /// Send hit
-      v1.sendHit(Event(action: "action", category: EventCategory.Action_Tracking));
+      v1.sendHit(
+          Event(action: "action", category: EventCategory.Action_Tracking));
 
       /// Send consent hit
       v1.sendHit(Consent(hasConsented: false));
@@ -104,9 +106,13 @@ void main() {
     // MockService fakeService = MockService();
     // ApiManager fakeApi = ApiManager(fakeService);
 
-    String fakeResponse = await ToolsTest.readFile('test_resources/decisionApi.json') ?? "";
-    when(fakeService.sendHttpRequest(RequestType.Post,
-            'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true', fsHeaders, any,
+    String fakeResponse =
+        await ToolsTest.readFile('test_resources/decisionApi.json') ?? "";
+    when(fakeService.sendHttpRequest(
+            RequestType.Post,
+            'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true',
+            fsHeaders,
+            any,
             timeoutMs: TIMEOUT))
         .thenAnswer((_) async {
       return http.Response(fakeResponse, 200);
@@ -114,7 +120,8 @@ void main() {
 
     /// count the callback trigger
 
-    FlagshipConfig config = ConfigBuilder().withTimeout(TIMEOUT).withStatusListener((newStatus) {
+    FlagshipConfig config =
+        ConfigBuilder().withTimeout(TIMEOUT).withStatusListener((newStatus) {
       print(" ---- statusListner is trigger ---- ");
       expect(Flagship.getStatus() == newStatus, true);
       expect(newStatus, Flagship.getStatus());
@@ -152,15 +159,20 @@ void main() {
   test('Test API with timeout', () async {
     // MockService fakeService = MockService();
     // ApiManager fakeApi = ApiManager(fakeService);
-    String fakeResponse = await ToolsTest.readFile('test_resources/decisionApi.json') ?? "";
-    when(fakeService.sendHttpRequest(RequestType.Post,
-            'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true', fsHeaders, any,
+    String fakeResponse =
+        await ToolsTest.readFile('test_resources/decisionApi.json') ?? "";
+    when(fakeService.sendHttpRequest(
+            RequestType.Post,
+            'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true',
+            fsHeaders,
+            any,
             timeoutMs: TIMEOUT))
         .thenAnswer((_) async {
       return http.Response(fakeResponse, 408);
     });
 
-    FlagshipConfig config = ConfigBuilder().withTimeout(TIMEOUT).withStatusListener((newStatus) {
+    FlagshipConfig config =
+        ConfigBuilder().withTimeout(TIMEOUT).withStatusListener((newStatus) {
       print(" ---- statusListner is trigger ---- ");
       expect(Flagship.getStatus() == newStatus, true);
       expect(newStatus, Flagship.getStatus());
