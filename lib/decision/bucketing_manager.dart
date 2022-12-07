@@ -31,11 +31,12 @@ class BucketingManager extends DecisionManager {
   }
 
   @override
-  Future<Campaigns> getCampaigns(
-      String envId, String visitorId, String? anonymousId, Map<String, Object> context) async {
+  Future<Campaigns> getCampaigns(String envId, String visitorId,
+      String? anonymousId, Map<String, Object> context) async {
     // Read File before
     String? jsonString = await _readFile().catchError((error) {
-      Flagship.logger(Level.ALL, "Error on reading the saved bucketing or the file doesn't exist");
+      Flagship.logger(Level.ALL,
+          "Error on reading the saved bucketing or the file doesn't exist");
       return null;
     });
     if (jsonString != null) {
@@ -43,8 +44,9 @@ class BucketingManager extends DecisionManager {
 
       // Send Keys context when the consent is true && the panic mode is not activated
       if (isConsent() && bucketingObject.panic == false) {
-        // Send the context
-        _sendKeyContext(envId, visitorId, context);
+        // Send the context // The Segment hit replace this action on sending context
+        //  _sendKeyContext(envId, visitorId, context);
+
       }
       return bucketVariations(visitorId, bucketingObject, context);
     } else {
@@ -56,11 +58,16 @@ class BucketingManager extends DecisionManager {
   _downloadScript() async {
     SharedPreferences prefs = await _prefs;
     // Create url
-    String urlString = Endpoints.BUCKETING_SCRIPT.replaceFirst("%s", Flagship.sharedInstance().envId ?? "");
+    String urlString = Endpoints.BUCKETING_SCRIPT
+        .replaceFirst("%s", Flagship.sharedInstance().envId ?? "");
 
     var response = await this.service.sendHttpRequest(
-        RequestType.Get, urlString, {"if-modified-since": prefs.getString(lastModfiedKey) ?? ""}, null,
-        timeoutMs: Flagship.sharedInstance().getConfiguration()?.timeout ?? TIMEOUT);
+        RequestType.Get,
+        urlString,
+        {"if-modified-since": prefs.getString(lastModfiedKey) ?? ""},
+        null,
+        timeoutMs:
+            Flagship.sharedInstance().getConfiguration()?.timeout ?? TIMEOUT);
     switch (response.statusCode) {
       case 200:
         Flagship.logger(Level.ALL, response.body, isJsonString: true);
@@ -72,7 +79,8 @@ class BucketingManager extends DecisionManager {
         _saveFile(response.body);
         break;
       case 304:
-        Flagship.logger(Level.ALL, "The bucketing script is not modified since last download");
+        Flagship.logger(Level.ALL,
+            "The bucketing script is not modified since last download");
         break;
       default:
         Flagship.logger(Level.ALL, "Failed to download script for bucketing");
@@ -89,7 +97,8 @@ class BucketingManager extends DecisionManager {
     this.polling?.start();
   }
 
-  _sendKeyContext(String envId, String visitorId, Map<String, dynamic> currentContext) async {
+  _sendKeyContext(String envId, String visitorId,
+      Map<String, dynamic> currentContext) async {
     // Url string for the /event
     String urlString = Endpoints.DECISION_API + envId + Endpoints.EVENTS;
     Flagship.logger(Level.INFO, 'Send Context :' + urlString);
@@ -102,18 +111,24 @@ class BucketingManager extends DecisionManager {
       "Content-type": "application/json"
     };
     // Create data to post
-    Object dataToPost = json.encode({"visitor_id": visitorId, "data": currentContext, "type": "CONTEXT"});
+    Object dataToPost = json.encode(
+        {"visitor_id": visitorId, "data": currentContext, "type": "CONTEXT"});
 
     // send context
-    this.service.sendHttpRequest(RequestType.Post, urlString, headers, dataToPost);
+    this
+        .service
+        .sendHttpRequest(RequestType.Post, urlString, headers, dataToPost);
   }
 
   // Save the response into the file
   _saveFile(String body) async {
     final directory = await getApplicationDocumentsDirectory();
     Directory bucketingDirectory =
-        await Directory.fromUri(Uri.file(directory.path + bucketingFolder)).create(recursive: true).catchError((error) {
-      Flagship.logger(Level.DEBUG, "Enable to create the directory to save the buckting file ");
+        await Directory.fromUri(Uri.file(directory.path + bucketingFolder))
+            .create(recursive: true)
+            .catchError((error) {
+      Flagship.logger(Level.DEBUG,
+          "Enable to create the directory to save the buckting file ");
     });
     // We got the path to save the json file
     File jsonFile = File(bucketingDirectory.path + fileName);
