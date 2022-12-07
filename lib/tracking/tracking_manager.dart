@@ -22,7 +22,7 @@ class TrackingManager {
   late String apiKey;
 
   /// service
-  late Service _service;
+  Service service = Service(http.Client());
 
   /// Pool tempo, place it later elswhere
   late FlagshipPoolQueue fsPool;
@@ -38,9 +38,8 @@ class TrackingManager {
 
   TrackingManagerDelegate? delegate;
 
-  TrackingManager(this.configTracking) {
+  TrackingManager(this.service, this.configTracking) {
     this.apiKey = Flagship.sharedInstance().apiKey ?? "";
-    _service = Service(http.Client());
 
     // Temporary create a pool  /// TO REVIEW
     fsPool = FlagshipPoolQueue(configTracking.poolMaxSize);
@@ -65,7 +64,7 @@ class TrackingManager {
 
   // later add code error in the future
   Future<void> sendActivate(Activate activateHit) async {
-    /// Create url
+    // Create url
     String urlString = Endpoints.DECISION_API + Endpoints.ACTIVATION;
     Object? objectToSend;
     if (activatePool.isEmpty()) {
@@ -82,7 +81,7 @@ class TrackingManager {
       objectToSend = jsonEncode(activateBatch.toJson());
     }
 
-    var response = await _service.sendHttpRequest(
+    var response = await service.sendHttpRequest(
         RequestType.Post, urlString, fsHeader, objectToSend,
         timeoutMs: TIMEOUT_REQUEST);
     switch (response.statusCode) {
@@ -98,7 +97,7 @@ class TrackingManager {
     }
   }
 
-  //Send Hit
+  // Send Hit
   Future<void> sendHit(BaseHit pHit) async {
     if (batchManager.cronTimer.isPaused) {
       batchManager.startCron();
@@ -144,7 +143,7 @@ class TrackingManager {
     /// Create url
     String urlString = Endpoints.BATCH;
     try {
-      var response = await _service.sendHttpRequest(RequestType.Post, urlString,
+      var response = await service.sendHttpRequest(RequestType.Post, urlString,
           fsHeader, jsonEncode(Batch(listOfHitToSend).bodyTrack),
           timeoutMs: TIMEOUT_REQUEST);
       switch (response.statusCode) {

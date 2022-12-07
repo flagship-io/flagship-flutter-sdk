@@ -5,7 +5,8 @@ import 'package:mockito/mockito.dart';
 
 FlagshipPoolQueue poolTest = FlagshipPoolQueue(80);
 
-class MockFlagshipPoolQueueDelegate extends Mock implements FlagshipPoolQueueDelegate {
+class MockFlagshipPoolQueueDelegate extends Mock
+    implements FlagshipPoolQueueDelegate {
   @override
   void onPoolSizeMaxReached() {
     poolTest.fsQueue.clear();
@@ -14,12 +15,12 @@ class MockFlagshipPoolQueueDelegate extends Mock implements FlagshipPoolQueueDel
 
 void main() {
   test("pool_queue", () async {
-    //FlagshipPoolQueue poolTest = FlagshipPoolQueue(80);
     poolTest.delegate = MockFlagshipPoolQueueDelegate();
 
     // create 100 hits
     for (int i = 0; i < 100; i++) {
-      Event testEvent = Event(action: "testPool" + "$i", category: EventCategory.Action_Tracking);
+      Event testEvent = Event(
+          action: "testPool" + "$i", category: EventCategory.Action_Tracking);
       testEvent.visitorId = "user_" + "$i";
       poolTest.addTrackElement(testEvent);
       // check the creattion id after adding the hit in the pool
@@ -40,7 +41,8 @@ void main() {
   test("removeWithvisitorId", () {
     // create 100 hits
     for (int i = 0; i < 20; i++) {
-      Event testEvent = Event(action: "testPool" + "$i", category: EventCategory.Action_Tracking);
+      Event testEvent = Event(
+          action: "testPool" + "$i", category: EventCategory.Action_Tracking);
       testEvent.visitorId = "user_" + "$i";
       poolTest.addTrackElement(testEvent);
       // check the creattion id after adding the hit in the pool
@@ -66,7 +68,8 @@ void main() {
   test("flushPool", () {
     poolTest.flushTrackQueue();
     for (int i = 0; i < 100; i++) {
-      Event testEvent = Event(action: "testPool" + "$i", category: EventCategory.Action_Tracking);
+      Event testEvent = Event(
+          action: "testPool" + "$i", category: EventCategory.Action_Tracking);
       testEvent.visitorId = "user_" + "$i";
       poolTest.addTrackElement(testEvent);
       // check the creattion id after adding the hit in the pool
@@ -79,7 +82,8 @@ void main() {
   test("flushPoolWithConsent", () {
     poolTest.flushTrackQueue();
     for (int i = 0; i < 50; i++) {
-      Event testEvent = Event(action: "testPool" + "$i", category: EventCategory.Action_Tracking);
+      Event testEvent = Event(
+          action: "testPool" + "$i", category: EventCategory.Action_Tracking);
       testEvent.visitorId = "user_" + "$i";
       poolTest.addTrackElement(testEvent);
     }
