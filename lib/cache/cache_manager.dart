@@ -1,5 +1,3 @@
-import 'package:flagship/hits/hit.dart';
-
 mixin IHitCacheManager {
   // save hit
   void cacheHits(Map<String, Object> rawHit);

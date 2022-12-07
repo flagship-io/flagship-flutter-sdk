@@ -1,6 +1,5 @@
 import 'package:flagship/hits/hit.dart';
 import 'package:flagship/model/modification.dart';
-import 'package:flagship/visitor.dart';
 
 class Activate extends Hit {
   // final String campaignId;
@@ -13,14 +12,20 @@ class Activate extends Hit {
 
   final String envId;
 
-  Activate(this.modification, String visitorId, this.anonymousId, this.envId) : super() {
+  Activate(this.modification, String visitorId, this.anonymousId, this.envId)
+      : super() {
     this.visitorId = visitorId;
   }
 
   Map<String, Object> toJson() {
     Map<String, String> result;
 
-    result = {"vaid": modification.variationId, "caid": modification.variationGroupId, "vid": visitorId, "cid": envId};
+    result = {
+      "vaid": modification.variationId,
+      "caid": modification.variationGroupId,
+      "vid": visitorId,
+      "cid": envId
+    };
 
     if (this.anonymousId != null) {
       result.addEntries({"aid": anonymousId ?? ""}.entries);

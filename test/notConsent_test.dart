@@ -1,10 +1,8 @@
 import 'package:flagship/decision/api_manager.dart';
 import 'package:flagship/flagship.dart';
-import 'package:flagship/flagshipContext/flagship_context_manager.dart';
 import 'package:flagship/flagship_version.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -42,13 +40,14 @@ void main() {
     });
 
     FlagshipConfig config = ConfigBuilder().withTimeout(TIMEOUT).build();
-    config.decisionManager = fakeApi;
+    //config.decisionManager = fakeApi;
     await Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
 
     var v1 = Flagship.newVisitor("visitorId").hasConsented(false).build();
+    v1.config.decisionManager = fakeApi;
     expect(v1.getConsent(), false);
     // ignore: deprecated_member_use_from_same_package
-    v1.synchronizeModifications().then((value) {
+    await v1.synchronizeModifications().then((value) {
       expect(Flagship.getStatus(), Status.READY);
 
       /// Activate
@@ -57,7 +56,7 @@ void main() {
 
       /// Get Modification
       // ignore: deprecated_member_use_from_same_package
-      expect(v1.getModification('aliasTer', 'default'), "testValue");
+      expect(v1.getModification('key_A', 'default'), "val_A");
 
       /// Get infos
       // ignore: deprecated_member_use_from_same_package

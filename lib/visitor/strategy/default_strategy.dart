@@ -128,8 +128,8 @@ class DefaultStrategy implements IVisitor {
     Flagship.logger(Level.ALL, SYNCHRONIZE_MODIFICATIONS);
     Status state = Flagship.getStatus();
     try {
-      var camp = await visitor.decisionManager.getCampaigns(
-          Flagship.sharedInstance().envId ?? "", visitor.visitorId, visitor.anonymousId, visitor.getContext());
+      var camp = await visitor.decisionManager.getCampaigns(Flagship.sharedInstance().envId ?? "", visitor.visitorId,
+          visitor.anonymousId, visitor.getConsent(), visitor.getContext());
       // Clear the previous modifications
       visitor.modifications.clear();
       // Update panic value

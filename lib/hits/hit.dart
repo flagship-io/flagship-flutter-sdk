@@ -1,6 +1,4 @@
 import 'package:flagship/flagship.dart';
-import 'package:flagship/utils/flagship_tools.dart';
-import 'package:flutter/material.dart';
 
 enum HitCategory {
   SCREENVIEW,

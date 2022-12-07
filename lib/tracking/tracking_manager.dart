@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:collection';
 import 'dart:convert';
 import 'package:flagship/api/endpoints.dart';
 import 'package:flagship/tracking/batch_manager.dart';
@@ -8,16 +7,13 @@ import 'package:flagship/flagship.dart';
 import 'package:flagship/flagship_version.dart';
 import 'package:flagship/hits/activate.dart';
 import 'package:flagship/hits/batch.dart';
-import 'package:flagship/hits/event.dart';
 import 'package:flagship/hits/hit.dart';
 import 'package:flagship/tracking/pool_queue.dart';
 import 'package:flagship/tracking/tracking_manager_config.dart';
 import 'package:flagship/utils/constants.dart';
-import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:http/http.dart' as http;
 import 'package:flagship/api/service.dart';
-import 'package:pausable_timer/pausable_timer.dart';
 
 const TIMEOUT_REQUEST = 60000; // 60 seconds
 
@@ -76,7 +72,8 @@ class TrackingManager {
       objectToSend = jsonEncode(activateHit.toJson());
     } else {
       urlString = Endpoints.DECISION_API + Endpoints.ACTIVATION;
-      var listOfActivate = activatePool.extractHitsWithVisitorId(activateHit.visitorId);
+      var listOfActivate =
+          activatePool.extractHitsWithVisitorId(activateHit.visitorId);
       // Add the current activate
       listOfActivate.add(activateHit);
       // Create an activate batch object
@@ -85,8 +82,9 @@ class TrackingManager {
       objectToSend = jsonEncode(activateBatch.toJson());
     }
 
-    var response =
-        await _service.sendHttpRequest(RequestType.Post, urlString, fsHeader, objectToSend, timeoutMs: TIMEOUT_REQUEST);
+    var response = await _service.sendHttpRequest(
+        RequestType.Post, urlString, fsHeader, objectToSend,
+        timeoutMs: TIMEOUT_REQUEST);
     switch (response.statusCode) {
       case 200:
       case 204:
@@ -108,7 +106,8 @@ class TrackingManager {
     // Add to pool
     if (pHit.isValid() == true) {
       fsPool.addTrackElement(pHit);
-      if (configTracking.batchStrategy == BatchCachingStrategy.BATCH_CONTINUOUS_CACHING) {
+      if (configTracking.batchStrategy ==
+          BatchCachingStrategy.BATCH_CONTINUOUS_CACHING) {
         // It must cache the hit in the database by calling the cacheHit method of the cache manager
         fsCacheHit.cacheHits(pHit.bodyTrack);
       }
@@ -145,15 +144,17 @@ class TrackingManager {
     /// Create url
     String urlString = Endpoints.BATCH;
     try {
-      var response = await _service.sendHttpRequest(
-          RequestType.Post, urlString, fsHeader, jsonEncode(Batch(listOfHitToSend).bodyTrack),
+      var response = await _service.sendHttpRequest(RequestType.Post, urlString,
+          fsHeader, jsonEncode(Batch(listOfHitToSend).bodyTrack),
           timeoutMs: TIMEOUT_REQUEST);
       switch (response.statusCode) {
         case 200:
         case 204:
         case 201:
           Flagship.logger(Level.INFO, HIT_SUCCESS);
-          Flagship.logger(Level.INFO, jsonEncode(Batch(listOfHitToSend).bodyTrack), isJsonString: true);
+          Flagship.logger(
+              Level.INFO, jsonEncode(Batch(listOfHitToSend).bodyTrack),
+              isJsonString: true);
           delegate?.onSendBatchWithSucess();
           break;
         default:
@@ -162,7 +163,8 @@ class TrackingManager {
       }
     } catch (error) {
       delegate?.onFailedToSendBatch(listOfHitToSend);
-      Flagship.logger(Level.EXCEPTIONS, EXCEPTION.replaceFirst("%s", "$error") + urlString);
+      Flagship.logger(
+          Level.EXCEPTIONS, EXCEPTION.replaceFirst("%s", "$error") + urlString);
       Flagship.logger(Level.ERROR, HIT_FAILED);
     }
   }

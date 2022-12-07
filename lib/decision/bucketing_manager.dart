@@ -31,8 +31,12 @@ class BucketingManager extends DecisionManager {
   }
 
   @override
-  Future<Campaigns> getCampaigns(String envId, String visitorId,
-      String? anonymousId, Map<String, Object> context) async {
+  Future<Campaigns> getCampaigns(
+      String envId,
+      String visitorId,
+      String? anonymousId,
+      bool hasConsented,
+      Map<String, Object> context) async {
     // Read File before
     String? jsonString = await _readFile().catchError((error) {
       Flagship.logger(Level.ALL,
@@ -43,10 +47,9 @@ class BucketingManager extends DecisionManager {
       Bucketing bucketingObject = Bucketing.fromJson(json.decode(jsonString));
 
       // Send Keys context when the consent is true && the panic mode is not activated
-      if (isConsent() && bucketingObject.panic == false) {
-        // Send the context // The Segment hit replace this action on sending context
-        //  _sendKeyContext(envId, visitorId, context);
-
+      if (hasConsented && bucketingObject.panic == false) {
+        // Send the context
+        _sendKeyContext(envId, visitorId, context);
       }
       return bucketVariations(visitorId, bucketingObject, context);
     } else {

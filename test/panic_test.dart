@@ -1,10 +1,8 @@
 import 'package:flagship/decision/api_manager.dart';
 import 'package:flagship/flagship.dart';
-import 'package:flagship/flagshipContext/flagship_context_manager.dart';
 import 'package:flagship/flagship_version.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -43,23 +41,17 @@ void main() {
     });
 
     FlagshipConfig config = ConfigBuilder().withTimeout(TIMEOUT).build();
-    config.statusListener = (newState) {
-      if (newState == Status.PANIC_ON) {
-        // ignore: deprecated_member_use_from_same_package
-        expect(Flagship.getCurrentVisitor()?.getModification('key1', 12), 12);
-      }
-    };
 
-    config.decisionManager = fakePanicApi;
     Flagship.sharedInstance().onUpdateState(Status.NOT_INITIALIZED);
     await Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
 
     var v1 = Flagship.newVisitor("panicUser").build();
     v1.config.decisionManager = fakePanicApi;
+
     Flagship.setCurrentVisitor(v1);
 
     // ignore: deprecated_member_use_from_same_package
-    v1.synchronizeModifications().then((value) {
+    await v1.synchronizeModifications().then((value) {
       expect(Flagship.getStatus(), Status.PANIC_ON);
 
       /// Activate

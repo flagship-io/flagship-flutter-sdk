@@ -81,11 +81,11 @@ class Visitor {
     // Load preset_Context
     this.updateContextWithMap(FlagshipContextManager.getPresetContextForApp());
 
-    // update context
+    // Update context
     this.updateContextWithMap(context);
-    // set delegate
+    // Set delegate
     _visitorDelegate = VisitorDelegate(this);
-    // set the consent
+    // Set the consent
     _hasConsented = hasConsented;
     // Send the consent hit on false at the start
     if (!_hasConsented) {
@@ -101,7 +101,7 @@ class Visitor {
   /// Update context directely with map for <String, Object>
   void updateContextWithMap(Map<String, Object> context) {
     _context.addAll(context);
-    Flagship.logger(Level.INFO, CONTEXT_UPDATE.replaceFirst("%s", "$_context"));
+    Flagship.logger(Level.DEBUG, CONTEXT_UPDATE.replaceFirst("%s", "$_context"));
   }
 
   /// Get the current context for the visitor
@@ -196,8 +196,7 @@ class Visitor {
     }
     // Update the state for visitor
     _hasConsented = newValue;
-    // Update the decision manager
-    decisionManager.updateConsent(newValue);
+
     // Delegate the action to strategy
     _visitorDelegate.setConsent(_hasConsented);
   }

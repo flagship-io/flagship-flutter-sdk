@@ -1,11 +1,9 @@
 import 'package:flagship/decision/api_manager.dart';
 import 'package:flagship/flagship.dart';
-import 'package:flagship/flagshipContext/flagship_context_manager.dart';
 import 'package:flagship/flagship_version.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -44,19 +42,20 @@ void main() {
     });
 
     FlagshipConfig config = ConfigBuilder().withTimeout(TIMEOUT).build();
-    config.decisionManager = fakeApi;
+    // config.decisionManager = fakeApi;
     await Flagship.start("bkk9glocmjcg0vtmdlng", "apiKey", config: config);
     Flagship.enableLog(true);
     Flagship.setLoggerLevel(Level.WARNING);
 
-    //var v1 = Flagship.createVisitor("visitorId", {});
-
     var v1 = Flagship.newVisitor("visitorId").withContext({}).build();
+
+    v1.config.decisionManager = fakeApi;
 
     v1.setConsent(true);
     expect(v1.getConsent(), true);
     // ignore: deprecated_member_use_from_same_package
-    v1.synchronizeModifications().then((value) {
+
+    await v1.fetchFlags().whenComplete(() {
       expect(Flagship.getStatus(), Status.READY);
 
       /// Activate
@@ -100,6 +99,10 @@ void main() {
       /// Send consent hit
       v1.sendHit(Consent(hasConsented: false));
     });
+
+    // await v1.synchronizeModifications().then((value) {
+
+    // });
   });
 
   test('Test API with default startegy and callback', () async {
@@ -145,6 +148,7 @@ void main() {
     //   expect(v1.getModification('aliasTer', 'default'), "default");
     // });
 
+    // ignore: deprecated_member_use_from_same_package
     await v1.synchronizeModifications().then((value) {
       expect(Flagship.getStatus(), Status.READY);
       // ignore: deprecated_member_use_from_same_package

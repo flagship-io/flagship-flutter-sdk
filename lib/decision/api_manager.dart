@@ -11,14 +11,14 @@ import 'package:flagship/utils/logger/log_manager.dart';
 class ApiManager extends DecisionManager {
   ApiManager(Service service) : super(service);
   @override
-  Future<Campaigns> getCampaigns(String envId, String visitorId,
-      String? anonymousId, Map<String, Object> context) async {
+  Future<Campaigns> getCampaigns(
+      String envId,
+      String visitorId,
+      String? anonymousId,
+      bool hasConsented,
+      Map<String, Object> context) async {
     // Create url
     String urlString = Endpoints.DECISION_API + envId + Endpoints.CAMPAIGNS;
-    // if the consent is false , we set the sendContext to false
-    if (isConsent() == false) {
-      urlString = urlString + Endpoints.DO_NOT_SEND_CONTEXT;
-    }
 
     Flagship.logger(Level.INFO, 'GET CAMPAIGNS :' + urlString);
 
@@ -34,9 +34,10 @@ class ApiManager extends DecisionManager {
     Map<String, Object> params = {
       "visitorId": visitorId,
       "context": context,
-      "trigger_hit": false
+      "trigger_hit": false,
+      "visitor_consent": hasConsented ? true : false
     };
-    // add xpc inofs if needed
+    // add xpc infos if needed
     if (anonymousId != null) {
       params.addEntries({"anonymousId": anonymousId}.entries);
     }
@@ -55,7 +56,8 @@ class ApiManager extends DecisionManager {
           Level.ALL,
           "Failed to synchronize : ${response.body}",
         );
-        throw Exception('Flagship, Failed to synchronize ');
+        throw Exception(
+            'Flagship, Failed to synchronize'); // later will use the message of the body response ...
     }
   }
 }

@@ -1,3 +1,4 @@
+// ignore: non_constant_identifier_names
 final ALL_USERS = "fs_all_users";
 
 /// Enumeration cases that represent **Predefined** targetings
