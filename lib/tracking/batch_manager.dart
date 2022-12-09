@@ -21,9 +21,11 @@ class BatchManager with TrackingManagerDelegate, FlagshipPoolQueueDelegate {
     return cronTimer.isPaused;
   }
 
-  BatchManager(this.fsPool, this.sendBatch, this.configTracking, this.fsCacheHit) {
+  BatchManager(
+      this.fsPool, this.sendBatch, this.configTracking, this.fsCacheHit) {
     // Timer for cron
-    cronTimer = PausableTimer(Duration(seconds: configTracking.batchIntervals), batchFromQueue);
+    cronTimer = PausableTimer(
+        Duration(seconds: configTracking.batchIntervals), batchFromQueue);
     cronTimer.start();
     // Set the delegate
     this.fsPool.delegate = this;
@@ -36,7 +38,8 @@ class BatchManager with TrackingManagerDelegate, FlagshipPoolQueueDelegate {
   void batchFromQueue() {
     cronTimer.reset();
     print(" ------ Create a batch from a queue and send it ------");
-    var listToSend = fsPool.extractXElementFromQueue(configTracking.poolMaxSize);
+    var listToSend =
+        fsPool.extractXElementFromQueue(configTracking.poolMaxSize);
 
     if (listToSend.isEmpty) {
       // Stop the cron may be ....
@@ -71,7 +74,7 @@ class BatchManager with TrackingManagerDelegate, FlagshipPoolQueueDelegate {
   }
 
   @override
-  onFailedToSendBatch(List<Hit> listOfHitToSend) {
+  onFailedToSendBatch(List<BaseHit> listOfHitToSend) {
     cronTimer.start();
     // Save again in pool queue at the bottom
     fsPool.addListOfElements(listOfHitToSend);

@@ -1,7 +1,7 @@
 import 'package:flagship/hits/hit.dart';
 import 'package:flagship/model/modification.dart';
 
-class Activate extends Hit {
+class Activate extends BaseHit {
   // final String campaignId;
   // final String variationId;
   // final String variationGroupId;

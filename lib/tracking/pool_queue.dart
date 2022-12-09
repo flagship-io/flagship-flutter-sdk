@@ -7,7 +7,7 @@ import 'package:flagship/utils/logger/log_manager.dart';
 /// Queue for the hits
 class FlagshipPoolQueue {
   // Queue for basehit
-  Queue<Hit> fsQueue = Queue();
+  Queue<BaseHit> fsQueue = Queue();
 
   FlagshipPoolQueueDelegate? delegate;
 
@@ -15,7 +15,7 @@ class FlagshipPoolQueue {
 
   FlagshipPoolQueue(this.sizelimitation);
 
-  void addTrackElement(Hit newHit) {
+  void addTrackElement(BaseHit newHit) {
     // Set id for the hit
     newHit.id = newHit.visitorId + ":" + FlagshipTools.generateUuidv4();
     // Add hit to queue
@@ -29,7 +29,7 @@ class FlagshipPoolQueue {
   }
 
 // Add elements to the bottom
-  void addListOfElements(List<Hit> list) {
+  void addListOfElements(List<BaseHit> list) {
     list.forEach((element) {
       fsQueue.add(element);
     });
@@ -46,7 +46,8 @@ class FlagshipPoolQueue {
   List<String> flushTrackQueue({bool flushingConsentHits = false}) {
     List<String> ret = [];
     if (flushingConsentHits == true) {
-      Flagship.logger(Level.DEBUG, "Remove hits from the pool excpet the consent tracking");
+      Flagship.logger(
+          Level.DEBUG, "Remove hits from the pool excpet the consent tracking");
       fsQueue.removeWhere((element) {
         if (element.type != HitCategory.CONSENT) {
           ret.add(element.id);
@@ -64,7 +65,9 @@ class FlagshipPoolQueue {
   /// Extract the hits // Hits must be deleted from the pool (expect the Consent type ones).
   void removeHitsForVisitorId(String visitorId) {
     fsQueue.removeWhere((element) {
-      return (element.visitorId == visitorId && element.type != HitCategory.CONSENT);
+      return ((element.visitorId == visitorId ||
+              element.anonymousId == visitorId) &&
+          element.type != HitCategory.CONSENT);
     });
   }
 

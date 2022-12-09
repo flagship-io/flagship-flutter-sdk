@@ -18,7 +18,7 @@ enum Status {
 }
 
 class Flagship with FlagshipDelegate {
-  // environement id (provided by flagship)
+  // Environement id (provided by flagship)
   String? envId;
 
   // Api key (provided by flagship)
@@ -32,7 +32,7 @@ class Flagship with FlagshipDelegate {
 
   Status _status = Status.NOT_INITIALIZED;
 
-  // internal Singelton
+  // Internal Singelton
   static final Flagship _singleton = Flagship._internal();
 
   factory Flagship.sharedInstance() {
@@ -68,7 +68,8 @@ class Flagship with FlagshipDelegate {
   }
 
   /// Create new visitor
-  static VisitorBuilder newVisitor(String visitorId, {Instance instanceType = Instance.SINGLE_INSTANCE}) {
+  static VisitorBuilder newVisitor(String visitorId,
+      {Instance instanceType = Instance.SINGLE_INSTANCE}) {
     return VisitorBuilder(visitorId, instanceType: instanceType);
   }
 

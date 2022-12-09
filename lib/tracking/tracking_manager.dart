@@ -139,7 +139,7 @@ class TrackingManager {
   //   }
   // }
 
-  Future<void> sendBatch(List<Hit> listOfHitToSend) async {
+  Future<void> sendBatch(List<BaseHit> listOfHitToSend) async {
     /// Create url
     String urlString = Endpoints.BATCH;
     try {
@@ -171,5 +171,5 @@ class TrackingManager {
 
 mixin TrackingManagerDelegate {
   onSendBatchWithSucess();
-  onFailedToSendBatch(List<Hit> listOfHitToSend);
+  onFailedToSendBatch(List<BaseHit> listOfHitToSend);
 }

@@ -44,6 +44,7 @@ void main() {
       Event testEvent = Event(
           action: "testPool" + "$i", category: EventCategory.Action_Tracking);
       testEvent.visitorId = "user_" + "$i";
+      testEvent.anonymousId = null;
       poolTest.addTrackElement(testEvent);
       // check the creattion id after adding the hit in the pool
       expect(testEvent.id.contains(testEvent.visitorId), true);
