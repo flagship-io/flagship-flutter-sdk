@@ -1,4 +1,5 @@
 import 'package:flagship/api/service.dart';
+import 'package:flagship/cache/default_cache.dart';
 import 'package:flagship/decision/api_manager.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/flagship_config.dart';
@@ -21,8 +22,8 @@ MockService fakeService = MockService();
 
 MockService fakeTrackingService = MockService();
 
-TrackingManager fakeTrackingMgr =
-    TrackingManager(fakeTrackingService, TrackingManagerConfig());
+TrackingManager fakeTrackingMgr = TrackingManager(
+    fakeTrackingService, TrackingManagerConfig(), DefaultCacheHitImp());
 
 ApiManager fakeApi = ApiManager(fakeService);
 

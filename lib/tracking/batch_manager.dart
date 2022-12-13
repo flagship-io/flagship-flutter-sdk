@@ -1,9 +1,14 @@
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:flagship/cache/cache_manager.dart';
+import 'package:flagship/cache/interface_cache.dart';
 import 'package:flagship/hits/batch.dart';
 import 'package:flagship/hits/hit.dart';
 import 'package:flagship/tracking/pool_queue.dart';
 import 'package:flagship/tracking/tracking_manager.dart';
 import 'package:flagship/tracking/tracking_manager_config.dart';
+import 'package:flagship/utils/flagship_tools.dart';
 import 'package:pausable_timer/pausable_timer.dart';
 
 class BatchManager with TrackingManagerDelegate, FlagshipPoolQueueDelegate {
@@ -13,7 +18,7 @@ class BatchManager with TrackingManagerDelegate, FlagshipPoolQueueDelegate {
 
   final Function sendBatch;
 
-  final HitCacheManager fsCacheHit;
+  final IHitCacheImplementation fsCacheHit;
 
   final TrackingManagerConfig configTracking;
 
@@ -47,6 +52,14 @@ class BatchManager with TrackingManagerDelegate, FlagshipPoolQueueDelegate {
     } else {
       // var batchToSend = this.createBatch(listToSend);
       // Before send this batch will check the validity
+
+      // in periodic strategy will cache the list
+      if (this.configTracking.batchStrategy ==
+          BatchCachingStrategy.BATCH_PERIODIC_CACHING) {
+        // Call the interface to store the entire loop before send it
+        this.fsCacheHit.cacheHits(FlagshipTools.hitsToMap(listToSend));
+      }
+      // Send batch Ò
       sendBatch(listToSend);
     }
   }
@@ -60,16 +73,18 @@ class BatchManager with TrackingManagerDelegate, FlagshipPoolQueueDelegate {
   @override
   onSendBatchWithSucess() {
     // Remove old cache before save a fresh data
-    fsCacheHit.flushAllHits();
-    switch (configTracking.batchStrategy) {
-      case BatchCachingStrategy.BATCH_CONTINUOUS_CACHING:
-        break;
-      case BatchCachingStrategy.BATCH_PERIODIC_CACHING:
-        fsPool.fsQueue.forEach((element) {
-          fsCacheHit.cacheHits(element.bodyTrack);
-        });
-        break;
-    }
+
+    fsCacheHit.flushHits(fsPool.getAllIds());
+    // why i did this here ???? !!!!!
+    // switch (configTracking.batchStrategy) {
+    //   case BatchCachingStrategy.BATCH_CONTINUOUS_CACHING:
+    //     break;
+    //   case BatchCachingStrategy.BATCH_PERIODIC_CACHING:
+    //     fsPool.fsQueue.forEach((element) {
+    //       fsCacheHit.cacheHits({element.id: element.bodyTrack});
+    //     });
+    //     break;
+    // }
     cronTimer.start();
   }
 

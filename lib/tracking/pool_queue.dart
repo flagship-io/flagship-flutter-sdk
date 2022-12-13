@@ -17,7 +17,7 @@ class FlagshipPoolQueue {
 
   void addTrackElement(BaseHit newHit) {
     // Set id for the hit
-    newHit.id = newHit.visitorId + ":" + FlagshipTools.generateUuidv4();
+    newHit.id = newHit.visitorId + "_" + FlagshipTools.generateUuidv4();
     // Add hit to queue
     fsQueue.add(newHit);
     // check the limitation
@@ -72,8 +72,8 @@ class FlagshipPoolQueue {
   }
 
   /// Extract the X first elements
-  List<Hit> extractXElementFromQueue(int xElem) {
-    List<Hit> result = [];
+  List<BaseHit> extractXElementFromQueue(int xElem) {
+    List<BaseHit> result = [];
     for (int i = 0; i < xElem && fsQueue.isNotEmpty; i++) {
       result.add(fsQueue.removeFirst());
     }
@@ -85,6 +85,16 @@ class FlagshipPoolQueue {
     return fsQueue.where((element) {
       return (element.visitorId == visitorId);
     }).toList();
+  }
+
+  // Get the ids for all the  hits in the actual pool
+
+  List<String> getAllIds() {
+    List<String> result = [];
+    fsQueue.forEach((element) {
+      result.add(element.id);
+    });
+    return result;
   }
 
   bool isEmpty() {

@@ -80,8 +80,8 @@ class Visitor {
     }
 
     // Init tracking manager
-    trackingManager =
-        TrackingManager(Service(http.Client()), config.trackingMangerConfig);
+    trackingManager = TrackingManager(Service(http.Client()),
+        config.trackingMangerConfig, this.config.hitCacheImp);
 
     // Load preset_Context
     this.updateContextWithMap(FlagshipContextManager.getPresetContextForApp());

@@ -114,7 +114,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
         .withTimeout(int.tryParse(timeoutController.text) ?? defaultTimeout)
         .withTrackingConfig(TrackingManagerConfig(
             batchIntervals: 60,
-            poolMaxSize: 10,
+            poolMaxSize: 3,
             batchStrategy: BatchCachingStrategy.BATCH_PERIODIC_CACHING))
         .build();
     Flagship.start(envIdController.text, apiKeyController.text, config: config);

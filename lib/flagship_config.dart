@@ -1,3 +1,5 @@
+import 'package:flagship/cache/default_cache.dart';
+import 'package:flagship/cache/interface_cache.dart';
 import 'package:flagship/decision/api_manager.dart';
 import 'package:flagship/decision/bucketing_manager.dart';
 import 'package:flagship/decision/decision_manager.dart';
@@ -35,8 +37,15 @@ class FlagshipConfig {
 
   TrackingManagerConfig trackingMangerConfig;
 
-  FlagshipConfig(this.decisionMode, this.timeout, this.pollingTime, this._logLevel, this.trackingMangerConfig,
-      {this.statusListener}) {
+  IHitCacheImplementation hitCacheImp;
+
+  IVisitorCacheImplementation visitorCacheImp;
+
+  FlagshipConfig(this.decisionMode, this.timeout, this.pollingTime,
+      this._logLevel, this.trackingMangerConfig,
+      {this.statusListener,
+      this.hitCacheImp = const DefaultCacheHitImp(),
+      this.visitorCacheImp = const DefaultCacheVisitorImp()}) {
     // Set the log Manager
     this.logManager = LogManager(level: _logLevel);
     // Log the timeout value in ms
@@ -98,13 +107,15 @@ class ConfigBuilder {
     return this;
   }
 
-  ConfigBuilder withTrackingConfig(TrackingManagerConfig trackingManagerConfig) {
+  ConfigBuilder withTrackingConfig(
+      TrackingManagerConfig trackingManagerConfig) {
     _trackingManagerConfig = trackingManagerConfig;
     return this;
   }
 
   FlagshipConfig build() {
-    return FlagshipConfig(_mode, _timeout, _pollingTime, _logLevel, _trackingManagerConfig,
+    return FlagshipConfig(
+        _mode, _timeout, _pollingTime, _logLevel, _trackingManagerConfig,
         statusListener: _statusListener);
   }
 }

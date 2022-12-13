@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flagship/api/endpoints.dart';
+import 'package:flagship/cache/interface_cache.dart';
 import 'package:flagship/tracking/batch_manager.dart';
 import 'package:flagship/cache/cache_manager.dart';
 import 'package:flagship/flagship.dart';
@@ -30,7 +31,7 @@ class TrackingManager {
   late FlagshipPoolQueue activatePool;
 
   /// Cache manager
-  late HitCacheManager fsCacheHit = HitCacheManager();
+  final IHitCacheImplementation fsCacheHit;
 
   final TrackingManagerConfig configTracking;
 
@@ -38,7 +39,7 @@ class TrackingManager {
 
   TrackingManagerDelegate? delegate;
 
-  TrackingManager(this.service, this.configTracking) {
+  TrackingManager(this.service, this.configTracking, this.fsCacheHit) {
     this.apiKey = Flagship.sharedInstance().apiKey ?? "";
 
     // Temporary create a pool  /// TO REVIEW
@@ -108,7 +109,7 @@ class TrackingManager {
       if (configTracking.batchStrategy ==
           BatchCachingStrategy.BATCH_CONTINUOUS_CACHING) {
         // It must cache the hit in the database by calling the cacheHit method of the cache manager
-        fsCacheHit.cacheHits(pHit.bodyTrack);
+        fsCacheHit.cacheHits({pHit.id: pHit.bodyTrack});
       }
     } else {
       // When the hit is not valid

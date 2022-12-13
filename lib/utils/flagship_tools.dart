@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flagship/hits/hit.dart';
 import 'package:intl/intl.dart';
 import '../flagship.dart';
 import 'logger/log_manager.dart';
@@ -28,10 +29,22 @@ class FlagshipTools {
     // Set format
     final format = new DateFormat('yyyyMMddhhmss');
     // Return the uuid
-    return format.format(DateTime.now()) + (min + Random().nextInt(max - min)).toString();
+    return format.format(DateTime.now()) +
+        (min + Random().nextInt(max - min)).toString();
   }
 
   static generateUuidv4() {
     return Uuid().v4();
+  }
+
+  // Convert a list of hits to Map<id, hit.body>
+  // id represent the id for the hit
+  // hit body represent all hit's information
+  static Map<String, Map<String, Object>> hitsToMap(List<BaseHit> listOfHits) {
+    Map<String, Map<String, Object>> result = {};
+    listOfHits.forEach((element) {
+      result.addEntries({element.id: element.bodyTrack}.entries);
+    });
+    return result;
   }
 }
