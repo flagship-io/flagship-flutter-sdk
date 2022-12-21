@@ -19,6 +19,9 @@ class FlagshipPoolQueue {
     // Set id for the hit
     newHit.id = newHit.visitorId + "_" + FlagshipTools.generateUuidv4();
     // Add hit to queue
+
+    print(" @@@@@@@@@@@@@@ adding new hit ${newHit.id} @@@@@@@@@@@@@@@");
+    // fsQueue.add(newHit);
     fsQueue.add(newHit);
     // check the limitation
     if (fsQueue.length == sizelimitation) {
@@ -99,6 +102,21 @@ class FlagshipPoolQueue {
 
   bool isEmpty() {
     return fsQueue.isEmpty;
+  }
+
+  // Convert a list of hits to Map<id, hit.body>
+  // id represent the id for the hit
+  // hit body represent all hit's information
+  Map<String, Map<String, Object>> hitsFromListToMap(List<BaseHit> list) {
+    Map<String, Map<String, Object>> result = {};
+    list.forEach((element) {
+      result.addEntries({element.id: element.bodyTrack}.entries);
+    });
+
+    // fsQueue.forEach((element) {
+    //   result.addEntries({element.id: element.bodyTrack}.entries);
+    // });
+    return result;
   }
 }
 

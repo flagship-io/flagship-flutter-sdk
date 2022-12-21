@@ -57,7 +57,7 @@ class VisitorDelegate implements IVisitor {
   @override
   Future<void> synchronizeModifications() async {
     getStrategy().synchronizeModifications().whenComplete(() {
-      if (visitor.config.decisionMode == Mode.BUCKETING ||
+      if (visitor.config.decisionMode == Mode.BUCKETING &&
           Flagship.getStatus() != Status.PANIC_ON) {
         visitor.sendHit(Segment(persona: visitor.getCurrentContext()));
       }

@@ -1,3 +1,4 @@
+import 'package:flagship/Storage/storage_managment.dart';
 import 'package:flagship/flagshipContext/flagship_context.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/tracking/tracking_manager_config.dart';
@@ -70,7 +71,13 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   /////////////// start sdk ////////////////////
 //start SDK
 
-  _startSdk() {
+  _startSdk() async {
+    /// Clean
+    DataBaseManagment dbClean = DataBaseManagment();
+    await dbClean.openDb();
+    dbClean.deleteAllRecord();
+
+    // Flagship.testDB();
     Flagship.sharedInstance().onUpdateState(Status.NOT_INITIALIZED);
 
     /// we did this to allow start(S)
@@ -113,9 +120,9 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
         })
         .withTimeout(int.tryParse(timeoutController.text) ?? defaultTimeout)
         .withTrackingConfig(TrackingManagerConfig(
-            batchIntervals: 60,
-            poolMaxSize: 3,
-            batchStrategy: BatchCachingStrategy.BATCH_PERIODIC_CACHING))
+            batchIntervals: 20,
+            poolMaxSize: 10,
+            batchStrategy: BatchCachingStrategy.BATCH_CONTINUOUS_CACHING))
         .build();
     Flagship.start(envIdController.text, apiKeyController.text, config: config);
   }

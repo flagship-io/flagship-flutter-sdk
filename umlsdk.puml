@@ -1,0 +1,815 @@
+@startuml
+set namespaceSeparator ::
+
+abstract class "flagship::cache::interface_cache.dart::IVisitorCacheImplementation" {
+  +void cacheVisitor()
+  +JsonCodec lookupVisitor()
+  +void flushVisitor()
+}
+
+abstract class "flagship::cache::interface_cache.dart::IHitCacheImplementation" {
+  +void cacheHits()
+  +Map<String, JsonCodec> lookupHits()
+  +void flushHits()
+  +void flushAllHits()
+}
+
+class "flagship::cache::cache_manager.dart::CacheManager" {
+}
+
+class "flagship::cache::default_cache.dart::DefaultCacheHitImp" {
+  +void cacheHits()
+  +void flushHits()
+  +Map<String, JsonCodec> lookupHits()
+  +void flushAllHits()
+}
+
+"flagship::cache::interface_cache.dart::IHitCacheImplementation" <|-- "flagship::cache::default_cache.dart::DefaultCacheHitImp"
+
+class "flagship::cache::default_cache.dart::DefaultCacheVisitorImp" {
+  +void cacheVisitor()
+  +void flushVisitor()
+  +JsonCodec lookupVisitor()
+}
+
+"flagship::cache::interface_cache.dart::IVisitorCacheImplementation" <|-- "flagship::cache::default_cache.dart::DefaultCacheVisitorImp"
+
+class "flagship::Targeting::targeting_manager.dart::TargetingManager" {
+  +String userId
+  +Map<String, dynamic> currentContext
+  +bool isTargetingGroupIsOkay()
+  +bool checkTargetGroupIsOkay()
+  +bool checkTargetingForList()
+  +bool checkCondition()
+  +bool isCurrentValueEqualToAudienceValue()
+  +bool isCurrentValueIsGreaterThanAudience()
+  +bool isCurrentValueIsGreaterThanOrEqualAudience()
+  +bool isCurrentValueIsLowerThanAudience()
+  +bool isCurrentValueIsLowerThanOrEqualAudience()
+  +bool isCurrentValueContainAudience()
+  +dynamic getCurrentValueFromCtx()
+  {static} +FSOperator createOperator()
+}
+
+class "flagship::Targeting::targeting_manager.dart::FSOperator" {
+  +int index
+  {static} +List<FSOperator> values
+  {static} +FSOperator EQUALS
+  {static} +FSOperator NOT_EQUALS
+  {static} +FSOperator GREATER_THAN
+  {static} +FSOperator GREATER_THAN_OR_EQUALS
+  {static} +FSOperator LOWER_THAN
+  {static} +FSOperator LOWER_THAN_OR_EQUALS
+  {static} +FSOperator CONTAINS
+  {static} +FSOperator NOT_CONTAINS
+  {static} +FSOperator Unknown
+}
+
+"flagship::Targeting::targeting_manager.dart::FSOperator" o-- "flagship::Targeting::targeting_manager.dart::FSOperator"
+"dart::core::Enum" <|-- "flagship::Targeting::targeting_manager.dart::FSOperator"
+
+class "flagship::flagshipContext::flagship_context.dart::FlagshipContext" {
+  +int index
+  {static} +List<FlagshipContext> values
+  {static} +FlagshipContext FIRST_TIME_INIT
+  {static} +FlagshipContext DEVICE_LOCALE
+  {static} +FlagshipContext DEVICE_TYPE
+  {static} +FlagshipContext DEVICE_MODEL
+  {static} +FlagshipContext LOCATION_CITY
+  {static} +FlagshipContext LOCATION_REGION
+  {static} +FlagshipContext LOCATION_COUNTRY
+  {static} +FlagshipContext LOCATION_LAT
+  {static} +FlagshipContext LOCATION_LONG
+  {static} +FlagshipContext IP
+  {static} +FlagshipContext OS_NAME
+  {static} +FlagshipContext OS_VERSION_NAME
+  {static} +FlagshipContext OS_VERSION_CODE
+  {static} +FlagshipContext CARRIER_NAME
+  {static} +FlagshipContext DEV_MODE
+  {static} +FlagshipContext INTERNET_CONNECTION
+  {static} +FlagshipContext APP_VERSION_NAME
+  {static} +FlagshipContext APP_VERSION_CODE
+  {static} +FlagshipContext FLAGSHIP_VERSION
+  {static} +FlagshipContext INTERFACE_NAME
+}
+
+"flagship::flagshipContext::flagship_context.dart::FlagshipContext" o-- "flagship::flagshipContext::flagship_context.dart::FlagshipContext"
+"dart::core::Enum" <|-- "flagship::flagshipContext::flagship_context.dart::FlagshipContext"
+
+class "flagship::flagshipContext::flagship_context_manager.dart::FlagshipContextManager" {
+  {static} +Map<String, Object> getPresetContextForApp()
+  {static} +Object? getValue()
+  {static} +bool chekcValidity()
+}
+
+class "flagship::visitor.dart::Visitor" {
+  +String visitorId
+  +String? anonymousId
+  +FlagshipConfig config
+  -Map<String, Object> _context
+  +Map<String, Modification> modifications
+  +TrackingManager trackingManager
+  -bool _hasConsented
+  -bool _isAuthenticated
+  -VisitorDelegate _visitorDelegate
+  +FlagshipDelegate flagshipDelegate
+  +DecisionManager decisionManager
+  +Map<String, Object> getContext()
+  +void clearContext()
+  +void updateContextWithMap()
+  +Map<String, Object> getCurrentContext()
+  +void updateContext()
+  +void updateFlagshipContext()
+  +Flag<dynamic> getFlag()
+  +T getModification()
+  +Map<String, Object>? getModificationInfo()
+  +Future<void> synchronizeModifications()
+  +Future<void> fetchFlags()
+  +Future<void> activateModification()
+  +Future<void> sendHit()
+  +void setConsent()
+  +bool getConsent()
+  +dynamic authenticate()
+  +dynamic unauthenticate()
+}
+
+"flagship::visitor.dart::Visitor" o-- "flagship::flagship_config.dart::FlagshipConfig"
+"flagship::visitor.dart::Visitor" o-- "flagship::tracking::tracking_manager.dart::TrackingManager"
+"flagship::visitor.dart::Visitor" o-- "flagship::visitor::visitor_delegate.dart::VisitorDelegate"
+"flagship::visitor.dart::Visitor" o-- "flagship::flagship_delegate.dart::FlagshipDelegate"
+"flagship::visitor.dart::Visitor" o-- "flagship::decision::decision_manager.dart::DecisionManager"
+
+class "flagship::visitor.dart::VisitorBuilder" {
+  +String visitorId
+  +Instance instanceType
+  -Map<String, Object> _context
+  -bool _hasConsented
+  -bool _isAuthenticated
+  +VisitorBuilder withContext()
+  +VisitorBuilder hasConsented()
+  +dynamic isAuthenticated()
+  +Visitor build()
+}
+
+"flagship::visitor.dart::VisitorBuilder" o-- "flagship::visitor.dart::Instance"
+
+class "flagship::visitor.dart::Instance" {
+  +int index
+  {static} +List<Instance> values
+  {static} +Instance SINGLE_INSTANCE
+  {static} +Instance NEW_INSTANCE
+}
+
+"flagship::visitor.dart::Instance" o-- "flagship::visitor.dart::Instance"
+"dart::core::Enum" <|-- "flagship::visitor.dart::Instance"
+
+class "flagship::utils::logger::log_manager.dart::LogManager" {
+  +String prefixLog
+  {static} +Level level
+  {static} +bool logEnabled
+  +void printLog()
+  -bool _allowDisplay()
+  -void _displayPrettyStringJson()
+  -void _displayMessage()
+}
+
+"flagship::utils::logger::log_manager.dart::LogManager" o-- "flagship::utils::logger::log_manager.dart::Level"
+
+class "flagship::utils::logger::log_manager.dart::Level" {
+  +int index
+  {static} +List<Level> values
+  {static} +Level NONE
+  {static} +Level EXCEPTIONS
+  {static} +Level ERROR
+  {static} +Level WARNING
+  {static} +Level DEBUG
+  {static} +Level INFO
+  {static} +Level ALL
+}
+
+"flagship::utils::logger::log_manager.dart::Level" o-- "flagship::utils::logger::log_manager.dart::Level"
+"dart::core::Enum" <|-- "flagship::utils::logger::log_manager.dart::Level"
+
+class "flagship::utils::flagship_tools.dart::FlagshipTools" {
+  {static} +bool chekcXidEnvironment()
+  {static} +dynamic generateFlagshipId()
+  {static} +dynamic generateUuidv4()
+  {static} +Map<String, Map<String, Object>> hitsToMap()
+}
+
+class "flagship::utils::constants.dart::Mode" {
+  +int index
+  {static} +List<Mode> values
+  {static} +Mode DECISION_API
+  {static} +Mode BUCKETING
+}
+
+"flagship::utils::constants.dart::Mode" o-- "flagship::utils::constants.dart::Mode"
+"dart::core::Enum" <|-- "flagship::utils::constants.dart::Mode"
+
+class "flagship::utils::device_tools.dart::FSDevice" {
+  {static} +String? deviceModel
+  {static} +bool isFirstTimeSdkUse
+  {static} +String? getDeviceLanguage()
+  {static} +dynamic isFirstTimeUser()
+  {static} +Future<String?> getDeviceModel()
+  {static} +String? getSystemVersionName()
+  {static} +String? getSystemVersion()
+  {static} +String getDeviceType()
+  {static} +dynamic loadDeviceInfo()
+}
+
+abstract class "flagship::flagship_delegate.dart::FlagshipDelegate" {
+  +void onUpdateState()
+}
+
+class "flagship::Storage::storage_managment.dart::StorageManagment" {
+  {static} +void storeJson()
+  +String readJson()
+}
+
+abstract class "flagship::visitor::Ivisitor.dart::IVisitor" {
+  +void updateContext()
+  +T getModification()
+  +Map<String, Object>? getModificationInfo()
+  +Future<void> synchronizeModifications()
+  +Future<void> activateModification()
+  +Future<void> sendHit()
+  +void setConsent()
+  +Modification? getFlagModification()
+  +dynamic authenticateVisitor()
+  +dynamic unAuthenticateVisitor()
+}
+
+class "flagship::visitor::visitor_delegate.dart::VisitorDelegate" {
+  +Visitor visitor
+  +DefaultStrategy getStrategy()
+  +Future<void> activateModification()
+  +T getModification()
+  +Modification? getFlagModification()
+  +Map<String, Object>? getModificationInfo()
+  +Future<void> synchronizeModifications()
+  +void updateContext()
+  +Future<void> sendHit()
+  +void setConsent()
+  +dynamic authenticateVisitor()
+  +dynamic unAuthenticateVisitor()
+}
+
+"flagship::visitor::visitor_delegate.dart::VisitorDelegate" o-- "flagship::visitor.dart::Visitor"
+"flagship::visitor::Ivisitor.dart::IVisitor" <|-- "flagship::visitor::visitor_delegate.dart::VisitorDelegate"
+
+class "flagship::visitor::strategy::not_ready_strategy.dart::NotReadyStrategy" {
+  +Future<void> activateModification()
+  +T getModification()
+  +Map<String, Object>? getModificationInfo()
+  +Future<void> sendHit()
+  +void setConsent()
+}
+
+"flagship::visitor::strategy::default_strategy.dart::DefaultStrategy" <|-- "flagship::visitor::strategy::not_ready_strategy.dart::NotReadyStrategy"
+
+class "flagship::visitor::strategy::panic_strategy.dart::PanicStrategy" {
+  +Future<void> activateModification()
+  +T getModification()
+  +void updateContext()
+  +Map<String, Object>? getModificationInfo()
+  +Future<void> sendHit()
+  +void setConsent()
+  +dynamic authenticateVisitor()
+  +dynamic unAuthenticateVisitor()
+}
+
+"flagship::visitor::strategy::default_strategy.dart::DefaultStrategy" <|-- "flagship::visitor::strategy::panic_strategy.dart::PanicStrategy"
+
+class "flagship::visitor::strategy::default_strategy.dart::DefaultStrategy" {
+  +Visitor visitor
+  +void updateContext()
+  -Future<void> _sendActivate()
+  +Future<void> activateModification()
+  +Modification? getFlagModification()
+  +T getModification()
+  +Map<String, Object>? getModificationInfo()
+  +Future<void> synchronizeModifications()
+  +Future<void> sendHit()
+  +void setConsent()
+  +dynamic authenticateVisitor()
+  +dynamic unAuthenticateVisitor()
+}
+
+"flagship::visitor::strategy::default_strategy.dart::DefaultStrategy" o-- "flagship::visitor.dart::Visitor"
+"flagship::visitor::Ivisitor.dart::IVisitor" <|-- "flagship::visitor::strategy::default_strategy.dart::DefaultStrategy"
+
+class "flagship::visitor::strategy::no_consent_strategy.dart::NoConsentStrategy" {
+  +Future<void> activateModification()
+  +Future<void> sendHit()
+}
+
+"flagship::visitor::strategy::default_strategy.dart::DefaultStrategy" <|-- "flagship::visitor::strategy::no_consent_strategy.dart::NoConsentStrategy"
+
+class "flagship::flagship.dart::Flagship" {
+  +String? envId
+  +String? apiKey
+  {static} -FlagshipConfig _configuration
+  +Visitor? currentVisitor
+  -Status _status
+  {static} -Flagship _singleton
+  {static} +dynamic start()
+  {static} +VisitorBuilder newVisitor()
+  {static} +dynamic setCurrentVisitor()
+  {static} +Visitor? getCurrentVisitor()
+  +FlagshipConfig? getConfiguration()
+  {static} +void enableLog()
+  {static} +void logger()
+  {static} +void setLoggerLevel()
+  {static} +Status getStatus()
+  +void onUpdateState()
+}
+
+"flagship::flagship.dart::Flagship" o-- "flagship::flagship_config.dart::FlagshipConfig"
+"flagship::flagship.dart::Flagship" o-- "flagship::visitor.dart::Visitor"
+"flagship::flagship.dart::Flagship" o-- "flagship::flagship.dart::Status"
+"flagship::flagship.dart::Flagship" o-- "flagship::flagship.dart::Flagship"
+"flagship::flagship_delegate.dart::FlagshipDelegate" <|-- "flagship::flagship.dart::Flagship"
+
+class "flagship::flagship.dart::Status" {
+  +int index
+  {static} +List<Status> values
+  {static} +Status NOT_INITIALIZED
+  {static} +Status PANIC_ON
+  {static} +Status READY
+}
+
+"flagship::flagship.dart::Status" o-- "flagship::flagship.dart::Status"
+"dart::core::Enum" <|-- "flagship::flagship.dart::Status"
+
+class "flagship::model::variation_group.dart::VariationGroups" {
+}
+
+class "flagship::model::flag.dart::Flag" {
+  -String _key
+  -T _defaultValue
+  -VisitorDelegate _visitorDelegate
+  +T value()
+  +Future<void> userExposed()
+  +bool exists()
+  +FlagMetadata metadata()
+  -bool _isSameType()
+}
+
+"flagship::model::flag.dart::Flag" o-- "flagship::visitor::visitor_delegate.dart::VisitorDelegate"
+
+class "flagship::model::flag.dart::FlagMetadata" {
+  +String campaignId
+  +String variationGroupId
+  +String variationId
+  +bool isReference
+  +String campaignType
+  +String slug
+  +Map<String, dynamic> toJson()
+}
+
+class "flagship::model::modification.dart::Modifications" {
+  +String type
+  +Map<String, dynamic> vals
+}
+
+class "flagship::model::modification.dart::Modification" {
+  +String key
+  +String campaignId
+  +String variationGroupId
+  +String variationId
+  +bool isReference
+  +String campaignType
+  +String slug
+  +dynamic value
+  +Map<String, Object> toJson()
+  +Map<String, Object> toJsonInformation()
+}
+
+class "flagship::model::bucketing.dart::Bucketing" {
+  +bool panic
+  +List<BucketCampaign> campaigns
+}
+
+class "flagship::model::bucketing.dart::BucketCampaign" {
+  +String idCampaign
+  +String type
+  +String slug
+  +List<VariationGroup> variationGroups
+}
+
+class "flagship::model::bucketing.dart::VariationGroup" {
+  +String idVariationGroup
+  +Targeting? targeting
+  +List<Variation> variations
+}
+
+"flagship::model::bucketing.dart::VariationGroup" o-- "flagship::model::trageting.dart::Targeting"
+
+class "flagship::model::campaigns.dart::Campaigns" {
+  +String visitorId
+  +bool panic
+  +List<Campaign> campaigns
+  +Map<String, dynamic> getAllModification()
+}
+
+class "flagship::model::campaign.dart::Campaign" {
+  +String idCampaign
+  +String variationGroupId
+  +Variation? variation
+  +String campaignType
+  +String slug
+  +Map<String, dynamic> toJson()
+  +Map<String, dynamic> getAllModificationsValue()
+  +Map<String, Modification> getAllModification()
+}
+
+"flagship::model::campaign.dart::Campaign" o-- "flagship::model::variation.dart::Variation"
+
+class "flagship::model::trageting.dart::Targeting" {
+  +List<TargetingGroup> targetingGroups
+}
+
+class "flagship::model::trageting.dart::TargetingGroup" {
+  +List<ItemTarget> targetings
+}
+
+class "flagship::model::trageting.dart::ItemTarget" {
+  +String targetOperator
+  +String tragetKey
+  +dynamic targetValue
+}
+
+class "flagship::model::variation.dart::Variation" {
+  +String idVariation
+  +Modifications modifications
+  +int allocation
+  +bool reference
+}
+
+"flagship::model::variation.dart::Variation" o-- "flagship::model::modification.dart::Modifications"
+
+class "flagship::api::endpoints.dart::Endpoints" {
+  {static} +String SEP
+  {static} +String DECISION_API
+  {static} +String CAMPAIGNS
+  {static} +String ARIANE
+  {static} +String ACTIVATION
+  {static} +String EVENTS
+  {static} +String BUCKETING_SCRIPT
+  {static} +String BATCH
+}
+
+class "flagship::api::service.dart::Service" {
+  +Client httpClient
+  +Future<Response> sendHttpRequest()
+}
+
+"flagship::api::service.dart::Service" o-- "http::src::client.dart::Client"
+
+class "flagship::api::service.dart::RequestType" {
+  +int index
+  {static} +List<RequestType> values
+  {static} +RequestType Post
+  {static} +RequestType Get
+}
+
+"flagship::api::service.dart::RequestType" o-- "flagship::api::service.dart::RequestType"
+"dart::core::Enum" <|-- "flagship::api::service.dart::RequestType"
+
+class "flagship::tracking::tracking_manager.dart::TrackingManager" {
+  +String apiKey
+  +Service service
+  +FlagshipPoolQueue fsPool
+  +FlagshipPoolQueue activatePool
+  +IHitCacheImplementation fsCacheHit
+  +TrackingManagerConfig configTracking
+  +BatchManager batchManager
+  +TrackingManagerDelegate? delegate
+  +Map<String, String> fsHeader
+  +Future<void> sendActivate()
+  +Future<void> sendHit()
+  +Future<void> sendBatch()
+}
+
+"flagship::tracking::tracking_manager.dart::TrackingManager" o-- "flagship::api::service.dart::Service"
+"flagship::tracking::tracking_manager.dart::TrackingManager" o-- "flagship::tracking::pool_queue.dart::FlagshipPoolQueue"
+"flagship::tracking::tracking_manager.dart::TrackingManager" o-- "flagship::cache::interface_cache.dart::IHitCacheImplementation"
+"flagship::tracking::tracking_manager.dart::TrackingManager" o-- "flagship::tracking::tracking_manager_config.dart::TrackingManagerConfig"
+"flagship::tracking::tracking_manager.dart::TrackingManager" o-- "flagship::tracking::batch_manager.dart::BatchManager"
+"flagship::tracking::tracking_manager.dart::TrackingManager" o-- "flagship::tracking::tracking_manager.dart::TrackingManagerDelegate"
+
+abstract class "flagship::tracking::tracking_manager.dart::TrackingManagerDelegate" {
+  +dynamic onSendBatchWithSucess()
+  +dynamic onFailedToSendBatch()
+}
+
+class "flagship::tracking::tracking_manager_config.dart::TrackingManagerConfig" {
+  +int batchIntervals
+  +int poolMaxSize
+  +BatchCachingStrategy batchStrategy
+}
+
+"flagship::tracking::tracking_manager_config.dart::TrackingManagerConfig" o-- "flagship::tracking::tracking_manager_config.dart::BatchCachingStrategy"
+
+class "flagship::tracking::tracking_manager_config.dart::BatchCachingStrategy" {
+  +int index
+  {static} +List<BatchCachingStrategy> values
+  {static} +BatchCachingStrategy BATCH_CONTINUOUS_CACHING
+  {static} +BatchCachingStrategy BATCH_PERIODIC_CACHING
+}
+
+"flagship::tracking::tracking_manager_config.dart::BatchCachingStrategy" o-- "flagship::tracking::tracking_manager_config.dart::BatchCachingStrategy"
+"dart::core::Enum" <|-- "flagship::tracking::tracking_manager_config.dart::BatchCachingStrategy"
+
+class "flagship::tracking::batch_manager.dart::BatchManager" {
+  +PausableTimer cronTimer
+  +FlagshipPoolQueue fsPool
+  +Function sendBatch
+  +IHitCacheImplementation fsCacheHit
+  +TrackingManagerConfig configTracking
+  +bool cronTimerIsPaused
+  +void startCron()
+  +void batchFromQueue()
+  +Batch createBatch()
+  +dynamic onSendBatchWithSucess()
+  +dynamic onFailedToSendBatch()
+  +void onPoolSizeMaxReached()
+}
+
+"flagship::tracking::batch_manager.dart::BatchManager" o-- "pausable_timer::pausable_timer.dart::PausableTimer"
+"flagship::tracking::batch_manager.dart::BatchManager" o-- "flagship::tracking::pool_queue.dart::FlagshipPoolQueue"
+"flagship::tracking::batch_manager.dart::BatchManager" o-- "flagship::cache::interface_cache.dart::IHitCacheImplementation"
+"flagship::tracking::batch_manager.dart::BatchManager" o-- "flagship::tracking::tracking_manager_config.dart::TrackingManagerConfig"
+"flagship::tracking::tracking_manager.dart::TrackingManagerDelegate" <|-- "flagship::tracking::batch_manager.dart::BatchManager"
+"flagship::tracking::pool_queue.dart::FlagshipPoolQueueDelegate" <|-- "flagship::tracking::batch_manager.dart::BatchManager"
+
+class "flagship::tracking::pool_queue.dart::FlagshipPoolQueue" {
+  +Queue<BaseHit> fsQueue
+  +FlagshipPoolQueueDelegate? delegate
+  +dynamic sizelimitation
+  +void addTrackElement()
+  +void addListOfElements()
+  +void removeTrackElement()
+  +List<String> flushTrackQueue()
+  +void removeHitsForVisitorId()
+  +List<BaseHit> extractXElementFromQueue()
+  +List<Hit> extractHitsWithVisitorId()
+  +List<String> getAllIds()
+  +bool isEmpty()
+}
+
+"flagship::tracking::pool_queue.dart::FlagshipPoolQueue" o-- "dart::collection::Queue<BaseHit>"
+"flagship::tracking::pool_queue.dart::FlagshipPoolQueue" o-- "flagship::tracking::pool_queue.dart::FlagshipPoolQueueDelegate"
+
+abstract class "flagship::tracking::pool_queue.dart::FlagshipPoolQueueDelegate" {
+  +void onPoolSizeMaxReached()
+}
+
+class "flagship::decision::polling::polling.dart::Polling" {
+  +int intervalTimePolling
+  +dynamic Function() getScript
+  +Timer timer
+  +dynamic start()
+  +dynamic stop()
+}
+
+"flagship::decision::polling::polling.dart::Polling" o-- "null::dynamic Function()"
+"flagship::decision::polling::polling.dart::Polling" o-- "dart::async::Timer"
+
+class "flagship::decision::api_manager.dart::ApiManager" {
+  +Future<Campaigns> getCampaigns()
+}
+
+"flagship::decision::decision_manager.dart::DecisionManager" <|-- "flagship::decision::api_manager.dart::ApiManager"
+
+class "flagship::decision::bucketing_manager.dart::BucketingManager" {
+  +int intervalPolling
+  +Polling? polling
+  +bool fileExists
+  -Future<SharedPreferences> _prefs
+  +Campaigns campaigns
+  +String lastModfiedKey
+  +String bucketingFolder
+  +String fileName
+  +Future<Campaigns> getCampaigns()
+  -dynamic _downloadScript()
+  +void startPolling()
+  -dynamic _sendKeyContext()
+  -dynamic _saveFile()
+  -Future<String?> _readFile()
+}
+
+"flagship::decision::bucketing_manager.dart::BucketingManager" o-- "flagship::decision::polling::polling.dart::Polling"
+"flagship::decision::bucketing_manager.dart::BucketingManager" o-- "flagship::model::campaigns.dart::Campaigns"
+"flagship::decision::decision_manager.dart::DecisionManager" <|-- "flagship::decision::bucketing_manager.dart::BucketingManager"
+
+abstract class "flagship::decision::decision_manager.dart::DecisionManager" {
+  -bool _panic
+  +Service service
+  +Map<String, Modification> getModifications()
+  +bool isPanic()
+  +void updatePanicMode()
+  +void startPolling()
+}
+
+"flagship::decision::decision_manager.dart::DecisionManager" o-- "flagship::api::service.dart::Service"
+"flagship::decision::interface_decision_manager.dart::IDecisionManager" <|-- "flagship::decision::decision_manager.dart::DecisionManager"
+
+abstract class "flagship::decision::interface_decision_manager.dart::IDecisionManager" {
+  +Future<Campaigns> getCampaigns()
+  +Map<String, Modification> getModifications()
+}
+
+class "flagship::flagship_config.dart::FlagshipConfig" {
+  +Mode decisionMode
+  +int timeout
+  +DecisionManager decisionManager
+  +LogManager logManager
+  +void Function(Status)? statusListener
+  +int pollingTime
+  -Level _logLevel
+  +TrackingManagerConfig trackingMangerConfig
+  +IHitCacheImplementation hitCacheImp
+  +IVisitorCacheImplementation visitorCacheImp
+}
+
+"flagship::flagship_config.dart::FlagshipConfig" o-- "flagship::utils::constants.dart::Mode"
+"flagship::flagship_config.dart::FlagshipConfig" o-- "flagship::decision::decision_manager.dart::DecisionManager"
+"flagship::flagship_config.dart::FlagshipConfig" o-- "flagship::utils::logger::log_manager.dart::LogManager"
+"flagship::flagship_config.dart::FlagshipConfig" o-- "flagship::flagship_config.dart::void Function(Status)"
+"flagship::flagship_config.dart::FlagshipConfig" o-- "flagship::utils::logger::log_manager.dart::Level"
+"flagship::flagship_config.dart::FlagshipConfig" o-- "flagship::tracking::tracking_manager_config.dart::TrackingManagerConfig"
+"flagship::flagship_config.dart::FlagshipConfig" o-- "flagship::cache::interface_cache.dart::IHitCacheImplementation"
+"flagship::flagship_config.dart::FlagshipConfig" o-- "flagship::cache::interface_cache.dart::IVisitorCacheImplementation"
+
+class "flagship::flagship_config.dart::ConfigBuilder" {
+  -Mode _mode
+  -int _timeout
+  -Level _logLevel
+  -int _pollingTime
+  -void Function(Status)? _statusListener
+  -TrackingManagerConfig _trackingManagerConfig
+  +ConfigBuilder withMode()
+  +ConfigBuilder withTimeout()
+  +ConfigBuilder withLogLevel()
+  +ConfigBuilder withBucketingPollingIntervals()
+  +ConfigBuilder withStatusListener()
+  +ConfigBuilder withTrackingConfig()
+  +FlagshipConfig build()
+}
+
+"flagship::flagship_config.dart::ConfigBuilder" o-- "flagship::utils::constants.dart::Mode"
+"flagship::flagship_config.dart::ConfigBuilder" o-- "flagship::utils::logger::log_manager.dart::Level"
+"flagship::flagship_config.dart::ConfigBuilder" o-- "flagship::flagship_config.dart::void Function(Status)"
+"flagship::flagship_config.dart::ConfigBuilder" o-- "flagship::tracking::tracking_manager_config.dart::TrackingManagerConfig"
+
+class "flagship::hits::segment.dart::Segment" {
+  +Map<String, dynamic> persona
+  +Map<String, Object> bodyTrack
+}
+
+"flagship::hits::hit.dart::BaseHit" <|-- "flagship::hits::segment.dart::Segment"
+
+class "flagship::hits::batch.dart::Batch" {
+  +List<Hit> listOfHits
+  +HitCategory type
+  +Map<String, Object> bodyTrack
+  +bool isValid()
+}
+
+"flagship::hits::batch.dart::Batch" o-- "flagship::hits::hit.dart::HitCategory"
+"flagship::hits::hit.dart::BaseHit" <|-- "flagship::hits::batch.dart::Batch"
+
+class "flagship::hits::batch.dart::ActivateBatch" {
+  +List<Hit> batch
+  +String envId
+  +Map<String, Object> toJson()
+}
+
+abstract class "flagship::hits::hit.dart::Hit" {
+  +String id
+  +String visitorId
+  +HitCategory type
+  +Map<String, Object> bodyTrack
+  +bool isValid()
+  +bool isLessThan4H()
+}
+
+"flagship::hits::hit.dart::Hit" o-- "flagship::hits::hit.dart::HitCategory"
+
+class "flagship::hits::hit.dart::BaseHit" {
+  +String clientId
+  +String? anonymousId
+  +String dataSource
+  +String? userIp
+  +String? screenResolution
+  +String? screenColorDepth
+  +String? userLanguage
+  +int? sessionNumber
+  +DateTime qt
+  +Map<String, Object> bodyTrack
+  +Map<String, Object> communBodyTrack
+  +String typeOfEvent
+  -Map<String, String> _createTuple()
+  +bool isValid()
+  +bool isLessThan4H()
+}
+
+"flagship::hits::hit.dart::Hit" <|-- "flagship::hits::hit.dart::BaseHit"
+
+class "flagship::hits::hit.dart::HitCategory" {
+  +int index
+  {static} +List<HitCategory> values
+  {static} +HitCategory SCREENVIEW
+  {static} +HitCategory PAGEVIEW
+  {static} +HitCategory TRANSACTION
+  {static} +HitCategory ITEM
+  {static} +HitCategory EVENT
+  {static} +HitCategory ACTIVATION
+  {static} +HitCategory CONSENT
+  {static} +HitCategory BATCH
+  {static} +HitCategory SEGMENT
+  {static} +HitCategory NONE
+}
+
+"flagship::hits::hit.dart::HitCategory" o-- "flagship::hits::hit.dart::HitCategory"
+"dart::core::Enum" <|-- "flagship::hits::hit.dart::HitCategory"
+
+class "flagship::hits::event.dart::Event" {
+  +EventCategory? category
+  +String action
+  +String? label
+  +int? value
+  +Map<String, Object> bodyTrack
+}
+
+"flagship::hits::event.dart::Event" o-- "flagship::hits::event.dart::EventCategory"
+"flagship::hits::hit.dart::BaseHit" <|-- "flagship::hits::event.dart::Event"
+
+class "flagship::hits::event.dart::Consent" {
+}
+
+"flagship::hits::event.dart::Event" <|-- "flagship::hits::event.dart::Consent"
+
+class "flagship::hits::event.dart::EventCategory" {
+  +int index
+  {static} +List<EventCategory> values
+  {static} +EventCategory Action_Tracking
+  {static} +EventCategory User_Engagement
+}
+
+"flagship::hits::event.dart::EventCategory" o-- "flagship::hits::event.dart::EventCategory"
+"dart::core::Enum" <|-- "flagship::hits::event.dart::EventCategory"
+
+class "flagship::hits::transaction.dart::Transaction" {
+  +String transactionId
+  +String affiliation
+  +double? revenue
+  +double? shipping
+  +double? tax
+  +String? currency
+  +String? couponCode
+  +String? paymentMethod
+  +String? shippingMethod
+  +int? itemCount
+  +Map<String, Object> bodyTrack
+}
+
+"flagship::hits::hit.dart::BaseHit" <|-- "flagship::hits::transaction.dart::Transaction"
+
+class "flagship::hits::item.dart::Item" {
+  +String transactionId
+  +String name
+  +String code
+  +double? price
+  +int? quantity
+  +String? category
+  +Map<String, Object> bodyTrack
+}
+
+"flagship::hits::hit.dart::BaseHit" <|-- "flagship::hits::item.dart::Item"
+
+class "flagship::hits::activate.dart::Activate" {
+  +Modification modification
+  +String? anonymousId
+  +String envId
+  +Map<String, Object> bodyTrack
+  +Map<String, Object> toJson()
+  +bool isValid()
+  +bool isLessThan4H()
+}
+
+"flagship::hits::activate.dart::Activate" o-- "flagship::model::modification.dart::Modification"
+"flagship::hits::hit.dart::BaseHit" <|-- "flagship::hits::activate.dart::Activate"
+
+class "flagship::hits::screen.dart::Screen" {
+  +String location
+  +Map<String, Object> bodyTrack
+}
+
+"flagship::hits::hit.dart::BaseHit" <|-- "flagship::hits::screen.dart::Screen"
+
+
+@enduml

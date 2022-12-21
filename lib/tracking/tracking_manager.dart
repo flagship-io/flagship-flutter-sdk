@@ -30,7 +30,7 @@ class TrackingManager {
 
   late FlagshipPoolQueue activatePool;
 
-  /// Cache manager
+  // Cache manager
   final IHitCacheImplementation fsCacheHit;
 
   final TrackingManagerConfig configTracking;
@@ -48,12 +48,13 @@ class TrackingManager {
     // Activate poool
     activatePool = FlagshipPoolQueue(configTracking.poolMaxSize);
 
-    /// Create batch manager
+    // Create batch manager
     batchManager = BatchManager(fsPool, sendBatch, configTracking, fsCacheHit);
     this.delegate = batchManager;
+    batchManager.startCron();
   }
 
-  /// Header for request
+  // Header for request
   Map<String, String> get fsHeader {
     return {
       "x-api-key": this.apiKey,
@@ -100,9 +101,6 @@ class TrackingManager {
 
   // Send Hit
   Future<void> sendHit(BaseHit pHit) async {
-    if (batchManager.cronTimer.isPaused) {
-      batchManager.startCron();
-    }
     // Add to pool
     if (pHit.isValid() == true) {
       fsPool.addTrackElement(pHit);
@@ -118,30 +116,8 @@ class TrackingManager {
     return;
   }
 
-  // /// Send Hit
-  // Future<void> sendHit(Hit pHit) async {
-  //   /// Create url
-  //   String urlString = Endpoints.ARIANE;
-  //   try {
-  //     var response = await _service.sendHttpRequest(RequestType.Post, urlString, fsHeader, jsonEncode(pHit.bodyTrack),
-  //         timeoutMs: TIMEOUT_REQUEST);
-  //     switch (response.statusCode) {
-  //       case 200:
-  //       case 204:
-  //       case 201:
-  //         Flagship.logger(Level.INFO, HIT_SUCCESS);
-  //         break;
-  //       default:
-  //         Flagship.logger(Level.ERROR, HIT_FAILED);
-  //     }
-  //   } catch (error) {
-  //     Flagship.logger(Level.EXCEPTIONS, EXCEPTION.replaceFirst("%s", "$error") + urlString);
-  //     Flagship.logger(Level.ERROR, HIT_FAILED);
-  //   }
-  // }
-
   Future<void> sendBatch(List<BaseHit> listOfHitToSend) async {
-    /// Create url
+    // Create url
     String urlString = Endpoints.BATCH;
     try {
       var response = await service.sendHttpRequest(RequestType.Post, urlString,
@@ -155,7 +131,7 @@ class TrackingManager {
           Flagship.logger(
               Level.INFO, jsonEncode(Batch(listOfHitToSend).bodyTrack),
               isJsonString: true);
-          delegate?.onSendBatchWithSucess();
+          delegate?.onSendBatchWithSucess(listOfHitToSend);
           break;
         default:
           Flagship.logger(Level.ERROR, HIT_FAILED);
@@ -171,6 +147,6 @@ class TrackingManager {
 }
 
 mixin TrackingManagerDelegate {
-  onSendBatchWithSucess();
+  onSendBatchWithSucess(List<BaseHit> listOfSendedHits);
   onFailedToSendBatch(List<BaseHit> listOfHitToSend);
 }

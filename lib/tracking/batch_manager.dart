@@ -57,9 +57,9 @@ class BatchManager with TrackingManagerDelegate, FlagshipPoolQueueDelegate {
       if (this.configTracking.batchStrategy ==
           BatchCachingStrategy.BATCH_PERIODIC_CACHING) {
         // Call the interface to store the entire loop before send it
-        this.fsCacheHit.cacheHits(FlagshipTools.hitsToMap(listToSend));
+        this.fsCacheHit.cacheHits(fsPool.hitsFromListToMap(listToSend));
       }
-      // Send batch Ò
+      // Send batch
       sendBatch(listToSend);
     }
   }
@@ -71,20 +71,30 @@ class BatchManager with TrackingManagerDelegate, FlagshipPoolQueueDelegate {
   }
 
   @override
-  onSendBatchWithSucess() {
+  onSendBatchWithSucess(List<BaseHit> listOfSendedHits) {
     // Remove old cache before save a fresh data
 
-    fsCacheHit.flushHits(fsPool.getAllIds());
-    // why i did this here ???? !!!!!
-    // switch (configTracking.batchStrategy) {
-    //   case BatchCachingStrategy.BATCH_CONTINUOUS_CACHING:
-    //     break;
-    //   case BatchCachingStrategy.BATCH_PERIODIC_CACHING:
-    //     fsPool.fsQueue.forEach((element) {
-    //       fsCacheHit.cacheHits({element.id: element.bodyTrack});
-    //     });
-    //     break;
-    // }
+    switch (configTracking.batchStrategy) {
+      case BatchCachingStrategy.BATCH_CONTINUOUS_CACHING:
+        // Refractor later
+        List<String> listOfIds = [];
+        listOfSendedHits.forEach((element) {
+          listOfIds.add(element.id);
+        });
+        fsCacheHit.flushHits(listOfIds);
+        break;
+      case BatchCachingStrategy.BATCH_PERIODIC_CACHING:
+        // Clean the pool before save it again, because those hits are sended with success
+        listOfSendedHits.forEach((element) {
+          fsPool.removeTrackElement(element.id);
+        });
+
+        // Flush all hits before cache the new ones
+        fsCacheHit.flushAllHits();
+        fsCacheHit.cacheHits(FlagshipTools.hitsToMap(fsPool.fsQueue.toList()));
+        break;
+    }
+
     cronTimer.start();
   }
 

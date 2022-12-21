@@ -10,7 +10,7 @@ class Segment extends BaseHit {
   @override
   Map<String, Object> get bodyTrack {
     var customBody = new Map<String, Object>();
-    customBody.addAll({"s": persona});
+    customBody.addAll({"s": persona, "t": typeOfEvent});
     // Add commun body
     customBody.addAll(super.communBodyTrack);
     return customBody;

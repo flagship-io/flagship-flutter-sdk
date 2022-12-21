@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flagship/api/service.dart';
+import 'package:flagship/cache/default_cache.dart';
 import 'package:flagship/flagshipContext/flagship_context.dart';
 import 'package:flagship/flagshipContext/flagship_context_manager.dart';
 import 'package:flagship/hits/event.dart';
@@ -80,8 +81,10 @@ class Visitor {
     }
 
     // Init tracking manager
-    trackingManager = TrackingManager(Service(http.Client()),
-        config.trackingMangerConfig, this.config.hitCacheImp);
+    trackingManager = TrackingManager(
+        Service(http.Client()),
+        config.trackingMangerConfig,
+        this.config.hitCacheImp ?? DefaultCacheHitImp());
 
     // Load preset_Context
     this.updateContextWithMap(FlagshipContextManager.getPresetContextForApp());

@@ -1,5 +1,6 @@
 library flagship;
 
+import 'package:flagship/Storage/storage_managment.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/device_tools.dart';
@@ -127,5 +128,12 @@ class Flagship with FlagshipDelegate {
     if (Flagship._configuration.statusListener != null) {
       Flagship._configuration.statusListener!(newStatus);
     }
+  }
+
+  /// Test funciton
+  static void testDB() async {
+    var dbTest = DataBaseManagment();
+    await dbTest.openDb();
+    //  dbTest.insertDog(DbModel(id: "1234:alias", visitorId: "alias"));
   }
 }

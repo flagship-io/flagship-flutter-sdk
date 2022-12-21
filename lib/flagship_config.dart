@@ -37,15 +37,13 @@ class FlagshipConfig {
 
   TrackingManagerConfig trackingMangerConfig;
 
-  IHitCacheImplementation hitCacheImp;
+  IHitCacheImplementation? hitCacheImp;
 
-  IVisitorCacheImplementation visitorCacheImp;
+  IVisitorCacheImplementation? visitorCacheImp;
 
   FlagshipConfig(this.decisionMode, this.timeout, this.pollingTime,
       this._logLevel, this.trackingMangerConfig,
-      {this.statusListener,
-      this.hitCacheImp = const DefaultCacheHitImp(),
-      this.visitorCacheImp = const DefaultCacheVisitorImp()}) {
+      {this.statusListener, this.hitCacheImp, this.visitorCacheImp}) {
     // Set the log Manager
     this.logManager = LogManager(level: _logLevel);
     // Log the timeout value in ms
@@ -54,6 +52,13 @@ class FlagshipConfig {
     decisionManager = (decisionMode == Mode.DECISION_API)
         ? ApiManager(Service(http.Client()))
         : BucketingManager(Service(http.Client()), this.pollingTime);
+
+    if (this.hitCacheImp == null) {
+      this.hitCacheImp = DefaultCacheHitImp();
+    }
+    if (this.visitorCacheImp == null) {
+      this.visitorCacheImp = DefaultCacheVisitorImp();
+    }
   }
 }
 

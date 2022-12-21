@@ -24,7 +24,7 @@ mixin IHitCacheImplementation {
 
 // Custom implementation : The custom implementation must load ALL the hits. Hits older than 4H should be ignored
 // Map of <id, hit json format>
-  Map<String, JsonCodec> lookupHits();
+  Future<Map<String, Map<String, Object>>> lookupHits();
 
 // Called to remove the hits from the database
 // Custom implementation : It should remove the hits data corresponding to the hitIds from the database.
