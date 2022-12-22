@@ -51,7 +51,6 @@ class TrackingManager {
     // Create batch manager
     batchManager = BatchManager(fsPool, sendBatch, configTracking, fsCacheHit);
     this.delegate = batchManager;
-    batchManager.startCron();
   }
 
   // Header for request

@@ -47,4 +47,20 @@ class FlagshipTools {
     });
     return result;
   }
+
+  // Convert the list of Map to list of hit
+  static List<BaseHit> converMapHitsToListHit(List<Map> list) {
+    List<BaseHit> result = [];
+
+    list.forEach((element) {
+      Map subMap = element['data_hit'];
+     switch (HsubMap['t']){
+
+      case 'SCREENVIEW'
+      break;
+     }
+      print(element['data_hit']);
+    });
+    return result;
+  }
 }

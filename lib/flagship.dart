@@ -28,7 +28,7 @@ class Flagship with FlagshipDelegate {
   // Default configuration DECISION_API
   static FlagshipConfig _configuration = ConfigBuilder().build();
 
-  // Local visitor , see the startClient function
+  // Local visitor
   Visitor? currentVisitor;
 
   Status _status = Status.NOT_INITIALIZED;

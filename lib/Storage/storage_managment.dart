@@ -13,44 +13,44 @@ String lastModfiedKey = "FSLastModifiedScript";
 String hitCacheFolder = "/flagship/cache/hits/";
 String fileName = "cacheHits.json";
 
-class StorageManagment {
-  // Store the json that represent the entire hits
-  static void storeJson(String jsonToStore) async {
-    final directory = await getApplicationDocumentsDirectory();
-    Directory bucketingDirectory =
-        await Directory.fromUri(Uri.file(directory.path + hitCacheFolder))
-            .create(recursive: true)
-            .catchError((error) {
-      Flagship.logger(Level.DEBUG,
-          "Enable to create the directory to save the cache hits file ");
-    });
-    // We got the path to save the json file
-    File jsonFile = File(bucketingDirectory.path + fileName);
-    jsonFile.writeAsString(jsonToStore);
-  }
+// class StorageManagment {
+//   // Store the json that represent the entire hits
+//   static void storeJson(String jsonToStore) async {
+//     final directory = await getApplicationDocumentsDirectory();
+//     Directory bucketingDirectory =
+//         await Directory.fromUri(Uri.file(directory.path + hitCacheFolder))
+//             .create(recursive: true)
+//             .catchError((error) {
+//       Flagship.logger(Level.DEBUG,
+//           "Enable to create the directory to save the cache hits file ");
+//     });
+//     // We got the path to save the json file
+//     File jsonFile = File(bucketingDirectory.path + fileName);
+//     jsonFile.writeAsString(jsonToStore);
+//   }
 
-// Read the file where we store the hits as json and convert to map before returning it
-  static Future<Map<String, Map<String, Object>>> readHisJson() async {
-    final directory = await getApplicationDocumentsDirectory();
-    File jsonFile = File(directory.path + hitCacheFolder + fileName);
-    if (jsonFile.existsSync() == true) {
-      // Convert to json
-      String jsonResult = jsonFile.readAsStringSync();
-      return JsonDecoder().convert(jsonResult);
-    } else {
-      throw Exception('Flagship, Failed to read bucketing script');
-    }
-  }
+// // Read the file where we store the hits as json and convert to map before returning it
+//   static Future<Map<String, Map<String, Object>>> readHisJson() async {
+//     final directory = await getApplicationDocumentsDirectory();
+//     File jsonFile = File(directory.path + hitCacheFolder + fileName);
+//     if (jsonFile.existsSync() == true) {
+//       // Convert to json
+//       String jsonResult = jsonFile.readAsStringSync();
+//       return JsonDecoder().convert(jsonResult);
+//     } else {
+//       throw Exception('Flagship, Failed to read bucketing script');
+//     }
+//   }
 
-  // Delete the file where we store all the hits
-  static deleteFile(String pathForFile) {
-    File jsonFile = File(pathForFile);
-    // Delete the file
-    if (jsonFile.existsSync() == true) {
-      jsonFile.delete(recursive: true);
-    }
-  }
-}
+//   // Delete the file where we store all the hits
+//   static deleteFile(String pathForFile) {
+//     File jsonFile = File(pathForFile);
+//     // Delete the file
+//     if (jsonFile.existsSync() == true) {
+//       jsonFile.delete(recursive: true);
+//     }
+//   }
+// }
 
 class DataBaseManagment {
   late Database database;
@@ -94,5 +94,13 @@ class DataBaseManagment {
   Future<void> deleteAllRecord() async {
     final db = database;
     await db.delete('table_hits');
+  }
+
+// To implement later
+  Future<List<Map>> readHits(String nameTable) async {
+    await openDb();
+    // Get the records for the tableHits
+    List<Map> list = await database.rawQuery('SELECT * FROM table_hits');
+    return list;
   }
 }

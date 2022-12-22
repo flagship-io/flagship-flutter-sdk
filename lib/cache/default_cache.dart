@@ -3,6 +3,7 @@ import 'package:flagship/Storage/storage_managment.dart';
 import 'package:flagship/cache/interface_cache.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
+import 'package:flagship/visitor.dart';
 
 //////////////////
 ///    HITS  /////
@@ -31,15 +32,15 @@ class DefaultCacheHitImp with IHitCacheImplementation {
     hitIds.forEach((element) {
       dbMgt.deleteHitWithId(element).whenComplete(() {
         print(
-            " &&&&&&&&&& The hit with id = $element is removed from data base  &&&&&&&&&&&&&&");
+            " &&&&&&&&&& The hit with id = $element is removed from data base &&&&&&&&&&&&&&");
       });
     });
   }
 
   @override
-  Future<Map<String, Map<String, Object>>> lookupHits() async {
+  Future<List<Map>> lookupHits() async {
     print("lookupHits Hit from Default cache Implementation");
-    return StorageManagment.readHisJson();
+    return dbMgt.readHits("table_hits");
   }
 
   @override
@@ -57,19 +58,19 @@ class DefaultCacheHitImp with IHitCacheImplementation {
 class DefaultCacheVisitorImp with IVisitorCacheImplementation {
   const DefaultCacheVisitorImp();
   @override
-  void cacheVisitor(String visitorId, JsonCodec data) {
-    // TODO: implement cacheVisitor
+  void cacheVisitor(String visitorId, String jsonString) {
+    print("cacheVisitor from default cache visitor");
   }
 
   @override
   void flushVisitor(String visitorId) {
-    // TODO: implement flushVisitor
+    print("flushVisitor from default cache");
   }
 
   @override
-  JsonCodec lookupVisitor(String visitoId) {
-    // TODO: implement lookupVisitor
-    throw UnimplementedError();
+  String lookupVisitor(String visitoId) {
+    print('lookupVisitor from default cache visitor');
+    return {}.toString();
   }
 }
 

@@ -99,6 +99,16 @@ class Visitor {
     if (!_hasConsented) {
       _visitorDelegate.sendHit(Consent(hasConsented: _hasConsented));
     }
+    // Load the hits in cache if exist
+    config.hitCacheImp?.lookupHits().then((value) {
+      print(value);
+      // Convert hits map to list hit
+      List<BaseHit> remainListOfHitInCache = [];
+      remainListOfHitInCache = FlagshipTools.converMapHitsToListHit(value);
+
+      // Re inject the hits comming from cache to the hit pool
+      trackingManager.fsPool.addListOfElements(remainListOfHitInCache);
+    });
   }
 
   /// Update context directely with map for <String, Object>

@@ -1,11 +1,9 @@
-import 'dart:convert';
-
 mixin IVisitorCacheImplementation {
-// Called after each fetchFlags. Must upsert the given visitor json data in the database.
-  void cacheVisitor(String visitorId, JsonCodec data);
+// Called after each fetchFlags. Must upsert the given visitor jsonString in the database.
+  void cacheVisitor(String visitorId, String jsonString);
 
-// Called right at visitor creation, return a json corresponding to visitor data. Return a json
-  JsonCodec lookupVisitor(String visitoId);
+// Called right at visitor creation, return a jsonString corresponding to visitor. Return a jsonString
+  String lookupVisitor(String visitoId);
 
 // Called when a visitor set consent to false. Must erase visitor data related to the given visitor
   void flushVisitor(String visitorId);
@@ -24,7 +22,7 @@ mixin IHitCacheImplementation {
 
 // Custom implementation : The custom implementation must load ALL the hits. Hits older than 4H should be ignored
 // Map of <id, hit json format>
-  Future<Map<String, Map<String, Object>>> lookupHits();
+  Future<List<Map>> lookupHits();
 
 // Called to remove the hits from the database
 // Custom implementation : It should remove the hits data corresponding to the hitIds from the database.

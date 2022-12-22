@@ -21,7 +21,6 @@ class FlagshipPoolQueue {
     // Add hit to queue
 
     print(" @@@@@@@@@@@@@@ adding new hit ${newHit.id} @@@@@@@@@@@@@@@");
-    // fsQueue.add(newHit);
     fsQueue.add(newHit);
     // check the limitation
     if (fsQueue.length == sizelimitation) {
@@ -112,10 +111,16 @@ class FlagshipPoolQueue {
     list.forEach((element) {
       result.addEntries({element.id: element.bodyTrack}.entries);
     });
+    return result;
+  }
 
-    // fsQueue.forEach((element) {
-    //   result.addEntries({element.id: element.bodyTrack}.entries);
-    // });
+  // Convert a list of map(hit) to list of hits
+
+  List<BaseHit> listHitsFromMap(List<Map> listOfMap) {
+    List<BaseHit> result = [];
+
+    listOfMap.forEach((element) {});
+
     return result;
   }
 }

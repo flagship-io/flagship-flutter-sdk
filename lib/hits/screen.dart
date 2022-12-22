@@ -1,7 +1,7 @@
 import 'package:flagship/hits/hit.dart';
 
 class Screen extends BaseHit {
-  final String location;
+  String location;
 
   Screen({required this.location}) : super() {
     type = HitCategory.SCREENVIEW;
@@ -14,5 +14,9 @@ class Screen extends BaseHit {
     // Add commun body
     customBody.addAll(super.communBodyTrack);
     return customBody;
+  }
+
+  Screen.fromMap(String oldId, Map body) : super.fromMap(oldId, body) {
+    location = body['dl'];
   }
 }

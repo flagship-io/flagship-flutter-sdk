@@ -143,4 +143,17 @@ class BaseHit extends Hit {
   bool isLessThan4H() {
     return (qt.difference(DateTime.now()).inHours <= 4);
   }
+
+  BaseHit.fromMap(String oldId, Map body) {
+    this.id = oldId;
+    this.clientId = body["client"];
+    this.anonymousId = body["cuid"];
+    this.visitorId = body["vid"];
+    this.dataSource = body["ds"];
+    this.screenResolution = body["sr"];
+    this.screenColorDepth = body['sd'];
+    this.userLanguage = body['ul'];
+    this.sessionNumber = body['sn'];
+    this.qt = body['qt'];
+  }
 }

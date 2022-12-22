@@ -73,9 +73,9 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
 
   _startSdk() async {
     /// Clean
-    DataBaseManagment dbClean = DataBaseManagment();
-    await dbClean.openDb();
-    dbClean.deleteAllRecord();
+    //DataBaseManagment dbClean = DataBaseManagment();
+    // await dbClean.openDb();
+    // dbClean.deleteAllRecord();
 
     // Flagship.testDB();
     Flagship.sharedInstance().onUpdateState(Status.NOT_INITIALIZED);
