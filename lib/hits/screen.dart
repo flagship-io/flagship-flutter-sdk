@@ -1,7 +1,7 @@
 import 'package:flagship/hits/hit.dart';
 
 class Screen extends BaseHit {
-  String location;
+  late String location;
 
   Screen({required this.location}) : super() {
     type = HitCategory.SCREENVIEW;
@@ -17,6 +17,6 @@ class Screen extends BaseHit {
   }
 
   Screen.fromMap(String oldId, Map body) : super.fromMap(oldId, body) {
-    location = body['dl'];
+    this.location = body['dl'];
   }
 }

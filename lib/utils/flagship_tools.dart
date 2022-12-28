@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flagship/hits/hit.dart';
+import 'package:flagship/hits/screen.dart';
 import 'package:intl/intl.dart';
 import '../flagship.dart';
 import 'logger/log_manager.dart';
@@ -53,13 +55,16 @@ class FlagshipTools {
     List<BaseHit> result = [];
 
     list.forEach((element) {
-      Map subMap = element['data_hit'];
-     switch (HsubMap['t']){
-
-      case 'SCREENVIEW'
-      break;
-     }
-      print(element['data_hit']);
+      String dataHitString = element['data_hit'];
+      Map subMap = jsonDecode(dataHitString);
+      print(subMap);
+      switch (subMap['t']) {
+        case 'SCREENVIEW':
+          result.add(Screen.fromMap(element['id'], subMap));
+          break;
+        default:
+          break;
+      }
     });
     return result;
   }

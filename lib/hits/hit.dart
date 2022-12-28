@@ -145,15 +145,21 @@ class BaseHit extends Hit {
   }
 
   BaseHit.fromMap(String oldId, Map body) {
-    this.id = oldId;
-    this.clientId = body["client"];
-    this.anonymousId = body["cuid"];
-    this.visitorId = body["vid"];
-    this.dataSource = body["ds"];
-    this.screenResolution = body["sr"];
-    this.screenColorDepth = body['sd'];
-    this.userLanguage = body['ul'];
-    this.sessionNumber = body['sn'];
-    this.qt = body['qt'];
+    try {
+      this.id = oldId;
+      this.clientId = body["cidzz"] ?? "";
+      this.anonymousId = body["cuid"] ?? "";
+      this.visitorId = body["vid"] ?? "";
+      this.dataSource = body["ds"] ?? "";
+      this.screenResolution = body["sr"] ?? "";
+      this.screenColorDepth = body['sd'] ?? "";
+      this.userLanguage = body['ul'] ?? "";
+      this.sessionNumber = body['sn'] ?? 0;
+      this.qt = DateTime.fromMicrosecondsSinceEpoch(body['q'] ?? 0);
+
+      /// Test later toDo
+    } catch (e) {
+      print(e);
+    }
   }
 }

@@ -22,7 +22,16 @@ class DefaultCacheHitImp with IHitCacheImplementation {
         isJsonString: true);
     await dbMgt.openDb(); // refracto this line
     hits.forEach((key, value) {
-      dbMgt.insertHitMap({'id': key, 'data_hit': value});
+      // Map mapTotest = {
+      //   "cid": "bkk9glocmjcg0vtmdlng",
+      //   "dl": "flutter_screen5",
+      //   "ds": "APP",
+      //   "qt": 59,
+      //   "t": "SCREENVIEW",
+      //   "vid": "userPoolManager_137"
+      // };
+      dbMgt.insertHitMap({'id': key, 'data_hit': jsonEncode(value)});
+      //dbMgt.insertHitMap({'id': key, 'data_hit': jsonEncode(mapTotest)});
     });
   }
 

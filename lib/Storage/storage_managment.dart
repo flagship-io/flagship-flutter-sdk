@@ -63,7 +63,7 @@ class DataBaseManagment {
       print(
           "########### Run the CREATE TABLE statement on the database. ############### ");
       return db.execute(
-        'CREATE TABLE table_hits(id TEXT PRIMARY KEY, data_hit JSON)',
+        'CREATE TABLE table_hits(id TEXT PRIMARY KEY, data_hit TEXT)',
       );
     }, version: 1);
   }
@@ -100,7 +100,6 @@ class DataBaseManagment {
   Future<List<Map>> readHits(String nameTable) async {
     await openDb();
     // Get the records for the tableHits
-    List<Map> list = await database.rawQuery('SELECT * FROM table_hits');
-    return list;
+    return await database.rawQuery('SELECT * FROM table_hits');
   }
 }
