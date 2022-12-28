@@ -18,5 +18,6 @@ class Screen extends BaseHit {
 
   Screen.fromMap(String oldId, Map body) : super.fromMap(oldId, body) {
     this.location = body['dl'];
+    this.type = HitCategory.SCREENVIEW;
   }
 }

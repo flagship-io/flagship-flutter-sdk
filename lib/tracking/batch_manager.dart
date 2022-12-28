@@ -41,26 +41,21 @@ class BatchManager with TrackingManagerDelegate, FlagshipPoolQueueDelegate {
   }
 
   void batchFromQueue() {
-    cronTimer.reset();
-    print(" ------ Create a batch from a queue and send it ------");
-    var listToSend =
+    print(" ------ Create a batch of hits and send to event.io ------");
+    var listOfHitsToSend =
         fsPool.extractXElementFromQueue(configTracking.poolMaxSize);
+    if (listOfHitsToSend.isNotEmpty) {
+      cronTimer.reset();
 
-    if (listToSend.isEmpty) {
-      // Stop the cron may be ....
-      print("--------- Pause the cron because the queue is empty -----------");
-    } else {
-      // var batchToSend = this.createBatch(listToSend);
-      // Before send this batch will check the validity
-
+      /// Refracto and check later this reset
       // in periodic strategy will cache the list
       if (this.configTracking.batchStrategy ==
           BatchCachingStrategy.BATCH_PERIODIC_CACHING) {
         // Call the interface to store the entire loop before send it
-        this.fsCacheHit.cacheHits(fsPool.hitsFromListToMap(listToSend));
+        this.fsCacheHit.cacheHits(fsPool.hitsFromListToMap(listOfHitsToSend));
       }
       // Send batch
-      sendBatch(listToSend);
+      sendBatch(listOfHitsToSend);
     }
   }
 

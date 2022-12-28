@@ -1,8 +1,11 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:flagship/hits/event.dart';
 import 'package:flagship/hits/hit.dart';
+import 'package:flagship/hits/item.dart';
 import 'package:flagship/hits/screen.dart';
+import 'package:flagship/hits/transaction.dart';
 import 'package:intl/intl.dart';
 import '../flagship.dart';
 import 'logger/log_manager.dart';
@@ -50,19 +53,27 @@ class FlagshipTools {
     return result;
   }
 
-  // Convert the list of Map to list of hit
-  static List<BaseHit> converMapHitsToListHit(List<Map> list) {
+  // Convert the list comming from DB to list of hit
+  static List<BaseHit> converMapToListOfHits(List<Map> list) {
     List<BaseHit> result = [];
-
     list.forEach((element) {
-      String dataHitString = element['data_hit'];
-      Map subMap = jsonDecode(dataHitString);
-      print(subMap);
+      Map subMap = jsonDecode(element['data_hit']);
       switch (subMap['t']) {
         case 'SCREENVIEW':
           result.add(Screen.fromMap(element['id'], subMap));
           break;
+        case 'EVENT':
+          result.add(Event.fromMap(element['id'], subMap));
+          break;
+        case 'TRANSACTION':
+          result.add(Transaction.fromMap(element['id'], subMap));
+          break;
+        case 'ITEM':
+          result.add(Item.fromMap(element['id'], subMap));
+          break;
         default:
+          Flagship.logger(
+              Level.ERROR, "Error on convert Map hit to object hits ");
           break;
       }
     });

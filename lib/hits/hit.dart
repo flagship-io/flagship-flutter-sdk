@@ -1,4 +1,5 @@
 import 'package:flagship/flagship.dart';
+import 'package:flagship/utils/logger/log_manager.dart';
 
 enum HitCategory {
   SCREENVIEW,
@@ -146,20 +147,22 @@ class BaseHit extends Hit {
 
   BaseHit.fromMap(String oldId, Map body) {
     try {
-      this.id = oldId;
-      this.clientId = body["cidzz"] ?? "";
-      this.anonymousId = body["cuid"] ?? "";
+      this.id = oldId; // Keep the same id in db
+      // Set CLient Id
+      this.clientId = body["cid"] ?? "";
+      // Set the id of visitor
       this.visitorId = body["vid"] ?? "";
-      this.dataSource = body["ds"] ?? "";
-      this.screenResolution = body["sr"] ?? "";
-      this.screenColorDepth = body['sd'] ?? "";
-      this.userLanguage = body['ul'] ?? "";
-      this.sessionNumber = body['sn'] ?? 0;
-      this.qt = DateTime.fromMicrosecondsSinceEpoch(body['q'] ?? 0);
+      this.anonymousId = body["cuid"];
+      // Data Source
+      this.dataSource = body["ds"] ?? "APP";
 
-      /// Test later toDo
+      this.screenResolution = body["sr"];
+      this.screenColorDepth = body['sd'];
+      this.userLanguage = body['ul'];
+      this.sessionNumber = body['sn'];
+      this.qt = DateTime.fromMicrosecondsSinceEpoch(body['q'] ?? 0);
     } catch (e) {
-      print(e);
+      Flagship.logger(Level.DEBUG, "Error en parsin hit from map, $e");
     }
   }
 }

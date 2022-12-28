@@ -1,7 +1,7 @@
 import 'package:flagship/hits/hit.dart';
 
 class Segment extends BaseHit {
-  final Map<String, dynamic> persona;
+  late Map<String, dynamic> persona;
 
   Segment({required this.persona}) : super() {
     type = HitCategory.SEGMENT;
@@ -14,5 +14,10 @@ class Segment extends BaseHit {
     // Add commun body
     customBody.addAll(super.communBodyTrack);
     return customBody;
+  }
+
+  Segment.fromMap(String oldId, Map body) : super.fromMap(oldId, body) {
+    this.type = HitCategory.SEGMENT;
+    this.persona = body['s'];
   }
 }

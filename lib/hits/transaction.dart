@@ -2,10 +2,10 @@ import 'package:flagship/hits/hit.dart';
 
 class Transaction extends BaseHit {
   /// Transaction unique identifier.
-  String transactionId;
+  late String transactionId;
 
   /// Transaction name. Name of the goal in the reporting.
-  String affiliation;
+  late String affiliation;
 
   /// Total revenue associated with the transaction. This value should include any shipping or tax costs
   double? revenue;
@@ -49,7 +49,8 @@ class Transaction extends BaseHit {
   @override
   Map<String, Object> get bodyTrack {
     var customBody = new Map<String, Object>();
-    customBody.addAll({"t": typeOfEvent, 'tid': transactionId, 'ta': affiliation});
+    customBody
+        .addAll({"t": typeOfEvent, 'tid': transactionId, 'ta': affiliation});
 
     // Add revenue
     if (revenue != null) customBody['tr'] = revenue ?? 0;
@@ -71,5 +72,29 @@ class Transaction extends BaseHit {
     // Add commun data
     customBody.addAll(super.communBodyTrack);
     return customBody;
+  }
+
+  Transaction.fromMap(String oldId, Map body) : super.fromMap(oldId, body) {
+    this.type = HitCategory.TRANSACTION;
+
+    this.affiliation = body['ta'] ?? "";
+    this.transactionId = body['tid'] ?? "";
+
+    // Add revenue
+    this.revenue = body['tr'];
+    // Add shipping
+    this.shipping = body['ts'];
+    // Add Tax
+    this.tax = body['tt'];
+    // Add currency
+    this.currency = body['tc'];
+    // Add coupon code
+    this.couponCode = body['tcc'];
+    // Add paymentMethod
+    this.paymentMethod = body['pm'];
+    // Add shippingMethod
+    this.shippingMethod = body['sm'];
+    // Add item count
+    this.itemCount = body['icn'];
   }
 }

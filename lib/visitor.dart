@@ -104,10 +104,13 @@ class Visitor {
       print(value);
       // Convert hits map to list hit
       List<BaseHit> remainListOfHitInCache = [];
-      remainListOfHitInCache = FlagshipTools.converMapHitsToListHit(value);
-
-      // Re inject the hits comming from cache to the hit pool
-      trackingManager.fsPool.addListOfElements(remainListOfHitInCache);
+      remainListOfHitInCache = FlagshipTools.converMapToListOfHits(value);
+      if (remainListOfHitInCache.isNotEmpty) {
+        Flagship.logger(Level.DEBUG,
+            "Adding the founded hits in cache into the pool of hits");
+        // Re inject the hits comming from cache to the hit pool
+        trackingManager.fsPool.addListOfElements(remainListOfHitInCache);
+      }
     });
   }
 

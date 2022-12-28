@@ -16,7 +16,7 @@ class _EventState extends State<EventHit> {
   @override
   void initState() {
     super.initState();
-    _eventActionController = TextEditingController(text: 'eventPool');
+    _eventActionController = TextEditingController(text: 'event_cache');
     _eventValueController = TextEditingController(text: '10');
   }
 
@@ -28,7 +28,9 @@ class _EventState extends State<EventHit> {
     var currentVisitor = Flagship.getCurrentVisitor();
     Event event = Event(
         action: _eventActionController.text,
-        category: _isActionTracking ? EventCategory.Action_Tracking : EventCategory.User_Engagement);
+        category: _isActionTracking
+            ? EventCategory.Action_Tracking
+            : EventCategory.User_Engagement);
     event.label = "flutter_label";
     event.sessionNumber = 12;
     event.value = (int.tryParse(_eventValueController.text) ?? 0);
@@ -77,8 +79,10 @@ class _EventState extends State<EventHit> {
             style: TextStyle(color: Colors.white),
           ),
           SizedBox(height: _verticalSpace),
-          FSInputField("Event action", _eventActionController, TextInputType.text),
-          FSInputField("Event value", _eventValueController, TextInputType.text),
+          FSInputField(
+              "Event action", _eventActionController, TextInputType.text),
+          FSInputField(
+              "Event value", _eventValueController, TextInputType.text),
           SizedBox(height: _verticalSpace),
           Row(
             children: [
