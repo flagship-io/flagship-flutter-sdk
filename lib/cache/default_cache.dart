@@ -1,9 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flagship/Storage/storage_managment.dart';
 import 'package:flagship/cache/interface_cache.dart';
 import 'package:flagship/flagship.dart';
+import 'package:flagship/model/visitor_cache/visitor_cache.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 //////////////////
 ///    HITS  /////
@@ -63,14 +66,10 @@ class DefaultCacheVisitorImp with IVisitorCacheImplementation {
   @override
   void cacheVisitor(String visitorId, String jsonString) async {
     print("cacheVisitor from default cache visitor");
+    var data =
+        await rootBundle.loadString("assets/visitor.json"); // todo remove later
     await dbMgt.openDb(); // refracto this line
-    dbMgt.insertVisitorData({
-      "id": visitorId,
-      "data": jsonEncode({
-        "visitorId": visitorId,
-        "context": {"isVip": true}
-      })
-    });
+    dbMgt.insertVisitorData({"id": visitorId, "visitor": data});
   }
 
   @override
@@ -80,7 +79,8 @@ class DefaultCacheVisitorImp with IVisitorCacheImplementation {
 
   @override
   Future<String> lookupVisitor(String visitoId) async {
-    print('lookupVisitor from default cache visitor');
+    print(
+        ' --------------- lookupVisitor from default cache visitor ------------ ');
     return dbMgt.readVisitor('table_visitors');
   }
 }

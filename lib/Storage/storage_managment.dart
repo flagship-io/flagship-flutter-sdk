@@ -37,7 +37,7 @@ class DataBaseManagment {
       print(
           "########### Run the CREATE TABLE statement on the database. ############### ");
       return db.execute(
-        'CREATE TABLE table_visitors(id TEXT PRIMARY KEY, data TEXT)',
+        'CREATE TABLE table_visitors(id TEXT PRIMARY KEY, visitor TEXT)',
       );
     }, version: 1);
   }

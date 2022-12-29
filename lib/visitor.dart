@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flagship/api/service.dart';
 import 'package:flagship/cache/default_cache.dart';
 import 'package:flagship/flagshipContext/flagship_context.dart';
@@ -10,6 +11,7 @@ import 'package:flagship/decision/decision_manager.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/hits/hit.dart';
+import 'package:flagship/model/visitor_cache/visitor_cache.dart';
 import 'package:flagship/tracking/tracking_manager.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/flagship_tools.dart';
@@ -114,7 +116,15 @@ class Visitor {
     });
     // Lookup for the cached visitor data
     config.visitorCacheImp?.lookupVisitor(this.visitorId).then((value) {
-      print(value);
+      // convert to Map
+      Map<String, dynamic> result = jsonDecode(value);
+      // Retreive the json string stored in the visitor filed of this map.
+      if (result['visitor'] != null) {
+        VisitorCache cachedVisitor =
+            VisitorCache.fromJson(jsonDecode(result['visitor']));
+        print(
+            'The cached visitor get through the lookup is ${cachedVisitor.toString()}');
+      }
     });
   }
 
