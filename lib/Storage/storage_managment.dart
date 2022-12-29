@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flagship/flagship.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
@@ -108,12 +110,20 @@ class DataBaseManagment {
   }
 
   // Read all hit saved
-  Future<String> readVisitor(String nameTable) async {
+  Future<String> readVisitor(String visitorId, String nameTable) async {
     await openDb();
     // Get the records for the tableHits
-    List<Map> result =
-        await cacheVisitorDB.rawQuery('SELECT * FROM $nameTable');
+    List<Map> result = await cacheVisitorDB
+        .rawQuery('SELECT * FROM $nameTable WHERE id = ?', [visitorId]);
 
-    return jsonEncode(result.last);
+    if (result.isNotEmpty) {
+      Flagship.logger(Level.INFO,
+          "The visitor: $visitorId have already a stored data in cache");
+      return jsonEncode(result.last);
+    } else {
+      Flagship.logger(
+          Level.INFO, "The visitor: $visitorId have no data stored in cache");
+      return '';
+    }
   }
 }

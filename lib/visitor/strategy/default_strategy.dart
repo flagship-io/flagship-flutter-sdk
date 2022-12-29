@@ -4,6 +4,8 @@ import 'package:flagship/hits/activate.dart';
 import 'package:flagship/hits/event.dart';
 import 'package:flagship/hits/hit.dart';
 import 'package:flagship/model/modification.dart';
+import 'package:flagship/model/visitor_cache/visitor_cache.dart';
+import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/flagship.dart';
@@ -157,17 +159,11 @@ class DefaultStrategy implements IVisitor {
       }
       // Update the state for Flagship
       visitor.flagshipDelegate.onUpdateState(state);
-
-      // Save the response for teh visitor database
-      var objectToStore = {
-        "version": 1,
-        "data": {},
-        "assignmentsHistory": {},
-        "campaigns": {},
-      };
-
-      visitor.config.visitorCacheImp
-          ?.cacheVisitor(visitor.visitorId, JsonCodec().encode(objectToStore));
+      // Save the response for the visitor database
+      // create a VisitorCache object from the fetch response
+      var visitorToCache = VisitorCache.fromVisitor(this.visitor);
+      visitor.config.visitorCacheImp?.cacheVisitor(
+          visitor.visitorId, jsonEncode(visitorToCache.toJson()));
     } catch (error) {
       Flagship.logger(Level.EXCEPTIONS,
           EXCEPTION.replaceFirst("%s", "${error.toString()}"));

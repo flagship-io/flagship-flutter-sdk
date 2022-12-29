@@ -1,9 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
-import 'assignments_history.dart';
-import 'campaign.dart';
-import 'context.dart';
-
+import 'campaign_cache.dart';
 part 'data.g.dart';
 
 @JsonSerializable()
@@ -11,9 +8,9 @@ class Data {
   String? visitorId;
   String? anonymousId;
   bool? consent;
-  Context? context;
-  AssignmentsHistory? assignmentsHistory;
-  List<Campaign>? campaigns;
+  Map<String, dynamic>? context;
+  Map<String, dynamic>? assignmentsHistory;
+  List<CampaignCache>? campaigns;
 
   Data({
     this.visitorId,

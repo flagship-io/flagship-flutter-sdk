@@ -116,14 +116,16 @@ class Visitor {
     });
     // Lookup for the cached visitor data
     config.visitorCacheImp?.lookupVisitor(this.visitorId).then((value) {
-      // convert to Map
-      Map<String, dynamic> result = jsonDecode(value);
-      // Retreive the json string stored in the visitor filed of this map.
-      if (result['visitor'] != null) {
-        VisitorCache cachedVisitor =
-            VisitorCache.fromJson(jsonDecode(result['visitor']));
-        print(
-            'The cached visitor get through the lookup is ${cachedVisitor.toString()}');
+      if (value.length != 0) {
+        // convert to Map
+        Map<String, dynamic> result = jsonDecode(value);
+        // Retreive the json string stored in the visitor filed of this map.
+        if (result['visitor'] != null) {
+          VisitorCache cachedVisitor =
+              VisitorCache.fromJson(jsonDecode(result['visitor']));
+          print(
+              'The cached visitor get through the lookup is ${cachedVisitor.toString()}');
+        }
       }
     });
   }

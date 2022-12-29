@@ -12,13 +12,12 @@ Data _$DataFromJson(Map<String, dynamic> json) => Data(
       consent: json['consent'] as bool?,
       context: json['context'] == null
           ? null
-          : Context.fromJson(json['context'] as Map<String, dynamic>),
+          : (json['context'] as Map<String, dynamic>),
       assignmentsHistory: json['assignmentsHistory'] == null
           ? null
-          : AssignmentsHistory.fromJson(
-              json['assignmentsHistory'] as Map<String, dynamic>),
+          : (json['assignmentsHistory'] as Map<String, dynamic>),
       campaigns: (json['campaigns'] as List<dynamic>?)
-          ?.map((e) => Campaign.fromJson(e as Map<String, dynamic>))
+          ?.map((e) => CampaignCache.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 

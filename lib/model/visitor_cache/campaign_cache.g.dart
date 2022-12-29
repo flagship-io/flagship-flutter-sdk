@@ -1,12 +1,12 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'campaign.dart';
+part of 'campaign_cache.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-Campaign _$CampaignFromJson(Map<String, dynamic> json) => Campaign(
+CampaignCache _$CampaignFromJson(Map<String, dynamic> json) => CampaignCache(
       campaignId: json['campaignId'] as String?,
       variationGroupId: json['variationGroupId'] as String?,
       variationId: json['variationId'] as String?,
@@ -15,10 +15,11 @@ Campaign _$CampaignFromJson(Map<String, dynamic> json) => Campaign(
       activated: json['activated'] as bool?,
       flags: json['flags'] == null
           ? null
-          : Flags.fromJson(json['flags'] as Map<String, dynamic>),
+          : (json['flags'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$CampaignToJson(Campaign instance) => <String, dynamic>{
+Map<String, dynamic> _$CampaignCacheToJson(CampaignCache instance) =>
+    <String, dynamic>{
       'campaignId': instance.campaignId,
       'variationGroupId': instance.variationGroupId,
       'variationId': instance.variationId,
