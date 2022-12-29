@@ -1,39 +1,6 @@
 import 'package:flagship/flagship.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 
-enum HitCategory {
-  SCREENVIEW,
-  PAGEVIEW,
-  TRANSACTION,
-  ITEM,
-  EVENT,
-  ACTIVATION,
-  CONSENT,
-  BATCH,
-  SEGMENT,
-  NONE
-}
-
-abstract class Hit {
-  // id for the hit
-  late String id;
-
-  // Visitor id
-  late String visitorId;
-
-  // Check the validity
-  bool isValid();
-
-  // Type for hit
-  HitCategory type = HitCategory.NONE;
-
-  // Is less than 4h
-  bool isLessThan4H();
-
-  // Body used on posting data
-  Map<String, Object> get bodyTrack;
-}
-
 class BaseHit extends Hit {
   // type for hit
   // Type type = Type.NONE;
@@ -62,14 +29,35 @@ class BaseHit extends Hit {
   /// QT time
   late DateTime qt;
 
-  @override
-  Map<String, Object> get bodyTrack {
-    return {};
-  }
-
   BaseHit() {
     this.clientId = Flagship.sharedInstance().envId ?? "";
     qt = DateTime.now();
+  }
+
+  BaseHit.fromMap(String oldId, Map body) {
+    try {
+      this.id = oldId; // Keep the same id in db
+      // Set CLient Id
+      this.clientId = body["cid"] ?? "";
+      // Set the id of visitor
+      this.visitorId = body["vid"] ?? "";
+      this.anonymousId = body["cuid"];
+      // Data Source
+      this.dataSource = body["ds"] ?? "APP";
+
+      this.screenResolution = body["sr"];
+      this.screenColorDepth = body['sd'];
+      this.userLanguage = body['ul'];
+      this.sessionNumber = body['sn'];
+      this.qt = DateTime.fromMicrosecondsSinceEpoch(body['q'] ?? 0);
+    } catch (e) {
+      Flagship.logger(Level.DEBUG, "Error en parsin hit from map, $e");
+    }
+  }
+
+  @override
+  Map<String, Object> get bodyTrack {
+    return {};
   }
 
   Map<String, Object> get communBodyTrack {
@@ -123,6 +111,16 @@ class BaseHit extends Hit {
     return ret;
   }
 
+  @override
+  bool isLessThan4H() {
+    return (qt.difference(DateTime.now()).inHours <= 4);
+  }
+
+  @override
+  bool isValid() {
+    return true; // Todo implement later
+  }
+
   Map<String, String> _createTuple() {
     Map<String, String> tupleId = new Map<String, String>();
     if (this.anonymousId != null) {
@@ -134,35 +132,37 @@ class BaseHit extends Hit {
     }
     return tupleId;
   }
+}
 
-  @override
-  bool isValid() {
-    return true; // Todo implement later
-  }
+abstract class Hit {
+  // id for the hit
+  late String id;
 
-  @override
-  bool isLessThan4H() {
-    return (qt.difference(DateTime.now()).inHours <= 4);
-  }
+  // Visitor id
+  late String visitorId;
 
-  BaseHit.fromMap(String oldId, Map body) {
-    try {
-      this.id = oldId; // Keep the same id in db
-      // Set CLient Id
-      this.clientId = body["cid"] ?? "";
-      // Set the id of visitor
-      this.visitorId = body["vid"] ?? "";
-      this.anonymousId = body["cuid"];
-      // Data Source
-      this.dataSource = body["ds"] ?? "APP";
+  // Type for hit
+  HitCategory type = HitCategory.NONE;
 
-      this.screenResolution = body["sr"];
-      this.screenColorDepth = body['sd'];
-      this.userLanguage = body['ul'];
-      this.sessionNumber = body['sn'];
-      this.qt = DateTime.fromMicrosecondsSinceEpoch(body['q'] ?? 0);
-    } catch (e) {
-      Flagship.logger(Level.DEBUG, "Error en parsin hit from map, $e");
-    }
-  }
+  // Body used on posting data
+  Map<String, Object> get bodyTrack;
+
+  // Is less than 4h
+  bool isLessThan4H();
+
+  // Check the validity
+  bool isValid();
+}
+
+enum HitCategory {
+  SCREENVIEW,
+  PAGEVIEW,
+  TRANSACTION,
+  ITEM,
+  EVENT,
+  ACTIVATION,
+  CONSENT,
+  BATCH,
+  SEGMENT,
+  NONE
 }

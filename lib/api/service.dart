@@ -13,7 +13,8 @@ enum RequestType { Post, Get }
 class Service {
   http.Client httpClient;
   Service(this.httpClient);
-  Future<Response> sendHttpRequest(RequestType type, String urlString, Map<String, String> headers, Object? data,
+  Future<Response> sendHttpRequest(RequestType type, String urlString,
+      Map<String, String> headers, Object? data,
       {timeoutMs = TIMEOUT}) async {
     var url = Uri.parse(urlString);
     switch (type) {
@@ -28,10 +29,12 @@ class Service {
                 .timeout(Duration(milliseconds: timeoutMs));
             return response;
           } on TimeoutException catch (e) {
-            Flagship.logger(Level.INFO, REQUEST_TIMEOUT.replaceFirst("%s", urlString));
+            Flagship.logger(
+                Level.INFO, REQUEST_TIMEOUT.replaceFirst("%s", urlString));
             return Response('$e', 408);
           } on Error catch (e) {
-            Flagship.logger(Level.INFO, REQUEST_ERROR.replaceFirst("%s", urlString));
+            Flagship.logger(
+                Level.INFO, REQUEST_ERROR.replaceFirst("%s", urlString));
             return Response("$e", 400);
           }
         }
@@ -47,4 +50,5 @@ class Service {
     }
   }
 }
-/// Refractor later with rich code errors 
+
+/// Refractor later with rich code errors

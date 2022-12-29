@@ -157,8 +157,8 @@ class DefaultStrategy implements IVisitor {
       }
       // Update the state for Flagship
       visitor.flagshipDelegate.onUpdateState(state);
-      // Save the response for teh visitor database
 
+      // Save the response for teh visitor database
       var objectToStore = {
         "version": 1,
         "data": {},

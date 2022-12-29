@@ -22,16 +22,7 @@ class DefaultCacheHitImp with IHitCacheImplementation {
         isJsonString: true);
     await dbMgt.openDb(); // refracto this line
     hits.forEach((key, value) {
-      // Map mapTotest = {
-      //   "cid": "bkk9glocmjcg0vtmdlng",
-      //   "dl": "flutter_screen5",
-      //   "ds": "APP",
-      //   "qt": 59,
-      //   "t": "SCREENVIEW",
-      //   "vid": "userPoolManager_137"
-      // };
       dbMgt.insertHitMap({'id': key, 'data_hit': jsonEncode(value)});
-      //dbMgt.insertHitMap({'id': key, 'data_hit': jsonEncode(mapTotest)});
     });
   }
 
@@ -39,7 +30,7 @@ class DefaultCacheHitImp with IHitCacheImplementation {
   void flushHits(List<String> hitIds) async {
     print("Flush Hits from Default cache Implementation $hitIds");
     hitIds.forEach((element) {
-      dbMgt.deleteHitWithId(element).whenComplete(() {
+      dbMgt.deleteHitWithId(element, 'table_hits').whenComplete(() {
         print(
             " &&&&&&&&&& The hit with id = $element is removed from data base &&&&&&&&&&&&&&");
       });
@@ -56,7 +47,7 @@ class DefaultCacheHitImp with IHitCacheImplementation {
   void flushAllHits() {
     print("Flush all hits from Default cache Implementation");
     // Delete the file where we store the hits
-    dbMgt.deleteAllRecord();
+    dbMgt.deleteAllRecord('table_hits');
   }
 }
 
@@ -65,21 +56,32 @@ class DefaultCacheHitImp with IHitCacheImplementation {
 //////////////////
 
 class DefaultCacheVisitorImp with IVisitorCacheImplementation {
-  const DefaultCacheVisitorImp();
+  final DataBaseManagment dbMgt = DataBaseManagment();
+
+  DefaultCacheVisitorImp();
+
   @override
-  void cacheVisitor(String visitorId, String jsonString) {
+  void cacheVisitor(String visitorId, String jsonString) async {
     print("cacheVisitor from default cache visitor");
+    await dbMgt.openDb(); // refracto this line
+    dbMgt.insertVisitorData({
+      "id": visitorId,
+      "data": jsonEncode({
+        "visitorId": visitorId,
+        "context": {"isVip": true}
+      })
+    });
   }
 
   @override
   void flushVisitor(String visitorId) {
-    print("flushVisitor from default cache");
+    dbMgt.deleteVisitorWithId(visitorId, 'table_visitors');
   }
 
   @override
-  String lookupVisitor(String visitoId) {
+  Future<String> lookupVisitor(String visitoId) async {
     print('lookupVisitor from default cache visitor');
-    return {}.toString();
+    return dbMgt.readVisitor('table_visitors');
   }
 }
 

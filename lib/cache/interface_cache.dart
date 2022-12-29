@@ -3,7 +3,7 @@ mixin IVisitorCacheImplementation {
   void cacheVisitor(String visitorId, String jsonString);
 
 // Called right at visitor creation, return a jsonString corresponding to visitor. Return a jsonString
-  String lookupVisitor(String visitoId);
+  Future<String> lookupVisitor(String visitoId);
 
 // Called when a visitor set consent to false. Must erase visitor data related to the given visitor
   void flushVisitor(String visitorId);

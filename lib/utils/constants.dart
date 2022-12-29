@@ -12,8 +12,9 @@ const String INITIALIZATION_PARAM_ERROR = "Params 'envId' is not valide.";
 
 // CONTEXT
 const String CONTEXT_UPDATE = "Update context with Map %s";
-const String CONTEXT_PARAM_ERROR = "params 'key' must be a non null String, and 'value' must be one of the " +
-    "following types : String, Number, Boolean.";
+const String CONTEXT_PARAM_ERROR =
+    "params 'key' must be a non null String, and 'value' must be one of the " +
+        "following types : String, Number, Boolean.";
 const String PARSING_ERROR = "An error occured whil parsing ";
 
 // MODIFICATION
@@ -32,26 +33,35 @@ const String ACTIVATE_SUCCESS = "Activate sent with success";
 const String ACTIVATE_FAILED = "Failed to send activate";
 const String HIT_INVALID_DATA_ERROR = "'%s' hit invalid format error. \n %s";
 const String HIT_NOT_READY = "Not ready to send hits";
-const String GETMODIFICATION_NOT_READY = "Not ready to get modification, sdk will return the default value";
-const String GETMODIFICATION_INFO_NOT_READY = "Not ready to get modification infos";
+const String GETMODIFICATION_NOT_READY =
+    "Not ready to get modification, sdk will return the default value";
+const String GETMODIFICATION_INFO_NOT_READY =
+    "Not ready to get modification infos";
 const String ACTIVTAE_NOT_READY = "Not ready to send activate";
 
 // PANIC
 const String PANIC = "Panic mode is on.";
 const String PANIC_HIT = "Panic mode is on, no event will be sent";
 const String PANIC_ACTIVATE = "panic mode is on, the activate is not sent";
-const String PANIC_MODIFICATION_INFO = "Panic mode is on, no modification infos for key '%s'.";
-const String PANIC_MODIFICATION = "panic mode is on, will return the default value";
-const String PANIC_UPDATE_CONTEXT = "Panic mode is on, update context not effective";
+const String PANIC_MODIFICATION_INFO =
+    "Panic mode is on, no modification infos for key '%s'.";
+const String PANIC_MODIFICATION =
+    "panic mode is on, will return the default value";
+const String PANIC_UPDATE_CONTEXT =
+    "Panic mode is on, update context not effective";
 
-const String PANIC_HIT_CONSENT = "Panic mode is on, the hit consent is not sent";
+const String PANIC_HIT_CONSENT =
+    "Panic mode is on, the hit consent is not sent";
 
-const String PANIC_AUTHENTICATE = "Panic mode is on, the authenticate is not effective";
-const String PANIC_UNAUTHENTICATE = "Panic mode is on, the unAuthenticate is not effective";
+const String PANIC_AUTHENTICATE =
+    "Panic mode is on, the authenticate is not effective";
+const String PANIC_UNAUTHENTICATE =
+    "Panic mode is on, the unAuthenticate is not effective";
 
 // CONSENT
 const String CONSENT_HIT = "The user is not consented to send hit";
-const String CONSENT_ACTIVATE = "The user is not consented to send the actiavte hit";
+const String CONSENT_ACTIVATE =
+    "The user is not consented to send the actiavte hit";
 
 // REQUEST
 const String REQUEST_POST_BODY = "Body of the POST: %s";

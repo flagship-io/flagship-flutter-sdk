@@ -112,6 +112,10 @@ class Visitor {
         trackingManager.fsPool.addListOfElements(remainListOfHitInCache);
       }
     });
+    // Lookup for the cached visitor data
+    config.visitorCacheImp?.lookupVisitor(this.visitorId).then((value) {
+      print(value);
+    });
   }
 
   /// Update context directely with map for <String, Object>
@@ -217,6 +221,8 @@ class Visitor {
       var listToremove =
           trackingManager.fsPool.flushTrackQueue(flushingConsentHits: false);
       this.trackingManager.fsCacheHit.flushHits(listToremove);
+      // Erase the related data in cache
+      this.config.visitorCacheImp?.flushVisitor(this.visitorId);
     }
     // Update the state for visitor
     _hasConsented = newValue;

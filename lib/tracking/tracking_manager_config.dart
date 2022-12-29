@@ -1,6 +1,7 @@
 const int DEFAULT_BATCH_LENGTH = 20; // Exctract 20 hits from the loop
 
-const int DEFAULT_TIME_INTERVAL = 20; // On each 10 seconds will launch the batch from the queue
+const int DEFAULT_TIME_INTERVAL =
+    20; // On each 10 seconds will launch the batch from the queue
 
 enum BatchCachingStrategy {
   BATCH_CONTINUOUS_CACHING, // Cache on continous when hit occurs

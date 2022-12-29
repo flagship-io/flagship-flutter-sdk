@@ -13,57 +13,31 @@ String lastModfiedKey = "FSLastModifiedScript";
 String hitCacheFolder = "/flagship/cache/hits/";
 String fileName = "cacheHits.json";
 
-// class StorageManagment {
-//   // Store the json that represent the entire hits
-//   static void storeJson(String jsonToStore) async {
-//     final directory = await getApplicationDocumentsDirectory();
-//     Directory bucketingDirectory =
-//         await Directory.fromUri(Uri.file(directory.path + hitCacheFolder))
-//             .create(recursive: true)
-//             .catchError((error) {
-//       Flagship.logger(Level.DEBUG,
-//           "Enable to create the directory to save the cache hits file ");
-//     });
-//     // We got the path to save the json file
-//     File jsonFile = File(bucketingDirectory.path + fileName);
-//     jsonFile.writeAsString(jsonToStore);
-//   }
-
-// // Read the file where we store the hits as json and convert to map before returning it
-//   static Future<Map<String, Map<String, Object>>> readHisJson() async {
-//     final directory = await getApplicationDocumentsDirectory();
-//     File jsonFile = File(directory.path + hitCacheFolder + fileName);
-//     if (jsonFile.existsSync() == true) {
-//       // Convert to json
-//       String jsonResult = jsonFile.readAsStringSync();
-//       return JsonDecoder().convert(jsonResult);
-//     } else {
-//       throw Exception('Flagship, Failed to read bucketing script');
-//     }
-//   }
-
-//   // Delete the file where we store all the hits
-//   static deleteFile(String pathForFile) {
-//     File jsonFile = File(pathForFile);
-//     // Delete the file
-//     if (jsonFile.existsSync() == true) {
-//       jsonFile.delete(recursive: true);
-//     }
-//   }
-// }
-
 class DataBaseManagment {
   late Database database;
+  late Database cacheVisitorDB;
 
   DataBaseManagment();
 
   openDb() async {
     String pathToDataBase = join(await getDatabasesPath(), 'hits_database.db');
+    String pathToDataBaseVisitor =
+        join(await getDatabasesPath(), 'visitor_database.db');
+
     database = await openDatabase(pathToDataBase, onCreate: (db, version) {
       print(
           "########### Run the CREATE TABLE statement on the database. ############### ");
       return db.execute(
         'CREATE TABLE table_hits(id TEXT PRIMARY KEY, data_hit TEXT)',
+      );
+    }, version: 1);
+
+    cacheVisitorDB =
+        await openDatabase(pathToDataBaseVisitor, onCreate: (db, version) {
+      print(
+          "########### Run the CREATE TABLE statement on the database. ############### ");
+      return db.execute(
+        'CREATE TABLE table_visitors(id TEXT PRIMARY KEY, data TEXT)',
       );
     }, version: 1);
   }
@@ -78,12 +52,12 @@ class DataBaseManagment {
   }
 
   // Delete item with id
-  Future<void> deleteHitWithId(String id) async {
+  Future<void> deleteHitWithId(String id, String nameTable) async {
     // Get a reference to the database.
     final db = database;
     // Remove the Dog from the database.
     await db.delete(
-      'table_hits',
+      '$nameTable',
       // Use a `where` clause to delete a specific dog.
       where: 'id = ?',
       // Pass the hit's id as a whereArg to prevent SQL injection.
@@ -91,15 +65,55 @@ class DataBaseManagment {
     );
   }
 
-  Future<void> deleteAllRecord() async {
+// Delete all reocrd
+  Future<void> deleteAllRecord(String nameTable) async {
     final db = database;
-    await db.delete('table_hits');
+    await db.delete(nameTable);
   }
 
-// To implement later
+// Read all hit saved
   Future<List<Map>> readHits(String nameTable) async {
     await openDb();
     // Get the records for the tableHits
-    return await database.rawQuery('SELECT * FROM table_hits');
+    return await database.rawQuery('SELECT * FROM $nameTable');
+  }
+
+//////////////////
+//// Visitor ////
+//////////////////
+
+  // Insert visitor Map data Visitor
+  Future<void> insertVisitorData(Map<String, Object> visitoMap) async {
+    await cacheVisitorDB.insert(
+      'table_visitors',
+      visitoMap,
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  // Delete all reocrd
+  // Delete item with id
+  // TODO refractor this function
+  Future<void> deleteVisitorWithId(String id, String nameTable) async {
+    // Get a reference to the database.
+    final db = cacheVisitorDB;
+    // Remove the Dog from the database.
+    await db.delete(
+      '$nameTable',
+      // Use a `where` clause to delete a specific dog.
+      where: 'id = ?',
+      // Pass the hit's id as a whereArg to prevent SQL injection.
+      whereArgs: [id],
+    );
+  }
+
+  // Read all hit saved
+  Future<String> readVisitor(String nameTable) async {
+    await openDb();
+    // Get the records for the tableHits
+    List<Map> result =
+        await cacheVisitorDB.rawQuery('SELECT * FROM $nameTable');
+
+    return jsonEncode(result.last);
   }
 }

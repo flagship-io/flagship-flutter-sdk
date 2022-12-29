@@ -27,7 +27,8 @@ class PanicStrategy extends DefaultStrategy {
 
   @override
   Map<String, Object>? getModificationInfo(String key) {
-    Flagship.logger(Level.ERROR, PANIC_MODIFICATION_INFO.replaceFirst("%s", key));
+    Flagship.logger(
+        Level.ERROR, PANIC_MODIFICATION_INFO.replaceFirst("%s", key));
     return null;
   }
 
