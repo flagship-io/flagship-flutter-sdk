@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flagship/hits/activate.dart';
 import 'package:flagship/hits/event.dart';
 import 'package:flagship/hits/hit.dart';
@@ -160,10 +159,8 @@ class DefaultStrategy implements IVisitor {
       // Update the state for Flagship
       visitor.flagshipDelegate.onUpdateState(state);
       // Save the response for the visitor database
-      // create a VisitorCache object from the fetch response
-      var visitorToCache = VisitorCache.fromVisitor(this.visitor);
-      visitor.config.visitorCacheImp?.cacheVisitor(
-          visitor.visitorId, jsonEncode(visitorToCache.toJson()));
+      cacheVisitor(visitor.visitorId,
+          jsonEncode(VisitorCache.fromVisitor(this.visitor).toJson()));
     } catch (error) {
       Flagship.logger(Level.EXCEPTIONS,
           EXCEPTION.replaceFirst("%s", "${error.toString()}"));
@@ -208,5 +205,34 @@ class DefaultStrategy implements IVisitor {
       Flagship.logger(Level.ALL,
           "unAuthenticateVisitor method will be ignored in Bucketing configuration");
     }
+  }
+
+  @override
+  void cacheVisitor(String visitorId, String jsonString) {
+    visitor.config.visitorCacheImp?.cacheVisitor(visitor.visitorId, jsonString);
+  }
+
+  @override
+  // Called right at visitor creation, return a jsonString corresponding to visitor. Return a jsonString
+  void lookupVisitor(String visitoId) async {
+    visitor.config.visitorCacheImp
+        ?.lookupVisitor(visitor.visitorId)
+        .then((value) {
+      if (value.length != 0) {
+        // convert to Map
+        Map<String, dynamic> result = jsonDecode(value);
+        // Retreive the json string stored in the visitor filed of this map.
+        if (result['visitor'] != null) {
+          VisitorCache cachedVisitor =
+              VisitorCache.fromJson(jsonDecode(result['visitor']));
+          print(
+              'The cached visitor get through the lookup is ${cachedVisitor.toString()}');
+          // update the current visitor with his own cached data
+          // 1 - update modification Map<String, Modification> modifications
+          visitor.modifications
+              .addEntries(cachedVisitor.getModifications().entries);
+        }
+      }
+    });
   }
 }

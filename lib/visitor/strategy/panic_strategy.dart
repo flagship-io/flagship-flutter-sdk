@@ -51,4 +51,8 @@ class PanicStrategy extends DefaultStrategy {
   unAuthenticateVisitor() {
     Flagship.logger(Level.INFO, PANIC_UNAUTHENTICATE);
   }
+
+  void cacheVisitor(String visitorId, String jsonString) {
+    Flagship.logger(Level.INFO, "No caching on panic mode");
+  }
 }

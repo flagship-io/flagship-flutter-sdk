@@ -1,3 +1,4 @@
+import 'package:flagship/model/modification.dart';
 import 'package:flagship/model/visitor_cache/campaign_cache.dart';
 import 'package:flagship/visitor.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -49,5 +50,27 @@ class VisitorCache {
       }
     });
     this.data?.campaigns = listCampCache;
+  }
+
+  Map<String, Modification> getModifications() {
+    Map<String, Modification> result = {};
+    // construire a partire des flags
+    this.data?.campaigns?.forEach((campItem) {
+      campItem.flags?.forEach((keyFalg, valueFlag) {
+        Modification newModification = Modification(
+            keyFalg,
+            campItem.campaignId ?? "",
+            campItem.variationGroupId ?? "",
+            campItem.variationId ?? "",
+            campItem.isReference ?? false,
+            campItem.type ?? "",
+            "slug",
+
+            /// Add this slug later
+            valueFlag);
+        result.addEntries({keyFalg as String: newModification}.entries);
+      });
+    });
+    return result;
   }
 }

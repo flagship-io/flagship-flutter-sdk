@@ -35,4 +35,8 @@ class NotReadyStrategy extends DefaultStrategy {
   void setConsent(bool isConsent) {
     Flagship.logger(Level.INFO, HIT_NOT_READY);
   }
+
+  void cacheVisitor(String visitorId, String jsonString) {
+    Flagship.logger(Level.INFO, "No caching on not ready");
+  }
 }

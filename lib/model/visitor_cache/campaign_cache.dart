@@ -2,8 +2,6 @@ import 'package:flagship/model/modification.dart';
 import 'package:json_annotation/json_annotation.dart';
 part 'campaign_cache.g.dart';
 
-int dataBaseVersion = 1;
-
 @JsonSerializable()
 class CampaignCache {
   String? campaignId;

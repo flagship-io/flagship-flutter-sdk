@@ -95,4 +95,13 @@ class VisitorDelegate implements IVisitor {
   unAuthenticateVisitor() {
     getStrategy().unAuthenticateVisitor();
   }
+
+  void cacheVisitor(String visitorId, String jsonString) {
+    getStrategy().cacheVisitor(visitorId, jsonString);
+  }
+
+  @override
+  void lookupVisitor(String visitoId) {
+    getStrategy().lookupVisitor(visitoId);
+  }
 }

@@ -28,4 +28,8 @@ class NoConsentStrategy extends DefaultStrategy {
         Flagship.logger(Level.INFO, CONSENT_HIT);
     }
   }
+
+  // void cacheVisitor(String visitorId, String jsonString) {
+  //       Flagship.logger(Level.INFO, "No caching on panic mode");
+  // }
 }
