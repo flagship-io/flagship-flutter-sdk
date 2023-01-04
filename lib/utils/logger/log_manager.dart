@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 enum Level {
   NONE,
@@ -59,11 +60,15 @@ class LogManager {
   }
 
   void _displayPrettyStringJson(String input) {
-    const JsonDecoder decoder = JsonDecoder();
-    const JsonEncoder encoder = JsonEncoder.withIndent('  ');
-    final dynamic object = decoder.convert(input);
-    final dynamic prettyString = encoder.convert(object);
-    prettyString.split('\n').forEach((dynamic element) => print(element));
+    try {
+      const JsonDecoder decoder = JsonDecoder();
+      const JsonEncoder encoder = JsonEncoder.withIndent('  ');
+      final dynamic object = decoder.convert(input);
+      final dynamic prettyString = encoder.convert(object);
+      prettyString.split('\n').forEach((dynamic element) => print(element));
+    } catch (e) {
+      log(e.toString());
+    }
   }
 
   void _displayMessage(String msg, bool isJsonString) {

@@ -32,7 +32,7 @@ class BucketingManager extends DecisionManager {
 
   @override
   Future<Campaigns> getCampaigns(
-      String envId, String visitorId, String? anonymousId, Map<String, Object> context) async {
+      String envId, String visitorId, String? anonymousId, bool hasConsented, Map<String, Object> context) async {
     // Read File before
     String? jsonString = await _readFile().catchError((error) {
       Flagship.logger(Level.ALL, "Error on reading the saved bucketing or the file doesn't exist");
@@ -42,7 +42,7 @@ class BucketingManager extends DecisionManager {
       Bucketing bucketingObject = Bucketing.fromJson(json.decode(jsonString));
 
       // Send Keys context when the consent is true && the panic mode is not activated
-      if (isConsent() && bucketingObject.panic == false) {
+      if (hasConsented && bucketingObject.panic == false) {
         // Send the context
         _sendKeyContext(envId, visitorId, context);
       }

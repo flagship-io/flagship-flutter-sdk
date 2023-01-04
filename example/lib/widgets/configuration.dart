@@ -72,7 +72,8 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
     Flagship.sharedInstance().onUpdateState(Status.NOT_INITIALIZED);
 
     /// we did this to allow start(S)
-    Flagship.logger(Level.ALL, '--------- Start with $visitorIdController.text ---------');
+    Flagship.logger(
+        Level.ALL, '--------- Start with $visitorIdController.text ---------');
 
     FlagshipConfig config = ConfigBuilder()
         .withMode(widget.isApiMode ? Mode.DECISION_API : Mode.BUCKETING)
@@ -178,7 +179,10 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
               ),
               Text(
                 "Configuration",
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 25),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 25),
               ),
               Container(
                 child: ElevatedButton(
@@ -192,7 +196,8 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
               SizedBox(height: _spaceBetweenInput),
               FSInputField("ApiKey", apiKeyController, TextInputType.text),
               SizedBox(height: _spaceBetweenInput),
-              FSInputField("Timeout(ms)", timeoutController, TextInputType.number),
+              FSInputField(
+                  "Timeout(ms)", timeoutController, TextInputType.number),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -203,15 +208,18 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
                   )),
                   Expanded(
                       child: ElevatedButton(
-                          onPressed: () => {_changeMode()}, child: Text(widget.isApiMode ? "API" : "BUCKETING")))
+                          onPressed: () => {_changeMode()},
+                          child: Text(widget.isApiMode ? "API" : "BUCKETING")))
                 ],
               ),
               (widget.isApiMode == true)
                   ? SizedBox(height: _spaceBetweenInput)
-                  : FSInputField("Polling Interval(s)", pollingTimeController, TextInputType.number),
+                  : FSInputField("Polling Interval(s)", pollingTimeController,
+                      TextInputType.number),
               SizedBox(height: _spaceBetweenInput),
               SizedBox(height: _spaceBetweenInput),
-              FSInputField("VisitorId", visitorIdController, TextInputType.text),
+              FSInputField(
+                  "VisitorId", visitorIdController, TextInputType.text),
               SizedBox(height: _spaceBetweenInput),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -224,7 +232,9 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
                   Expanded(
                       child: ElevatedButton(
                           onPressed: () => {_consent()},
-                          child: Text(widget.isConsented ? "Consented" : "Not Consented")))
+                          child: Text(widget.isConsented
+                              ? "Consented"
+                              : "Not Consented")))
                 ],
               ),
               SizedBox(height: _spaceBetweenInput),
@@ -275,7 +285,8 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   doMe() {
 // Create a visitor
 
-    Visitor visitor = Flagship.newVisitor("random_Id").withContext({"isVip": true}).build();
+    Visitor visitor =
+        Flagship.newVisitor("random_Id").withContext({"isVip": true}).build();
 
 // Call the authenticate function
 

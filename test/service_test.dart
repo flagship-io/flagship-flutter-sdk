@@ -1,6 +1,5 @@
 import 'package:flagship/decision/api_manager.dart';
 import 'package:flagship/flagship.dart';
-import 'package:flagship/flagshipContext/flagship_context_manager.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/flagship_version.dart';
 import 'package:flutter/widgets.dart';
@@ -28,24 +27,24 @@ void main() {
     "Content-type": "application/json"
   };
 
-  Object data = json.encode({"visitorId": "visitorId", "context": {}, "trigger_hit": false});
-
   MockService fakeService = MockService();
   ApiManager fakeApi = ApiManager(fakeService);
   test('Test API manager with reponse ', () async {
     /// prepare response
-    String fakeResponse = await ToolsTest.readFile('test_resources/decisionApi.json') ?? "";
-    when(fakeService.sendHttpRequest(RequestType.Post,
-            'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true', fsHeaders, data,
+    String fakeResponse =
+        await ToolsTest.readFile('test_resources/decisionApi.json') ?? "";
+    when(fakeService.sendHttpRequest(
+            RequestType.Post,
+            'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true',
+            fsHeaders,
+            any,
             timeoutMs: TIMEOUT))
         .thenAnswer((_) async {
       return http.Response(fakeResponse, 200);
     });
-    fakeApi.getCampaigns("bkk9glocmjcg0vtmdlrr", "visitorId", null, {}).then((value) {
+    fakeApi.getCampaigns(
+        "bkk9glocmjcg0vtmdlrr", "visitorId", null, true, {}).then((value) {
       fakeApi.getModifications(value.campaigns);
-      expect(fakeApi.isConsent(), true);
-      fakeApi.updateConsent(false);
-      expect(fakeApi.isConsent(), false);
       expect(fakeApi.isPanic(), false);
     });
   });

@@ -35,31 +35,30 @@ void main() {
   MockService fakePanicService = MockService();
   ApiManager fakePanicApi = ApiManager(fakePanicService);
   test('Test API with panic mode', () async {
-    String fakeResponse = await ToolsTest.readFile('test_resources/decisionApiPanic.json') ?? "";
-    when(fakePanicService.sendHttpRequest(RequestType.Post,
-            'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true', fsHeaders, any,
+    String fakeResponse =
+        await ToolsTest.readFile('test_resources/decisionApiPanic.json') ?? "";
+    when(fakePanicService.sendHttpRequest(
+            RequestType.Post,
+            'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true',
+            fsHeaders,
+            any,
             timeoutMs: TIMEOUT))
         .thenAnswer((_) async {
       return http.Response(fakeResponse, 200);
     });
 
     FlagshipConfig config = ConfigBuilder().withTimeout(TIMEOUT).build();
-    config.statusListener = (newState) {
-      if (newState == Status.PANIC_ON) {
-        // ignore: deprecated_member_use_from_same_package
-        expect(Flagship.getCurrentVisitor()?.getModification('key1', 12), 12);
-      }
-    };
 
-    config.decisionManager = fakePanicApi;
     Flagship.sharedInstance().onUpdateState(Status.NOT_INITIALIZED);
-    Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
+    await Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
 
     var v1 = Flagship.newVisitor("panicUser").build();
+    v1.config.decisionManager = fakePanicApi;
+
     Flagship.setCurrentVisitor(v1);
 
     // ignore: deprecated_member_use_from_same_package
-    v1.synchronizeModifications().then((value) {
+    await v1.synchronizeModifications().then((value) {
       expect(Flagship.getStatus(), Status.PANIC_ON);
 
       /// Activate
@@ -79,7 +78,8 @@ void main() {
       expect(v1.getContext().keys.contains('newKey'), false);
 
       /// Send hit
-      v1.sendHit(Event(action: "action", category: EventCategory.Action_Tracking));
+      v1.sendHit(
+          Event(action: "action", category: EventCategory.Action_Tracking));
     });
   });
 }

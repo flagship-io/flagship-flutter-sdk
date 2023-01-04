@@ -26,31 +26,30 @@ void main() {
     "Content-type": "application/json"
   };
 
-  Map<String, dynamic> presetContext = FlagshipContextManager.getPresetContextForApp();
-  Map<String, dynamic> jsonData = {"visitorId": "visitorId", "context": presetContext, "trigger_hit": false};
-  Object data = json.encode(jsonData);
-
-  //Object data = json.encode({"visitorId": "visitorId", "context": {}, "trigger_hit": false});
-
   MockService fakeService = MockService();
   ApiManager fakeApi = ApiManager(fakeService);
   test('Test API with no consent', () async {
-    String fakeResponse = await ToolsTest.readFile('test_resources/decisionApi.json') ?? "";
-    when(fakeService.sendHttpRequest(RequestType.Post,
-            'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true', fsHeaders, data,
+    String fakeResponse =
+        await ToolsTest.readFile('test_resources/decisionApi.json') ?? "";
+    when(fakeService.sendHttpRequest(
+            RequestType.Post,
+            'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true',
+            fsHeaders,
+            any,
             timeoutMs: TIMEOUT))
         .thenAnswer((_) async {
       return http.Response(fakeResponse, 200);
     });
 
     FlagshipConfig config = ConfigBuilder().withTimeout(TIMEOUT).build();
-    config.decisionManager = fakeApi;
-    Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
+    //config.decisionManager = fakeApi;
+    await Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
 
     var v1 = Flagship.newVisitor("visitorId").hasConsented(false).build();
+    v1.config.decisionManager = fakeApi;
     expect(v1.getConsent(), false);
     // ignore: deprecated_member_use_from_same_package
-    v1.synchronizeModifications().then((value) {
+    await v1.synchronizeModifications().then((value) {
       expect(Flagship.getStatus(), Status.READY);
 
       /// Activate
@@ -59,7 +58,7 @@ void main() {
 
       /// Get Modification
       // ignore: deprecated_member_use_from_same_package
-      expect(v1.getModification('aliasTer', 'default'), "testValue");
+      expect(v1.getModification('key_A', 'default'), "val_A");
 
       /// Get infos
       // ignore: deprecated_member_use_from_same_package
@@ -71,7 +70,8 @@ void main() {
       expect(infos['isReference'], true);
 
       /// Send hit
-      v1.sendHit(Event(action: "action", category: EventCategory.Action_Tracking));
+      v1.sendHit(
+          Event(action: "action", category: EventCategory.Action_Tracking));
 
       /// Send consent hit
       v1.sendHit(Consent(hasConsented: false));

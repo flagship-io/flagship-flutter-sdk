@@ -6,9 +6,6 @@ class Endpoints {
   static const String ACTIVATION = "activate";
   static const String EVENTS = "/events";
 
-  // extra sendContext
-  static const String DO_NOT_SEND_CONTEXT = "&sendContextEvent=false";
-
 // Bucketing
   static const String BUCKETING_SCRIPT = "https://cdn.flagship.io/%s/bucketing.json";
 }
