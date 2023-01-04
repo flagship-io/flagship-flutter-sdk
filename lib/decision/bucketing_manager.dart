@@ -19,6 +19,8 @@ class BucketingManager extends DecisionManager {
   Polling? polling;
   bool fileExists = true;
 
+  // Map<String, String>? assignationHistory;
+
   late Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   late Campaigns campaigns;
 
@@ -31,12 +33,9 @@ class BucketingManager extends DecisionManager {
   }
 
   @override
-  Future<Campaigns> getCampaigns(
-      String envId,
-      String visitorId,
-      String? anonymousId,
-      bool hasConsented,
-      Map<String, Object> context) async {
+  Future<Campaigns> getCampaigns(String envId, String visitorId,
+      String? anonymousId, bool hasConsented, Map<String, Object> context,
+      {Map<String, String> assignHistory = const {}}) async {
     // Read File before
     String? jsonString = await _readFile().catchError((error) {
       Flagship.logger(Level.ALL,
@@ -51,7 +50,8 @@ class BucketingManager extends DecisionManager {
         // Send the context
         _sendKeyContext(envId, visitorId, context);
       }
-      return bucketVariations(visitorId, bucketingObject, context);
+      return bucketVariations(
+          visitorId, bucketingObject, context, assignHistory);
     } else {
       Flagship.logger(Level.ALL, "Flagship, Failed to synchronize");
       return Campaigns(visitorId, false, []);

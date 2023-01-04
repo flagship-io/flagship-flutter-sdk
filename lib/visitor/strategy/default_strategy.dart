@@ -4,7 +4,6 @@ import 'package:flagship/hits/event.dart';
 import 'package:flagship/hits/hit.dart';
 import 'package:flagship/model/modification.dart';
 import 'package:flagship/model/visitor_cache/visitor_cache.dart';
-import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/flagship.dart';
@@ -225,12 +224,14 @@ class DefaultStrategy implements IVisitor {
         if (result['visitor'] != null) {
           VisitorCache cachedVisitor =
               VisitorCache.fromJson(jsonDecode(result['visitor']));
-          print(
+          Flagship.logger(Level.DEBUG,
               'The cached visitor get through the lookup is ${cachedVisitor.toString()}');
           // update the current visitor with his own cached data
           // 1 - update modification Map<String, Modification> modifications
           visitor.modifications
               .addEntries(cachedVisitor.getModifications().entries);
+          // 2- Update the assignation history
+          visitor.assignmentsHistory = cachedVisitor.getAssignationHistory();
         }
       }
     });

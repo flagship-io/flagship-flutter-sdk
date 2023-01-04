@@ -73,4 +73,9 @@ class VisitorCache {
     });
     return result;
   }
+
+  // Get Assignation history
+  Map<String, String> getAssignationHistory() {
+    return data?.assignmentsHistory as Map<String, String>;
+  }
 }

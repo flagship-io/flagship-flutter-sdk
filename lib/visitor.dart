@@ -63,6 +63,9 @@ class Visitor {
   // Xpc
   bool _isAuthenticated;
 
+// AssignmentsHistory history
+  Map<String, String> assignmentsHistory = {};
+
   // delegate visitor
   late VisitorDelegate _visitorDelegate;
   // delegate to update the status
@@ -103,7 +106,6 @@ class Visitor {
     }
     // Load the hits in cache if exist
     config.hitCacheImp?.lookupHits().then((value) {
-      print(value);
       // Convert hits map to list hit
       List<BaseHit> remainListOfHitInCache = [];
       remainListOfHitInCache = FlagshipTools.converMapToListOfHits(value);

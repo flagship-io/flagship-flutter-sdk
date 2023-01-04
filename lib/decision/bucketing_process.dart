@@ -10,19 +10,20 @@ import 'package:murmurhash/murmurhash.dart';
 import 'package:collection/collection.dart';
 
 extension BucketingProcess on BucketingManager {
-  Campaigns bucketVariations(
-      String visitorId, Bucketing scriptBucket, Map<String, dynamic> context) {
-    /// Check the panic mode
+  Campaigns bucketVariations(String visitorId, Bucketing scriptBucket,
+      Map<String, dynamic> context, Map<String, String> assignHistory) {
+    // Check the panic mode
     if (scriptBucket.panic == true) {
       return Campaigns(visitorId, true, []);
     }
     // Check the targeting and filter the variation he can run
-    Campaigns result = processBucketing(visitorId, scriptBucket, context);
+    Campaigns result =
+        processBucketing(visitorId, scriptBucket, context, assignHistory);
     return result;
   }
 
-  Campaigns processBucketing(
-      String visitorId, Bucketing scriptBucket, Map<String, dynamic> context) {
+  Campaigns processBucketing(String visitorId, Bucketing scriptBucket,
+      Map<String, dynamic> context, Map<String, String> assignHistory) {
     Campaigns result = Campaigns(visitorId, false, []);
     TargetingManager targetManager = TargetingManager(visitorId, context);
     // Campaign
@@ -38,8 +39,17 @@ extension BucketingProcess on BucketingManager {
                   itemVarGroup.idVariationGroup +
                   "is OK 👍");
 
-          String? varId =
-              selectIdVariationWithMurMurHash(visitorId, itemVarGroup);
+          // Check if the variationId already exist in the history before selecting by the MurMurHash
+          String? varId;
+          if (assignHistory.containsKey(itemVarGroup.idVariationGroup) ==
+              true) {
+            // The variation group already exist
+            Flagship.logger(Level.ALL, "The variation already exist");
+            varId = assignHistory[
+                itemVarGroup.idVariationGroup]; // add more security
+          } else {
+            varId = selectIdVariationWithMurMurHash(visitorId, itemVarGroup);
+          }
 
           if (varId != null) {
             // Create variation group
