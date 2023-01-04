@@ -13,13 +13,14 @@ enum RequestType { Post, Get }
 class Service {
   http.Client httpClient;
   Service(this.httpClient);
-  Future<Response> sendHttpRequest(RequestType type, String urlString, Map<String, String> headers, Object? data,
+  Future<Response> sendHttpRequest(RequestType type, String urlString,
+      Map<String, String> headers, Object? data,
       {timeoutMs = TIMEOUT}) async {
     var url = Uri.parse(urlString);
     switch (type) {
       case RequestType.Post:
         {
-          Flagship.logger(Level.INFO, "$data", isJsonString: true);
+          Flagship.logger(Level.INFO, data.toString(), isJsonString: true);
 
           try {
             var response = await this
@@ -28,11 +29,13 @@ class Service {
                 .timeout(Duration(milliseconds: timeoutMs));
             return response;
           } on TimeoutException catch (e) {
-            Flagship.logger(Level.INFO, REQUEST_TIMEOUT.replaceFirst("%s", urlString));
-            return Response('$e', 408);
+            Flagship.logger(
+                Level.INFO, REQUEST_TIMEOUT.replaceFirst("%s", urlString));
+            return Response(e.toString(), 408);
           } on Error catch (e) {
-            Flagship.logger(Level.INFO, REQUEST_ERROR.replaceFirst("%s", urlString));
-            return Response("$e", 400);
+            Flagship.logger(
+                Level.INFO, REQUEST_ERROR.replaceFirst("%s", urlString));
+            return Response(e.toString(), 400);
           }
         }
       case RequestType.Get:
@@ -40,7 +43,7 @@ class Service {
           var response = await this.httpClient.get(url, headers: headers);
           return response;
         } on Error catch (e) {
-          return Response("$e", 400);
+          return Response(e.toString(), 400);
         }
       default:
         return Response('Error', 400);
