@@ -1,3 +1,11 @@
+# Release notes
+
+## 2.0.1 - 04/01/2023
+
+Added
+
+- visitor_consent key in body of the campaign request
+
 ## 2.0.0 - 2022-10-03
 
 Added
@@ -15,9 +23,9 @@ Added
 - Flag class to manipulate Flag
 
 Changed
+
 - synchronizeModification is now deprecated, use fetchFlags function through the visitor instance
 - getModification / getModificationInfo / activateModification are now obsolete and have been replaced by Flag class
-
 
 ## 1.2.0 - 2022-03-24
 
