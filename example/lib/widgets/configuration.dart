@@ -1,4 +1,7 @@
 import 'package:flagship/Storage/storage_managment.dart';
+import 'package:flagship/flagship.dart';
+import 'package:flagship/flagship.dart';
+import 'package:flagship/flagship.dart';
 import 'package:flagship/flagshipContext/flagship_context.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/tracking/tracking_manager_config.dart';
@@ -15,9 +18,11 @@ import 'package:flagship/flagship.dart';
 
 // ignore: must_be_immutable
 class Configuration extends StatefulWidget {
-  bool isApiMode = true;
+  bool isApiMode = false;
   bool isAuthenticate = false;
   bool isConsented = true;
+
+  bool isSdkReady = false;
 
   @override
   _ConfigurationState createState() => _ConfigurationState();
@@ -88,7 +93,6 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
         .withMode(widget.isApiMode ? Mode.DECISION_API : Mode.BUCKETING)
         .withStatusListener((newStatus) {
           print('--------- Callback with $newStatus ---------');
-          var titleMsg = '';
           var newVisitor;
           if (newStatus == Status.READY) {
             //Get the visitor
@@ -102,19 +106,12 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
                 .build();
             // Set current visitor singleton instance for future use
             Flagship.setCurrentVisitor(newVisitor);
-            // }
 
-            newVisitor.fetchFlags().whenComplete(() {
-              switch (Flagship.getStatus()) {
-                case Status.PANIC_ON:
-                  titleMsg = "SDK is on panic mode, will use default value";
-                  break;
-                case Status.READY:
-                  titleMsg = "SDK is ready to use";
-                  break;
-                default:
-              }
-              showBasicDialog(titleMsg, '');
+            setState(() {
+              widget.isSdkReady = ((newStatus == Status.PANIC_ON) ||
+                      (newStatus == Status.READY))
+                  ? true
+                  : false;
             });
           }
         })
@@ -125,6 +122,24 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
             batchStrategy: BatchCachingStrategy.BATCH_CONTINUOUS_CACHING))
         .build();
     Flagship.start(envIdController.text, apiKeyController.text, config: config);
+  }
+
+// Fetch flags
+
+  _fetchFalgs() {
+    var titleMsg = '';
+    Flagship.getCurrentVisitor()?.fetchFlags().whenComplete(() {
+      switch (Flagship.getStatus()) {
+        case Status.PANIC_ON:
+          titleMsg = "SDK is on panic mode, will use default value";
+          break;
+        case Status.READY:
+          titleMsg = "SDK is ready to use";
+          break;
+        default:
+      }
+      showBasicDialog(titleMsg, '');
+    });
   }
 
 // Change Mode
@@ -274,15 +289,24 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
               SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    child: Text("START"),
+                    child: Text("START & CREATE VISITOR"),
                     onPressed: () => {_startSdk()},
                   )),
               SizedBox(height: _spaceBetweenInput),
               Container(
                   width: double.infinity,
                   child: ElevatedButton(
-                    child: Text("Update context & synchronize"),
-                    onPressed: () => {_onTapContext(context)},
+                    child: Text("FETCH FLAGS"),
+                    onPressed: widget.isSdkReady ? () => {_fetchFalgs()} : null,
+                  )),
+              SizedBox(height: _spaceBetweenInput),
+              Container(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    child: Text("UPDATE CONTEXT"),
+                    onPressed: widget.isSdkReady
+                        ? () => {_onTapContext(context)}
+                        : null,
                   )),
             ],
           ),
@@ -292,75 +316,8 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   }
 
   String _createRandomUser() {
+    return "adel12";
+    return "userPoolManager_810";
     return 'userPoolManager_' + Random().nextInt(1000).toString();
-  }
-
-  doMe() {
-// Create a visitor
-
-    Visitor visitor =
-        Flagship.newVisitor("random_Id").withContext({"isVip": true}).build();
-
-// Call the authenticate function
-
-    visitor.authenticate("random_Id");
-
-// Fetch the flags to update the visitor decision
-
-    visitor.fetchFlags().whenComplete(() {
-      // ... Do things ....
-    });
-
-// If you want to unauthenticate the visitor
-
-    visitor.unauthenticate();
-
-// Fetch the flags to update the visitor decision
-
-    visitor.fetchFlags().whenComplete(() {
-      // ... Do things ....
-    });
-
-    // Update the location country
-    visitor.updateFlagshipContext(FlagshipContext.LOCATION_COUNTRY, "FRANCE");
-    // Update the carrier name
-    visitor.updateFlagshipContext(FlagshipContext.CARRIER_NAME, "SFR");
-
-//////////////////////////////////////////////
-/////// Start sdk with default options ///////
-//////////////////////////////////////////////
-
-    Flagship.start("your_env_id", "your_api_key");
-
-//////////////////////////////////////////////
-/////// Start sdk with custom options  ///////
-//////////////////////////////////////////////
-
-// - timeout   = 1500 ms
-// - level     = warning message
-// - activated = true
-// - statusListener callback
-
-// create a config :
-
-//////////////////////////////////////////////
-/////// Start SDK with custom options  ///////
-//////////////////////////////////////////////
-
-// - timeout   = 1500 ms
-// - level     = warning message
-// - statusListener callback
-
-    FlagshipConfig customConfig = ConfigBuilder()
-        .withMode(Mode.DECISION_API)
-        .withStatusListener((newStatus) {
-          // Do things when status change ...
-        })
-        .withTimeout(1500)
-        .withLogLevel(Level.WARNING)
-        .build();
-
-// Start SDK
-    Flagship.start("envId", "apiKey", config: customConfig);
   }
 }

@@ -214,26 +214,32 @@ class DefaultStrategy implements IVisitor {
   @override
   // Called right at visitor creation, return a jsonString corresponding to visitor. Return a jsonString
   void lookupVisitor(String visitoId) async {
-    visitor.config.visitorCacheImp
-        ?.lookupVisitor(visitor.visitorId)
-        .then((value) {
-      if (value.length != 0) {
-        // convert to Map
-        Map<String, dynamic> result = jsonDecode(value);
-        // Retreive the json string stored in the visitor filed of this map.
-        if (result['visitor'] != null) {
-          VisitorCache cachedVisitor =
-              VisitorCache.fromJson(jsonDecode(result['visitor']));
-          Flagship.logger(Level.DEBUG,
-              'The cached visitor get through the lookup is ${cachedVisitor.toString()}');
-          // update the current visitor with his own cached data
-          // 1 - update modification Map<String, Modification> modifications
-          visitor.modifications
-              .addEntries(cachedVisitor.getModifications().entries);
+    String resultFromCache = await visitor.config.visitorCacheImp
+            ?.lookupVisitor(visitor.visitorId) ??
+        "";
+    if (resultFromCache.length != 0) {
+      // convert to Map
+      Map<String, dynamic> result = jsonDecode(resultFromCache);
+      // Retreive the json string stored in the visitor filed of this map.
+      if (result['visitor'] != null) {
+        VisitorCache cachedVisitor =
+            VisitorCache.fromJson(jsonDecode(result['visitor']));
+        Flagship.logger(Level.DEBUG,
+            'The cached visitor get through the lookup is ${cachedVisitor.toString()}');
+        // update the current visitor with his own cached data
+        // 1 - update modification Map<String, Modification> modifications
+        visitor.modifications
+            .addEntries(cachedVisitor.getModifications().entries);
+        if (visitor.config.decisionMode == Mode.BUCKETING) {
           // 2- Update the assignation history
-          visitor.assignmentsHistory = cachedVisitor.getAssignationHistory();
+          // Need Refractor later ....
+          //visitor.assignmentsHistory =
+          //  cachedVisitor.getAssignationHistory() ?? {};
+          visitor.decisionManager.updateAssignationHistory(
+              cachedVisitor.getAssignationHistory() ?? {});
         }
       }
-    });
+    }
+    // });
   }
 }

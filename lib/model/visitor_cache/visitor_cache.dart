@@ -32,8 +32,10 @@ class VisitorCache {
         visitorId: visitor.visitorId,
         context: visitor.getContext(),
         anonymousId: visitor.anonymousId,
-        consent: visitor.getConsent());
+        consent: visitor.getConsent(),
+        assignmentsHistory: visitor.assignmentsHistory);
     List<CampaignCache> listCampCache = [];
+
     visitor.modifications.forEach((key, modificationItem) {
       // If the campaign already exist then just update flags
       CampaignCache newCampCache = listCampCache.firstWhere(
@@ -48,7 +50,19 @@ class VisitorCache {
       } else {
         newCampCache.updateFlags({key: modificationItem.value});
       }
+      // Fill the assignation hsitory
+      if (this
+              .data
+              ?.assignmentsHistory
+              ?.keys
+              .contains(modificationItem.variationGroupId) ==
+          false) {
+        this.data?.assignmentsHistory?.addEntries({
+              modificationItem.variationGroupId: modificationItem.variationId
+            }.entries);
+      }
     });
+
     this.data?.campaigns = listCampCache;
   }
 
@@ -75,7 +89,7 @@ class VisitorCache {
   }
 
   // Get Assignation history
-  Map<String, String> getAssignationHistory() {
-    return data?.assignmentsHistory as Map<String, String>;
+  Map<String, dynamic>? getAssignationHistory() {
+    return data?.assignmentsHistory;
   }
 }

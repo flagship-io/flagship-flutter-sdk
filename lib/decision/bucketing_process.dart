@@ -11,7 +11,7 @@ import 'package:collection/collection.dart';
 
 extension BucketingProcess on BucketingManager {
   Campaigns bucketVariations(String visitorId, Bucketing scriptBucket,
-      Map<String, dynamic> context, Map<String, String> assignHistory) {
+      Map<String, dynamic> context, Map<String, dynamic> assignHistory) {
     // Check the panic mode
     if (scriptBucket.panic == true) {
       return Campaigns(visitorId, true, []);
@@ -23,7 +23,7 @@ extension BucketingProcess on BucketingManager {
   }
 
   Campaigns processBucketing(String visitorId, Bucketing scriptBucket,
-      Map<String, dynamic> context, Map<String, String> assignHistory) {
+      Map<String, dynamic> context, Map<String, dynamic> assignHistory) {
     Campaigns result = Campaigns(visitorId, false, []);
     TargetingManager targetManager = TargetingManager(visitorId, context);
     // Campaign
@@ -44,11 +44,17 @@ extension BucketingProcess on BucketingManager {
           if (assignHistory.containsKey(itemVarGroup.idVariationGroup) ==
               true) {
             // The variation group already exist
-            Flagship.logger(Level.ALL, "The variation already exist");
             varId = assignHistory[
                 itemVarGroup.idVariationGroup]; // add more security
+            Flagship.logger(Level.DEBUG,
+                "This variation: $varId' already selected for the visitor: $visitorId event if the allocation changed this visitor still belong to the initial bucket");
           } else {
             varId = selectIdVariationWithMurMurHash(visitorId, itemVarGroup);
+
+            Flagship.logger(
+                Level.ALL, "Adding a new saved variation in the assignation ");
+            this.assignationHistory?.addEntries(
+                {itemVarGroup.idVariationGroup: varId ?? ""}.entries);
           }
 
           if (varId != null) {
@@ -66,12 +72,10 @@ extension BucketingProcess on BucketingManager {
 
               /// Add this camp to the result
               result.campaigns.add(camp);
+            } else {
+              Flagship.logger(Level.DEBUG,
+                  "Variation $varId not found in the recent bucketing script, this variation could be removed, will return a default value ");
             }
-            // for (Variation itemVar in itemVarGroup.variations) {
-            //   if (itemVar.idVariation == varId) {
-            //     camp.variation = itemVar;
-            //   }
-            // }
           }
         } else {
           Flagship.logger(

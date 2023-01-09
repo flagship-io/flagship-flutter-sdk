@@ -64,7 +64,7 @@ class Visitor {
   bool _isAuthenticated;
 
 // AssignmentsHistory history
-  Map<String, String> assignmentsHistory = {};
+  Map<String, dynamic> assignmentsHistory = {};
 
   // delegate visitor
   late VisitorDelegate _visitorDelegate;

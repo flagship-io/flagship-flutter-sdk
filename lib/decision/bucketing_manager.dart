@@ -19,7 +19,7 @@ class BucketingManager extends DecisionManager {
   Polling? polling;
   bool fileExists = true;
 
-  // Map<String, String>? assignationHistory;
+  Map<String, dynamic>? assignationHistory;
 
   late Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   late Campaigns campaigns;
@@ -33,9 +33,12 @@ class BucketingManager extends DecisionManager {
   }
 
   @override
-  Future<Campaigns> getCampaigns(String envId, String visitorId,
-      String? anonymousId, bool hasConsented, Map<String, Object> context,
-      {Map<String, String> assignHistory = const {}}) async {
+  Future<Campaigns> getCampaigns(
+      String envId,
+      String visitorId,
+      String? anonymousId,
+      bool hasConsented,
+      Map<String, Object> context) async {
     // Read File before
     String? jsonString = await _readFile().catchError((error) {
       Flagship.logger(Level.ALL,
@@ -51,7 +54,7 @@ class BucketingManager extends DecisionManager {
         _sendKeyContext(envId, visitorId, context);
       }
       return bucketVariations(
-          visitorId, bucketingObject, context, assignHistory);
+          visitorId, bucketingObject, context, assignationHistory ?? {});
     } else {
       Flagship.logger(Level.ALL, "Flagship, Failed to synchronize");
       return Campaigns(visitorId, false, []);
@@ -146,6 +149,15 @@ class BucketingManager extends DecisionManager {
       return jsonFile.readAsStringSync();
     } else {
       throw Exception('Flagship, Failed to read bucketing script');
+    }
+  }
+
+  void updateAssignationHistory(Map<String, dynamic> newAssign) {
+    if (this.assignationHistory == null) {
+      this.assignationHistory = Map.fromEntries(newAssign.entries);
+    } else {
+      this.assignationHistory?.clear();
+      this.assignationHistory?.addEntries(newAssign.entries);
     }
   }
 }

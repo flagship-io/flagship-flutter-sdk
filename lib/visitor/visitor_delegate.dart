@@ -101,7 +101,7 @@ class VisitorDelegate implements IVisitor {
   }
 
   @override
-  void lookupVisitor(String visitoId) {
+  void lookupVisitor(String visitoId) async {
     getStrategy().lookupVisitor(visitoId);
   }
 }

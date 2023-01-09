@@ -81,5 +81,3 @@ class DefaultCacheVisitorImp with IVisitorCacheImplementation {
     return dbMgt.readVisitor(visitoId, 'table_visitors');
   }
 }
-
-// "/Users/adel/Library/Developer/CoreSimulator/Devices/3CC5A686-64FF-4091-B733-0548518FCB6B/data/Containers/Data/Application/74876BC8-1621-4EDA-916C-F6A10E46D125/Documents/flagship/cache/hits/visitorId"
