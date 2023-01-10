@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flagship/Storage/storage_managment.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/flagship.dart';
@@ -9,6 +11,7 @@ import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor.dart';
 import 'package:flagship_qa/mixins/dialog.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import './FSinputField.dart';
 import 'dart:math';
@@ -18,11 +21,14 @@ import 'package:flagship/flagship.dart';
 
 // ignore: must_be_immutable
 class Configuration extends StatefulWidget {
-  bool isApiMode = false;
+  bool isApiMode = true;
   bool isAuthenticate = false;
   bool isConsented = true;
-
   bool isSdkReady = false;
+
+// The current strategy
+  BatchCachingStrategy currentStrategy =
+      BatchCachingStrategy.BATCH_CONTINUOUS_CACHING;
 
   @override
   _ConfigurationState createState() => _ConfigurationState();
@@ -119,7 +125,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
         .withTrackingConfig(TrackingManagerConfig(
             batchIntervals: 20,
             poolMaxSize: 10,
-            batchStrategy: BatchCachingStrategy.BATCH_CONTINUOUS_CACHING))
+            batchStrategy: widget.currentStrategy))
         .build();
     Flagship.start(envIdController.text, apiKeyController.text, config: config);
   }
@@ -147,6 +153,24 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
     setState(() {
       widget.isApiMode = !widget.isApiMode;
     });
+  }
+
+  _onChnageStrategy(String value) {
+    switch (value) {
+      case "CONTINOUS":
+        widget.currentStrategy = BatchCachingStrategy.BATCH_CONTINUOUS_CACHING;
+        break;
+      case "PERIODIC":
+        widget.currentStrategy = BatchCachingStrategy.BATCH_PERIODIC_CACHING;
+        break;
+      case "NO_STRATEGY":
+        widget.currentStrategy =
+            BatchCachingStrategy.NO_BATCHING_CONTINUOUS_CACHING_STRATEGY;
+        break;
+    }
+
+    print(
+        " ------------- The choosen strategy is ${widget.currentStrategy} ----------------");
   }
 
   // Consent Mode
@@ -184,6 +208,8 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
 
   @override
   Widget build(BuildContext context) {
+    List<String> strategyArray = ["CONTINOUS", "PERIODIC", "NO_STRATEGY"];
+
     double _spaceBetweenInput = 10;
     envIdController.text = envId;
     apiKeyController.text = apiKey;
@@ -263,6 +289,27 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
                           child: Text(widget.isConsented
                               ? "Consented"
                               : "Not Consented")))
+                ],
+              ),
+              SizedBox(height: _spaceBetweenInput),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Expanded(
+                      child: Text(
+                    "Strategy",
+                    style: TextStyle(color: Colors.white),
+                  )),
+                  Expanded(
+                      child: CupertinoPicker.builder(
+                          itemExtent: 30,
+                          childCount: 3,
+                          backgroundColor: Colors.white,
+                          onSelectedItemChanged: (range) =>
+                              {_onChnageStrategy(strategyArray[range])},
+                          itemBuilder: (context, range) {
+                            return Text(strategyArray[range]);
+                          }))
                 ],
               ),
               SizedBox(height: _spaceBetweenInput),

@@ -130,10 +130,8 @@ class Flagship with FlagshipDelegate {
     }
   }
 
-  /// Test funciton
-  static void testDB() async {
-    var dbTest = DataBaseManagment();
-    await dbTest.openDb();
-    //  dbTest.insertDog(DbModel(id: "1234:alias", visitorId: "alias"));
+// When close flagship, send hit present in the queue
+  void close() {
+    Flagship.getCurrentVisitor()?.trackingManager.batchManager.batchFromQueue();
   }
 }

@@ -3,12 +3,14 @@ import 'dart:math';
 
 import 'package:flagship/cache/cache_manager.dart';
 import 'package:flagship/cache/interface_cache.dart';
+import 'package:flagship/flagship.dart';
 import 'package:flagship/hits/batch.dart';
 import 'package:flagship/hits/hit.dart';
-import 'package:flagship/tracking/pool_queue.dart';
+import 'package:flagship/tracking/Batching/pool_queue.dart';
 import 'package:flagship/tracking/tracking_manager.dart';
 import 'package:flagship/tracking/tracking_manager_config.dart';
 import 'package:flagship/utils/flagship_tools.dart';
+import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:pausable_timer/pausable_timer.dart';
 
 class BatchManager with TrackingManagerDelegate, FlagshipPoolQueueDelegate {
@@ -66,30 +68,51 @@ class BatchManager with TrackingManagerDelegate, FlagshipPoolQueueDelegate {
   }
 
   @override
-  onSendBatchWithSucess(List<BaseHit> listOfSendedHits) {
+  onSendBatchWithSucess(
+      List<BaseHit> listOfSendedHits, BatchCachingStrategy strategy) {
     // Remove old cache before save a fresh data
 
-    switch (configTracking.batchStrategy) {
-      case BatchCachingStrategy.BATCH_CONTINUOUS_CACHING:
-        // Refractor later
-        List<String> listOfIds = [];
-        listOfSendedHits.forEach((element) {
-          listOfIds.add(element.id);
-        });
-        fsCacheHit.flushHits(listOfIds);
-        break;
-      case BatchCachingStrategy.BATCH_PERIODIC_CACHING:
-        // Clean the pool before save it again, because those hits are sended with success
-        listOfSendedHits.forEach((element) {
-          fsPool.removeTrackElement(element.id);
-        });
+    if (strategy == BatchCachingStrategy.BATCH_CONTINUOUS_CACHING) {
+      // Refractor later
+      List<String> listOfIds = [];
+      listOfSendedHits.forEach((element) {
+        listOfIds.add(element.id);
+      });
+      fsCacheHit.flushHits(listOfIds);
+    } else if (strategy == BatchCachingStrategy.BATCH_PERIODIC_CACHING) {
+      // Clean the pool before save it again, because those hits are sended with success
+      listOfSendedHits.forEach((element) {
+        fsPool.removeTrackElement(element.id);
+      });
 
-        // Flush all hits before cache the new ones
-        fsCacheHit.flushAllHits();
-        fsCacheHit.cacheHits(FlagshipTools.hitsToMap(fsPool.fsQueue.toList()));
-        break;
+      // Flush all hits before cache the new ones
+      fsCacheHit.flushAllHits();
+      fsCacheHit.cacheHits(FlagshipTools.hitsToMap(fsPool.fsQueue.toList()));
+    } else {
+      Flagship.logger(
+          Level.INFO, "Batching is not implemented on hidden option");
     }
 
+    // switch (configTracking.batchStrategy) {
+    //   case BatchCachingStrategy.BATCH_CONTINUOUS_CACHING:
+    //     // Refractor later
+    //     List<String> listOfIds = [];
+    //     listOfSendedHits.forEach((element) {
+    //       listOfIds.add(element.id);
+    //     });
+    //     fsCacheHit.flushHits(listOfIds);
+    //     break;
+    //   case BatchCachingStrategy.BATCH_PERIODIC_CACHING:
+    //     // Clean the pool before save it again, because those hits are sended with success
+    //     listOfSendedHits.forEach((element) {
+    //       fsPool.removeTrackElement(element.id);
+    //     });
+
+    //     // Flush all hits before cache the new ones
+    //     fsCacheHit.flushAllHits();
+    //     fsCacheHit.cacheHits(FlagshipTools.hitsToMap(fsPool.fsQueue.toList()));
+    //     break;
+    // }
     cronTimer.start();
   }
 

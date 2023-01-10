@@ -6,7 +6,9 @@ const int DEFAULT_TIME_INTERVAL =
 enum BatchCachingStrategy {
   BATCH_CONTINUOUS_CACHING, // Cache on continous when hit occurs
 
-  BATCH_PERIODIC_CACHING // cache when batch is launched
+  BATCH_PERIODIC_CACHING, // Cache when batch is launched
+
+  NO_BATCHING_CONTINUOUS_CACHING_STRATEGY // Hidden option
 }
 
 class TrackingManagerConfig {
@@ -15,7 +17,7 @@ class TrackingManagerConfig {
   // Define the maximum number of tracking hit that each batch can contain.
   final int poolMaxSize;
 
-  // indicate the strategy
+  // indicate the strategy to adopt for the cache manager
   final BatchCachingStrategy batchStrategy;
 
   TrackingManagerConfig(

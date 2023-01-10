@@ -3,8 +3,8 @@ import 'package:flagship/cache/default_cache.dart';
 import 'package:flagship/cache/interface_cache.dart';
 import 'package:flagship/hits/event.dart';
 import 'package:flagship/hits/hit.dart';
-import 'package:flagship/tracking/batch_manager.dart';
-import 'package:flagship/tracking/pool_queue.dart';
+import 'package:flagship/tracking/Batching/batch_manager.dart';
+import 'package:flagship/tracking/Batching/pool_queue.dart';
 import 'package:flagship/tracking/tracking_manager_config.dart';
 import 'package:flutter_test/flutter_test.dart';
 

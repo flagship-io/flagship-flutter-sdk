@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:flagship/api/service.dart';
 import 'package:flagship/cache/default_cache.dart';
 import 'package:flagship/flagshipContext/flagship_context.dart';
@@ -11,8 +10,9 @@ import 'package:flagship/decision/decision_manager.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/hits/hit.dart';
-import 'package:flagship/model/visitor_cache/visitor_cache.dart';
+import 'package:flagship/tracking/tracking_manager_strategies.dart';
 import 'package:flagship/tracking/tracking_manager.dart';
+import 'package:flagship/tracking/tracking_manager_config.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
@@ -86,10 +86,19 @@ class Visitor {
     }
 
     // Init tracking manager
-    trackingManager = TrackingManager(
-        Service(http.Client()),
-        config.trackingMangerConfig,
-        this.config.hitCacheImp ?? DefaultCacheHitImp());
+    switch (config.trackingMangerConfig.batchStrategy) {
+      case BatchCachingStrategy.BATCH_CONTINUOUS_CACHING:
+      case BatchCachingStrategy.BATCH_PERIODIC_CACHING:
+        trackingManager = TrackingManageStrategy(
+            Service(http.Client()),
+            config.trackingMangerConfig,
+            this.config.hitCacheImp ?? DefaultCacheHitImp());
+        break;
+      default:
+        trackingManager = TrackingManager(
+            Service(http.Client()), config.trackingMangerConfig, null);
+        break;
+    }
 
     // Load preset_Context
     this.updateContextWithMap(FlagshipContextManager.getPresetContextForApp());
@@ -222,7 +231,7 @@ class Visitor {
     if (newValue == false) {
       var listToremove =
           trackingManager.fsPool.flushTrackQueue(flushingConsentHits: false);
-      this.trackingManager.fsCacheHit.flushHits(listToremove);
+      this.trackingManager.fsCacheHit?.flushHits(listToremove);
       // Erase the related data in cache
       this.config.visitorCacheImp?.flushVisitor(this.visitorId);
     }

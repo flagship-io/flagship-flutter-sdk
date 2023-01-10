@@ -1,5 +1,5 @@
 import 'package:flagship/hits/event.dart';
-import 'package:flagship/tracking/pool_queue.dart';
+import 'package:flagship/tracking/Batching/pool_queue.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
