@@ -1,4 +1,6 @@
 mixin IVisitorCacheImplementation {
+  int visitorCacheLookupTimeout = 200;
+
 // Called after each fetchFlags. Must upsert the given visitor jsonString in the database.
   void cacheVisitor(String visitorId, String jsonString);
 
@@ -10,6 +12,8 @@ mixin IVisitorCacheImplementation {
 }
 
 mixin IHitCacheImplementation {
+  int hitCacheLookupTimeout = 200;
+
   // Called to return the hits contained in the database
   // Attention: The periodic strategy must remove all the previous hits from database and insert the new ones
   // hits Map of <id, hit json format> Id : hit unique id Hit json format

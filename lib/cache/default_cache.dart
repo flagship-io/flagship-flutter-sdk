@@ -7,12 +7,8 @@ import 'package:flagship/utils/logger/log_manager.dart';
 //////////////////
 ///    HITS  /////
 //////////////////
-// Todo , refractor the opening db
 class DefaultCacheHitImp with IHitCacheImplementation {
   final DataBaseManagment dbMgt = DataBaseManagment();
-
-  DefaultCacheHitImp();
-
   @override
   void cacheHits(Map<String, Map<String, Object>> hits) async {
     Flagship.logger(
@@ -39,6 +35,7 @@ class DefaultCacheHitImp with IHitCacheImplementation {
 
   @override
   Future<List<Map>> lookupHits() async {
+    await Future.delayed(Duration(milliseconds: 20));
     print("lookupHits Hit from Default cache Implementation");
     await dbMgt.openDb();
     return dbMgt.readHits("table_hits");

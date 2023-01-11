@@ -1,3 +1,4 @@
+import 'package:flagship/cache/interface_cache.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/tracking/tracking_manager_config.dart';
@@ -356,5 +357,47 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
 
   String _createRandomUser() {
     return 'userPoolManager_' + Random().nextInt(1000).toString();
+  }
+}
+
+class CustomCacheHit with IHitCacheImplementation {
+  @override
+  void cacheHits(Map<String, Map<String, Object>> hits) {
+    print("-------------- CUSTOM ------------");
+  }
+
+  @override
+  void flushAllHits() {
+    print("-------------- CUSTOM ------------");
+  }
+
+  @override
+  void flushHits(List<String> hitIds) {
+    print("-------------- CUSTOM ------------");
+  }
+
+  @override
+  Future<List<Map>> lookupHits() {
+    print("-------------- CUSTOM ------------");
+    return Future.value([]);
+  }
+}
+
+class CustomVisitorCache with IVisitorCacheImplementation {
+  @override
+  void cacheVisitor(String visitorId, String jsonString) {
+    print("-------------- CUSTOM VISITOR CACHE------------");
+  }
+
+  @override
+  void flushVisitor(String visitorId) {
+    print("--------------  CUSTOM VISITOR CACHE- ------------");
+  }
+
+  @override
+  Future<String> lookupVisitor(String visitoId) async {
+    Future.delayed(Duration(milliseconds: 200));
+    print("--------------  CUSTOM VISITOR CACHE- ------------");
+    return Future.value("");
   }
 }

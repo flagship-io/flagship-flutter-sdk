@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flagship/hits/activate.dart';
 import 'package:flagship/hits/event.dart';
 import 'package:flagship/hits/hit.dart';
 import 'package:flagship/model/modification.dart';
 import 'package:flagship/model/visitor_cache/visitor_cache.dart';
+import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/flagship.dart';
@@ -214,32 +216,98 @@ class DefaultStrategy implements IVisitor {
   @override
   // Called right at visitor creation, return a jsonString corresponding to visitor. Return a jsonString
   void lookupVisitor(String visitoId) async {
-    String resultFromCache = await visitor.config.visitorCacheImp
-            ?.lookupVisitor(visitor.visitorId) ??
-        "";
-    if (resultFromCache.length != 0) {
-      // convert to Map
-      Map<String, dynamic> result = jsonDecode(resultFromCache);
-      // Retreive the json string stored in the visitor filed of this map.
-      if (result['visitor'] != null) {
-        VisitorCache cachedVisitor =
-            VisitorCache.fromJson(jsonDecode(result['visitor']));
-        Flagship.logger(Level.DEBUG,
-            'The cached visitor get through the lookup is ${cachedVisitor.toString()}');
-        // update the current visitor with his own cached data
-        // 1 - update modification Map<String, Modification> modifications
-        visitor.modifications
-            .addEntries(cachedVisitor.getModifications().entries);
-        if (visitor.config.decisionMode == Mode.BUCKETING) {
-          // 2- Update the assignation history
-          // Need Refractor later ....
-          //visitor.assignmentsHistory =
-          //  cachedVisitor.getAssignationHistory() ?? {};
-          visitor.decisionManager.updateAssignationHistory(
-              cachedVisitor.getAssignationHistory() ?? {});
+    visitor.config.visitorCacheImp
+        ?.lookupVisitor(visitor.visitorId)
+        .then((resultFromCache) {
+      if (resultFromCache.length != 0) {
+        // convert to Map
+        Map<String, dynamic> result = jsonDecode(resultFromCache);
+        // Retreive the json string stored in the visitor filed of this map.
+        if (result['visitor'] != null) {
+          VisitorCache cachedVisitor =
+              VisitorCache.fromJson(jsonDecode(result['visitor']));
+          Flagship.logger(Level.DEBUG,
+              'The cached visitor get through the lookup is ${cachedVisitor.toString()}');
+          // update the current visitor with his own cached data
+          // 1 - update modification Map<String, Modification> modifications
+          visitor.modifications
+              .addEntries(cachedVisitor.getModifications().entries);
+          if (visitor.config.decisionMode == Mode.BUCKETING) {
+            // 2- Update the assignation history
+            visitor.decisionManager.updateAssignationHistory(
+                cachedVisitor.getAssignationHistory() ?? {});
+          }
         }
       }
-    }
+    }).timeout(
+            Duration(
+                milliseconds:
+                    visitor.config.visitorCacheImp?.visitorCacheLookupTimeout ??
+                        200), onTimeout: () {
+      Flagship.logger(
+          Level.ERROR, "Timeout on trying to read the cache visitor");
+    });
+
+    // String resultFromCache = await visitor.config.visitorCacheImp
+    //         ?.lookupVisitor(visitor.visitorId)
+    //         .timeout(
+    //             Duration(
+    //               milliseconds: visitor
+    //                       .config.visitorCacheImp?.visitorCacheLookupTimeout ??
+    //                   200,
+    //             ), onTimeout: () {
+    //       Flagship.logger(
+    //           Level.ERROR, "Timeout on trying to read the cache visitor");
+    //       return Future.error(
+    //           Exception("Timeout on trying to read the cache visitor"));
+    //     }) ??
+    //     "";
+    // if (resultFromCache.length != 0) {
+    //   // convert to Map
+    //   Map<String, dynamic> result = jsonDecode(resultFromCache);
+    //   // Retreive the json string stored in the visitor filed of this map.
+    //   if (result['visitor'] != null) {
+    //     VisitorCache cachedVisitor =
+    //         VisitorCache.fromJson(jsonDecode(result['visitor']));
+    //     Flagship.logger(Level.DEBUG,
+    //         'The cached visitor get through the lookup is ${cachedVisitor.toString()}');
+    //     // update the current visitor with his own cached data
+    //     // 1 - update modification Map<String, Modification> modifications
+    //     visitor.modifications
+    //         .addEntries(cachedVisitor.getModifications().entries);
+    //     if (visitor.config.decisionMode == Mode.BUCKETING) {
+    //       // 2- Update the assignation history
+    //       // Need Refractor later ....
+    //       //visitor.assignmentsHistory =
+    //       //  cachedVisitor.getAssignationHistory() ?? {};
+    //       visitor.decisionManager.updateAssignationHistory(
+    //           cachedVisitor.getAssignationHistory() ?? {});
+    //     }
+    //   }
+    // }
     // });
+  }
+
+  @override
+  void lookupHits() async {
+    // Load the hits in cache if exist
+    visitor.config.hitCacheImp?.lookupHits().then((value) {
+      // Convert hits map to list hit
+      List<BaseHit> remainListOfHitInCache = [];
+      remainListOfHitInCache = FlagshipTools.converMapToListOfHits(value);
+
+      if (remainListOfHitInCache.isNotEmpty) {
+        Flagship.logger(Level.DEBUG,
+            "Adding the founded hits in cache into the pool of hits");
+        // Re inject the hits comming from cache to the hit pool
+        visitor.trackingManager.fsPool
+            .addListOfElements(remainListOfHitInCache);
+      }
+    }).timeout(
+        Duration(
+            milliseconds: visitor.config.hitCacheImp?.hitCacheLookupTimeout ??
+                200), onTimeout: () {
+      Flagship.logger(Level.ERROR, "Timeout on reading hits for cache");
+    });
   }
 }

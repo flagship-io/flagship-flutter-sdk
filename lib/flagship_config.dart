@@ -43,7 +43,7 @@ class FlagshipConfig {
 
   FlagshipConfig(this.decisionMode, this.timeout, this.pollingTime,
       this._logLevel, this.trackingMangerConfig,
-      {this.statusListener, this.hitCacheImp, this.visitorCacheImp}) {
+      {this.statusListener, this.visitorCacheImp, this.hitCacheImp}) {
     // Set the log Manager
     this.logManager = LogManager(level: _logLevel);
     // Log the timeout value in ms
@@ -80,6 +80,12 @@ class ConfigBuilder {
 
 // Tracking Config
   TrackingManagerConfig _trackingManagerConfig = TrackingManagerConfig();
+
+  // Cache Hit imp
+  IHitCacheImplementation? _hitCacheImp;
+
+  // Cache Visitor Imp
+  IVisitorCacheImplementation? _visitorCacheImp;
 
   ConfigBuilder();
 
@@ -118,9 +124,26 @@ class ConfigBuilder {
     return this;
   }
 
+  ConfigBuilder withCacheHitManager(IHitCacheImplementation hitCacheImp,
+      {int hitCacheTimeout = 200}) {
+    _hitCacheImp = hitCacheImp;
+    _hitCacheImp?.hitCacheLookupTimeout = hitCacheTimeout;
+    return this;
+  }
+
+  ConfigBuilder withCacheVisitorManager(
+      IVisitorCacheImplementation visitorCacheImp,
+      {int visitorCacheTimeout = 200}) {
+    _visitorCacheImp = visitorCacheImp;
+    _visitorCacheImp?.visitorCacheLookupTimeout = visitorCacheTimeout;
+    return this;
+  }
+
   FlagshipConfig build() {
     return FlagshipConfig(
         _mode, _timeout, _pollingTime, _logLevel, _trackingManagerConfig,
-        statusListener: _statusListener);
+        statusListener: _statusListener,
+        hitCacheImp: _hitCacheImp,
+        visitorCacheImp: _visitorCacheImp);
   }
 }

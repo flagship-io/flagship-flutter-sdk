@@ -114,17 +114,19 @@ class Visitor {
       _visitorDelegate.sendHit(Consent(hasConsented: _hasConsented));
     }
     // Load the hits in cache if exist
-    config.hitCacheImp?.lookupHits().then((value) {
-      // Convert hits map to list hit
-      List<BaseHit> remainListOfHitInCache = [];
-      remainListOfHitInCache = FlagshipTools.converMapToListOfHits(value);
-      if (remainListOfHitInCache.isNotEmpty) {
-        Flagship.logger(Level.DEBUG,
-            "Adding the founded hits in cache into the pool of hits");
-        // Re inject the hits comming from cache to the hit pool
-        trackingManager.fsPool.addListOfElements(remainListOfHitInCache);
-      }
-    });
+    // config.hitCacheImp?.lookupHits().then((value) {
+    //   // Convert hits map to list hit
+    //   List<BaseHit> remainListOfHitInCache = [];
+    //   remainListOfHitInCache = FlagshipTools.converMapToListOfHits(value);
+    //   if (remainListOfHitInCache.isNotEmpty) {
+    //     Flagship.logger(Level.DEBUG,
+    //         "Adding the founded hits in cache into the pool of hits");
+    //     // Re inject the hits comming from cache to the hit pool
+    //     trackingManager.fsPool.addListOfElements(remainListOfHitInCache);
+    //   }
+    // });
+
+    _visitorDelegate.lookupHits();
     // Lookup for the cached visitor data
     _visitorDelegate.lookupVisitor(this.visitorId);
   }
