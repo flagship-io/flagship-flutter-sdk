@@ -4,7 +4,6 @@ import 'package:flagship/api/endpoints.dart';
 import 'package:flagship/cache/interface_cache.dart';
 import 'package:flagship/tracking/Batching/batch_manager.dart';
 import 'package:flagship/flagship.dart';
-import 'package:flagship/flagship_version.dart';
 import 'package:flagship/hits/activate.dart';
 import 'package:flagship/hits/hit.dart';
 import 'package:flagship/tracking/Batching/pool_queue.dart';
@@ -28,36 +27,42 @@ class TrackingManager {
 
   late FlagshipPoolQueue activatePool;
 
-  // Cache manager
+// Cache manager
   final IHitCacheImplementation? fsCacheHit;
 
+// Config for the tracking manager
   final TrackingManagerConfig configTracking;
 
+// Batch manager
   late BatchManager batchManager;
 
+// Delegate for tracking manager
   TrackingManagerDelegate? delegate;
 
   TrackingManager(this.service, this.configTracking, this.fsCacheHit) {
     this.apiKey = Flagship.sharedInstance().apiKey ?? "";
   }
 
-  // Header for request
-  Map<String, String> get fsHeader {
-    return {
-      "x-api-key": this.apiKey,
-      "x-sdk-client": "flutter",
-      "x-sdk-version": FlagshipVersion,
-      "Content-type": "application/json"
-    };
-  }
+  // // Header for request
+  // Map<String, String> get fsHeader(String apiKey) {
+  //   return {
+  //     "x-api-key": this.apiKey,
+  //     "x-sdk-client": "flutter",
+  //     "x-sdk-version": FlagshipVersion,
+  //     "Content-type": "application/json"
+  //   };
+  // }
 
   Future<void> sendHit(BaseHit pHit) async {
     if (pHit.isValid() == true) {
-      /// Create url
+      // Create url
       String urlString = Endpoints.ARIANE;
       try {
         var response = await service.sendHttpRequest(
-            RequestType.Post, urlString, fsHeader, jsonEncode(pHit.bodyTrack),
+            RequestType.Post,
+            urlString,
+            Endpoints.getFSHeader(this.apiKey),
+            jsonEncode(pHit.bodyTrack),
             timeoutMs: TIMEOUT_REQUEST);
         switch (response.statusCode) {
           case 200:
@@ -78,12 +83,12 @@ class TrackingManager {
     }
   }
 
-  // later add code error in the future
+  // Send Activate
   Future<void> sendActivate(Activate activateHit) async {
-    /// Create url
+    // Create url
     String urlString = Endpoints.DECISION_API + Endpoints.ACTIVATION;
-    var response = await service.sendHttpRequest(
-        RequestType.Post, urlString, fsHeader, jsonEncode(activateHit.toJson()),
+    var response = await service.sendHttpRequest(RequestType.Post, urlString,
+        Endpoints.getFSHeader(this.apiKey), jsonEncode(activateHit.toJson()),
         timeoutMs: TIMEOUT_REQUEST);
     switch (response.statusCode) {
       case 200:

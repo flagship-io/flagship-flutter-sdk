@@ -30,7 +30,6 @@ class Batch extends BaseHit {
 
   @override
   bool isValid() {
-    // TODO: implement isValid
     throw UnimplementedError();
   }
 }

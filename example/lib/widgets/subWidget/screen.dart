@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flagship_qa/widgets/FSinputField.dart';
 import 'package:flutter/material.dart';
 import 'package:flagship/hits/screen.dart';
@@ -20,40 +18,13 @@ class _ScreenState extends State<ScreenHit> {
   }
 
   _onSendScreenHit() async {
-    var text = "Screen hit sent";
     var currentVisitor = Flagship.getCurrentVisitor();
-    var subText = "Screen hit has been sent";
     try {
       for (int index = 0; index < 9; index++) {
         Screen screenEvent = Screen(location: _textController.text + '$index');
         await currentVisitor?.sendHit(screenEvent);
       }
-    } catch (e) {
-      text = "Screen send error";
-      subText = e.toString();
-    }
-    // showDialog(
-    //     context: context,
-    //     builder: (BuildContext context) {
-    //       return new AlertDialog(
-    //         title: new Text(text),
-    //         content: new Column(
-    //           mainAxisSize: MainAxisSize.min,
-    //           crossAxisAlignment: CrossAxisAlignment.start,
-    //           children: <Widget>[
-    //             Text(subText),
-    //           ],
-    //         ),
-    //         actions: <Widget>[
-    //           new TextButton(
-    //             onPressed: () {
-    //               Navigator.of(context).pop();
-    //             },
-    //             child: const Text('Close'),
-    //           ),
-    //         ],
-    //       );
-    //     });
+    } catch (e) {}
   }
 
   final double _vertcialSpace = 20;

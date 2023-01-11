@@ -8,7 +8,7 @@ enum BatchCachingStrategy {
 
   BATCH_PERIODIC_CACHING, // Cache when batch is launched
 
-  NO_BATCHING_CONTINUOUS_CACHING_STRATEGY // Hidden option
+  NO_BATCHING_CONTINUOUS_CACHING_STRATEGY // Hidden option with no caching and no batching
 }
 
 class TrackingManagerConfig {

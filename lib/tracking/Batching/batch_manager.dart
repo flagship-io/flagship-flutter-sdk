@@ -1,7 +1,3 @@
-import 'dart:convert';
-import 'dart:math';
-
-import 'package:flagship/cache/cache_manager.dart';
 import 'package:flagship/cache/interface_cache.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/hits/batch.dart';

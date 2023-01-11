@@ -1,3 +1,5 @@
+import 'package:flagship/flagship_version.dart';
+
 class Endpoints {
   static const String SEP = "/";
   static const String DECISION_API = "https://decision.flagship.io/v2/";
@@ -12,4 +14,14 @@ class Endpoints {
 
   // Batch events
   static const String BATCH = "https://events.flagship.io";
+
+// Get the flagship header
+  static Map<String, String> getFSHeader(String apiKey) {
+    return {
+      "x-api-key": apiKey,
+      "x-sdk-client": "flutter",
+      "x-sdk-version": FlagshipVersion,
+      "Content-type": "application/json"
+    };
+  }
 }

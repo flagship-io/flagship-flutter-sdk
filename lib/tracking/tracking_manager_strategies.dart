@@ -22,6 +22,7 @@ class TrackingManageStrategy extends TrackingManager {
       : super(service, configTracking, fsCacheHit) {
     strategy = configTracking.batchStrategy;
 
+    // Create pool
     fsPool = FlagshipPoolQueue(configTracking.poolMaxSize);
 
     // Activate pool
@@ -70,8 +71,8 @@ class TrackingManageStrategy extends TrackingManager {
       objectToSend = jsonEncode(activateBatch.toJson());
     }
 
-    var response = await service.sendHttpRequest(
-        RequestType.Post, urlString, fsHeader, objectToSend,
+    var response = await service.sendHttpRequest(RequestType.Post, urlString,
+        Endpoints.getFSHeader(this.apiKey), objectToSend,
         timeoutMs: TIMEOUT_REQUEST);
     switch (response.statusCode) {
       case 200:
@@ -90,8 +91,11 @@ class TrackingManageStrategy extends TrackingManager {
     // Create url
     String urlString = Endpoints.BATCH;
     try {
-      var response = await service.sendHttpRequest(RequestType.Post, urlString,
-          fsHeader, jsonEncode(Batch(listOfHitToSend).bodyTrack),
+      var response = await service.sendHttpRequest(
+          RequestType.Post,
+          urlString,
+          Endpoints.getFSHeader(this.apiKey),
+          jsonEncode(Batch(listOfHitToSend).bodyTrack),
           timeoutMs: TIMEOUT_REQUEST);
       switch (response.statusCode) {
         case 200:

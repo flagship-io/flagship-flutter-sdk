@@ -11,12 +11,10 @@ import 'package:flagship/model/modification.dart';
 import 'package:flagship/model/visitor_cache/campaign_cache.dart';
 import 'package:flagship/model/visitor_cache/data.dart';
 import 'package:flagship/model/visitor_cache/visitor_cache.dart';
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../flagship.dart';
 import 'logger/log_manager.dart';
 import 'package:uuid/uuid.dart';
-import 'package:flutter/services.dart' show rootBundle;
 
 // length for the envId
 const int LengthId = 20;

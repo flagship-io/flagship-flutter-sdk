@@ -7,7 +7,6 @@ import 'package:flagship/decision/decision_manager.dart';
 import 'package:flagship/decision/polling/polling.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/flagship_config.dart';
-import 'package:flagship/flagship_version.dart';
 import 'package:flagship/model/bucketing.dart';
 import 'package:flagship/model/campaigns.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
@@ -109,21 +108,16 @@ class BucketingManager extends DecisionManager {
     String urlString = Endpoints.DECISION_API + envId + Endpoints.EVENTS;
     Flagship.logger(Level.INFO, 'Send Context :' + urlString);
 
-    // Create header  /// Refractor later , the same code exist
-    Map<String, String> headers = {
-      "x-api-key": Flagship.sharedInstance().apiKey ?? "",
-      "x-sdk-client": "flutter",
-      "x-sdk-version": FlagshipVersion,
-      "Content-type": "application/json"
-    };
     // Create data to post
     Object dataToPost = json.encode(
         {"visitor_id": visitorId, "data": currentContext, "type": "CONTEXT"});
 
     // send context
-    this
-        .service
-        .sendHttpRequest(RequestType.Post, urlString, headers, dataToPost);
+    this.service.sendHttpRequest(
+        RequestType.Post,
+        urlString,
+        Endpoints.getFSHeader(Flagship.sharedInstance().apiKey ?? ""),
+        dataToPost);
   }
 
   // Save the response into the file

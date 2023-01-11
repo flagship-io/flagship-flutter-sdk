@@ -1,4 +1,3 @@
-import 'package:flagship/cache/cache_manager.dart';
 import 'package:flagship/cache/default_cache.dart';
 import 'package:flagship/cache/interface_cache.dart';
 import 'package:flagship/hits/event.dart';

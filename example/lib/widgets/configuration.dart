@@ -1,15 +1,8 @@
-import 'dart:ffi';
-
-import 'package:flagship/Storage/storage_managment.dart';
 import 'package:flagship/flagship.dart';
-import 'package:flagship/flagship.dart';
-import 'package:flagship/flagship.dart';
-import 'package:flagship/flagshipContext/flagship_context.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/tracking/tracking_manager_config.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
-import 'package:flagship/visitor.dart';
 import 'package:flagship_qa/mixins/dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +10,6 @@ import './FSinputField.dart';
 import 'dart:math';
 import '../widgets/context_screen.dart';
 // My package
-import 'package:flagship/flagship.dart';
 
 // ignore: must_be_immutable
 class Configuration extends StatefulWidget {
@@ -363,8 +355,6 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   }
 
   String _createRandomUser() {
-    return "adel12";
-    return "userPoolManager_810";
     return 'userPoolManager_' + Random().nextInt(1000).toString();
   }
 }

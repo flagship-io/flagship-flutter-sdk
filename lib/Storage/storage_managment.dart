@@ -1,32 +1,27 @@
 import 'dart:convert';
-import 'dart:ffi';
-import 'dart:io';
-import 'dart:math';
-
 import 'package:flagship/flagship.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
-/// Trying to add database import
+// Trying to add database import
 
 String lastModfiedKey = "FSLastModifiedScript";
-String hitCacheFolder = "/flagship/cache/hits/";
 String fileName = "cacheHits.json";
 
 class DataBaseManagment {
-  late Database database;
-  late Database cacheVisitorDB;
+  Database? _database;
+  Database? _cacheVisitorDB;
 
   DataBaseManagment();
 
-  openDb() async {
+  Future<void> openDb() async {
     String pathToDataBase = join(await getDatabasesPath(), 'hits_database.db');
+
     String pathToDataBaseVisitor =
         join(await getDatabasesPath(), 'visitor_database.db');
 
-    database = await openDatabase(pathToDataBase, onCreate: (db, version) {
+    _database = await openDatabase(pathToDataBase, onCreate: (db, version) {
       print(
           "########### Run the CREATE TABLE statement on the database. ############### ");
       return db.execute(
@@ -34,7 +29,7 @@ class DataBaseManagment {
       );
     }, version: 1);
 
-    cacheVisitorDB =
+    _cacheVisitorDB =
         await openDatabase(pathToDataBaseVisitor, onCreate: (db, version) {
       print(
           "########### Run the CREATE TABLE statement on the database. ############### ");
@@ -42,11 +37,13 @@ class DataBaseManagment {
         'CREATE TABLE table_visitors(id TEXT PRIMARY KEY, visitor TEXT)',
       );
     }, version: 1);
+
+    return;
   }
 
   // Define a function that inserts dogs into the database
   Future<void> insertHitMap(Map<String, Object> hitMap) async {
-    await database.insert(
+    await _database?.insert(
       'table_hits',
       hitMap,
       conflictAlgorithm: ConflictAlgorithm.replace,
@@ -56,9 +53,9 @@ class DataBaseManagment {
   // Delete item with id
   Future<void> deleteHitWithId(String id, String nameTable) async {
     // Get a reference to the database.
-    final db = database;
+    final db = _database;
     // Remove the Dog from the database.
-    await db.delete(
+    await db?.delete(
       '$nameTable',
       // Use a `where` clause to delete a specific dog.
       where: 'id = ?',
@@ -69,15 +66,15 @@ class DataBaseManagment {
 
 // Delete all reocrd
   Future<void> deleteAllRecord(String nameTable) async {
-    final db = database;
-    await db.delete(nameTable);
+    final db = _database;
+    await db?.delete(nameTable);
   }
 
 // Read all hit saved
   Future<List<Map>> readHits(String nameTable) async {
-    await openDb();
+    //   await openDb();
     // Get the records for the tableHits
-    return await database.rawQuery('SELECT * FROM $nameTable');
+    return await _database?.rawQuery('SELECT * FROM $nameTable') ?? [];
   }
 
 //////////////////
@@ -86,7 +83,7 @@ class DataBaseManagment {
 
   // Insert visitor Map data Visitor
   Future<void> insertVisitorData(Map<String, Object> visitoMap) async {
-    await cacheVisitorDB.insert(
+    await _cacheVisitorDB?.insert(
       'table_visitors',
       visitoMap,
       conflictAlgorithm: ConflictAlgorithm.replace,
@@ -95,12 +92,11 @@ class DataBaseManagment {
 
   // Delete all reocrd
   // Delete item with id
-  // TODO refractor this function
   Future<void> deleteVisitorWithId(String id, String nameTable) async {
     // Get a reference to the database.
-    final db = cacheVisitorDB;
+    final db = _cacheVisitorDB;
     // Remove the Dog from the database.
-    await db.delete(
+    await db?.delete(
       '$nameTable',
       // Use a `where` clause to delete a specific dog.
       where: 'id = ?',
@@ -111,10 +107,11 @@ class DataBaseManagment {
 
   // Read all hit saved
   Future<String> readVisitor(String visitorId, String nameTable) async {
-    await openDb();
+    // await openDb();
     // Get the records for the tableHits
-    List<Map> result = await cacheVisitorDB
-        .rawQuery('SELECT * FROM $nameTable WHERE id = ?', [visitorId]);
+    List<Map> result = await _cacheVisitorDB
+            ?.rawQuery('SELECT * FROM $nameTable WHERE id = ?', [visitorId]) ??
+        [];
 
     if (result.isNotEmpty) {
       Flagship.logger(Level.INFO,

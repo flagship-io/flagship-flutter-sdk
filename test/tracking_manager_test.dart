@@ -4,7 +4,6 @@ import 'package:flagship/decision/api_manager.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/flagship_version.dart';
-import 'package:flagship/hits/activate.dart';
 import 'package:flagship/tracking/tracking_manager.dart';
 import 'package:flagship/tracking/tracking_manager_config.dart';
 import 'package:flagship/visitor.dart';

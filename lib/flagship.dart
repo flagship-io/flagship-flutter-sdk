@@ -1,6 +1,5 @@
 library flagship;
 
-import 'package:flagship/Storage/storage_managment.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/device_tools.dart';
