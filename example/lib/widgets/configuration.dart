@@ -282,8 +282,6 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
                           child: Text(widget.isConsented
                               ? "Consented"
                               : "Not Consented")))
-<<<<<<< HEAD
-=======
                 ],
               ),
               SizedBox(height: _spaceBetweenInput),
@@ -305,7 +303,6 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
                           itemBuilder: (context, range) {
                             return Text(strategyArray[range]);
                           }))
->>>>>>> cacheManager_v3
                 ],
               ),
               SizedBox(height: _spaceBetweenInput),
@@ -359,79 +356,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   }
 
   String _createRandomUser() {
-<<<<<<< HEAD
     return 'user_' + Random().nextInt(100).toString();
-  }
-
-  doMe() {
-// Create a visitor
-
-    Visitor visitor =
-        Flagship.newVisitor("random_Id").withContext({"isVip": true}).build();
-
-// Call the authenticate function
-
-    visitor.authenticate("random_Id");
-
-// Fetch the flags to update the visitor decision
-
-    visitor.fetchFlags().whenComplete(() {
-      // ... Do things ....
-    });
-
-// If you want to unauthenticate the visitor
-
-    visitor.unauthenticate();
-
-// Fetch the flags to update the visitor decision
-
-    visitor.fetchFlags().whenComplete(() {
-      // ... Do things ....
-    });
-
-    // Update the location country
-    visitor.updateFlagshipContext(FlagshipContext.LOCATION_COUNTRY, "FRANCE");
-    // Update the carrier name
-    visitor.updateFlagshipContext(FlagshipContext.CARRIER_NAME, "SFR");
-
-//////////////////////////////////////////////
-/////// Start sdk with default options ///////
-//////////////////////////////////////////////
-
-    Flagship.start("your_env_id", "your_api_key");
-
-//////////////////////////////////////////////
-/////// Start sdk with custom options  ///////
-//////////////////////////////////////////////
-
-// - timeout   = 1500 ms
-// - level     = warning message
-// - activated = true
-// - statusListener callback
-
-// create a config :
-
-//////////////////////////////////////////////
-/////// Start SDK with custom options  ///////
-//////////////////////////////////////////////
-
-// - timeout   = 1500 ms
-// - level     = warning message
-// - statusListener callback
-
-    FlagshipConfig customConfig = ConfigBuilder()
-        .withMode(Mode.DECISION_API)
-        .withStatusListener((newStatus) {
-          // Do things when status change ...
-        })
-        .withTimeout(1500)
-        .withLogLevel(Level.WARNING)
-        .build();
-
-// Start SDK
-    Flagship.start("envId", "apiKey", config: customConfig);
-=======
-    return 'userPoolManager_' + Random().nextInt(1000).toString();
   }
 }
 
@@ -474,6 +399,5 @@ class CustomVisitorCache with IVisitorCacheImplementation {
     Future.delayed(Duration(milliseconds: 200));
     print("--------------  CUSTOM VISITOR CACHE- ------------");
     return Future.value("");
->>>>>>> cacheManager_v3
   }
 }
