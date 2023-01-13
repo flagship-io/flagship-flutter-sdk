@@ -1,11 +1,9 @@
 import 'package:flagship/decision/api_manager.dart';
 import 'package:flagship/flagship.dart';
-import 'package:flagship/flagshipContext/flagship_context_manager.dart';
 import 'package:flagship/flagship_version.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -27,10 +25,6 @@ void main() {
     "x-sdk-version": FlagshipVersion,
     "Content-type": "application/json"
   };
-
-  // Map<String, dynamic> presetContext = FlagshipContextManager.getPresetContextForApp();
-  // Map<String, dynamic> jsonData = {"visitorId": "visitorId", "context": presetContext, "trigger_hit": false};
-  // Object data = json.encode(jsonData);
 
   MockService fakeService = MockService();
   ApiManager fakeApi = ApiManager(fakeService);
@@ -154,6 +148,7 @@ void main() {
     //   expect(v1.getModification('aliasTer', 'default'), "default");
     // });
 
+    // ignore: deprecated_member_use_from_same_package
     await v1.synchronizeModifications().then((value) {
       expect(Flagship.getStatus(), Status.READY);
       // ignore: deprecated_member_use_from_same_package

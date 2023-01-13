@@ -2,13 +2,13 @@ import 'hit.dart';
 
 class Item extends BaseHit {
   /// Transaction unique identifier
-  String transactionId;
+  late String transactionId;
 
   /// Product name
-  String name;
+  late String name;
 
   /// Specifies the item code or SKU
-  String code;
+  late String code;
 
   /// Specifies the item price
   double? price;
@@ -27,7 +27,7 @@ class Item extends BaseHit {
       this.category,
       this.quantity})
       : super() {
-    type = Type.ITEM;
+    type = HitCategory.ITEM;
   }
 
   @override
@@ -46,5 +46,15 @@ class Item extends BaseHit {
     // Add commun body
     customBody.addAll(super.communBodyTrack);
     return customBody;
+  }
+
+  Item.fromMap(String oldId, Map body) : super.fromMap(oldId, body) {
+    this.type = HitCategory.ITEM;
+    this.transactionId = body['tid'] ?? "";
+    this.name = body['in'] ?? "";
+    this.code = body['ic'] ?? "";
+    this.price = body['ip'];
+    this.quantity = body['iq'];
+    this.category = body['iv'];
   }
 }

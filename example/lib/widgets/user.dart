@@ -1,9 +1,9 @@
-import 'package:flagship/flagship.dart';
 import 'package:flagship/visitor.dart';
 import 'package:flagship_qa/widgets/FSinputField.dart';
 import 'package:flagship_qa/widgets/FSoutputField.dart';
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class User extends StatefulWidget {
   late Visitor? currentVisitor;
   User(this.currentVisitor);
@@ -49,14 +49,20 @@ class _UserState extends State<User> {
               ),
               Text(
                 "Visitor",
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 25),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 25),
               ),
               SizedBox(height: _marginFromTop),
-              FSOutputField("Visitor Id", widget.currentVisitor?.visitorId ?? ""),
+              FSOutputField(
+                  "Visitor Id", widget.currentVisitor?.visitorId ?? ""),
               SizedBox(height: _spaceBetweenInput),
-              FSOutputField("Anonymous Id", widget.currentVisitor?.anonymousId ?? ""),
+              FSOutputField(
+                  "Anonymous Id", widget.currentVisitor?.anonymousId ?? ""),
               SizedBox(height: _spaceBetweenInput + 2 * _marginFromTop),
-              FSInputField("New authenticated id", visitorIdController, TextInputType.text),
+              FSInputField("New authenticated id", visitorIdController,
+                  TextInputType.text),
               SizedBox(height: _spaceBetweenInput + 2 * _marginFromTop / 6),
               SizedBox(
                   width: double.infinity,
@@ -97,7 +103,8 @@ class _UserState extends State<User> {
           context: context,
           builder: (BuildContext context) {
             return new AlertDialog(
-              title: new Text("Authenticate id must contain at least 3 characters"),
+              title: new Text(
+                  "Authenticate id must contain at least 3 characters"),
               actions: <Widget>[
                 new TextButton(
                   onPressed: () {

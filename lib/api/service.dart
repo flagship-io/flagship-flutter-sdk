@@ -21,7 +21,6 @@ class Service {
       case RequestType.Post:
         {
           Flagship.logger(Level.INFO, data.toString(), isJsonString: true);
-
           try {
             var response = await this
                 .httpClient
@@ -50,4 +49,5 @@ class Service {
     }
   }
 }
-/// Refractor later with rich code errors 
+
+/// Refractor later with rich code errors

@@ -1,5 +1,7 @@
 import 'package:flagship/hits/hit.dart';
+import 'package:flagship/hits/segment.dart';
 import 'package:flagship/model/modification.dart';
+import 'package:flagship/utils/constants.dart';
 import 'package:flagship/visitor/Ivisitor.dart';
 import 'package:flagship/visitor/strategy/default_strategy.dart';
 import 'package:flagship/visitor/strategy/no_consent_strategy.dart';
@@ -51,10 +53,15 @@ class VisitorDelegate implements IVisitor {
     return getStrategy().getModificationInfo(key);
   }
 
-// Synchronize modification
+// Fetch modification
   @override
-  Future<void> synchronizeModifications() {
-    return getStrategy().synchronizeModifications();
+  Future<void> synchronizeModifications() async {
+    getStrategy().synchronizeModifications().whenComplete(() {
+      if (visitor.config.decisionMode == Mode.BUCKETING &&
+          Flagship.getStatus() != Status.PANIC_ON) {
+        visitor.sendHit(Segment(persona: visitor.getCurrentContext()));
+      }
+    });
   }
 
 // Update context
@@ -68,7 +75,9 @@ class VisitorDelegate implements IVisitor {
   Future<void> sendHit(BaseHit hit) async {
     // set visitorId for hit
     hit.visitorId = visitor.visitorId;
+    // set anonymousId for hit
     hit.anonymousId = visitor.anonymousId;
+    hit.qt = DateTime.now();
     getStrategy().sendHit(hit);
   }
 
@@ -85,5 +94,19 @@ class VisitorDelegate implements IVisitor {
   @override
   unAuthenticateVisitor() {
     getStrategy().unAuthenticateVisitor();
+  }
+
+  void cacheVisitor(String visitorId, String jsonString) {
+    getStrategy().cacheVisitor(visitorId, jsonString);
+  }
+
+  @override
+  void lookupVisitor(String visitoId) async {
+    getStrategy().lookupVisitor(visitoId);
+  }
+
+  @override
+  void lookupHits() async {
+    getStrategy().lookupHits();
   }
 }

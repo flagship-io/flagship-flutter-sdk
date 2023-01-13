@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'package:flagship/hits/activate.dart';
 import 'package:flagship/hits/event.dart';
 import 'package:flagship/hits/hit.dart';
 import 'package:flagship/model/modification.dart';
+import 'package:flagship/model/visitor_cache/visitor_cache.dart';
+import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/flagship.dart';
@@ -32,8 +35,8 @@ class DefaultStrategy implements IVisitor {
   Future<void> _sendActivate(Modification pModification) async {
     // Construct the activate hit
     // Refractor later the envId
-    Activate activateHit =
-        Activate(pModification, visitor.visitorId, visitor.anonymousId, Flagship.sharedInstance().envId ?? "");
+    Activate activateHit = Activate(pModification, visitor.visitorId,
+        visitor.anonymousId, Flagship.sharedInstance().envId ?? "");
 
     await visitor.trackingManager.sendActivate(activateHit);
   }
@@ -63,13 +66,15 @@ class DefaultStrategy implements IVisitor {
   T getModification<T>(String key, T defaultValue, {bool activate = false}) {
     var ret = defaultValue;
 
-    bool hasSameType = true; // When the Type is not the same the activate won't be sent
+    bool hasSameType =
+        true; // When the Type is not the same the activate won't be sent
     if (visitor.modifications.containsKey(key)) {
       try {
         var modification = visitor.modifications[key];
 
         if (modification == null) {
-          Flagship.logger(Level.INFO, GET_MODIFICATION_ERROR.replaceFirst("%s", key));
+          Flagship.logger(
+              Level.INFO, GET_MODIFICATION_ERROR.replaceFirst("%s", key));
           return ret;
         }
         switch (T) {
@@ -101,7 +106,8 @@ class DefaultStrategy implements IVisitor {
           _sendActivate(modification);
         }
       } catch (exp) {
-        Flagship.logger(Level.INFO, "an exception raised  $exp , will return a default value ");
+        Flagship.logger(Level.INFO,
+            "an exception raised  $exp , will return a default value ");
       }
     }
     return ret;
@@ -117,19 +123,24 @@ class DefaultStrategy implements IVisitor {
         return null;
       }
     } else {
-      Flagship.logger(Level.ERROR, GET_MODIFICATION_INFO_ERROR.replaceFirst("%s", key));
+      Flagship.logger(
+          Level.ERROR, GET_MODIFICATION_INFO_ERROR.replaceFirst("%s", key));
       return null;
     }
   }
 
-  /// Synchronize modification for the visitor
+  // Synchronize modification for the visitor
   @override
   Future<void> synchronizeModifications() async {
     Flagship.logger(Level.ALL, SYNCHRONIZE_MODIFICATIONS);
     Status state = Flagship.getStatus();
     try {
-      var camp = await visitor.decisionManager.getCampaigns(Flagship.sharedInstance().envId ?? "", visitor.visitorId,
-          visitor.anonymousId, visitor.getConsent(), visitor.getContext());
+      var camp = await visitor.decisionManager.getCampaigns(
+          Flagship.sharedInstance().envId ?? "",
+          visitor.visitorId,
+          visitor.anonymousId,
+          visitor.getConsent(),
+          visitor.getContext());
       // Clear the previous modifications
       visitor.modifications.clear();
       // Update panic value
@@ -141,12 +152,18 @@ class DefaultStrategy implements IVisitor {
         var modif = visitor.decisionManager.getModifications(camp.campaigns);
         visitor.modifications.addAll(modif);
         Flagship.logger(
-            Level.INFO, SYNCHRONIZE_MODIFICATIONS_RESULTS.replaceFirst("%s", "${visitor.modifications.keys}"));
+            Level.INFO,
+            SYNCHRONIZE_MODIFICATIONS_RESULTS.replaceFirst(
+                "%s", "${visitor.modifications.keys}"));
       }
       // Update the state for Flagship
       visitor.flagshipDelegate.onUpdateState(state);
+      // Save the response for the visitor database
+      cacheVisitor(visitor.visitorId,
+          jsonEncode(VisitorCache.fromVisitor(this.visitor).toJson()));
     } catch (error) {
-      Flagship.logger(Level.EXCEPTIONS, EXCEPTION.replaceFirst("%s", "${error.toString()}"));
+      Flagship.logger(Level.EXCEPTIONS,
+          EXCEPTION.replaceFirst("%s", "${error.toString()}"));
     }
     return;
   }
@@ -172,7 +189,8 @@ class DefaultStrategy implements IVisitor {
         visitor.visitorId = pVisitorId;
       }
     } else {
-      Flagship.logger(Level.ALL, "AuthenticateVisitor method will be ignored in Bucketing configuration");
+      Flagship.logger(Level.ALL,
+          "AuthenticateVisitor method will be ignored in Bucketing configuration");
     }
   }
 
@@ -184,7 +202,72 @@ class DefaultStrategy implements IVisitor {
         visitor.anonymousId = null;
       }
     } else {
-      Flagship.logger(Level.ALL, "unAuthenticateVisitor method will be ignored in Bucketing configuration");
+      Flagship.logger(Level.ALL,
+          "unAuthenticateVisitor method will be ignored in Bucketing configuration");
     }
+  }
+
+  @override
+  void cacheVisitor(String visitorId, String jsonString) {
+    visitor.config.visitorCacheImp?.cacheVisitor(visitor.visitorId, jsonString);
+  }
+
+  @override
+  // Called right at visitor creation, return a jsonString corresponding to visitor. Return a jsonString
+  void lookupVisitor(String visitoId) async {
+    visitor.config.visitorCacheImp
+        ?.lookupVisitor(visitor.visitorId)
+        .then((resultFromCache) {
+      if (resultFromCache.length != 0) {
+        // convert to Map
+        Map<String, dynamic> result = jsonDecode(resultFromCache);
+        // Retreive the json string stored in the visitor filed of this map.
+        if (result['visitor'] != null) {
+          VisitorCache cachedVisitor =
+              VisitorCache.fromJson(jsonDecode(result['visitor']));
+          Flagship.logger(Level.DEBUG,
+              'The cached visitor get through the lookup is ${cachedVisitor.toString()}');
+          // update the current visitor with his own cached data
+          // 1 - update modification Map<String, Modification> modifications
+          visitor.modifications
+              .addEntries(cachedVisitor.getModifications().entries);
+          if (visitor.config.decisionMode == Mode.BUCKETING) {
+            // 2- Update the assignation history
+            visitor.decisionManager.updateAssignationHistory(
+                cachedVisitor.getAssignationHistory() ?? {});
+          }
+        }
+      }
+    }).timeout(
+            Duration(
+                milliseconds:
+                    visitor.config.visitorCacheImp?.visitorCacheLookupTimeout ??
+                        200), onTimeout: () {
+      Flagship.logger(
+          Level.ERROR, "Timeout on trying to read the cache visitor");
+    });
+  }
+
+  @override
+  void lookupHits() async {
+    // Load the hits in cache if exist
+    visitor.config.hitCacheImp?.lookupHits().then((value) {
+      // Convert hits map to list hit
+      List<BaseHit> remainListOfHitInCache = [];
+      remainListOfHitInCache = FlagshipTools.converMapToListOfHits(value);
+
+      if (remainListOfHitInCache.isNotEmpty) {
+        Flagship.logger(Level.DEBUG,
+            "Adding the founded hits in cache into the pool of hits");
+        // Re inject the hits comming from cache to the hit pool
+        visitor.trackingManager.fsPool
+            .addListOfElements(remainListOfHitInCache);
+      }
+    }).timeout(
+        Duration(
+            milliseconds: visitor.config.hitCacheImp?.hitCacheLookupTimeout ??
+                200), onTimeout: () {
+      Flagship.logger(Level.ERROR, "Timeout on reading hits for cache");
+    });
   }
 }

@@ -1,19 +1,24 @@
 import 'dart:async';
+import 'package:flagship/api/service.dart';
+import 'package:flagship/cache/default_cache.dart';
 import 'package:flagship/flagshipContext/flagship_context.dart';
 import 'package:flagship/flagshipContext/flagship_context_manager.dart';
 import 'package:flagship/hits/event.dart';
 import 'package:flagship/model/flag.dart';
 import 'package:flagship/model/modification.dart';
-import 'package:flagship/api/tracking_manager.dart';
 import 'package:flagship/decision/decision_manager.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/hits/hit.dart';
+import 'package:flagship/tracking/tracking_manager_strategies.dart';
+import 'package:flagship/tracking/tracking_manager.dart';
+import 'package:flagship/tracking/tracking_manager_config.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor/visitor_delegate.dart';
 import 'flagship_delegate.dart';
+import 'package:http/http.dart' as http;
 
 enum Instance {
   // The  newly created visitor instance will be returned and saved into the Flagship singleton. Call `Flagship.getVisitor()` to retrieve the instance.
@@ -26,7 +31,7 @@ enum Instance {
 }
 
 class Visitor {
-  // VisitorId
+  /// VisitorId
   String visitorId;
 
   String? anonymousId;
@@ -50,17 +55,21 @@ class Visitor {
     return this.config.decisionManager;
   }
 
-  TrackingManager trackingManager = TrackingManager();
+  late TrackingManager trackingManager;
 
-  //Consent by default is true
+  /// Consent by default is true
   bool _hasConsented = true;
 
-  // Xpc
+  /// Experience Continuity
   bool _isAuthenticated;
 
-  // delegate visitor
+  /// AssignmentsHistory history
+  Map<String, dynamic> assignmentsHistory = {};
+
+  /// Delegate visitor
   late VisitorDelegate _visitorDelegate;
-  // delegate to update the status
+
+  /// Delegate to update the status
   final FlagshipDelegate flagshipDelegate = Flagship.sharedInstance();
 
   /// Create new instance for visitor
@@ -68,26 +77,52 @@ class Visitor {
   /// config: this object manage the mode of the sdk and other params
   /// visitorId : the user ID for the visitor
   /// context : Map that represent the conext for the visitor
-  Visitor(this.config, this.visitorId, this._isAuthenticated, Map<String, Object> context, {bool hasConsented = true}) {
+  Visitor(this.config, this.visitorId, this._isAuthenticated,
+      Map<String, Object> context,
+      {bool hasConsented = true}) {
     if (_isAuthenticated == true) {
       this.anonymousId = FlagshipTools.generateFlagshipId();
     } else {
       anonymousId = null;
     }
 
-    // Load preset_Context
+    /// Init Tracking manager
+    switch (config.trackingMangerConfig.batchStrategy) {
+      case BatchCachingStrategy.BATCH_CONTINUOUS_CACHING:
+      case BatchCachingStrategy.BATCH_PERIODIC_CACHING:
+        trackingManager = TrackingManageStrategy(
+            Service(http.Client()),
+            config.trackingMangerConfig,
+            this.config.hitCacheImp ?? DefaultCacheHitImp());
+        break;
+      default:
+        trackingManager = TrackingManager(
+            Service(http.Client()), config.trackingMangerConfig, null);
+        break;
+    }
+
+    /// Load preset_Context
     this.updateContextWithMap(FlagshipContextManager.getPresetContextForApp());
 
-    // Update context
+    /// Update context
     this.updateContextWithMap(context);
-    // Set delegate
+
+    /// Set delegate
     _visitorDelegate = VisitorDelegate(this);
-    // Set the consent
+
+    /// Set the consent
     _hasConsented = hasConsented;
-    // Send the consent hit on false at the start
+
+    /// Send the consent hit on false at the start
     if (!_hasConsented) {
       _visitorDelegate.sendHit(Consent(hasConsented: _hasConsented));
     }
+
+    /// Load the hits in cache if exist
+    _visitorDelegate.lookupHits();
+
+    /// Lookup for the cached visitor data
+    _visitorDelegate.lookupVisitor(this.visitorId);
   }
 
   /// Update context directely with map for <String, Object>
@@ -98,7 +133,8 @@ class Visitor {
   /// Update context directely with map for <String, Object>
   void updateContextWithMap(Map<String, Object> context) {
     _context.addAll(context);
-    Flagship.logger(Level.DEBUG, CONTEXT_UPDATE.replaceFirst("%s", "$_context"));
+    Flagship.logger(
+        Level.DEBUG, CONTEXT_UPDATE.replaceFirst("%s", "$_context"));
   }
 
   /// Get the current context for the visitor
@@ -115,11 +151,11 @@ class Visitor {
   /// otherwise the update context skip with warnning log
 
   void updateContext<T>(String key, T value) {
-    // Delegate the action to strategy
+    /// Delegate the action to strategy
     _visitorDelegate.updateContext(key, value);
   }
 
-  // Update with predefined context
+  /// Update with predefined context
   void updateFlagshipContext<T>(FlagshipContext flagshipContext, T value) {
     if (FlagshipContextManager.chekcValidity(flagshipContext, value)) {
       _visitorDelegate.updateContext(rawValue(flagshipContext), value);
@@ -146,7 +182,8 @@ class Visitor {
   @Deprecated('Use value() in Flag class instead')
   T getModification<T>(String key, T defaultValue, {bool activate = false}) {
     // Delegate the action to strategy
-    return _visitorDelegate.getModification(key, defaultValue, activate: activate);
+    return _visitorDelegate.getModification(key, defaultValue,
+        activate: activate);
   }
 
   /// Get the modification infos relative to flag (modification)
@@ -167,7 +204,7 @@ class Visitor {
   }
 
   Future<void> fetchFlags() async {
-    // Delegate the action to strategy
+    /// Delegate the action to strategy
     return _visitorDelegate.synchronizeModifications();
   }
 
@@ -184,8 +221,16 @@ class Visitor {
     _visitorDelegate.sendHit(hit);
   }
 
-  // Set Consent
+  /// Set Consent
   void setConsent(bool newValue) {
+    // flush the hits from the pool
+    if (newValue == false) {
+      var listToremove =
+          trackingManager.fsPool.flushTrackQueue(flushingConsentHits: false);
+      this.trackingManager.fsCacheHit?.flushHits(listToremove);
+      // Erase the related data in cache
+      this.config.visitorCacheImp?.flushVisitor(this.visitorId);
+    }
     // Update the state for visitor
     _hasConsented = newValue;
 
@@ -215,8 +260,7 @@ class Visitor {
   }
 }
 
-//// Builder
-
+// Builder
 class VisitorBuilder {
   final String visitorId;
 
@@ -231,7 +275,8 @@ class VisitorBuilder {
 // Xpc by default false
   bool _isAuthenticated = false;
 
-  VisitorBuilder(this.visitorId, {this.instanceType = Instance.SINGLE_INSTANCE});
+  VisitorBuilder(this.visitorId,
+      {this.instanceType = Instance.SINGLE_INSTANCE});
 
 // Context
   VisitorBuilder withContext(Map<String, Object> context) {
@@ -251,7 +296,10 @@ class VisitorBuilder {
 
   Visitor build() {
     Visitor newVisitor = Visitor(
-        Flagship.sharedInstance().getConfiguration() ?? ConfigBuilder().build(), visitorId, _isAuthenticated, _context,
+        Flagship.sharedInstance().getConfiguration() ?? ConfigBuilder().build(),
+        visitorId,
+        _isAuthenticated,
+        _context,
         hasConsented: _hasConsented);
     if (this.instanceType == Instance.SINGLE_INSTANCE) {
       //Set this visitor as shared instance

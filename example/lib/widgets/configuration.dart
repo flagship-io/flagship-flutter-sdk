@@ -1,20 +1,27 @@
-import 'package:flagship/flagshipContext/flagship_context.dart';
+import 'package:flagship/cache/interface_cache.dart';
+import 'package:flagship/flagship.dart';
 import 'package:flagship/flagship_config.dart';
+import 'package:flagship/tracking/tracking_manager_config.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
-import 'package:flagship/visitor.dart';
 import 'package:flagship_qa/mixins/dialog.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import './FSinputField.dart';
 import 'dart:math';
 import '../widgets/context_screen.dart';
 // My package
-import 'package:flagship/flagship.dart';
 
+// ignore: must_be_immutable
 class Configuration extends StatefulWidget {
   bool isApiMode = true;
   bool isAuthenticate = false;
   bool isConsented = true;
+  bool isSdkReady = false;
+
+// The current strategy
+  BatchCachingStrategy currentStrategy =
+      BatchCachingStrategy.BATCH_CONTINUOUS_CACHING;
 
   @override
   _ConfigurationState createState() => _ConfigurationState();
@@ -25,7 +32,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   String apiKey = "";
   String envId = "";
 
-  final int defaultTimeout = 2000;
+  final int defaultTimeout = 4000;
   final int defaultPollingTime = 60;
 
   final envIdController = TextEditingController();
@@ -68,7 +75,13 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   /////////////// start sdk ////////////////////
 //start SDK
 
-  _startSdk() {
+  _startSdk() async {
+    /// Clean
+    //DataBaseManagment dbClean = DataBaseManagment();
+    // await dbClean.openDb();
+    // dbClean.deleteAllRecord();
+
+    // Flagship.testDB();
     Flagship.sharedInstance().onUpdateState(Status.NOT_INITIALIZED);
 
     /// we did this to allow start(S)
@@ -79,7 +92,6 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
         .withMode(widget.isApiMode ? Mode.DECISION_API : Mode.BUCKETING)
         .withStatusListener((newStatus) {
           print('--------- Callback with $newStatus ---------');
-          var titleMsg = '';
           var newVisitor;
           if (newStatus == Status.READY) {
             //Get the visitor
@@ -93,25 +105,40 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
                 .build();
             // Set current visitor singleton instance for future use
             Flagship.setCurrentVisitor(newVisitor);
-            // }
 
-            newVisitor.fetchFlags().whenComplete(() {
-              switch (Flagship.getStatus()) {
-                case Status.PANIC_ON:
-                  titleMsg = "SDK is on panic mode, will use default value";
-                  break;
-                case Status.READY:
-                  titleMsg = "SDK is ready to use";
-                  break;
-                default:
-              }
-              showBasicDialog(titleMsg, '');
+            setState(() {
+              widget.isSdkReady = ((newStatus == Status.PANIC_ON) ||
+                      (newStatus == Status.READY))
+                  ? true
+                  : false;
             });
           }
         })
         .withTimeout(int.tryParse(timeoutController.text) ?? defaultTimeout)
+        .withTrackingConfig(TrackingManagerConfig(
+            batchIntervals: 20,
+            poolMaxSize: 10,
+            batchStrategy: widget.currentStrategy))
         .build();
     Flagship.start(envIdController.text, apiKeyController.text, config: config);
+  }
+
+// Fetch flags
+
+  _fetchFalgs() {
+    var titleMsg = '';
+    Flagship.getCurrentVisitor()?.fetchFlags().whenComplete(() {
+      switch (Flagship.getStatus()) {
+        case Status.PANIC_ON:
+          titleMsg = "SDK is on panic mode, will use default value";
+          break;
+        case Status.READY:
+          titleMsg = "SDK is ready to use";
+          break;
+        default:
+      }
+      showBasicDialog(titleMsg, '');
+    });
   }
 
 // Change Mode
@@ -119,6 +146,24 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
     setState(() {
       widget.isApiMode = !widget.isApiMode;
     });
+  }
+
+  _onChnageStrategy(String value) {
+    switch (value) {
+      case "CONTINOUS":
+        widget.currentStrategy = BatchCachingStrategy.BATCH_CONTINUOUS_CACHING;
+        break;
+      case "PERIODIC":
+        widget.currentStrategy = BatchCachingStrategy.BATCH_PERIODIC_CACHING;
+        break;
+      case "NO_STRATEGY":
+        widget.currentStrategy =
+            BatchCachingStrategy.NO_BATCHING_CONTINUOUS_CACHING_STRATEGY;
+        break;
+    }
+
+    print(
+        " ------------- The choosen strategy is ${widget.currentStrategy} ----------------");
   }
 
   // Consent Mode
@@ -156,6 +201,8 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
 
   @override
   Widget build(BuildContext context) {
+    List<String> strategyArray = ["CONTINOUS", "PERIODIC", "NO_STRATEGY"];
+
     double _spaceBetweenInput = 10;
     envIdController.text = envId;
     apiKeyController.text = apiKey;
@@ -235,6 +282,30 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
                           child: Text(widget.isConsented
                               ? "Consented"
                               : "Not Consented")))
+<<<<<<< HEAD
+=======
+                ],
+              ),
+              SizedBox(height: _spaceBetweenInput),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Expanded(
+                      child: Text(
+                    "Strategy",
+                    style: TextStyle(color: Colors.white),
+                  )),
+                  Expanded(
+                      child: CupertinoPicker.builder(
+                          itemExtent: 30,
+                          childCount: 3,
+                          backgroundColor: Colors.white,
+                          onSelectedItemChanged: (range) =>
+                              {_onChnageStrategy(strategyArray[range])},
+                          itemBuilder: (context, range) {
+                            return Text(strategyArray[range]);
+                          }))
+>>>>>>> cacheManager_v3
                 ],
               ),
               SizedBox(height: _spaceBetweenInput),
@@ -261,15 +332,24 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
               SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    child: Text("START"),
+                    child: Text("START & CREATE VISITOR"),
                     onPressed: () => {_startSdk()},
                   )),
               SizedBox(height: _spaceBetweenInput),
               Container(
                   width: double.infinity,
                   child: ElevatedButton(
-                    child: Text("Update context & synchronize"),
-                    onPressed: () => {_onTapContext(context)},
+                    child: Text("FETCH FLAGS"),
+                    onPressed: widget.isSdkReady ? () => {_fetchFalgs()} : null,
+                  )),
+              SizedBox(height: _spaceBetweenInput),
+              Container(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    child: Text("UPDATE CONTEXT"),
+                    onPressed: widget.isSdkReady
+                        ? () => {_onTapContext(context)}
+                        : null,
                   )),
             ],
           ),
@@ -279,6 +359,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   }
 
   String _createRandomUser() {
+<<<<<<< HEAD
     return 'user_' + Random().nextInt(100).toString();
   }
 
@@ -349,5 +430,50 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
 
 // Start SDK
     Flagship.start("envId", "apiKey", config: customConfig);
+=======
+    return 'userPoolManager_' + Random().nextInt(1000).toString();
+  }
+}
+
+class CustomCacheHit with IHitCacheImplementation {
+  @override
+  void cacheHits(Map<String, Map<String, Object>> hits) {
+    print("-------------- CUSTOM ------------");
+  }
+
+  @override
+  void flushAllHits() {
+    print("-------------- CUSTOM ------------");
+  }
+
+  @override
+  void flushHits(List<String> hitIds) {
+    print("-------------- CUSTOM ------------");
+  }
+
+  @override
+  Future<List<Map>> lookupHits() {
+    print("-------------- CUSTOM ------------");
+    return Future.value([]);
+  }
+}
+
+class CustomVisitorCache with IVisitorCacheImplementation {
+  @override
+  void cacheVisitor(String visitorId, String jsonString) {
+    print("-------------- CUSTOM VISITOR CACHE------------");
+  }
+
+  @override
+  void flushVisitor(String visitorId) {
+    print("--------------  CUSTOM VISITOR CACHE- ------------");
+  }
+
+  @override
+  Future<String> lookupVisitor(String visitoId) async {
+    Future.delayed(Duration(milliseconds: 200));
+    print("--------------  CUSTOM VISITOR CACHE- ------------");
+    return Future.value("");
+>>>>>>> cacheManager_v3
   }
 }

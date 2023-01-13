@@ -27,7 +27,8 @@ class PanicStrategy extends DefaultStrategy {
 
   @override
   Map<String, Object>? getModificationInfo(String key) {
-    Flagship.logger(Level.ERROR, PANIC_MODIFICATION_INFO.replaceFirst("%s", key));
+    Flagship.logger(
+        Level.ERROR, PANIC_MODIFICATION_INFO.replaceFirst("%s", key));
     return null;
   }
 
@@ -49,5 +50,15 @@ class PanicStrategy extends DefaultStrategy {
   @override
   unAuthenticateVisitor() {
     Flagship.logger(Level.INFO, PANIC_UNAUTHENTICATE);
+  }
+
+  @override
+  void cacheVisitor(String visitorId, String jsonString) {
+    Flagship.logger(Level.INFO, "No caching on panic mode");
+  }
+
+  @override
+  void lookupHits() async {
+    Flagship.logger(Level.INFO, "No lookup Hits when panic mode");
   }
 }

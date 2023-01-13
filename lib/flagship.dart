@@ -18,7 +18,7 @@ enum Status {
 }
 
 class Flagship with FlagshipDelegate {
-  // environement id (provided by flagship)
+  // Environement id (provided by flagship)
   String? envId;
 
   // Api key (provided by flagship)
@@ -27,12 +27,12 @@ class Flagship with FlagshipDelegate {
   // Default configuration DECISION_API
   static FlagshipConfig _configuration = ConfigBuilder().build();
 
-  // Local visitor , see the startClient function
+  // Local visitor
   Visitor? currentVisitor;
 
   Status _status = Status.NOT_INITIALIZED;
 
-  // internal Singelton
+  // Internal Singelton
   static final Flagship _singleton = Flagship._internal();
 
   factory Flagship.sharedInstance() {
@@ -68,7 +68,8 @@ class Flagship with FlagshipDelegate {
   }
 
   /// Create new visitor
-  static VisitorBuilder newVisitor(String visitorId, {Instance instanceType = Instance.SINGLE_INSTANCE}) {
+  static VisitorBuilder newVisitor(String visitorId,
+      {Instance instanceType = Instance.SINGLE_INSTANCE}) {
     return VisitorBuilder(visitorId, instanceType: instanceType);
   }
 
@@ -126,5 +127,10 @@ class Flagship with FlagshipDelegate {
     if (Flagship._configuration.statusListener != null) {
       Flagship._configuration.statusListener!(newStatus);
     }
+  }
+
+// When close flagship, send hit present in the queue
+  void close() {
+    Flagship.getCurrentVisitor()?.trackingManager.batchManager.batchFromQueue();
   }
 }

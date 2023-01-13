@@ -46,7 +46,8 @@ class TargetingManager {
 
   bool checkTargetGroupIsOkay(TargetingGroup itemTargetGroup) {
     for (ItemTarget itemTarget in itemTargetGroup.targetings) {
-      dynamic currentContextValue = getCurrentValueFromCtx(itemTarget.tragetKey);
+      dynamic currentContextValue =
+          getCurrentValueFromCtx(itemTarget.tragetKey);
       // Audience value
       dynamic audienceValue = itemTarget.targetValue;
 
@@ -59,7 +60,8 @@ class TargetingManager {
           (audienceValue is List<int>) ||
           (audienceValue is List<double>) ||
           (audienceValue is List<dynamic>)) {
-        isOkay = checkTargetingForList(currentContextValue, opType, audienceValue);
+        isOkay =
+            checkTargetingForList(currentContextValue, opType, audienceValue);
       } else {
         isOkay = checkCondition(currentContextValue, opType, audienceValue);
       }
@@ -74,7 +76,8 @@ class TargetingManager {
     return true;
   }
 
-  bool checkTargetingForList(dynamic currentValue, FSOperator opType, List<dynamic> listAudience) {
+  bool checkTargetingForList(
+      dynamic currentValue, FSOperator opType, List<dynamic> listAudience) {
     // Check the type list before
     bool isOkay = false;
     bool isTargetingOkayForList = true;
@@ -88,7 +91,8 @@ class TargetingManager {
           isTargetingOkayForList = false;
         }
         // For those operator, we use  --- AND ---
-      } else if (opType == FSOperator.NOT_EQUALS || opType == FSOperator.NOT_CONTAINS) {
+      } else if (opType == FSOperator.NOT_EQUALS ||
+          opType == FSOperator.NOT_CONTAINS) {
         if (isOkay == false) {
           return false; // Exit No need to check others
         }
@@ -101,7 +105,8 @@ class TargetingManager {
   }
 
   //... CONDITIONS ...//
-  bool checkCondition(dynamic cuurentValue, FSOperator operation, dynamic audienceValue) {
+  bool checkCondition(
+      dynamic cuurentValue, FSOperator operation, dynamic audienceValue) {
     switch (operation) {
       case FSOperator.EQUALS:
         return isCurrentValueEqualToAudienceValue(cuurentValue, audienceValue);
@@ -110,11 +115,13 @@ class TargetingManager {
       case FSOperator.GREATER_THAN:
         return isCurrentValueIsGreaterThanAudience(cuurentValue, audienceValue);
       case FSOperator.GREATER_THAN_OR_EQUALS:
-        return isCurrentValueIsGreaterThanOrEqualAudience(cuurentValue, audienceValue);
+        return isCurrentValueIsGreaterThanOrEqualAudience(
+            cuurentValue, audienceValue);
       case FSOperator.LOWER_THAN:
         return isCurrentValueIsLowerThanAudience(cuurentValue, audienceValue);
       case FSOperator.LOWER_THAN_OR_EQUALS:
-        return isCurrentValueIsLowerThanOrEqualAudience(cuurentValue, audienceValue);
+        return isCurrentValueIsLowerThanOrEqualAudience(
+            cuurentValue, audienceValue);
       case FSOperator.CONTAINS:
         return isCurrentValueContainAudience(cuurentValue, audienceValue);
       case FSOperator.NOT_CONTAINS:
@@ -125,12 +132,14 @@ class TargetingManager {
   }
 
   /// Compare EQUALS
-  bool isCurrentValueEqualToAudienceValue(dynamic currentValue, dynamic audienceValue) {
+  bool isCurrentValueEqualToAudienceValue(
+      dynamic currentValue, dynamic audienceValue) {
     return (currentValue == audienceValue);
   }
 
   /// Compare greater than
-  bool isCurrentValueIsGreaterThanAudience(dynamic currentValue, dynamic audienceValue) {
+  bool isCurrentValueIsGreaterThanAudience(
+      dynamic currentValue, dynamic audienceValue) {
     if (currentValue is num && audienceValue is num) {
       return (currentValue > audienceValue);
     } else if (currentValue is String && audienceValue is String) {
@@ -141,18 +150,21 @@ class TargetingManager {
   }
 
   /// Compare greater than or equal
-  bool isCurrentValueIsGreaterThanOrEqualAudience(dynamic currentValue, dynamic audienceValue) {
+  bool isCurrentValueIsGreaterThanOrEqualAudience(
+      dynamic currentValue, dynamic audienceValue) {
     if (currentValue is num && audienceValue is num) {
       return (currentValue >= audienceValue);
     } else if (currentValue is String && audienceValue is String) {
-      return (currentValue.compareTo(audienceValue) == 1 || currentValue.compareTo(audienceValue) == 0);
+      return (currentValue.compareTo(audienceValue) == 1 ||
+          currentValue.compareTo(audienceValue) == 0);
     } else {
       return false;
     }
   }
 
   /// Compare lower than
-  bool isCurrentValueIsLowerThanAudience(dynamic currentValue, dynamic audienceValue) {
+  bool isCurrentValueIsLowerThanAudience(
+      dynamic currentValue, dynamic audienceValue) {
     if (currentValue is num && audienceValue is num) {
       return (currentValue < audienceValue);
     } else if (currentValue is String && audienceValue is String) {
@@ -163,18 +175,21 @@ class TargetingManager {
   }
 
   /// Compare lower than or equal
-  bool isCurrentValueIsLowerThanOrEqualAudience(dynamic currentValue, dynamic audienceValue) {
+  bool isCurrentValueIsLowerThanOrEqualAudience(
+      dynamic currentValue, dynamic audienceValue) {
     if (currentValue is num && audienceValue is num) {
       return (currentValue <= audienceValue);
     } else if (currentValue is String && audienceValue is String) {
-      return (currentValue.compareTo(audienceValue) == -1 || currentValue.compareTo(audienceValue) == 0);
+      return (currentValue.compareTo(audienceValue) == -1 ||
+          currentValue.compareTo(audienceValue) == 0);
     } else {
       return false;
     }
   }
 
   /// Compare contain
-  bool isCurrentValueContainAudience(dynamic currentValue, dynamic audienceValue) {
+  bool isCurrentValueContainAudience(
+      dynamic currentValue, dynamic audienceValue) {
     if (currentValue is String && audienceValue is String) {
       return (currentValue).contains(audienceValue);
     }

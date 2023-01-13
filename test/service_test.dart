@@ -4,7 +4,6 @@ import 'package:flagship/flagship_config.dart';
 import 'package:flagship/flagship_version.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';

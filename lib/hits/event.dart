@@ -17,7 +17,7 @@ class Event extends BaseHit {
   EventCategory? category;
 
   /// name of the event.
-  String action;
+  late String action;
 
   /// description of the event.
   String? label;
@@ -25,8 +25,9 @@ class Event extends BaseHit {
   /// value of the event, must be non-negative.
   int? value;
 
-  Event({required this.action, required this.category, this.label, this.value}) : super() {
-    type = Type.EVENT;
+  Event({required this.action, required this.category, this.label, this.value})
+      : super() {
+    type = HitCategory.EVENT;
   }
 
   @override
@@ -35,7 +36,9 @@ class Event extends BaseHit {
     customBody.addAll({
       "t": typeOfEvent,
       "ea": this.action,
-      "ec": (this.category == EventCategory.Action_Tracking) ? ActionTracking : UserEngagement
+      "ec": (this.category == EventCategory.Action_Tracking)
+          ? ActionTracking
+          : UserEngagement
     });
     // Add label
     if (label != null) customBody['el'] = label ?? "";
@@ -45,11 +48,27 @@ class Event extends BaseHit {
     customBody.addAll(super.communBodyTrack);
     return customBody;
   }
+
+  Event.fromMap(String oldId, Map body) : super.fromMap(oldId, body) {
+    // this.location = body['dl'];
+    this.category = (body['ec'] == ActionTracking)
+        ? EventCategory.Action_Tracking
+        : EventCategory.User_Engagement;
+    this.action = body['ea'] ?? "";
+    this.label = body['el'];
+    this.value = body["ev"];
+    this.type = HitCategory.EVENT;
+  }
 }
 
 class Consent extends Event {
-  Consent({required bool hasConsented}) : super(action: "fs_consent", category: EventCategory.User_Engagement) {
-    type = Type.CONSENT;
+  Consent({required bool hasConsented})
+      : super(action: "fs_consent", category: EventCategory.User_Engagement) {
+    type = HitCategory.CONSENT;
     label = hasConsented ? "Flutter:true" : "Flutter:false";
+  }
+
+  Consent.fromMap(String oldId, Map body) : super.fromMap(oldId, body) {
+    this.type = HitCategory.CONSENT;
   }
 }
