@@ -22,8 +22,8 @@ class DataBaseManagment {
         join(await getDatabasesPath(), 'visitor_database.db');
 
     _database = await openDatabase(pathToDataBase, onCreate: (db, version) {
-      print(
-          "########### Run the CREATE TABLE statement on the database. ############### ");
+      Flagship.logger(
+          Level.DEBUG, " Run the CREATE TABLE hits on the database.");
       return db.execute(
         'CREATE TABLE table_hits(id TEXT PRIMARY KEY, data_hit TEXT)',
       );
@@ -31,8 +31,8 @@ class DataBaseManagment {
 
     _cacheVisitorDB =
         await openDatabase(pathToDataBaseVisitor, onCreate: (db, version) {
-      print(
-          "########### Run the CREATE TABLE statement on the database. ############### ");
+      Flagship.logger(
+          Level.DEBUG, "Run the CREATE TABLE visitor on the database");
       return db.execute(
         'CREATE TABLE table_visitors(id TEXT PRIMARY KEY, visitor TEXT)',
       );

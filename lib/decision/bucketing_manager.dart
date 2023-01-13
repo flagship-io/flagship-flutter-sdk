@@ -46,12 +46,6 @@ class BucketingManager extends DecisionManager {
     });
     if (jsonString != null) {
       Bucketing bucketingObject = Bucketing.fromJson(json.decode(jsonString));
-
-      // Send Keys context when the consent is true && the panic mode is not activated
-      if (hasConsented && bucketingObject.panic == false) {
-        // Send the context
-        _sendKeyContext(envId, visitorId, context);
-      }
       return bucketVariations(
           visitorId, bucketingObject, context, assignationHistory ?? {});
     } else {
@@ -102,23 +96,23 @@ class BucketingManager extends DecisionManager {
     this.polling?.start();
   }
 
-  _sendKeyContext(String envId, String visitorId,
-      Map<String, dynamic> currentContext) async {
-    // Url string for the /event
-    String urlString = Endpoints.DECISION_API + envId + Endpoints.EVENTS;
-    Flagship.logger(Level.INFO, 'Send Context :' + urlString);
+  // _sendKeyContext(String envId, String visitorId,
+  //     Map<String, dynamic> currentContext) async {
+  //   // Url string for the /event
+  //   String urlString = Endpoints.DECISION_API + envId + Endpoints.EVENTS;
+  //   Flagship.logger(Level.INFO, 'Send Context :' + urlString);
 
-    // Create data to post
-    Object dataToPost = json.encode(
-        {"visitor_id": visitorId, "data": currentContext, "type": "CONTEXT"});
+  //   // Create data to post
+  //   Object dataToPost = json.encode(
+  //       {"visitor_id": visitorId, "data": currentContext, "type": "CONTEXT"});
 
-    // send context
-    this.service.sendHttpRequest(
-        RequestType.Post,
-        urlString,
-        Endpoints.getFSHeader(Flagship.sharedInstance().apiKey ?? ""),
-        dataToPost);
-  }
+  //   // send context
+  //   this.service.sendHttpRequest(
+  //       RequestType.Post,
+  //       urlString,
+  //       Endpoints.getFSHeader(Flagship.sharedInstance().apiKey ?? ""),
+  //       dataToPost);
+  // }
 
   // Save the response into the file
   _saveFile(String body) async {

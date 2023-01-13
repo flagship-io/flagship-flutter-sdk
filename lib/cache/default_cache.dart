@@ -24,26 +24,26 @@ class DefaultCacheHitImp with IHitCacheImplementation {
   @override
   void flushHits(List<String> hitIds) async {
     print("Flush Hits from Default cache Implementation $hitIds");
-    //await dbMgt.openDb();
     hitIds.forEach((element) {
       dbMgt.deleteHitWithId(element, 'table_hits').whenComplete(() {
-        print(
-            " &&&&&&&&&& The hit with id = $element is removed from data base &&&&&&&&&&&&&&");
+        Flagship.logger(
+            Level.DEBUG, "The hit with an id = $element is removed from cache");
       });
     });
   }
 
   @override
   Future<List<Map>> lookupHits() async {
-    await Future.delayed(Duration(milliseconds: 20));
-    print("lookupHits Hit from Default cache Implementation");
+    Flagship.logger(
+        Level.DEBUG, "lookupHits Hit from Default cache Implementation");
     await dbMgt.openDb();
     return dbMgt.readHits("table_hits");
   }
 
   @override
   void flushAllHits() {
-    print("Flush all hits from Default cache Implementation");
+    Flagship.logger(
+        Level.DEBUG, "Flush all hits from default cache Implementation");
     // Delete the file where we store the hits
     dbMgt.deleteAllRecord('table_hits');
   }
@@ -60,21 +60,23 @@ class DefaultCacheVisitorImp with IVisitorCacheImplementation {
 
   @override
   void cacheVisitor(String visitorId, String jsonString) async {
-    print("cacheVisitor from default cache visitor");
-    // await dbMgt.openDb(); // refracto this line
+    Flagship.logger(
+        Level.DEBUG, "cacheVisitor from default cache Implementation");
     dbMgt.insertVisitorData({"id": visitorId, "visitor": jsonString});
   }
 
   @override
   void flushVisitor(String visitorId) {
+    Flagship.logger(
+        Level.DEBUG, "flushVisitor from default cache Implementation");
     dbMgt.deleteVisitorWithId(visitorId, 'table_visitors');
   }
 
   @override
   Future<String> lookupVisitor(String visitoId) async {
+    Flagship.logger(
+        Level.DEBUG, "lookupVisitor from default cache Implementation ");
     await dbMgt.openDb();
-    print(
-        ' --------------- lookupVisitor from default cache visitor ------------ ');
     return dbMgt.readVisitor(visitoId, 'table_visitors');
   }
 }

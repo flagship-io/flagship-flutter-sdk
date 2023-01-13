@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:flagship/hits/activate.dart';
 import 'package:flagship/hits/event.dart';
 import 'package:flagship/hits/hit.dart';
@@ -130,7 +129,7 @@ class DefaultStrategy implements IVisitor {
     }
   }
 
-  /// Synchronize modification for the visitor
+  // Synchronize modification for the visitor
   @override
   Future<void> synchronizeModifications() async {
     Flagship.logger(Level.ALL, SYNCHRONIZE_MODIFICATIONS);
@@ -247,45 +246,6 @@ class DefaultStrategy implements IVisitor {
       Flagship.logger(
           Level.ERROR, "Timeout on trying to read the cache visitor");
     });
-
-    // String resultFromCache = await visitor.config.visitorCacheImp
-    //         ?.lookupVisitor(visitor.visitorId)
-    //         .timeout(
-    //             Duration(
-    //               milliseconds: visitor
-    //                       .config.visitorCacheImp?.visitorCacheLookupTimeout ??
-    //                   200,
-    //             ), onTimeout: () {
-    //       Flagship.logger(
-    //           Level.ERROR, "Timeout on trying to read the cache visitor");
-    //       return Future.error(
-    //           Exception("Timeout on trying to read the cache visitor"));
-    //     }) ??
-    //     "";
-    // if (resultFromCache.length != 0) {
-    //   // convert to Map
-    //   Map<String, dynamic> result = jsonDecode(resultFromCache);
-    //   // Retreive the json string stored in the visitor filed of this map.
-    //   if (result['visitor'] != null) {
-    //     VisitorCache cachedVisitor =
-    //         VisitorCache.fromJson(jsonDecode(result['visitor']));
-    //     Flagship.logger(Level.DEBUG,
-    //         'The cached visitor get through the lookup is ${cachedVisitor.toString()}');
-    //     // update the current visitor with his own cached data
-    //     // 1 - update modification Map<String, Modification> modifications
-    //     visitor.modifications
-    //         .addEntries(cachedVisitor.getModifications().entries);
-    //     if (visitor.config.decisionMode == Mode.BUCKETING) {
-    //       // 2- Update the assignation history
-    //       // Need Refractor later ....
-    //       //visitor.assignmentsHistory =
-    //       //  cachedVisitor.getAssignationHistory() ?? {};
-    //       visitor.decisionManager.updateAssignationHistory(
-    //           cachedVisitor.getAssignationHistory() ?? {});
-    //     }
-    //   }
-    // }
-    // });
   }
 
   @override

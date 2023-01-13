@@ -12,7 +12,6 @@ import "package:flagship/api/service.dart";
 
 import 'flagship.dart';
 
-/// Will refarctor this class by using a builder
 // Time out 2 seconds
 const TIMEOUT = 2000;
 

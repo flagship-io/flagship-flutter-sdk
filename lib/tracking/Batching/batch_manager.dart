@@ -10,14 +10,19 @@ import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:pausable_timer/pausable_timer.dart';
 
 class BatchManager with TrackingManagerDelegate, FlagshipPoolQueueDelegate {
+// Pausable timer
   late PausableTimer cronTimer;
 
+// Queue
   final FlagshipPoolQueue fsPool;
 
+// CallBack
   final Function sendBatch;
 
+// Cache Hit
   final IHitCacheImplementation fsCacheHit;
 
+// Configuration tracking manager
   final TrackingManagerConfig configTracking;
 
   bool get cronTimerIsPaused {
@@ -39,7 +44,6 @@ class BatchManager with TrackingManagerDelegate, FlagshipPoolQueueDelegate {
   }
 
   void batchFromQueue() {
-    print(" ------ Create a batch of hits and send to event.io ------");
     var listOfHitsToSend =
         fsPool.extractXElementFromQueue(configTracking.poolMaxSize);
     if (listOfHitsToSend.isNotEmpty) {
@@ -67,7 +71,6 @@ class BatchManager with TrackingManagerDelegate, FlagshipPoolQueueDelegate {
   onSendBatchWithSucess(
       List<BaseHit> listOfSendedHits, BatchCachingStrategy strategy) {
     // Remove old cache before save a fresh data
-
     if (strategy == BatchCachingStrategy.BATCH_CONTINUOUS_CACHING) {
       // Refractor later
       List<String> listOfIds = [];
@@ -88,27 +91,6 @@ class BatchManager with TrackingManagerDelegate, FlagshipPoolQueueDelegate {
       Flagship.logger(
           Level.INFO, "Batching is not implemented on hidden option");
     }
-
-    // switch (configTracking.batchStrategy) {
-    //   case BatchCachingStrategy.BATCH_CONTINUOUS_CACHING:
-    //     // Refractor later
-    //     List<String> listOfIds = [];
-    //     listOfSendedHits.forEach((element) {
-    //       listOfIds.add(element.id);
-    //     });
-    //     fsCacheHit.flushHits(listOfIds);
-    //     break;
-    //   case BatchCachingStrategy.BATCH_PERIODIC_CACHING:
-    //     // Clean the pool before save it again, because those hits are sended with success
-    //     listOfSendedHits.forEach((element) {
-    //       fsPool.removeTrackElement(element.id);
-    //     });
-
-    //     // Flush all hits before cache the new ones
-    //     fsCacheHit.flushAllHits();
-    //     fsCacheHit.cacheHits(FlagshipTools.hitsToMap(fsPool.fsQueue.toList()));
-    //     break;
-    // }
     cronTimer.start();
   }
 

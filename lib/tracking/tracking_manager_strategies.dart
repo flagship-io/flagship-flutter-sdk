@@ -22,7 +22,7 @@ class TrackingManageStrategy extends TrackingManager {
       : super(service, configTracking, fsCacheHit) {
     strategy = configTracking.batchStrategy;
 
-    // Create pool
+    // Hits pool
     fsPool = FlagshipPoolQueue(configTracking.poolMaxSize);
 
     // Activate pool
@@ -43,7 +43,7 @@ class TrackingManageStrategy extends TrackingManager {
       fsPool.addTrackElement(pHit);
 
       if (strategy == BatchCachingStrategy.BATCH_CONTINUOUS_CACHING) {
-        // It must cache the hit in the database by calling the cacheHit method of the cache manager
+        // It must cache the hit in the database by calling the cacheHit method
         fsCacheHit?.cacheHits({pHit.id: pHit.bodyTrack});
       }
     } else {
@@ -89,7 +89,7 @@ class TrackingManageStrategy extends TrackingManager {
 
   Future<void> sendBatch(List<BaseHit> listOfHitToSend) async {
     // Create url
-    String urlString = Endpoints.BATCH;
+    String urlString = Endpoints.EVENT;
     try {
       var response = await service.sendHttpRequest(
           RequestType.Post,

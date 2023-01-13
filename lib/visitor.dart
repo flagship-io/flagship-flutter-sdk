@@ -31,7 +31,7 @@ enum Instance {
 }
 
 class Visitor {
-  // VisitorId
+  /// VisitorId
   String visitorId;
 
   String? anonymousId;
@@ -57,18 +57,19 @@ class Visitor {
 
   late TrackingManager trackingManager;
 
-  //Consent by default is true
+  /// Consent by default is true
   bool _hasConsented = true;
 
-  // Xpc
+  /// Experience Continuity
   bool _isAuthenticated;
 
-// AssignmentsHistory history
+  /// AssignmentsHistory history
   Map<String, dynamic> assignmentsHistory = {};
 
-  // delegate visitor
+  /// Delegate visitor
   late VisitorDelegate _visitorDelegate;
-  // delegate to update the status
+
+  /// Delegate to update the status
   final FlagshipDelegate flagshipDelegate = Flagship.sharedInstance();
 
   /// Create new instance for visitor
@@ -85,7 +86,7 @@ class Visitor {
       anonymousId = null;
     }
 
-    // Init tracking manager
+    /// Init Tracking manager
     switch (config.trackingMangerConfig.batchStrategy) {
       case BatchCachingStrategy.BATCH_CONTINUOUS_CACHING:
       case BatchCachingStrategy.BATCH_PERIODIC_CACHING:
@@ -100,34 +101,27 @@ class Visitor {
         break;
     }
 
-    // Load preset_Context
+    /// Load preset_Context
     this.updateContextWithMap(FlagshipContextManager.getPresetContextForApp());
 
-    // Update context
+    /// Update context
     this.updateContextWithMap(context);
-    // Set delegate
+
+    /// Set delegate
     _visitorDelegate = VisitorDelegate(this);
-    // Set the consent
+
+    /// Set the consent
     _hasConsented = hasConsented;
-    // Send the consent hit on false at the start
+
+    /// Send the consent hit on false at the start
     if (!_hasConsented) {
       _visitorDelegate.sendHit(Consent(hasConsented: _hasConsented));
     }
-    // Load the hits in cache if exist
-    // config.hitCacheImp?.lookupHits().then((value) {
-    //   // Convert hits map to list hit
-    //   List<BaseHit> remainListOfHitInCache = [];
-    //   remainListOfHitInCache = FlagshipTools.converMapToListOfHits(value);
-    //   if (remainListOfHitInCache.isNotEmpty) {
-    //     Flagship.logger(Level.DEBUG,
-    //         "Adding the founded hits in cache into the pool of hits");
-    //     // Re inject the hits comming from cache to the hit pool
-    //     trackingManager.fsPool.addListOfElements(remainListOfHitInCache);
-    //   }
-    // });
 
+    /// Load the hits in cache if exist
     _visitorDelegate.lookupHits();
-    // Lookup for the cached visitor data
+
+    /// Lookup for the cached visitor data
     _visitorDelegate.lookupVisitor(this.visitorId);
   }
 
@@ -157,11 +151,11 @@ class Visitor {
   /// otherwise the update context skip with warnning log
 
   void updateContext<T>(String key, T value) {
-    // Delegate the action to strategy
+    /// Delegate the action to strategy
     _visitorDelegate.updateContext(key, value);
   }
 
-  // Update with predefined context
+  /// Update with predefined context
   void updateFlagshipContext<T>(FlagshipContext flagshipContext, T value) {
     if (FlagshipContextManager.chekcValidity(flagshipContext, value)) {
       _visitorDelegate.updateContext(rawValue(flagshipContext), value);
@@ -210,7 +204,7 @@ class Visitor {
   }
 
   Future<void> fetchFlags() async {
-    // Delegate the action to strategy
+    /// Delegate the action to strategy
     return _visitorDelegate.synchronizeModifications();
   }
 
@@ -227,7 +221,7 @@ class Visitor {
     _visitorDelegate.sendHit(hit);
   }
 
-  // Set Consent
+  /// Set Consent
   void setConsent(bool newValue) {
     // flush the hits from the pool
     if (newValue == false) {
@@ -266,8 +260,7 @@ class Visitor {
   }
 }
 
-//// Builder
-
+// Builder
 class VisitorBuilder {
   final String visitorId;
 

@@ -4,7 +4,7 @@ import 'package:flagship/hits/hit.dart';
 import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 
-/// Queue for the hits
+// Queue for the hits
 class FlagshipPoolQueue {
   // Queue for basehit
   Queue<BaseHit> fsQueue = Queue();
@@ -19,8 +19,6 @@ class FlagshipPoolQueue {
     // Set id for the hit
     newHit.id = newHit.visitorId + "_" + FlagshipTools.generateUuidv4();
     // Add hit to queue
-
-    print(" @@@@@@@@@@@@@@ adding new hit ${newHit.id} @@@@@@@@@@@@@@@");
     fsQueue.add(newHit);
     // check the limitation
     if (fsQueue.length == sizelimitation) {
@@ -44,7 +42,7 @@ class FlagshipPoolQueue {
     });
   }
 
-  /// Clear all the hit in the queue
+  // Clear all the hit in the queue
   List<String> flushTrackQueue({bool flushingConsentHits = false}) {
     List<String> ret = [];
     if (flushingConsentHits == true) {

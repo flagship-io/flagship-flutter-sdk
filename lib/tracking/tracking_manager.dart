@@ -43,20 +43,10 @@ class TrackingManager {
     this.apiKey = Flagship.sharedInstance().apiKey ?? "";
   }
 
-  // // Header for request
-  // Map<String, String> get fsHeader(String apiKey) {
-  //   return {
-  //     "x-api-key": this.apiKey,
-  //     "x-sdk-client": "flutter",
-  //     "x-sdk-version": FlagshipVersion,
-  //     "Content-type": "application/json"
-  //   };
-  // }
-
   Future<void> sendHit(BaseHit pHit) async {
     if (pHit.isValid() == true) {
       // Create url
-      String urlString = Endpoints.ARIANE;
+      String urlString = Endpoints.EVENT;
       try {
         var response = await service.sendHttpRequest(
             RequestType.Post,
@@ -101,6 +91,7 @@ class TrackingManager {
   }
 }
 
+/// Delegate for the used for the strategies : CONTINOUS, PERIODIC
 mixin TrackingManagerDelegate {
   onSendBatchWithSucess(
       List<BaseHit> listOfSendedHits, BatchCachingStrategy strategy);
