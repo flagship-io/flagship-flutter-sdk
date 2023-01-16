@@ -6,6 +6,7 @@ import 'package:flagship/flagship_config.dart';
 import 'package:flagship/flagship_version.dart';
 import 'package:flagship/tracking/tracking_manager.dart';
 import 'package:flagship/tracking/tracking_manager_config.dart';
+import 'package:flagship/tracking/tracking_manager_strategies.dart';
 import 'package:flagship/visitor.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -21,12 +22,13 @@ MockService fakeService = MockService();
 
 MockService fakeTrackingService = MockService();
 
-TrackingManager fakeTrackingMgr = TrackingManager(
+TrackingManager fakeTrackingMgr = TrackingManageStrategy(
     fakeTrackingService, TrackingManagerConfig(), DefaultCacheHitImp());
 
 ApiManager fakeApi = ApiManager(fakeService);
 
 Future<void> main() async {
+  ToolsTest.sqfliteTestInit();
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences.setMockInitialValues({});
   Map<String, String> fsHeaders = {

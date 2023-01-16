@@ -16,6 +16,7 @@ import 'test_tools.dart';
 
 @GenerateMocks([Service])
 void main() {
+  ToolsTest.sqfliteTestInit();
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences.setMockInitialValues({});
 
@@ -69,8 +70,6 @@ void main() {
 
       // ignore: deprecated_member_use_from_same_package
       expect(v1.getModification('aliasDouble', 100.0, activate: true), 12.0);
-
-      //
 
       /// Get infos
       // ignore: deprecated_member_use_from_same_package

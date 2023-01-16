@@ -15,6 +15,7 @@ import 'test_tools.dart';
 
 @GenerateMocks([Service])
 void main() {
+  ToolsTest.sqfliteTestInit();
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences.setMockInitialValues({});
   Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey");

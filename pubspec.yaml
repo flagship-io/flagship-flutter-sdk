@@ -30,6 +30,7 @@ dev_dependencies:
   mockito: ^5.0.16
   build_runner: ^2.1.4
   json_serializable: ^6.5.4
+  sqflite_common_ffi: ^2.2.1
   #test: <latest_version>
 
 # For information on the generic Dart part of this file, see the

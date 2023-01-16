@@ -15,6 +15,7 @@ import 'package:http/http.dart' as http;
 
 @GenerateMocks([Service])
 void main() async {
+  ToolsTest.sqfliteTestInit();
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences.setMockInitialValues({});
   Map<String, String> fsHeaders = {

@@ -49,7 +49,7 @@ class Flagship with FlagshipDelegate {
   // apiKey: Api key (provided by flagship)
   static start(String envId, String apiKey, {FlagshipConfig? config}) async {
     _singleton._status = Status.NOT_INITIALIZED;
-    await FSDevice.loadDeviceInfo();
+    FSDevice.loadDeviceInfo();
     if (FlagshipTools.chekcXidEnvironment(envId)) {
       _singleton.apiKey = apiKey;
       _singleton.envId = envId;
