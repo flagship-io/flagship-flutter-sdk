@@ -16,7 +16,7 @@ class _EventState extends State<EventHit> {
   @override
   void initState() {
     super.initState();
-    _eventActionController = TextEditingController(text: 'event_cache');
+    _eventActionController = TextEditingController(text: 'event_v3');
     _eventValueController = TextEditingController(text: '10');
   }
 

@@ -29,8 +29,8 @@ class Configuration extends StatefulWidget {
 
 class _ConfigurationState extends State<Configuration> with ShowDialog {
   // keys
-  String apiKey = "";
-  String envId = "";
+  String apiKey = "DxAcxlnRB9yFBZYtLDue1q01dcXZCw6aM49CQB23";
+  String envId = "bkk9glocmjcg0vtmdlng";
 
   final int defaultTimeout = 4000;
   final int defaultPollingTime = 60;
@@ -297,11 +297,18 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
                       child: CupertinoPicker.builder(
                           itemExtent: 30,
                           childCount: 3,
-                          backgroundColor: Colors.white,
+                          backgroundColor: Color.fromARGB(255, 165, 31, 49),
                           onSelectedItemChanged: (range) =>
                               {_onChnageStrategy(strategyArray[range])},
                           itemBuilder: (context, range) {
-                            return Text(strategyArray[range]);
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                strategyArray[range],
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 14),
+                              ),
+                            );
                           }))
                 ],
               ),
