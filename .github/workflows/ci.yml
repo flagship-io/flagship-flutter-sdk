@@ -2,7 +2,7 @@ name: Run CI
 on: [push]
 jobs:
   test:
-    name: Test Flagship Flutter SDK
+    name: Unit Test For SDK Flagship
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
