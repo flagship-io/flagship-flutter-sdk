@@ -10,8 +10,16 @@ String lastModfiedKey = "FSLastModifiedScript";
 String fileName = "cacheHits.json";
 
 class DataBaseManagment {
-  Database? _database;
-  Database? _cacheVisitorDB;
+  Database? _hitDatabase;
+  Database? _visitorDatabase;
+
+  bool get isHDatabaseOpen {
+    return _hitDatabase?.isOpen ?? false;
+  }
+
+  bool get isVDatabaseOpen {
+    return _visitorDatabase?.isOpen ?? false;
+  }
 
   DataBaseManagment();
 
@@ -21,7 +29,7 @@ class DataBaseManagment {
     String pathToDataBaseVisitor =
         join(await getDatabasesPath(), 'visitor_database.db');
 
-    _database = await openDatabase(pathToDataBase, onCreate: (db, version) {
+    _hitDatabase = await openDatabase(pathToDataBase, onCreate: (db, version) {
       Flagship.logger(
           Level.DEBUG, " Run the CREATE TABLE hits on the database.");
       return db.execute(
@@ -29,7 +37,7 @@ class DataBaseManagment {
       );
     }, version: 1);
 
-    _cacheVisitorDB =
+    _visitorDatabase =
         await openDatabase(pathToDataBaseVisitor, onCreate: (db, version) {
       Flagship.logger(
           Level.DEBUG, "Run the CREATE TABLE visitor on the database");
@@ -43,7 +51,7 @@ class DataBaseManagment {
 
   // Define a function that inserts dogs into the database
   Future<void> insertHitMap(Map<String, Object> hitMap) async {
-    await _database?.insert(
+    await _hitDatabase?.insert(
       'table_hits',
       hitMap,
       conflictAlgorithm: ConflictAlgorithm.replace,
@@ -53,7 +61,7 @@ class DataBaseManagment {
   // Delete item with id
   Future<void> deleteHitWithId(String id, String nameTable) async {
     // Get a reference to the database.
-    final db = _database;
+    final db = _hitDatabase;
     // Remove the Dog from the database.
     await db?.delete(
       '$nameTable',
@@ -66,7 +74,7 @@ class DataBaseManagment {
 
 // Delete all reocrd
   Future<void> deleteAllRecord(String nameTable) async {
-    final db = _database;
+    final db = _hitDatabase;
     await db?.delete(nameTable);
   }
 
@@ -74,7 +82,7 @@ class DataBaseManagment {
   Future<List<Map>> readHits(String nameTable) async {
     //   await openDb();
     // Get the records for the tableHits
-    return await _database?.rawQuery('SELECT * FROM $nameTable') ?? [];
+    return await _hitDatabase?.rawQuery('SELECT * FROM $nameTable') ?? [];
   }
 
 //////////////////
@@ -83,7 +91,7 @@ class DataBaseManagment {
 
   // Insert visitor Map data Visitor
   Future<void> insertVisitorData(Map<String, Object> visitoMap) async {
-    await _cacheVisitorDB?.insert(
+    await _visitorDatabase?.insert(
       'table_visitors',
       visitoMap,
       conflictAlgorithm: ConflictAlgorithm.replace,
@@ -94,7 +102,7 @@ class DataBaseManagment {
   // Delete item with id
   Future<void> deleteVisitorWithId(String id, String nameTable) async {
     // Get a reference to the database.
-    final db = _cacheVisitorDB;
+    final db = _visitorDatabase;
     // Remove the Dog from the database.
     await db?.delete(
       '$nameTable',
@@ -109,7 +117,7 @@ class DataBaseManagment {
   Future<String> readVisitor(String visitorId, String nameTable) async {
     // await openDb();
     // Get the records for the tableHits
-    List<Map> result = await _cacheVisitorDB
+    List<Map> result = await _visitorDatabase
             ?.rawQuery('SELECT * FROM $nameTable WHERE id = ?', [visitorId]) ??
         [];
 

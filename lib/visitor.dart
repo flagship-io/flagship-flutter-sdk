@@ -113,16 +113,14 @@ class Visitor {
     /// Set the consent
     _hasConsented = hasConsented;
 
-    /// Send the consent hit on false at the start
-    if (!_hasConsented) {
-      _visitorDelegate.sendHit(Consent(hasConsented: _hasConsented));
-    }
-
     /// Load the hits in cache if exist
     _visitorDelegate.lookupHits();
 
     /// Lookup for the cached visitor data
     _visitorDelegate.lookupVisitor(this.visitorId);
+
+    /// Send the consent hit
+    _visitorDelegate.sendHit(Consent(hasConsented: _hasConsented));
   }
 
   /// Update context directely with map for <String, Object>

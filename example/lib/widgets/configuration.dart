@@ -29,8 +29,11 @@ class Configuration extends StatefulWidget {
 
 class _ConfigurationState extends State<Configuration> with ShowDialog {
   // keys
-  String apiKey = "DxAcxlnRB9yFBZYtLDue1q01dcXZCw6aM49CQB23";
-  String envId = "bkk9glocmjcg0vtmdlng";
+  //String apiKey = "DxAcxlnRB9yFBZYtLDue1q01dcXZCw6aM49CQB23";
+  //String envId = "bkk9glocmjcg0vtmdlng";
+  // For QA
+  String apiKey = "N1Rm3DsCBrahhnGTzEnha31IN4DK8tXl28IykcCX";
+  String envId = "bk87t3jggr10c6l6sdog";
 
   final int defaultTimeout = 4000;
   final int defaultPollingTime = 60;
@@ -49,12 +52,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   }
 
   final Map<String, Object> initialVisitorContext = {
-    "isVipClient": true,
-    "qa_getflag": true,
-    "bucketingKey": "condition1",
-    "QA": true,
-    "qaKeyString": "beta",
-    "qaKeyNumber": 2222
+    "testing_tracking_manager": true // For QA
   };
 
   Map<String, Object> visitorContext = {};
@@ -76,12 +74,6 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
 //start SDK
 
   _startSdk() async {
-    /// Clean
-    //DataBaseManagment dbClean = DataBaseManagment();
-    // await dbClean.openDb();
-    // dbClean.deleteAllRecord();
-
-    // Flagship.testDB();
     Flagship.sharedInstance().onUpdateState(Status.NOT_INITIALIZED);
 
     /// we did this to allow start(S)
@@ -117,7 +109,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
         .withTimeout(int.tryParse(timeoutController.text) ?? defaultTimeout)
         .withTrackingConfig(TrackingManagerConfig(
             batchIntervals: 20,
-            poolMaxSize: 10,
+            poolMaxSize: 5,
             batchStrategy: widget.currentStrategy))
         .build();
     Flagship.start(envIdController.text, apiKeyController.text, config: config);
@@ -363,7 +355,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   }
 
   String _createRandomUser() {
-    return 'user_' + Random().nextInt(100).toString();
+    return 'visitor-A' + Random().nextInt(100).toString();
   }
 }
 
