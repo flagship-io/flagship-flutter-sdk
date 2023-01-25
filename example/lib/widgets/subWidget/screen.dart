@@ -20,11 +20,11 @@ class _ScreenState extends State<ScreenHit> {
   _onSendScreenHit() async {
     var currentVisitor = Flagship.getCurrentVisitor();
     try {
-      for (int index = 0; index < 9; index++) {
-        Screen screenEvent = Screen(location: _textController.text + '$index');
-        await currentVisitor?.sendHit(screenEvent);
-      }
-    } catch (e) {}
+      Screen screenEvent = Screen(location: _textController.text);
+      await currentVisitor?.sendHit(screenEvent);
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
   final double _vertcialSpace = 20;

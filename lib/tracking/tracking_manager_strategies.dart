@@ -56,20 +56,19 @@ class TrackingManageStrategy extends TrackingManager {
   Future<void> sendActivate(Activate activateHit) async {
     // Create url
     String urlString = Endpoints.DECISION_API + Endpoints.ACTIVATION;
-    Object? objectToSend;
-    if (activatePool.isEmpty()) {
-      objectToSend = jsonEncode(activateHit.toJson());
-    } else {
-      urlString = Endpoints.DECISION_API + Endpoints.ACTIVATION;
-      var listOfActivate =
-          activatePool.extractHitsWithVisitorId(activateHit.visitorId);
-      // Add the current activate
-      listOfActivate.add(activateHit);
-      // Create an activate batch object
-      ActivateBatch activateBatch = ActivateBatch(listOfActivate);
-      // Encode
-      objectToSend = jsonEncode(activateBatch.toJson());
-    }
+    // Add the current activate
+    List<Hit> listOfActivate = [activateHit];
+
+    if (activatePool.isEmpty() == false) {
+      Flagship.logger(Level.ALL,
+          "Add previous activates in batch found in the pool activate");
+      listOfActivate
+          .addAll(activatePool.extractHitsWithVisitorId(activateHit.visitorId));
+    } else {}
+    // Create an activate batch object
+    ActivateBatch activateBatch = ActivateBatch(listOfActivate);
+    // Encode batch before send it
+    Object? objectToSend = jsonEncode(activateBatch.toJson());
 
     var response = await service.sendHttpRequest(RequestType.Post, urlString,
         Endpoints.getFSHeader(this.apiKey), objectToSend,
