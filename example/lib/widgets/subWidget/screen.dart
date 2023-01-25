@@ -17,11 +17,11 @@ class _ScreenState extends State<ScreenHit> {
     _textController = TextEditingController(text: 'flutter_screen');
   }
 
-  _onSendScreenHit() async {
+  _onSendScreenHit() {
     var currentVisitor = Flagship.getCurrentVisitor();
     try {
       Screen screenEvent = Screen(location: _textController.text);
-      await currentVisitor?.sendHit(screenEvent);
+      currentVisitor?.sendHit(screenEvent);
     } catch (e) {
       print(e.toString());
     }
