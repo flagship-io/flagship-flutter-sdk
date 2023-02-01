@@ -35,6 +35,8 @@ class Service {
             Flagship.logger(
                 Level.INFO, REQUEST_ERROR.replaceFirst("%s", urlString));
             return Response(e.toString(), 400);
+          } on Exception catch (e) {
+            return Response(e.toString(), 511);
           }
         }
       case RequestType.Get:

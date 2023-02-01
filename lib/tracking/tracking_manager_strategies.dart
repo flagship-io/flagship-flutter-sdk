@@ -56,15 +56,21 @@ class TrackingManageStrategy extends TrackingManager {
   Future<void> sendActivate(Activate activateHit) async {
     // Create url
     String urlString = Endpoints.DECISION_API + Endpoints.ACTIVATION;
-    // Add the current activate
+    // Add the current activate by default
     List<Hit> listOfActivate = [activateHit];
+    bool needToClean = false;
 
+    /// When yes, the cache and pool need to be cleaned
+    // If we have a failed activate hits
     if (activatePool.isEmpty() == false) {
+      needToClean = true;
       Flagship.logger(Level.ALL,
           "Add previous activates in batch found in the pool activate");
       listOfActivate
           .addAll(activatePool.extractHitsWithVisitorId(activateHit.visitorId));
-    } else {}
+    } else {
+      // We dont have any failed activate in the pool
+    }
     // Create an activate batch object
     ActivateBatch activateBatch = ActivateBatch(listOfActivate);
     // Encode batch before send it
@@ -77,16 +83,25 @@ class TrackingManageStrategy extends TrackingManager {
       case 200:
       case 204:
         Flagship.logger(Level.INFO, ACTIVATE_SUCCESS + ": $objectToSend");
-        // Clear all the activate in the pool
-        activatePool.flushTrackQueue();
+        // Clear all the activate in the pool and clear them from cache
+        if (needToClean) {
+          listOfActivate.remove(activateHit);
+          activatePool.flushTrackQueue();
+          delegate?.onSendBatchWithSucess(
+              listOfActivate, strategy); // revoir ici faut remove le current
+        }
         break;
       default:
         Flagship.logger(Level.ERROR, ACTIVATE_FAILED + ": $objectToSend");
         activatePool.addTrackElement(activateHit);
+        if (strategy == BatchCachingStrategy.BATCH_CONTINUOUS_CACHING) {
+          // It must cache the hit in the database by calling the cacheHit method
+          fsCacheHit?.cacheHits({activateHit.id: activateHit.bodyTrack});
+        }
     }
   }
 
-  Future<void> sendBatch(List<BaseHit> listOfHitToSend) async {
+  Future<void> sendBatch(List<Hit> listOfHitToSend) async {
     // Create url
     String urlString = Endpoints.EVENT;
     try {

@@ -2,12 +2,8 @@ import 'package:flagship/flagship.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 
 class BaseHit extends Hit {
-  // type for hit
-  // Type type = Type.NONE;
-
   // Required
-  late String clientId;
-  late String? anonymousId;
+  String clientId = "";
 
   String dataSource = "APP";
 
@@ -49,7 +45,7 @@ class BaseHit extends Hit {
       this.screenColorDepth = body['sd'];
       this.userLanguage = body['ul'];
       this.sessionNumber = body['sn'];
-      this.qt = DateTime.fromMicrosecondsSinceEpoch(body['q'] ?? 0);
+      this.qt = DateTime.parse(body['qt']);
     } catch (e) {
       Flagship.logger(Level.DEBUG, "Error en parsin hit from map, $e");
     }
@@ -85,7 +81,10 @@ class BaseHit extends Hit {
     if (sessionNumber != null) result["sn"] = sessionNumber ?? 0;
 
     // Add qt entries
-    result.addEntries({"qt": qt.second}.entries);
+    result.addEntries({"qt": qt.toString()}.entries);
+
+// remove later
+    result.addEntries({"qt": "2023-02-01 10:27:13.012733"}.entries);
 
     return result;
   }
@@ -106,6 +105,9 @@ class BaseHit extends Hit {
       case HitCategory.TRANSACTION:
         ret = 'TRANSACTION';
         break;
+      case HitCategory.ACTIVATION:
+        ret = 'ACTIVATE';
+        break;
       default:
     }
     return ret;
@@ -113,7 +115,7 @@ class BaseHit extends Hit {
 
   @override
   bool isLessThan4H() {
-    return (qt.difference(DateTime.now()).inHours <= 4);
+    return (DateTime.now().difference(qt).inHours <= 4);
   }
 
   @override
@@ -136,10 +138,12 @@ class BaseHit extends Hit {
 
 abstract class Hit {
   // id for the hit
-  late String id;
+  String id = "";
+
+  String? anonymousId;
 
   // Visitor id
-  late String visitorId;
+  String visitorId = "";
 
   // Type for hit
   HitCategory type = HitCategory.NONE;

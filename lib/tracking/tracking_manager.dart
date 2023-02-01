@@ -94,6 +94,6 @@ class TrackingManager {
 /// Delegate for the used for the strategies : CONTINOUS, PERIODIC
 mixin TrackingManagerDelegate {
   onSendBatchWithSucess(
-      List<BaseHit> listOfSendedHits, BatchCachingStrategy strategy);
-  onFailedToSendBatch(List<BaseHit> listOfHitToSend);
+      List<Hit> listOfSendedHits, BatchCachingStrategy strategy);
+  onFailedToSendBatch(List<Hit> listOfHitToSend);
 }

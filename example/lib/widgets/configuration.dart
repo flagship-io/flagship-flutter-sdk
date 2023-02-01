@@ -84,19 +84,19 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
         .withMode(widget.isApiMode ? Mode.DECISION_API : Mode.BUCKETING)
         .withStatusListener((newStatus) {
           print('--------- Callback with $newStatus ---------');
-          var newVisitor;
+          //var newVisitor;
           if (newStatus == Status.READY) {
             //Get the visitor
             // visitor = Flagship.getCurrentVisitor();
             // if (visitor == null) {
             // Create visitor if null
-            newVisitor = Flagship.newVisitor(visitorIdController.text)
-                .withContext(visitorContext)
-                .hasConsented(widget.isConsented)
-                .isAuthenticated(widget.isAuthenticate)
-                .build();
-            // Set current visitor singleton instance for future use
-            Flagship.setCurrentVisitor(newVisitor);
+            // newVisitor = Flagship.newVisitor(visitorIdController.text)
+            //     .withContext(visitorContext)
+            //     .hasConsented(widget.isConsented)
+            //     .isAuthenticated(widget.isAuthenticate)
+            //     .build();
+            // // Set current visitor singleton instance for future use
+            // Flagship.setCurrentVisitor(newVisitor);
 
             setState(() {
               widget.isSdkReady = ((newStatus == Status.PANIC_ON) ||
@@ -113,6 +113,17 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
             batchStrategy: widget.currentStrategy))
         .build();
     Flagship.start(envIdController.text, apiKeyController.text, config: config);
+  }
+
+  _createVisitor() {
+    var newVisitor;
+    newVisitor = Flagship.newVisitor(visitorIdController.text)
+        .withContext(visitorContext)
+        .hasConsented(widget.isConsented)
+        .isAuthenticated(widget.isAuthenticate)
+        .build();
+    // Set current visitor singleton instance for future use
+    Flagship.setCurrentVisitor(newVisitor);
   }
 
 // Fetch flags
@@ -328,8 +339,15 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
               SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    child: Text("START & CREATE VISITOR"),
+                    child: Text("START"),
                     onPressed: () => {_startSdk()},
+                  )),
+              SizedBox(height: _spaceBetweenInput),
+              SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    child: Text("CREATE VISITOR"),
+                    onPressed: () => {_createVisitor()},
                   )),
               SizedBox(height: _spaceBetweenInput),
               Container(

@@ -7,7 +7,7 @@ import 'package:flagship/utils/logger/log_manager.dart';
 // Queue for the hits
 class FlagshipPoolQueue {
   // Queue for basehit
-  Queue<BaseHit> fsQueue = Queue();
+  Queue<Hit> fsQueue = Queue();
 
   FlagshipPoolQueueDelegate? delegate;
 
@@ -15,7 +15,7 @@ class FlagshipPoolQueue {
 
   FlagshipPoolQueue(this.sizelimitation);
 
-  void addTrackElement(BaseHit newHit) {
+  void addTrackElement(Hit newHit) {
     // Set id for the hit
     newHit.id = newHit.visitorId + "_" + FlagshipTools.generateUuidv4();
     // Add hit to queue
@@ -29,7 +29,7 @@ class FlagshipPoolQueue {
   }
 
 // Add elements to the bottom
-  void addListOfElements(List<BaseHit> list) {
+  void addListOfElements(List<Hit> list) {
     list.forEach((element) {
       fsQueue.add(element);
     });
@@ -72,8 +72,8 @@ class FlagshipPoolQueue {
   }
 
   /// Extract the X first elements
-  List<BaseHit> extractXElementFromQueue(int xElem) {
-    List<BaseHit> result = [];
+  List<Hit> extractXElementFromQueue(int xElem) {
+    List<Hit> result = [];
     for (int i = 0; i < xElem && fsQueue.isNotEmpty; i++) {
       result.add(fsQueue.removeFirst());
     }
@@ -104,7 +104,7 @@ class FlagshipPoolQueue {
   // Convert a list of hits to Map<id, hit.body>
   // id represent the id for the hit
   // hit body represent all hit's information
-  Map<String, Map<String, Object>> hitsFromListToMap(List<BaseHit> list) {
+  Map<String, Map<String, Object>> hitsFromListToMap(List<Hit> list) {
     Map<String, Map<String, Object>> result = {};
     list.forEach((element) {
       result.addEntries({element.id: element.bodyTrack}.entries);

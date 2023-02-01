@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:flagship/hits/activate.dart';
 import 'package:flagship/hits/event.dart';
 import 'package:flagship/hits/hit.dart';
@@ -10,6 +11,8 @@ import 'package:flagship/utils/constants.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/visitor.dart';
 import 'package:flagship/visitor/Ivisitor.dart';
+import 'package:flutter/material.dart';
+import 'package:http/retry.dart';
 
 // This class represent the default behaviour
 class DefaultStrategy implements IVisitor {
@@ -253,15 +256,44 @@ class DefaultStrategy implements IVisitor {
     // Load the hits in cache if exist
     visitor.config.hitCacheImp?.lookupHits().then((value) {
       // Convert hits map to list hit
-      List<BaseHit> remainListOfHitInCache = [];
-      remainListOfHitInCache = FlagshipTools.converMapToListOfHits(value);
+      List<BaseHit> remainListOfTrackInCache =
+          FlagshipTools.converMapToListOfHits(value);
 
-      if (remainListOfHitInCache.isNotEmpty) {
-        Flagship.logger(Level.DEBUG,
-            "Adding the founded hits in cache into the pool of hits");
-        // Re inject the hits comming from cache to the hit pool
-        visitor.trackingManager.fsPool
-            .addListOfElements(remainListOfHitInCache);
+      List<BaseHit> remainHits = [];
+      List<BaseHit> remainActivate = [];
+      List<String> invalidIds = [];
+
+      //Remove oldest hit
+      remainListOfTrackInCache.forEach((element) {
+        if (element.isLessThan4H()) {
+          if (element.type == HitCategory.ACTIVATION) {
+            remainActivate.add(element);
+          } else {
+            remainHits.add(element);
+          }
+        } else {
+          invalidIds.add(element.id);
+        }
+      });
+      Flagship.logger(Level.DEBUG,
+          "Adding the founded hits and activate in cache to the pools");
+      // Add cached hits
+      if (remainHits.isNotEmpty) {
+        Flagship.logger(Level.INFO,
+            "Adding cached hits, tracking manager will process to send them");
+        visitor.trackingManager.fsPool.addListOfElements(remainHits);
+      }
+      // Add cached activate
+      if (remainActivate.isNotEmpty) {
+        Flagship.logger(Level.INFO,
+            "Adding cached activate tracking manager will process to send them");
+        visitor.trackingManager.activatePool.addListOfElements(remainActivate);
+      }
+      // Remove invalide hits or activate
+      if (invalidIds.isNotEmpty) {
+        Flagship.logger(Level.INFO,
+            "Some tracking found in cache are usless because their date creation is more than 4 hours, the process will remove them");
+        visitor.config.hitCacheImp?.flushHits(invalidIds);
       }
     }).timeout(
         Duration(

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:flagship/hits/activate.dart';
 import 'package:flagship/hits/event.dart';
 import 'package:flagship/hits/hit.dart';
 import 'package:flagship/hits/item.dart';
@@ -50,7 +51,7 @@ class FlagshipTools {
   // Convert a list of hits to Map<id, hit.body>
   // id represent the id for the hit
   // hit body represent all hit's information
-  static Map<String, Map<String, Object>> hitsToMap(List<BaseHit> listOfHits) {
+  static Map<String, Map<String, Object>> hitsToMap(List<Hit> listOfHits) {
     Map<String, Map<String, Object>> result = {};
     listOfHits.forEach((element) {
       result.addEntries({element.id: element.bodyTrack}.entries);
@@ -75,6 +76,9 @@ class FlagshipTools {
           break;
         case 'ITEM':
           result.add(Item.fromMap(element['id'], subMap));
+          break;
+        case 'ACTIVATE':
+          result.add(Activate.fromMap(element['id'], subMap));
           break;
         default:
           Flagship.logger(

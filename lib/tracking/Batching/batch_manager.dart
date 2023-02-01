@@ -69,7 +69,7 @@ class BatchManager with TrackingManagerDelegate, FlagshipPoolQueueDelegate {
 
   @override
   onSendBatchWithSucess(
-      List<BaseHit> listOfSendedHits, BatchCachingStrategy strategy) {
+      List<Hit> listOfSendedHits, BatchCachingStrategy strategy) {
     // Remove old cache before save a fresh data
     if (strategy == BatchCachingStrategy.BATCH_CONTINUOUS_CACHING) {
       // Refractor later
@@ -95,7 +95,7 @@ class BatchManager with TrackingManagerDelegate, FlagshipPoolQueueDelegate {
   }
 
   @override
-  onFailedToSendBatch(List<BaseHit> listOfHitToSend) {
+  onFailedToSendBatch(List<Hit> listOfHitToSend) {
     cronTimer.start();
     // Save again in pool queue at the bottom
     fsPool.addListOfElements(listOfHitToSend);
