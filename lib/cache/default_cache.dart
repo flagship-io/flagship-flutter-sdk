@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:flagship/Storage/storage_managment.dart';
+import 'package:flagship/Storage/database_management.dart';
 import 'package:flagship/cache/interface_cache.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
@@ -8,7 +8,7 @@ import 'package:flagship/utils/logger/log_manager.dart';
 ///    HITS  /////
 //////////////////
 class DefaultCacheHitImp with IHitCacheImplementation {
-  final DataBaseManagment dbMgt = DataBaseManagment();
+  final DatabaseManagement dbMgt = DatabaseManagement();
 
   Future<void> _checkDatabase() async {
     if (dbMgt.isHDatabaseOpen == false) {
@@ -64,7 +64,7 @@ class DefaultCacheHitImp with IHitCacheImplementation {
 //////////////////
 
 class DefaultCacheVisitorImp with IVisitorCacheImplementation {
-  final DataBaseManagment dbMgt = DataBaseManagment();
+  final DatabaseManagement dbMgt = DatabaseManagement();
 
   DefaultCacheVisitorImp();
 

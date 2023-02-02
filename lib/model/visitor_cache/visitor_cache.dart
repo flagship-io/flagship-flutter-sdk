@@ -68,7 +68,7 @@ class VisitorCache {
 
   Map<String, Modification> getModifications() {
     Map<String, Modification> result = {};
-    // construire a partire des flags
+    // construire a partir des flags
     this.data?.campaigns?.forEach((campItem) {
       campItem.flags?.forEach((keyFalg, valueFlag) {
         Modification newModification = Modification(

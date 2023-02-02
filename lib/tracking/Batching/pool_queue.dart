@@ -101,6 +101,10 @@ class FlagshipPoolQueue {
     return fsQueue.isEmpty;
   }
 
+  bool isNotEmpty() {
+    return fsQueue.isNotEmpty;
+  }
+
   // Convert a list of hits to Map<id, hit.body>
   // id represent the id for the hit
   // hit body represent all hit's information

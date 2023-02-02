@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 import 'package:flagship/hits/activate.dart';
 import 'package:flagship/hits/event.dart';
 import 'package:flagship/hits/hit.dart';
@@ -11,8 +10,6 @@ import 'package:flagship/utils/constants.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/visitor.dart';
 import 'package:flagship/visitor/Ivisitor.dart';
-import 'package:flutter/material.dart';
-import 'package:http/retry.dart';
 
 // This class represent the default behaviour
 class DefaultStrategy implements IVisitor {
@@ -234,11 +231,9 @@ class DefaultStrategy implements IVisitor {
           // 1 - update modification Map<String, Modification> modifications
           visitor.modifications
               .addEntries(cachedVisitor.getModifications().entries);
-          if (visitor.config.decisionMode == Mode.BUCKETING) {
-            // 2- Update the assignation history
-            visitor.decisionManager.updateAssignationHistory(
-                cachedVisitor.getAssignationHistory() ?? {});
-          }
+          // 2- Update the assignation history
+          visitor.decisionManager.updateAssignationHistory(
+              cachedVisitor.getAssignationHistory() ?? {});
         }
       }
     }).timeout(

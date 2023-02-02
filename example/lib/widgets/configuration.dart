@@ -151,7 +151,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
     });
   }
 
-  _onChnageStrategy(String value) {
+  _onChangeStrategy(String value) {
     switch (value) {
       case "CONTINOUS":
         widget.currentStrategy = BatchCachingStrategy.BATCH_CONTINUOUS_CACHING;
@@ -302,7 +302,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
                           childCount: 3,
                           backgroundColor: Color.fromARGB(255, 165, 31, 49),
                           onSelectedItemChanged: (range) =>
-                              {_onChnageStrategy(strategyArray[range])},
+                              {_onChangeStrategy(strategyArray[range])},
                           itemBuilder: (context, range) {
                             return Padding(
                               padding: const EdgeInsets.all(8.0),

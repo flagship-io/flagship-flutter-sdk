@@ -9,7 +9,7 @@ import 'package:path/path.dart';
 String lastModfiedKey = "FSLastModifiedScript";
 String fileName = "cacheHits.json";
 
-class DataBaseManagment {
+class DatabaseManagement {
   Database? _hitDatabase;
   Database? _visitorDatabase;
 
@@ -21,7 +21,7 @@ class DataBaseManagment {
     return _visitorDatabase?.isOpen ?? false;
   }
 
-  DataBaseManagment();
+  DatabaseManagement();
 
   Future<void> openDb() async {
     String pathToDataBase = join(await getDatabasesPath(), 'hits_database.db');
