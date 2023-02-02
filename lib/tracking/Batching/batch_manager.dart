@@ -44,11 +44,10 @@ class BatchManager with TrackingManagerDelegate, FlagshipPoolQueueDelegate {
   }
 
   void batchFromQueue() {
+    cronTimer.reset();
     var listOfHitsToSend =
         fsPool.extractXElementFromQueue(configTracking.poolMaxSize);
     if (listOfHitsToSend.isNotEmpty) {
-      cronTimer.reset();
-
       /// Refracto and check later this reset
       // in periodic strategy will cache the list
       if (this.configTracking.batchStrategy ==
@@ -58,6 +57,8 @@ class BatchManager with TrackingManagerDelegate, FlagshipPoolQueueDelegate {
       }
       // Send batch
       sendBatch(listOfHitsToSend);
+    } else {
+      cronTimer.start();
     }
   }
 
