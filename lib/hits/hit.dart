@@ -82,10 +82,6 @@ class BaseHit extends Hit {
 
     // Add qt entries
     result.addEntries({"qt": qt.toString()}.entries);
-
-// remove later
-    result.addEntries({"qt": "2023-02-01 10:27:13.012733"}.entries);
-
     return result;
   }
 
