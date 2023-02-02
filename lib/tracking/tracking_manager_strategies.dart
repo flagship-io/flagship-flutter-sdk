@@ -62,7 +62,7 @@ class TrackingManageStrategy extends TrackingManager {
 
     /// When yes, the cache and pool need to be cleaned
     // If we have a failed activate hits
-    if (!activatePool.isEmpty()) {
+    if (activatePool.isNotEmpty()) {
       needToClean = true;
       Flagship.logger(Level.ALL,
           "Add previous activates in batch found in the pool activate");
