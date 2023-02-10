@@ -10,7 +10,8 @@ import 'package:flagship/decision/decision_manager.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/hits/hit.dart';
-import 'package:flagship/tracking/tracking_manager_strategies.dart';
+import 'package:flagship/tracking/tracking_manager_periodic_strategy.dart';
+import 'package:flagship/tracking/tracking_manager_continuous_strategies.dart';
 import 'package:flagship/tracking/tracking_manager.dart';
 import 'package:flagship/tracking/tracking_manager_config.dart';
 import 'package:flagship/utils/constants.dart';
@@ -89,8 +90,13 @@ class Visitor {
     /// Init Tracking manager
     switch (config.trackingMangerConfig.batchStrategy) {
       case BatchCachingStrategy.BATCH_CONTINUOUS_CACHING:
+        trackingManager = TrackingManageContinuousStrategy(
+            Service(http.Client()),
+            config.trackingMangerConfig,
+            this.config.hitCacheImp ?? DefaultCacheHitImp());
+        break;
       case BatchCachingStrategy.BATCH_PERIODIC_CACHING:
-        trackingManager = TrackingManageStrategy(
+        trackingManager = TrackingManagerPeriodicStrategy(
             Service(http.Client()),
             config.trackingMangerConfig,
             this.config.hitCacheImp ?? DefaultCacheHitImp());
@@ -223,9 +229,10 @@ class Visitor {
   void setConsent(bool newValue) {
     // flush the hits from the pool
     if (newValue == false) {
-      var listToremove =
-          trackingManager.fsPool.flushTrackQueue(flushingConsentHits: false);
-      this.trackingManager.fsCacheHit?.flushHits(listToremove);
+      this.trackingManager.flushAllTracking();
+      // var listToremove = trackingManager._fsHitPool
+      //     .flushTrackQueue(flushingConsentHits: false);
+      // this.trackingManager.fsCacheHit?.flushHits(listToremove);
       // Erase the related data in cache
       this.config.visitorCacheImp?.flushVisitor(this.visitorId);
     }

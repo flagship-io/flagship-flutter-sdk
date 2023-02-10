@@ -22,7 +22,7 @@ void main() {
       Event testEvent = Event(
           action: "testPool" + "$i", category: EventCategory.Action_Tracking);
       testEvent.visitorId = "user_" + "$i";
-      poolTest.addTrackElement(testEvent);
+      poolTest.addNewTrackElement(testEvent);
       // check the creattion id after adding the hit in the pool
       expect(testEvent.id.contains(testEvent.visitorId), true);
     }
@@ -45,7 +45,7 @@ void main() {
           action: "testPool" + "$i", category: EventCategory.Action_Tracking);
       testEvent.visitorId = "user_" + "$i";
       testEvent.anonymousId = null;
-      poolTest.addTrackElement(testEvent);
+      poolTest.addNewTrackElement(testEvent);
       // check the creattion id after adding the hit in the pool
       expect(testEvent.id.contains(testEvent.visitorId), true);
     }
@@ -72,7 +72,7 @@ void main() {
       Event testEvent = Event(
           action: "testPool" + "$i", category: EventCategory.Action_Tracking);
       testEvent.visitorId = "user_" + "$i";
-      poolTest.addTrackElement(testEvent);
+      poolTest.addNewTrackElement(testEvent);
       // check the creattion id after adding the hit in the pool
       expect(testEvent.id.contains(testEvent.visitorId), true);
     }
@@ -86,16 +86,16 @@ void main() {
       Event testEvent = Event(
           action: "testPool" + "$i", category: EventCategory.Action_Tracking);
       testEvent.visitorId = "user_" + "$i";
-      poolTest.addTrackElement(testEvent);
+      poolTest.addNewTrackElement(testEvent);
     }
 
     // Create the consent one
     Consent consent = Consent(hasConsented: false);
     consent.visitorId = "user_10";
-    poolTest.addTrackElement(consent);
-    poolTest.flushTrackQueue(flushingConsentHits: true);
+    poolTest.addNewTrackElement(consent);
+    poolTest.flushTrackQueue(keepConsentHits: true);
     expect(poolTest.fsQueue.length, 1);
-    poolTest.flushTrackQueue(flushingConsentHits: false);
+    poolTest.flushTrackQueue(keepConsentHits: false);
     expect(poolTest.fsQueue.length, 0);
   });
 }

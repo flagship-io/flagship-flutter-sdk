@@ -104,6 +104,9 @@ class BaseHit extends Hit {
       case HitCategory.ACTIVATION:
         ret = 'ACTIVATE';
         break;
+      case HitCategory.SEGMENT:
+        ret = 'SEGMENT';
+        break;
       default:
     }
     return ret;

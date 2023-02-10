@@ -253,36 +253,21 @@ class DefaultStrategy implements IVisitor {
       // Convert hits map to list hit
       List<BaseHit> remainListOfTrackInCache =
           FlagshipTools.converMapToListOfHits(value);
-
-      List<BaseHit> remainHits = [];
-      List<BaseHit> remainActivate = [];
       List<String> invalidIds = [];
-
+      List<BaseHit> remainTracking = [];
       //Remove oldest hit
       remainListOfTrackInCache.forEach((element) {
         if (element.isLessThan4H()) {
-          if (element.type == HitCategory.ACTIVATION) {
-            remainActivate.add(element);
-          } else {
-            remainHits.add(element);
-          }
+          remainTracking.add(element);
         } else {
           invalidIds.add(element.id);
         }
       });
       Flagship.logger(Level.DEBUG,
           "Adding the founded hits and activate in cache to the pools");
-      // Add cached hits
-      if (remainHits.isNotEmpty) {
-        Flagship.logger(Level.INFO,
-            "Adding cached hits, tracking manager will process to send them");
-        visitor.trackingManager.fsPool.addListOfElements(remainHits);
-      }
-      // Add cached activate
-      if (remainActivate.isNotEmpty) {
-        Flagship.logger(Level.INFO,
-            "Adding cached activate tracking manager will process to send them");
-        visitor.trackingManager.activatePool.addListOfElements(remainActivate);
+      // Add backed elements of tracking
+      if (remainTracking.isNotEmpty) {
+        visitor.trackingManager.addTrackingElementsToPool(remainTracking);
       }
       // Remove invalide hits or activate
       if (invalidIds.isNotEmpty) {

@@ -6,7 +6,7 @@ import 'package:flagship/flagship_config.dart';
 import 'package:flagship/flagship_version.dart';
 import 'package:flagship/tracking/tracking_manager.dart';
 import 'package:flagship/tracking/tracking_manager_config.dart';
-import 'package:flagship/tracking/tracking_manager_strategies.dart';
+import 'package:flagship/tracking/tracking_manager_continuous_strategies.dart';
 import 'package:flagship/visitor.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -22,7 +22,7 @@ MockService fakeService = MockService();
 
 MockService fakeTrackingService = MockService();
 
-TrackingManager fakeTrackingMgr = TrackingManageStrategy(
+TrackingManager fakeTrackingMgr = TrackingManageContinuousStrategy(
     fakeTrackingService, TrackingManagerConfig(), DefaultCacheHitImp());
 
 ApiManager fakeApi = ApiManager(fakeService);
@@ -73,6 +73,7 @@ Future<void> main() async {
       await mockFlag.userExposed();
       // The activate should failed ==> the activate pool should have one in queue
       expect(fakeTrackingMgr.activatePool.fsQueue.length, 1);
+      fakeTrackingMgr
 
       await mockFlag.userExposed();
       expect(fakeTrackingMgr.activatePool.fsQueue.length, 2);

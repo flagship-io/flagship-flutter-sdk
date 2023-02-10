@@ -131,6 +131,8 @@ class Flagship with FlagshipDelegate {
 
 // When close flagship, send hit present in the queue
   void close() {
-    Flagship.getCurrentVisitor()?.trackingManager.batchManager.batchFromQueue();
+    Flagship.getCurrentVisitor()?.trackingManager.close();
+
+    // Flagship.getCurrentVisitor()?.trackingManager.batchManager.batchFromQueue();
   }
 }

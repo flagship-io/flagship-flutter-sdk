@@ -30,7 +30,7 @@ void main() {
       Event testEvent = Event(
           action: "testPool" + "$i", category: EventCategory.Action_Tracking);
       testEvent.visitorId = "user_" + "$i";
-      testPool.addTrackElement(testEvent);
+      testPool.addNewTrackElement(testEvent);
     }
 
     // Create batch object
@@ -57,7 +57,7 @@ void main() {
       Event testEvent = Event(
           action: "testPool" + "$i", category: EventCategory.Action_Tracking);
       testEvent.visitorId = "user_" + "$i";
-      testPool.addTrackElement(testEvent);
+      testPool.addNewTrackElement(testEvent);
     }
 
     // Create batch object
@@ -88,7 +88,7 @@ void main() {
       Event testEvent = Event(
           action: "testPool" + "$i", category: EventCategory.Action_Tracking);
       testEvent.visitorId = "user_" + "$i";
-      testPool.addTrackElement(testEvent);
+      testPool.addNewTrackElement(testEvent);
 
       if (i == 29) {
         expect(testBatch.fsPool.fsQueue.length, 0);

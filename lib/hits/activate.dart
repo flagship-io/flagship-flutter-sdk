@@ -2,15 +2,10 @@ import 'package:flagship/hits/hit.dart';
 import 'package:flagship/model/modification.dart';
 
 class Activate extends BaseHit {
-  // final String campaignId;
-  // final String variationId;
-  // final String variationGroupId;
-  // final bool isReference;
   Modification? modification;
-  //final String visitorId;
   String? anonymousId;
 
-  late String envId;
+  String envId = "";
 
   Activate(this.modification, String visitorId, this.anonymousId, this.envId)
       : super() {
@@ -32,6 +27,9 @@ class Activate extends BaseHit {
     this.id = oldId;
     // Set the client Id
     this.envId = body["cid"] ?? "";
+
+    // Set the qt
+    this.qt = DateTime.parse(body['qt']);
 
     // Create the modification object to set the "caid" & "vaid"
     if ((body["caid"] != null) && (body["vaid"] != null)) {
@@ -62,18 +60,12 @@ class Activate extends BaseHit {
     var customBody = new Map<String, Object>();
     customBody.addEntries(this.toJson().entries);
     // Add qt and type entries
-    customBody.addAll({"t": typeOfEvent, "qt": qt.second});
+    customBody.addAll({"t": typeOfEvent, "qt": qt.toString()});
     return customBody;
   }
 
   @override
   bool isValid() {
     return true;
-  }
-
-  @override
-  bool isLessThan4H() {
-    return (qt.difference(DateTime.now()).inHours <= 4);
-    //return true; // see later
   }
 }

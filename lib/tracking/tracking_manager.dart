@@ -2,11 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flagship/api/endpoints.dart';
 import 'package:flagship/cache/interface_cache.dart';
-import 'package:flagship/tracking/Batching/batch_manager.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/hits/activate.dart';
 import 'package:flagship/hits/hit.dart';
-import 'package:flagship/tracking/Batching/pool_queue.dart';
 import 'package:flagship/tracking/tracking_manager_config.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
@@ -22,22 +20,17 @@ class TrackingManager {
   /// service
   Service service = Service(http.Client());
 
-  /// Pool tempo, place it later elswhere
-  late FlagshipPoolQueue fsPool;
-
-  late FlagshipPoolQueue activatePool;
-
 // Cache manager
   final IHitCacheImplementation? fsCacheHit;
 
 // Config for the tracking manager
   final TrackingManagerConfig configTracking;
 
-// Batch manager
-  late BatchManager batchManager;
+// Delegate hits
+  TrackingManagerDelegate? hitDelegate;
 
-// Delegate for tracking manager
-  TrackingManagerDelegate? delegate;
+// Delegate activate
+  TrackingManagerDelegate? activateDelegate;
 
   TrackingManager(this.service, this.configTracking, this.fsCacheHit) {
     this.apiKey = Flagship.sharedInstance().apiKey ?? "";
@@ -89,11 +82,21 @@ class TrackingManager {
         Flagship.logger(Level.ERROR, ACTIVATE_FAILED);
     }
   }
+
+  // Called when close flagship
+  close() {}
+  // Called to flush the pool queue
+  flushAllTracking() {}
+  // Called to add a list to the pools
+  // Each hit is checked before adding to the respective pool
+  addTrackingElementsToPool(List<Hit> listOfTracking) {}
 }
 
-/// Delegate for the used for the strategies : CONTINOUS, PERIODIC
 mixin TrackingManagerDelegate {
+  // On Sucess Sendig Batch
   onSendBatchWithSucess(
       List<Hit> listOfSendedHits, BatchCachingStrategy strategy);
+
+  // On Failed Sending Batch
   onFailedToSendBatch(List<Hit> listOfHitToSend);
 }

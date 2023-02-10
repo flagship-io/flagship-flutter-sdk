@@ -8,34 +8,40 @@ import 'package:flagship/utils/logger/log_manager.dart';
 class FlagshipPoolQueue {
   // Queue for basehit
   Queue<Hit> fsQueue = Queue();
-
+  // Delegate
   FlagshipPoolQueueDelegate? delegate;
+  //Size limitation
+  final sizeLimitation;
+  FlagshipPoolQueue(this.sizeLimitation);
 
-  final sizelimitation;
-
-  FlagshipPoolQueue(this.sizelimitation);
-
-  void addTrackElement(Hit newHit) {
+  // Add Element tracking to the pool by adding an id
+  // The id is used to manipulate this element in the databas
+  void addNewTrackElement(Hit newHit) {
     // Set id for the hit
     newHit.id = newHit.visitorId + "_" + FlagshipTools.generateUuidv4();
     // Add hit to queue
     fsQueue.add(newHit);
     // check the limitation
-    if (fsQueue.length == sizelimitation) {
+    if (fsQueue.length == sizeLimitation) {
       Flagship.logger(Level.DEBUG,
-          "The size max for the pool hit is reached, no need to wait for interval time to send the batch ......");
+          "The size max for the pool is reached, no need to wait for interval time to send batch.");
       this.delegate?.onPoolSizeMaxReached();
     }
   }
 
-// Add elements to the bottom
+// Add list of elements to queue
   void addListOfElements(List<Hit> list) {
     list.forEach((element) {
       fsQueue.add(element);
     });
   }
 
-  // remove track elements
+// Add a single element to queue
+  void addElement(Hit hitElement) {
+    fsQueue.add(hitElement);
+  }
+
+  // remove track elements from queue
   void removeTrackElement(String id) {
     fsQueue.removeWhere((element) {
       return (element.id == id);
@@ -43,9 +49,11 @@ class FlagshipPoolQueue {
   }
 
   // Clear all the hit in the queue
-  List<String> flushTrackQueue({bool flushingConsentHits = false}) {
+  // by default the keepConsentHits = false
+  // Return the ids for the deleted elments ==> thoses ids will be used to remove the backup in database
+  List<String> flushTrackQueue({bool keepConsentHits = false}) {
     List<String> ret = [];
-    if (flushingConsentHits == true) {
+    if (keepConsentHits == true) {
       Flagship.logger(
           Level.DEBUG, "Remove hits from the pool excpet the consent tracking");
       fsQueue.removeWhere((element) {
@@ -56,7 +64,8 @@ class FlagshipPoolQueue {
         return false;
       });
     } else {
-      Flagship.logger(Level.DEBUG, "Remove all hits from the pool");
+      Flagship.logger(Level.DEBUG, "Remove all track elemets from the pool");
+      ret = fsQueue.map((e) => e.id).toList();
       fsQueue.clear();
     }
     return ret;
@@ -88,7 +97,6 @@ class FlagshipPoolQueue {
   }
 
   // Get the ids for all the  hits in the actual pool
-
   List<String> getAllIds() {
     List<String> result = [];
     fsQueue.forEach((element) {
