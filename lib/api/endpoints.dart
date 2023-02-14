@@ -4,7 +4,6 @@ class Endpoints {
   static const String SEP = "/";
   static const String DECISION_API = "https://decision.flagship.io/v2/";
   static const String CAMPAIGNS = "/campaigns/?exposeAllKeys=true";
-  //static const String ARIANE = "https://ariane.abtasty.com"; we use a new endpoint
   static const String ACTIVATION = "activate";
 
 // Bucketing

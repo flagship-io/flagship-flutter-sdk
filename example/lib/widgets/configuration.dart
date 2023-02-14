@@ -19,10 +19,6 @@ import '../widgets/context_screen.dart';
 class Configuration extends StatefulWidget {
   bool isSdkReady = false;
 
-// The current strategy
-//  BatchCachingStrategy currentStrategy =
-  //    BatchCachingStrategy.BATCH_CONTINUOUS_CACHING;
-
   @override
   _ConfigurationState createState() => _ConfigurationState();
 }
