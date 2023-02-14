@@ -86,7 +86,7 @@ class TrackingManager {
   // Called when close flagship
   close() {}
   // Called to flush the pool queue
-  flushAllTracking() {}
+  flushAllTracking(String visitorId) {}
   // Called to add a list to the pools
   // Each hit is checked before adding to the respective pool
   addTrackingElementsToPool(List<Hit> listOfTracking) {}

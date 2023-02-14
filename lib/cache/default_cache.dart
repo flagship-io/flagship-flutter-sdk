@@ -12,7 +12,7 @@ class DefaultCacheHitImp with IHitCacheImplementation {
 
   Future<void> _checkDatabase() async {
     if (dbMgt.isHDatabaseOpen == false) {
-      Flagship.logger(Level.INFO, "initialize Database for cache hits");
+      Flagship.logger(Level.DEBUG, "initialize Database for cache hits");
       await dbMgt.openDb();
     }
   }
@@ -20,7 +20,7 @@ class DefaultCacheHitImp with IHitCacheImplementation {
   @override
   void cacheHits(Map<String, Map<String, Object>> hits) async {
     Flagship.logger(
-        Level.ALL, "Cache Hits from Default Cache Hit Implementation : \n");
+        Level.DEBUG, "Cache Hits from Default Cache Hit Implementation : \n");
     Flagship.logger(Level.ALL, JsonEncoder().convert(hits).toString(),
         isJsonString: true);
     await _checkDatabase();

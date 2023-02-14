@@ -51,23 +51,29 @@ class FlagshipPoolQueue {
   // Clear all the hit in the queue
   // by default the keepConsentHits = false
   // Return the ids for the deleted elments ==> thoses ids will be used to remove the backup in database
-  List<String> flushTrackQueue({bool keepConsentHits = false}) {
+  List<String> flushTrackAndKeepConsent(String visitorId) {
     List<String> ret = [];
-    if (keepConsentHits == true) {
-      Flagship.logger(
-          Level.DEBUG, "Remove hits from the pool excpet the consent tracking");
-      fsQueue.removeWhere((element) {
-        if (element.type != HitCategory.CONSENT) {
-          ret.add(element.id);
-          return true;
-        }
-        return false;
-      });
-    } else {
-      Flagship.logger(Level.DEBUG, "Remove all track elemets from the pool");
-      ret = fsQueue.map((e) => e.id).toList();
-      fsQueue.clear();
-    }
+    Flagship.logger(Level.DEBUG,
+        "Remove visitorId's hits from the pool excpet the consent tracking");
+    fsQueue.removeWhere((element) {
+      if (element.visitorId == visitorId &&
+          element.type != HitCategory.CONSENT) {
+        ret.add(element.id);
+        return true;
+      }
+      return false;
+    });
+    return ret;
+  }
+
+  /// Remove all track elements in the pool
+  /// Return an id for the removed element to remove them in database
+  List<String> flushAllTrackFromQueue() {
+    List<String> ret = [];
+    Flagship.logger(
+        Level.DEBUG, "Remove all visitorId's track elemets from the pool");
+    ret = fsQueue.map((e) => e.id).toList();
+    fsQueue.clear();
     return ret;
   }
 

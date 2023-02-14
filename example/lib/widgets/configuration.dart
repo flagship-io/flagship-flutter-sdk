@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flagship/cache/interface_cache.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/flagship_config.dart';
+import 'package:flagship/hits/screen.dart';
 import 'package:flagship/tracking/tracking_manager_config.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
@@ -12,6 +15,7 @@ import 'package:provider/provider.dart';
 import './FSinputField.dart';
 import 'dart:math';
 import '../widgets/context_screen.dart';
+import 'package:path_provider/path_provider.dart';
 
 // My package
 
@@ -54,8 +58,8 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
 
   _startSdk() async {
     // To localize the path of simulator
-    // Directory tempDir = await getTemporaryDirectory();
-    // print(tempDir.path);
+    Directory tempDir = await getTemporaryDirectory();
+    print(tempDir.path);
 
     Flagship.sharedInstance().onUpdateState(Status.NOT_INITIALIZED);
     FSData fsData = Provider.of<FSData>(context, listen: false);
@@ -65,6 +69,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
         Level.ALL, '--------- Start with $visitorIdController.text ---------');
 
     FlagshipConfig config = ConfigBuilder()
+        .withLogLevel(Level.INFO)
         .withMode(fsData.sdkMode)
         .withStatusListener((newStatus) {
           print('--------- Callback with $newStatus ---------');
@@ -80,7 +85,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
         })
         .withTimeout(int.tryParse(timeoutController.text) ?? fsData.timeout)
         .withTrackingConfig(TrackingManagerConfig(
-            batchIntervals: 20, poolMaxSize: 5, batchStrategy: fsData.strategy))
+            batchIntervals: 10, poolMaxSize: 5, batchStrategy: fsData.strategy))
         .build();
     Flagship.start(envIdController.text, apiKeyController.text, config: config);
   }
@@ -159,7 +164,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   @override
   Widget build(BuildContext context) {
     FSData fsData = Provider.of<FSData>(context, listen: true);
-    UserData fsUser = Provider.of<UserData>(context);
+    UserData fsUser = Provider.of<UserData>(context, listen: false);
     List<String> strategyArray = ["CONTINOUS", "PERIODIC", "NO_STRATEGY"];
     double _spaceBetweenInput = 10;
     envIdController.text = fsData.envId;
@@ -208,7 +213,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
                 timeoutController,
                 TextInputType.number,
                 onChangeInput: (newText) =>
-                    {fsData.updaeTimeout(int.parse(newText))},
+                    {fsData.updaeTimeout(int.tryParse(newText) ?? 2000)},
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -327,7 +332,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
                   child: ElevatedButton(
                     child: Text("CREATE VISITOR"),
                     onPressed: () => {
-                      fsUser.updateVisitorId(_createRandomUser()),
+                      //fsUser.updateVisitorId(_createRandomUser()),
                       _createVisitor()
                     },
                   )),
@@ -347,6 +352,14 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
                         ? () => {_onTapContext(context)}
                         : null,
                   )),
+              SizedBox(height: _spaceBetweenInput),
+              Container(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                      child: Text("CUSTOM SCENARIOS"),
+                      onPressed: () {
+                        _customTest();
+                      })),
             ],
           ),
         ),
@@ -356,6 +369,32 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
 
   String _createRandomUser() {
     return 'visitor-A' + Random().nextInt(100).toString();
+  }
+
+  _customTest() async {
+    var vA = Flagship.newVisitor("visitorA")
+        .withContext({"testing_tracking_manager": true})
+        .isAuthenticated(true)
+        .build();
+
+    await vA.fetchFlags();
+
+    //Activate
+    var value = vA.getFlag("my_flag", "defaultValue").value();
+
+    print("the vlaue of flag is " + value);
+    vA.sendHit(Screen(location: "screenQA"));
+
+    /// mode online
+
+    // var vB = Flagship.newVisitor("visitorB")
+    //     .withContext({"testing_tracking_manager": true}).build();
+
+    // await vB.fetchFlags();
+    // //Activate
+    // var valueBis = vB.getFlag("my_flag", "defaultValue").value();
+    // print(valueBis);
+    // vB.sendHit(Screen(location: "screenQA"));
   }
 }
 

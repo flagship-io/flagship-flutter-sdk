@@ -4,6 +4,7 @@ import 'package:flagship/api/service.dart';
 import 'package:flagship/hits/hit.dart';
 import 'package:flagship/tracking/tracking_manager_config.dart';
 import 'package:flagship/tracking/tracking_manager_continuous_strategies.dart';
+import 'package:flagship/utils/flagship_tools.dart';
 
 class TrackingManagerPeriodicStrategy extends TrackingManageContinuousStrategy {
   TrackingManagerPeriodicStrategy(Service service,

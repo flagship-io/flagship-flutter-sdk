@@ -27,7 +27,7 @@ const String GET_MODIFICATION_ERROR =
 const String GET_MODIFICATION_INFO_ERROR = "No modification for key '%s'.";
 
 // HITS
-const String HIT_SUCCESS = "Hit sent with success";
+const String HIT_SUCCESS = "Hits sent with success";
 const String HIT_FAILED = "Failed to send hit";
 const String ACTIVATE_SUCCESS = "Activate sent with success";
 const String ACTIVATE_FAILED = "Failed to send activate";

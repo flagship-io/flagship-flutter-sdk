@@ -22,7 +22,6 @@ class FSInputField extends StatelessWidget {
       keyboardType: keyboardType,
       style: TextStyle(fontSize: 12, color: Color.fromARGB(221, 13, 13, 13)),
       onChanged: (newText) {
-        print(newText);
         if (onChangeInput != null) {
           onChangeInput!(newText);
         }

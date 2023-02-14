@@ -229,10 +229,7 @@ class Visitor {
   void setConsent(bool newValue) {
     // flush the hits from the pool
     if (newValue == false) {
-      this.trackingManager.flushAllTracking();
-      // var listToremove = trackingManager._fsHitPool
-      //     .flushTrackQueue(flushingConsentHits: false);
-      // this.trackingManager.fsCacheHit?.flushHits(listToremove);
+      this.trackingManager.flushAllTracking(this.visitorId);
       // Erase the related data in cache
       this.config.visitorCacheImp?.flushVisitor(this.visitorId);
     }

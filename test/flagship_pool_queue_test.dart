@@ -67,7 +67,7 @@ void main() {
   });
 
   test("flushPool", () {
-    poolTest.flushTrackQueue();
+    poolTest.flushAllTrackFromQueue();
     for (int i = 0; i < 100; i++) {
       Event testEvent = Event(
           action: "testPool" + "$i", category: EventCategory.Action_Tracking);
@@ -76,26 +76,26 @@ void main() {
       // check the creattion id after adding the hit in the pool
       expect(testEvent.id.contains(testEvent.visitorId), true);
     }
-    poolTest.flushTrackQueue();
+    poolTest.flushAllTrackFromQueue();
     expect(poolTest.fsQueue.length, 0);
   });
 
   test("flushPoolWithConsent", () {
-    poolTest.flushTrackQueue();
+    poolTest.flushAllTrackFromQueue();
     for (int i = 0; i < 50; i++) {
       Event testEvent = Event(
           action: "testPool" + "$i", category: EventCategory.Action_Tracking);
-      testEvent.visitorId = "user_" + "$i";
+      testEvent.visitorId = "userTest";
       poolTest.addNewTrackElement(testEvent);
     }
 
     // Create the consent one
     Consent consent = Consent(hasConsented: false);
-    consent.visitorId = "user_10";
+    consent.visitorId = "userTest";
     poolTest.addNewTrackElement(consent);
-    poolTest.flushTrackQueue(keepConsentHits: true);
+    poolTest.flushTrackAndKeepConsent("userTest");
     expect(poolTest.fsQueue.length, 1);
-    poolTest.flushTrackQueue(keepConsentHits: false);
+    poolTest.flushAllTrackFromQueue();
     expect(poolTest.fsQueue.length, 0);
   });
 }

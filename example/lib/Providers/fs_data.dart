@@ -13,7 +13,8 @@ class FSData extends ChangeNotifier {
   int _timeout = 4000;
 
   // Strategy
-  BatchCachingStrategy _strategy = BatchCachingStrategy.BATCH_PERIODIC_CACHING;
+  BatchCachingStrategy _strategy =
+      BatchCachingStrategy.NO_BATCHING_CONTINUOUS_CACHING_STRATEGY;
 
   void updateEnvId(String pEnvId) {
     _envId = pEnvId;
@@ -62,7 +63,7 @@ class FSData extends ChangeNotifier {
 }
 
 class UserData extends ChangeNotifier {
-  String _visitorId = "";
+  String _visitorId = "user01";
   Map<String, Object> context = {"testing_tracking_manager": true};
   bool _hasConsented = true;
   bool _isAuthenticated = false;

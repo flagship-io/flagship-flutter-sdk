@@ -26,6 +26,16 @@ class TrackingManageContinuousStrategy extends TrackingManager {
   // Batch manager
   late BatchManager activateBatchManager;
 
+  // Get the hitPool
+  FlagshipPoolQueue get fsHitPool {
+    return _fsHitPool;
+  }
+
+  // Get the activate pool
+  FlagshipPoolQueue get activatePool {
+    return _activatePool;
+  }
+
   TrackingManageContinuousStrategy(Service service,
       TrackingManagerConfig configTracking, IHitCacheImplementation fsCacheHit)
       : super(service, configTracking, fsCacheHit) {
@@ -84,19 +94,15 @@ class TrackingManageContinuousStrategy extends TrackingManager {
           Flagship.logger(Level.INFO, ACTIVATE_SUCCESS);
           // Clear all the activate in the pool and clear them from cache
           if (needToClean) {
-            _activatePool.flushTrackQueue();
+            _activatePool.flushAllTrackFromQueue();
             listOfActivate.remove(
                 activateHit); // Remove the current hit before because is not already present in the cache.
-            // activateDelegate?.onSendBatchWithSucess(listOfActivate, strategy);
             onSendActivateBatchWithSucess(listOfActivate);
           }
           break;
         default:
           _activatePool.addNewTrackElement(activateHit);
-          //  if (strategy == BatchCachingStrategy.BATCH_CONTINUOUS_CACHING) {
-          // It must cache the hit in the database by calling the cacheHit method
-          //fsCacheHit?.cacheHits({activateHit.id: activateHit.bodyTrack});
-          //  }
+
           this.onCacheHits({activateHit.id: activateHit.bodyTrack});
       }
     });
@@ -195,13 +201,12 @@ class TrackingManageContinuousStrategy extends TrackingManager {
   }
 
   @override
-  flushAllTracking() {
+  flushAllTracking(String visitorId) {
     // Retreive the ids (hits) and clean hit pool (keep the consent  tracking)
-    var listIdsToRemove =
-        this._fsHitPool.flushTrackQueue(keepConsentHits: true);
+    var listIdsToRemove = this._fsHitPool.flushTrackAndKeepConsent(visitorId);
     // Retreive the ids (activate) and clean activate pool
-    listIdsToRemove.addAll(this._activatePool.flushTrackQueue());
-    // Based on ths ids will remove them from the database
+    listIdsToRemove.addAll(this._activatePool.flushAllTrackFromQueue());
+    // Based on those ids will remove them from database
     if (listIdsToRemove.isNotEmpty) {
       this.fsCacheHit?.flushHits(listIdsToRemove);
     }
