@@ -102,8 +102,8 @@ class Visitor {
             this.config.hitCacheImp ?? DefaultCacheHitImp());
         break;
       default:
-        trackingManager = TrackingManager(
-            Service(http.Client()), config.trackingMangerConfig, null);
+        trackingManager = TrackingManager(Service(http.Client()),
+            config.trackingMangerConfig, DefaultCacheHitImp());
         break;
     }
 

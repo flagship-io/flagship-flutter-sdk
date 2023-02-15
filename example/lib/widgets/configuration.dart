@@ -7,6 +7,7 @@ import 'package:flagship/hits/screen.dart';
 import 'package:flagship/tracking/tracking_manager_config.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
+import 'package:flagship/visitor.dart';
 import 'package:flagship_qa/Providers/fs_data.dart';
 import 'package:flagship_qa/mixins/dialog.dart';
 import 'package:flutter/cupertino.dart';
@@ -69,7 +70,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
         Level.ALL, '--------- Start with $visitorIdController.text ---------');
 
     FlagshipConfig config = ConfigBuilder()
-        .withLogLevel(Level.INFO)
+        .withLogLevel(Level.ALL)
         .withMode(fsData.sdkMode)
         .withStatusListener((newStatus) {
           print('--------- Callback with $newStatus ---------');
@@ -164,7 +165,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   @override
   Widget build(BuildContext context) {
     FSData fsData = Provider.of<FSData>(context, listen: true);
-    UserData fsUser = Provider.of<UserData>(context, listen: false);
+    UserData fsUser = Provider.of<UserData>(context, listen: true);
     List<String> strategyArray = ["CONTINOUS", "PERIODIC", "NO_STRATEGY"];
     double _spaceBetweenInput = 10;
     envIdController.text = fsData.envId;
@@ -372,18 +373,24 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   }
 
   _customTest() async {
-    var vA = Flagship.newVisitor("visitorA")
+    Visitor vA = Flagship.newVisitor("visitor_A")
         .withContext({"testing_tracking_manager": true})
         .isAuthenticated(true)
         .build();
 
-    await vA.fetchFlags();
+    vA.fetchFlags().whenComplete(() {
+      print("stop");
+      //Activate
+      var value = vA.getFlag("btnTitle", "defaultValue").value();
+      print("the vlaue of flag is " + value);
+      vA.sendHit(Screen(location: "screenQA"));
+      print("stop"); // to go online mode
 
-    //Activate
-    var value = vA.getFlag("my_flag", "defaultValue").value();
+      Flagship.sharedInstance().close();
+    });
+    // to go offline mode
 
-    print("the vlaue of flag is " + value);
-    vA.sendHit(Screen(location: "screenQA"));
+    // Flagship.sharedInstance().close();
 
     /// mode online
 

@@ -272,7 +272,7 @@ class DefaultStrategy implements IVisitor {
           "Adding the founded hits and activate in cache to the pools");
       // Add backed elements of tracking
       if (remainTracking.isNotEmpty) {
-        visitor.trackingManager.addTrackingElementsToPool(remainTracking);
+        visitor.trackingManager.addTrackingElementsToBatch(remainTracking);
       }
       // Remove invalide hits or activate
       if (invalidIds.isNotEmpty) {
