@@ -147,10 +147,14 @@ class DefaultStrategy implements IVisitor {
       visitor.decisionManager.updatePanicMode(camp.panic);
       if (camp.panic) {
         state = Status.PANIC_ON;
+        // Stop batching loop when the panic mode is ON
+        visitor.trackingManager.stopBatchingLoop();
       } else {
         state = Status.READY;
         var modif = visitor.decisionManager.getModifications(camp.campaigns);
         visitor.modifications.addAll(modif);
+        // Start Batching loop
+        visitor.trackingManager.startBatchingLoop();
         Flagship.logger(
             Level.INFO,
             SYNCHRONIZE_MODIFICATIONS_RESULTS.replaceFirst(
@@ -158,6 +162,7 @@ class DefaultStrategy implements IVisitor {
       }
       // Update the state for Flagship
       visitor.flagshipDelegate.onUpdateState(state);
+
       // Save the response for the visitor database
       cacheVisitor(visitor.visitorId,
           jsonEncode(VisitorCache.fromVisitor(this.visitor).toJson()));

@@ -84,12 +84,18 @@ class TrackingManager {
   }
 
   // Called when close flagship
-  close() {}
+  void close() {}
   // Called to flush the pool queue
-  flushAllTracking(String visitorId) {}
+  void flushAllTracking(String visitorId) {}
   // Called to add a list to the pools
   // Each hit is checked before adding to the respective pool
-  addTrackingElementsToPool(List<Hit> listOfTracking) {}
+  void addTrackingElementsToPool(List<Hit> listOfTracking) {}
+
+  // start batching loops
+  void startBatchingLoop() {}
+
+  // Stop Batching loops
+  void stopBatchingLoop() {}
 }
 
 mixin TrackingManagerDelegate {

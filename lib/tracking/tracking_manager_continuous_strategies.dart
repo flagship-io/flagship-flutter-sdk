@@ -21,10 +21,10 @@ class TrackingManageContinuousStrategy extends TrackingManager {
   late FlagshipPoolQueue _activatePool;
 
 // Batch manager
-  late BatchManager batchManager;
+  BatchManager? hitBatchManager;
 
   // Batch manager
-  late BatchManager activateBatchManager;
+  BatchManager? activateBatchManager;
 
   // Get the hitPool
   FlagshipPoolQueue get fsHitPool {
@@ -46,14 +46,16 @@ class TrackingManageContinuousStrategy extends TrackingManager {
     _activatePool = FlagshipPoolQueue(configTracking.poolMaxSize);
 
     // Create batch manager
-    batchManager =
-        BatchManager(_fsHitPool, sendBatch, configTracking, fsCacheHit);
+    hitBatchManager = BatchManager(
+        _fsHitPool, sendBatch, configTracking, fsCacheHit,
+        label: "batch_of_hits");
 
     // Create batch manager for activate
     activateBatchManager = BatchManager(
-        _activatePool, sendActivateBatch, configTracking, fsCacheHit);
+        _activatePool, sendActivateBatch, configTracking, fsCacheHit,
+        label: "batch_of_activate");
 
-    this.hitDelegate = batchManager;
+    this.hitDelegate = hitBatchManager;
     this.activateDelegate = activateBatchManager;
   }
 
@@ -196,8 +198,8 @@ class TrackingManageContinuousStrategy extends TrackingManager {
 
   @override
   close() {
-    batchManager.batchFromQueue();
-    activateBatchManager.batchFromQueue();
+    hitBatchManager?.batchFromQueue();
+    activateBatchManager?.batchFromQueue();
   }
 
   @override
@@ -221,5 +223,19 @@ class TrackingManageContinuousStrategy extends TrackingManager {
         this._fsHitPool.addElement(element);
       }
     });
+  }
+
+  // start batching loops
+  @override
+  void startBatchingLoop() {
+    hitBatchManager?.start();
+    activateBatchManager?.start();
+  }
+
+  // Stop Batching loops
+  @override
+  void stopBatchingLoop() {
+    hitBatchManager?.pause();
+    activateBatchManager?.pause();
   }
 }

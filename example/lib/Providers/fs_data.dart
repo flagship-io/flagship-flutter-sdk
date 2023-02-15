@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 
 class FSData extends ChangeNotifier {
   // Apikey
-  String _apiKey = "N1Rm3DsCBrahhnGTzEnha31IN4DK8tXl28IykcCX";
+  String _apiKey = "DxAcxlnRB9yFBZYtLDue1q01dcXZCw6aM49CQB23";
   // EnvId
-  String _envId = "bk87t3jggr10c6l6sdog";
+  String _envId = "bkk9glocmjcg0vtmdlng";
   // Mode
   Mode _mode = Mode.DECISION_API;
   // Timeout
@@ -14,7 +14,7 @@ class FSData extends ChangeNotifier {
 
   // Strategy
   BatchCachingStrategy _strategy =
-      BatchCachingStrategy.NO_BATCHING_CONTINUOUS_CACHING_STRATEGY;
+      BatchCachingStrategy.BATCH_CONTINUOUS_CACHING;
 
   void updateEnvId(String pEnvId) {
     _envId = pEnvId;

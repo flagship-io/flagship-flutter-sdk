@@ -12,21 +12,22 @@ import 'package:pausable_timer/pausable_timer.dart';
 class BatchManager with TrackingManagerDelegate, FlagshipPoolQueueDelegate {
 // Pausable timer
   late PausableTimer cronTimer;
-
 // Queue
   final FlagshipPoolQueue fsPool;
-
 // CallBack
   final Function sendBatch;
-
 // Cache Hit
   final IHitCacheImplementation fsCacheHit;
 
 // Configuration tracking manager
   final TrackingManagerConfig configTracking;
 
+  // Batch's label
+  final String label;
+
   BatchManager(
-      this.fsPool, this.sendBatch, this.configTracking, this.fsCacheHit) {
+      this.fsPool, this.sendBatch, this.configTracking, this.fsCacheHit,
+      {this.label = ""}) {
     // Timer for cron
     cronTimer = PausableTimer(
         Duration(seconds: configTracking.batchIntervals), batchFromQueue);
@@ -35,15 +36,18 @@ class BatchManager with TrackingManagerDelegate, FlagshipPoolQueueDelegate {
     this.fsPool.delegate = this;
   }
 
-  void startCron() {
+  void start() {
+    Flagship.logger(Level.DEBUG, "Start batching loop " + label);
     cronTimer.start();
   }
 
-  void reset() {
-    cronTimer.reset();
+  void pause() {
+    Flagship.logger(Level.DEBUG, "Stop batching loop " + label);
+    cronTimer.pause();
   }
 
   void batchFromQueue() {
+    Flagship.logger(Level.DEBUG, label + " : process to send batch");
     cronTimer.reset();
     var listOfHitsToSend =
         fsPool.extractXElementFromQueue(configTracking.poolMaxSize);
