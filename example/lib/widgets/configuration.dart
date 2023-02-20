@@ -165,7 +165,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   @override
   Widget build(BuildContext context) {
     FSData fsData = Provider.of<FSData>(context, listen: true);
-    UserData fsUser = Provider.of<UserData>(context, listen: true);
+    UserData fsUser = Provider.of<UserData>(context, listen: false);
     List<String> strategyArray = ["CONTINOUS", "PERIODIC", "NO_STRATEGY"];
     double _spaceBetweenInput = 10;
     envIdController.text = fsData.envId;
