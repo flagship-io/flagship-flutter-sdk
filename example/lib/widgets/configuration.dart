@@ -22,11 +22,8 @@ class Configuration extends StatefulWidget {
 
 class _ConfigurationState extends State<Configuration> with ShowDialog {
   // keys
-  // String apiKey = "DxAcxlnRB9yFBZYtLDue1q01dcXZCw6aM49CQB23";
-  // String envId = "bkk9glocmjcg0vtmdlng";
-
-  String apiKey = "auRGAbifPVSEqnYLHyQtyrHjucIejparLGjUQDEB";
-  String envId = "cfm90i86pb3labdlss60";
+  String apiKey = "DxAcxlnRB9yFBZYtLDue1q01dcXZCw6aM49CQB23";
+  String envId = "bkk9glocmjcg0vtmdlng";
 
   final int defaultTimeout = 2000;
   final int defaultPollingTime = 60;
@@ -45,7 +42,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   }
 
   final Map<String, Object> initialVisitorContext = {
-    // "customer": "QA",
+    "customer": "QA",
   };
 
   Map<String, Object> visitorContext = {};
@@ -108,8 +105,9 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
           }
         })
         .withTimeout(int.tryParse(timeoutController.text) ?? defaultTimeout)
-        .withUserExposureCallback((p0) {
-          print(p0.toJson());
+        .withUserExposureCallback((exposedFlag, exposedUser) {
+          print(exposedFlag.toJson().toString());
+          print(exposedUser.toJson().toString());
         })
         .build();
     Flagship.start(envIdController.text, apiKeyController.text, config: config);

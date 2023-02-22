@@ -45,6 +45,7 @@ class TrackingManager {
         timeoutMs: TIMEOUT_REQUEST);
     switch (response.statusCode) {
       case 200:
+      case 201:
       case 204:
         Flagship.logger(Level.INFO, ACTIVATE_SUCCESS);
         break;

@@ -1,8 +1,10 @@
 import 'package:flagship/hits/activate.dart';
 import 'package:flagship/hits/event.dart';
 import 'package:flagship/hits/hit.dart';
+import 'package:flagship/model/exposed_flag.dart';
+import 'package:flagship/model/flag.dart';
 import 'package:flagship/model/modification.dart';
-import 'package:flagship/model/userExposure.dart';
+import 'package:flagship/model/exposed_user.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/flagship.dart';
@@ -210,9 +212,11 @@ class DefaultStrategy implements IVisitor {
   void onExposure(Modification pModification) {
     var callback = Flagship.sharedInstance().getConfiguration()?.onUserExposure;
     if (callback != null) {
-      callback(UserExposure(
-          visitor.visitorId, visitor.anonymousId, visitor.getContext(),
-          modification: pModification));
+      callback(
+          ExposedUser(
+              visitor.visitorId, visitor.anonymousId, visitor.getContext()),
+          ExposedFlag(pModification.key, pModification.value,
+              FlagMetadata.withMap(pModification.toJsonInformation())));
     }
   }
 }

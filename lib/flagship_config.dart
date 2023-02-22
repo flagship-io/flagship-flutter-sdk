@@ -1,7 +1,8 @@
 import 'package:flagship/decision/api_manager.dart';
 import 'package:flagship/decision/bucketing_manager.dart';
 import 'package:flagship/decision/decision_manager.dart';
-import 'package:flagship/model/userExposure.dart';
+import 'package:flagship/model/exposed_flag.dart';
+import 'package:flagship/model/exposed_user.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +16,8 @@ import 'flagship.dart';
 const TIMEOUT = 2000;
 
 // On user Exposure
-typedef OnUserExposure = void Function(UserExposure userExposure)?;
+typedef OnUserExposure = void Function(
+    ExposedUser exposedUser, ExposedFlag exposedFlag)?;
 
 typedef StatusListener = void Function(Status newStatus)?;
 
