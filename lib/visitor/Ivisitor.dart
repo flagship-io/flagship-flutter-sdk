@@ -24,4 +24,7 @@ abstract class IVisitor {
 
 // unAuthenticateVisitor
   unAuthenticateVisitor();
+
+  // onExposure
+  void onExposure(Modification pModification);
 }

@@ -37,7 +37,7 @@ class TrackingManager {
   }
 
   // later add code error in the future
-  Future<void> sendActivate(Activate activateHit) async {
+  Future<int> sendActivate(Activate activateHit) async {
     /// Create url
     String urlString = Endpoints.DECISION_API + Endpoints.ACTIVATION;
     var response = await _service.sendHttpRequest(
@@ -51,6 +51,7 @@ class TrackingManager {
       default:
         Flagship.logger(Level.ERROR, ACTIVATE_FAILED);
     }
+    return response.statusCode;
   }
 
   /// Send Hit
@@ -58,7 +59,8 @@ class TrackingManager {
     /// Create url
     String urlString = Endpoints.ARIANE;
     try {
-      var response = await _service.sendHttpRequest(RequestType.Post, urlString, fsHeader, jsonEncode(pHit.bodyTrack),
+      var response = await _service.sendHttpRequest(
+          RequestType.Post, urlString, fsHeader, jsonEncode(pHit.bodyTrack),
           timeoutMs: TIMEOUT_REQUEST);
       switch (response.statusCode) {
         case 200:
@@ -70,7 +72,8 @@ class TrackingManager {
           Flagship.logger(Level.ERROR, HIT_FAILED);
       }
     } catch (error) {
-      Flagship.logger(Level.EXCEPTIONS, EXCEPTION.replaceFirst("%s", "$error") + urlString);
+      Flagship.logger(
+          Level.EXCEPTIONS, EXCEPTION.replaceFirst("%s", "$error") + urlString);
       Flagship.logger(Level.ERROR, HIT_FAILED);
     }
   }

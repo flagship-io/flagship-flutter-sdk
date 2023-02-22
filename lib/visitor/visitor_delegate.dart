@@ -86,4 +86,9 @@ class VisitorDelegate implements IVisitor {
   unAuthenticateVisitor() {
     getStrategy().unAuthenticateVisitor();
   }
+
+  @override
+  void onExposure(Modification pModification) {
+    getStrategy().onExposure(pModification);
+  }
 }

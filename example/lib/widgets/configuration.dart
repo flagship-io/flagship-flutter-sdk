@@ -22,8 +22,11 @@ class Configuration extends StatefulWidget {
 
 class _ConfigurationState extends State<Configuration> with ShowDialog {
   // keys
-  String apiKey = "";
-  String envId = "";
+  // String apiKey = "DxAcxlnRB9yFBZYtLDue1q01dcXZCw6aM49CQB23";
+  // String envId = "bkk9glocmjcg0vtmdlng";
+
+  String apiKey = "auRGAbifPVSEqnYLHyQtyrHjucIejparLGjUQDEB";
+  String envId = "cfm90i86pb3labdlss60";
 
   final int defaultTimeout = 2000;
   final int defaultPollingTime = 60;
@@ -42,12 +45,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   }
 
   final Map<String, Object> initialVisitorContext = {
-    "isVipClient": true,
-    "qa_getflag": true,
-    "bucketingKey": "condition1",
-    "QA": true,
-    "qaKeyString": "beta",
-    "qaKeyNumber": 2222
+    // "customer": "QA",
   };
 
   Map<String, Object> visitorContext = {};
@@ -110,6 +108,9 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
           }
         })
         .withTimeout(int.tryParse(timeoutController.text) ?? defaultTimeout)
+        .withUserExposureCallback((p0) {
+          print(p0.toJson());
+        })
         .build();
     Flagship.start(envIdController.text, apiKeyController.text, config: config);
   }
@@ -279,6 +280,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   }
 
   String _createRandomUser() {
+    return "userTest";
     return 'user_' + Random().nextInt(100).toString();
   }
 

@@ -1,5 +1,6 @@
 import 'package:flagship/flagship.dart';
 import 'package:flagship/hits/hit.dart';
+import 'package:flagship/model/modification.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor.dart';
@@ -27,7 +28,8 @@ class PanicStrategy extends DefaultStrategy {
 
   @override
   Map<String, Object>? getModificationInfo(String key) {
-    Flagship.logger(Level.ERROR, PANIC_MODIFICATION_INFO.replaceFirst("%s", key));
+    Flagship.logger(
+        Level.ERROR, PANIC_MODIFICATION_INFO.replaceFirst("%s", key));
     return null;
   }
 
@@ -49,5 +51,9 @@ class PanicStrategy extends DefaultStrategy {
   @override
   unAuthenticateVisitor() {
     Flagship.logger(Level.INFO, PANIC_UNAUTHENTICATE);
+  }
+
+  void onExposure(Modification pModification) {
+    Flagship.logger(Level.INFO, PANIC_ACTIVATE);
   }
 }
