@@ -34,6 +34,11 @@ class VisitorDelegate implements IVisitor {
     return getStrategy().activateModification(key);
   }
 
+  @override
+  Future<void> activateFlag(Modification pModification) {
+    return getStrategy().activateFlag(pModification);
+  }
+
 // Get modification
   @override
   T getModification<T>(String key, T defaultValue, {bool activate = false}) {

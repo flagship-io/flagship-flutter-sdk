@@ -29,6 +29,7 @@ class Modification {
   final String campaignType;
   final String slug;
   dynamic value;
+  dynamic defaultValue;
 
   Modification(
       this.key,

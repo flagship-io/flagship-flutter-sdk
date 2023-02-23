@@ -33,15 +33,20 @@ class Flag<T> {
 // Expose Flag
   Future<void> userExposed() async {
     // Before expose whe should check the Type
-    Modification? modif = this._visitorDelegate.getFlagModification(this._key);
-    if (modif != null) {
-      if (modif.value == null || _isSameType(modif.value)) {
+    Modification? modification =
+        this._visitorDelegate.getFlagModification(this._key);
+    if (modification != null) {
+      if (modification.value == null || _isSameType(modification.value)) {
         Flagship.logger(Level.DEBUG, "Send activate for the flag: " + _key);
 
-        this._visitorDelegate.activateModification(this._key);
+        // Update modification with default value
+        modification.defaultValue = this._defaultValue;
+        // Activate flag
+        this._visitorDelegate.activateFlag(modification);
       }
     } else {
-      Flagship.logger(Level.DEBUG, "Flag: " + _key + "not found, the activate won't be sent");
+      Flagship.logger(Level.DEBUG,
+          "Flag: " + _key + "not found, the activate won't be sent");
     }
   }
 
@@ -56,7 +61,8 @@ class Flag<T> {
     Modification? modif = this._visitorDelegate.getFlagModification(this._key);
     if (modif != null && (modif.value == null || _isSameType(modif.value))) {
       // when the flag value is null we provide the metadata
-      return FlagMetadata.withMap(this._visitorDelegate.getModificationInfo(this._key));
+      return FlagMetadata.withMap(
+          this._visitorDelegate.getModificationInfo(this._key));
     } else {
       return FlagMetadata.withMap(null);
     }

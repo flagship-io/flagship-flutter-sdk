@@ -105,9 +105,9 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
           }
         })
         .withTimeout(int.tryParse(timeoutController.text) ?? defaultTimeout)
-        .withUserExposureCallback((exposedFlag, exposedUser) {
-          print(exposedFlag.toJson().toString());
-          print(exposedUser.toJson().toString());
+        .withUserExposureCallback((exposedUser, exposedFlag) {
+          print("Exposed flag value are : ${exposedFlag.toJson().toString()}");
+          print("Exposed flag value are : ${exposedUser.toJson().toString()}");
         })
         .build();
     Flagship.start(envIdController.text, apiKeyController.text, config: config);

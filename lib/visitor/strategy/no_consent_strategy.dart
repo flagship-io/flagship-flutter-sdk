@@ -16,6 +16,11 @@ class NoConsentStrategy extends DefaultStrategy {
     Flagship.logger(Level.INFO, CONSENT_ACTIVATE);
   }
 
+  @override
+  Future<void> activateFlag(Modification pFlag) async {
+    Flagship.logger(Level.INFO, CONSENT_ACTIVATE);
+  }
+
 // The send hits is not allowed, except the consent event
   @override
   Future<void> sendHit(BaseHit hit) async {

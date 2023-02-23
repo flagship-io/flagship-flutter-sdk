@@ -61,6 +61,11 @@ class DefaultStrategy implements IVisitor {
   }
 
   @override
+  Future<void> activateFlag(Modification pModification) async {
+    return _sendActivate(pModification);
+  }
+
+  @override
   // Get Modification object, this object will be used by the flag class
   Modification? getFlagModification(String key) {
     return visitor.modifications[key];
@@ -215,7 +220,10 @@ class DefaultStrategy implements IVisitor {
       callback(
           ExposedUser(
               visitor.visitorId, visitor.anonymousId, visitor.getContext()),
-          ExposedFlag(pModification.key, pModification.value,
+          ExposedFlag(
+              pModification.key,
+              pModification.value,
+              pModification.defaultValue,
               FlagMetadata.withMap(pModification.toJsonInformation())));
     }
   }

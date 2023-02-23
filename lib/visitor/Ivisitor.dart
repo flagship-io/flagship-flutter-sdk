@@ -12,6 +12,8 @@ abstract class IVisitor {
   Future<void> synchronizeModifications();
 // Activate modification
   Future<void> activateModification(String key);
+// Activate flag
+  Future<void> activateFlag(Modification pModification);
 // Send Hits
   Future<void> sendHit(BaseHit hit);
 // send Consent

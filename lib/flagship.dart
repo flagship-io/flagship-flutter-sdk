@@ -68,7 +68,8 @@ class Flagship with FlagshipDelegate {
   }
 
   /// Create new visitor
-  static VisitorBuilder newVisitor(String visitorId, {Instance instanceType = Instance.SINGLE_INSTANCE}) {
+  static VisitorBuilder newVisitor(String visitorId,
+      {Instance instanceType = Instance.SINGLE_INSTANCE}) {
     return VisitorBuilder(visitorId, instanceType: instanceType);
   }
 

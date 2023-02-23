@@ -5,10 +5,13 @@ class ExposedFlag {
   final String flagKey;
   // Flag value
   final dynamic flagValue;
+  // Default Value
+  final dynamic defaultValue;
   // Metadata
   final FlagMetadata flagMetadata;
 
-  ExposedFlag(this.flagKey, this.flagValue, this.flagMetadata);
+  ExposedFlag(
+      this.flagKey, this.flagValue, this.defaultValue, this.flagMetadata);
 
 // Json representation
   Map<String, Object> toJson() {
@@ -16,6 +19,7 @@ class ExposedFlag {
       "ExposedFlag": {
         "flagKey": this.flagKey,
         "flagValue": this.flagValue,
+        "defaultValue": this.defaultValue,
         "flagMetadata": this.flagMetadata.toJson()
       }
     };

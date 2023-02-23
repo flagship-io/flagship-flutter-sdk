@@ -16,6 +16,11 @@ class NotReadyStrategy extends DefaultStrategy {
   }
 
   @override
+  Future<void> activateFlag(Modification pFlag) async {
+    Flagship.logger(Level.ERROR, ACTIVTAE_NOT_READY);
+  }
+
+  @override
   T getModification<T>(String key, T defaultValue, {bool activate = false}) {
     Flagship.logger(Level.ERROR, GETMODIFICATION_NOT_READY);
     return defaultValue;
