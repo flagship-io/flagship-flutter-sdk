@@ -7,6 +7,7 @@ import 'package:flagship/hits/activate.dart';
 import 'package:flagship/flagship_version.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
+import 'package:flutter/foundation.dart';
 import 'service.dart';
 import 'package:http/http.dart' as http;
 
@@ -77,5 +78,10 @@ class TrackingManager {
           Level.EXCEPTIONS, EXCEPTION.replaceFirst("%s", "$error") + urlString);
       Flagship.logger(Level.ERROR, HIT_FAILED);
     }
+  }
+
+  @visibleForTesting
+  void setService(Service pService) {
+    _service = pService;
   }
 }

@@ -41,6 +41,8 @@ class DefaultStrategy implements IVisitor {
     visitor.trackingManager.sendActivate(activateHit).then((statusCode) {
       if (statusCode >= 200 && statusCode < 300) {
         this.onExposure(pModification);
+      } else {
+        Flagship.logger(Level.ERROR, ACTIVATE_FAILED);
       }
     });
   }
