@@ -1,27 +1,43 @@
 import 'package:flagship/model/flag.dart';
 
-class ExposedFlag {
-  // Flag name
-  final String flagKey;
-  // Flag value
-  final dynamic flagValue;
-  // Default Value
-  final dynamic defaultValue;
+// This class represent the Flag object, manupulating this object allow to do
+// - Getting the flag vlaue
+// - Getting the metadata
+// - Expose the flag
+// - Check if the flag exist
+
+class ExposedFlag<T> implements IFlag {
+  // key of the flah
+  final String _key;
+  // Default value
+  final T _defaultValue;
+  // Value of the flag
+  final T _value;
   // Metadata
-  final FlagMetadata flagMetadata;
+  final FlagMetadata _metadata;
 
-  ExposedFlag(
-      this.flagKey, this.flagValue, this.defaultValue, this.flagMetadata);
+  ExposedFlag(this._key, this._value, this._defaultValue, this._metadata);
 
-// Json representation
-  Map<String, Object> toJson() {
+  T get value {
+    return _value;
+  }
+
+  @override
+  get defaultValue => _defaultValue;
+
+  @override
+  String get key => _key;
+
+  @override
+  FlagMetadata metadata() => _metadata;
+
+  // Json representation
+  Map<String, dynamic> toJson() {
     return {
-      "ExposedFlag": {
-        "flagKey": this.flagKey,
-        "flagValue": this.flagValue,
-        "defaultValue": this.defaultValue,
-        "flagMetadata": this.flagMetadata.toJson()
-      }
+      "Key": this.key,
+      "value": this.value,
+      "defaultValue": this.defaultValue,
+      "metadata": this.metadata().toJson()
     };
   }
 }

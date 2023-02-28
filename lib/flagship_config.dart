@@ -2,7 +2,7 @@ import 'package:flagship/decision/api_manager.dart';
 import 'package:flagship/decision/bucketing_manager.dart';
 import 'package:flagship/decision/decision_manager.dart';
 import 'package:flagship/model/exposed_flag.dart';
-import 'package:flagship/model/exposed_user.dart';
+import 'package:flagship/model/visitor_exposed.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flutter/material.dart';
@@ -16,8 +16,8 @@ import 'flagship.dart';
 const TIMEOUT = 2000;
 
 // On user Exposure
-typedef OnUserExposure = void Function(
-    ExposedUser exposedUser, ExposedFlag exposedFlag)?;
+typedef OnVisitorExposed = void Function(
+    VisitorExposed visitorExposed, ExposedFlag fromFlag)?;
 
 typedef StatusListener = void Function(Status newStatus)?;
 
@@ -34,7 +34,7 @@ class FlagshipConfig {
   // Status listner
   StatusListener statusListener;
   // Callback trigger on flag user exposed
-  OnUserExposure onUserExposure;
+  OnVisitorExposed onVisitorExposed;
 
   // Interval polling time
   int pollingTime = 60; // every 60 seconds will download the script bucketing.
@@ -42,7 +42,7 @@ class FlagshipConfig {
   Level _logLevel;
 
   FlagshipConfig(this.decisionMode, this.timeout, this.pollingTime,
-      this._logLevel, this.onUserExposure,
+      this._logLevel, this.onVisitorExposed,
       {this.statusListener}) {
     // Set the log Manager
     this.logManager = LogManager(level: _logLevel);
@@ -71,7 +71,7 @@ class ConfigBuilder {
   // StatusListener
   StatusListener? _statusListener;
 
-  OnUserExposure? _onUserExposure;
+  OnVisitorExposed? _onVisitorExposed;
 
   ConfigBuilder();
 
@@ -105,14 +105,14 @@ class ConfigBuilder {
   }
 
   // On User exposure
-  ConfigBuilder withUserExposureCallback(OnUserExposure pOnUserExposure) {
-    _onUserExposure = pOnUserExposure;
+  ConfigBuilder withOnVisitorExposed(OnVisitorExposed pOnVisitorExposed) {
+    _onVisitorExposed = pOnVisitorExposed;
     return this;
   }
 
   FlagshipConfig build() {
     return FlagshipConfig(
-        _mode, _timeout, _pollingTime, _logLevel, _onUserExposure,
+        _mode, _timeout, _pollingTime, _logLevel, _onVisitorExposed,
         statusListener: _statusListener);
   }
 }

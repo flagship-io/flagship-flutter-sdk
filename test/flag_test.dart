@@ -4,9 +4,7 @@ import 'package:flagship/api/service.dart';
 import 'package:flagship/api/tracking_manager.dart';
 import 'package:flagship/decision/api_manager.dart';
 import 'package:flagship/flagship.dart';
-import 'package:flagship/flagshipContext/flagship_context_manager.dart';
 import 'package:flagship/flagship_config.dart';
-import 'package:flagship/flagship_version.dart';
 import 'package:flagship/model/flag.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -48,12 +46,10 @@ void main() async {
 
   FlagshipConfig config = ConfigBuilder()
       .withTimeout(TIMEOUT)
-      .withUserExposureCallback((exposedUser, exposedFlag) {
-    expect(exposedFlag.flagMetadata.campaignId, "bsffhle242b2l3igq4dg");
-    expect(exposedFlag.flagMetadata.variationGroupId, "bsffhle242b2l3igq4egaa");
-    expect(exposedFlag.flagMetadata.variationId, "bsffhle242b2l3igq4f0");
-
-    print(exposedUser.toJson().toString());
+      .withOnVisitorExposed((exposedUser, exposedFlag) {
+    expect(exposedFlag.metadata().campaignId, "bsffhle242b2l3igq4dg");
+    expect(exposedFlag.metadata().variationGroupId, "bsffhle242b2l3igq4egaa");
+    expect(exposedFlag.metadata().variationId, "bsffhle242b2l3igq4f0");
   }).build();
   config.decisionManager = fakeApi;
   await Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
@@ -139,7 +135,7 @@ void main() async {
           expect(metadata.variationGroupId, "");
           expect(metadata.variationId, "");
           expect(metadata.isReference, false);
-          expect(metadata.slug, "");
+          expect(metadata.slug, null);
           expect(metadata.campaignType, "");
         }
         // Check lentgh for metedata json
@@ -161,7 +157,7 @@ void main() async {
       expect(metadata.variationGroupId, "");
       expect(metadata.variationId, "");
       expect(metadata.isReference, false);
-      expect(metadata.slug, "");
+      expect(metadata.slug, null);
       expect(metadata.campaignType, "");
     });
   });
@@ -195,6 +191,20 @@ void main() async {
       expect(metadata.isReference, true);
       expect(metadata.slug, "flutter");
       expect(metadata.campaignType, "ab");
+    });
+  });
+
+  test("Failed Activate Flag", () {
+    when(fakeService.sendHttpRequest(RequestType.Post,
+            'https://decision.flagship.io/v2/activate', any, any,
+            timeoutMs: 60000))
+        .thenAnswer((_) async {
+      return http.Response("fakeResponse", 400);
+    });
+    var v5 = Flagship.newVisitor("flagVisitor").build();
+    v5.fetchFlags().whenComplete(() async {
+      Flag myFlag = v5.getFlag("key_A", "12");
+      myFlag.userExposed();
     });
   });
 }

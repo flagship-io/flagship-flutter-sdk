@@ -43,6 +43,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
 
   final Map<String, Object> initialVisitorContext = {
     "customer": "QA",
+    "country": "AE"
   };
 
   Map<String, Object> visitorContext = {};
@@ -105,14 +106,26 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
           }
         })
         .withTimeout(int.tryParse(timeoutController.text) ?? defaultTimeout)
-        .withUserExposureCallback((exposedUser, exposedFlag) {
-          print("Exposed flag value are : ${exposedFlag.toJson().toString()}");
-          print("Exposed flag value are : ${exposedUser.toJson().toString()}");
+        .withOnVisitorExposed((exposedUser, fromFlag) {
+          print("L'utilisateur ayant été exposé ");
+
+          print(fromFlag.toJson().toString());
+          print(exposedUser.toJson().toString());
         })
         .build();
     Flagship.start(envIdController.text, apiKeyController.text, config: config);
   }
 
+  // .withUserExposureCallback((exposedUser, exposedFlag) {
+  //   ////
+  //   ///
+  //   ///
+
+  //   // -----------------------
+  //   print("Exposed flag value are : ${exposedFlag.toJson().toString()}");
+  //   print("Exposed flag value are : ${exposedUser.toJson().toString()}");
+  //   // -----------------------
+  // })
 // Change Mode
   _changeMode() {
     setState(() {

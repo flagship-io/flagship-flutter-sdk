@@ -52,7 +52,7 @@ class VisitorDelegate implements IVisitor {
 
 // Get modification info
   @override
-  Map<String, Object>? getModificationInfo(String key) {
+  Map<String, dynamic>? getModificationInfo(String key) {
     return getStrategy().getModificationInfo(key);
   }
 

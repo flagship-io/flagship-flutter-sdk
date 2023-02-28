@@ -3,7 +3,7 @@ import 'package:flagship/model/modification.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor/visitor_delegate.dart';
 
-class Flag<T> {
+class Flag<T> implements IFlag {
   // Key associated to the Flag
   final String _key;
   // Value for the Flag
@@ -16,13 +16,13 @@ class Flag<T> {
 // Get value for flag
 //
 // userExposed is true by default
-  T value({bool userExposed: true}) {
+  T value({bool vistorExposed: true}) {
     Modification? modif = this._visitorDelegate.getFlagModification(this._key);
     if (modif != null) {
       if (_isSameType(modif.value)) {
         // Activate if necessary
-        if (userExposed) {
-          this.userExposed();
+        if (vistorExposed) {
+          this.visitorExposed();
         }
         return modif.value as T;
       }
@@ -31,7 +31,13 @@ class Flag<T> {
   }
 
 // Expose Flag
+  @Deprecated('Use visitorExposed() instead')
   Future<void> userExposed() async {
+    visitorExposed();
+  }
+
+  // Expose Flag
+  Future<void> visitorExposed() async {
     // Before expose whe should check the Type
     Modification? modification =
         this._visitorDelegate.getFlagModification(this._key);
@@ -43,6 +49,9 @@ class Flag<T> {
         modification.defaultValue = this._defaultValue;
         // Activate flag
         this._visitorDelegate.activateFlag(modification);
+      } else {
+        Flagship.logger(Level.DEBUG,
+            "Exposed aborted, because the flagValue type is not the same as default value");
       }
     } else {
       Flagship.logger(Level.DEBUG,
@@ -56,6 +65,7 @@ class Flag<T> {
   }
 
   // Get metadata
+  @override
   FlagMetadata metadata() {
     // Before expose whe should check the Type
     Modification? modif = this._visitorDelegate.getFlagModification(this._key);
@@ -72,25 +82,31 @@ class Flag<T> {
   bool _isSameType(dynamic value) {
     return (value is T);
   }
+
+  @override
+  T get defaultValue => _defaultValue;
+
+  @override
+  String get key => _key;
 }
 
 class FlagMetadata {
-  late String campaignId = "";
-  late String variationGroupId = "";
-  late String variationId = "";
-  late bool isReference = false;
-  late String campaignType = "";
-  late String slug = "";
+  String campaignId = "";
+  String variationGroupId = "";
+  String variationId = "";
+  bool isReference = false;
+  String campaignType = "";
+  String? slug;
 
 // Create metadata from map entry
-  FlagMetadata.withMap(Map<String, Object>? infos) {
+  FlagMetadata.withMap(Map<String, dynamic>? infos) {
     if (infos != null) {
       this.campaignId = (infos['campaignId'] as String);
       this.variationGroupId = infos['variationGroupId'] as String;
       this.variationId = infos['variationId'] as String;
       this.isReference = infos['isReference'] as bool;
       this.campaignType = infos['campaignType'] as String;
-      this.slug = infos['slug'] as String;
+      this.slug = infos['slug'];
     }
   }
 
@@ -105,4 +121,15 @@ class FlagMetadata {
       "slug": this.slug,
     };
   }
+}
+
+abstract class IFlag<T> {
+  // Key for flag
+  String get key;
+
+  // Default value
+  T get defaultValue;
+
+  // Get metadata
+  FlagMetadata metadata();
 }

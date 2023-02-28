@@ -7,9 +7,10 @@ class Campaign {
   String variationGroupId = "";
   Variation? variation;
   String campaignType = "";
-  String slug = "";
+  String? slug;
 
-  Campaign(this.idCampaign, this.variationGroupId, this.campaignType, this.slug);
+  Campaign(
+      this.idCampaign, this.variationGroupId, this.campaignType, this.slug);
 
   Campaign.fromJson(Map<String, dynamic> json) {
     // Set the id campaign
@@ -23,7 +24,7 @@ class Campaign {
     // Set Type of cmapaign
     campaignType = (json['type'] ?? "") as String;
     // Set slug
-    slug = (json['slug'] ?? "") as String;
+    slug = json['slug'];
   }
 
   Map<String, dynamic> toJson() => {};
@@ -39,8 +40,15 @@ class Campaign {
     ret.forEach((key, value) {
       if (this.variation != null) {
         resultMap.addAll({
-          key: Modification(key, this.idCampaign, this.variationGroupId, this.variation?.idVariation ?? "",
-              this.variation?.reference ?? false, this.campaignType, this.slug, value)
+          key: Modification(
+              key,
+              this.idCampaign,
+              this.variationGroupId,
+              this.variation?.idVariation ?? "",
+              this.variation?.reference ?? false,
+              this.campaignType,
+              this.slug,
+              value)
         });
       }
     });

@@ -68,7 +68,9 @@ class Visitor {
   /// config: this object manage the mode of the sdk and other params
   /// visitorId : the user ID for the visitor
   /// context : Map that represent the conext for the visitor
-  Visitor(this.config, this.visitorId, this._isAuthenticated, Map<String, Object> context, {bool hasConsented = true}) {
+  Visitor(this.config, this.visitorId, this._isAuthenticated,
+      Map<String, Object> context,
+      {bool hasConsented = true}) {
     if (_isAuthenticated == true) {
       this.anonymousId = FlagshipTools.generateFlagshipId();
     } else {
@@ -98,7 +100,8 @@ class Visitor {
   /// Update context directely with map for <String, Object>
   void updateContextWithMap(Map<String, Object> context) {
     _context.addAll(context);
-    Flagship.logger(Level.DEBUG, CONTEXT_UPDATE.replaceFirst("%s", "$_context"));
+    Flagship.logger(
+        Level.DEBUG, CONTEXT_UPDATE.replaceFirst("%s", "$_context"));
   }
 
   /// Get the current context for the visitor
@@ -146,7 +149,8 @@ class Visitor {
   @Deprecated('Use value() in Flag class instead')
   T getModification<T>(String key, T defaultValue, {bool activate = false}) {
     // Delegate the action to strategy
-    return _visitorDelegate.getModification(key, defaultValue, activate: activate);
+    return _visitorDelegate.getModification(key, defaultValue,
+        activate: activate);
   }
 
   /// Get the modification infos relative to flag (modification)
@@ -154,7 +158,7 @@ class Visitor {
   /// key : the name of the key relative to modification
   /// Return map {"campaignId":"xxx", "variationId" : "xxxx", "variationGroupId":"xxxxx", "isReference": true/false}
   @Deprecated('Use metadata() in Flag class instead')
-  Map<String, Object>? getModificationInfo(String key) {
+  Map<String, dynamic>? getModificationInfo(String key) {
     // Delegate the action to strategy
     return _visitorDelegate.getModificationInfo(key);
   }
@@ -231,7 +235,8 @@ class VisitorBuilder {
 // Xpc by default false
   bool _isAuthenticated = false;
 
-  VisitorBuilder(this.visitorId, {this.instanceType = Instance.SINGLE_INSTANCE});
+  VisitorBuilder(this.visitorId,
+      {this.instanceType = Instance.SINGLE_INSTANCE});
 
 // Context
   VisitorBuilder withContext(Map<String, Object> context) {
@@ -251,7 +256,10 @@ class VisitorBuilder {
 
   Visitor build() {
     Visitor newVisitor = Visitor(
-        Flagship.sharedInstance().getConfiguration() ?? ConfigBuilder().build(), visitorId, _isAuthenticated, _context,
+        Flagship.sharedInstance().getConfiguration() ?? ConfigBuilder().build(),
+        visitorId,
+        _isAuthenticated,
+        _context,
         hasConsented: _hasConsented);
     if (this.instanceType == Instance.SINGLE_INSTANCE) {
       //Set this visitor as shared instance

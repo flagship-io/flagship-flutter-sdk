@@ -11,13 +11,18 @@ class NotReadyStrategy extends DefaultStrategy {
   NotReadyStrategy(Visitor visitor) : super(visitor);
 
   @override
+  Future<void> synchronizeModifications() async {
+    Flagship.logger(Level.ERROR, FETCH_NOT_READY);
+  }
+
+  @override
   Future<void> activateModification(String key) async {
-    Flagship.logger(Level.ERROR, ACTIVTAE_NOT_READY);
+    Flagship.logger(Level.ERROR, ACTIVATE_NOT_READY);
   }
 
   @override
   Future<void> activateFlag(Modification pFlag) async {
-    Flagship.logger(Level.ERROR, ACTIVTAE_NOT_READY);
+    Flagship.logger(Level.ERROR, ACTIVATE_NOT_READY);
   }
 
   @override
@@ -44,6 +49,6 @@ class NotReadyStrategy extends DefaultStrategy {
 
   @override
   void onExposure(Modification pModification) {
-    Flagship.logger(Level.INFO, ACTIVTAE_NOT_READY);
+    Flagship.logger(Level.INFO, ACTIVATE_NOT_READY);
   }
 }

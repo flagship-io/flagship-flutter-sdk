@@ -7,7 +7,7 @@ abstract class IVisitor {
 // Get Modification
   T getModification<T>(String key, T defaultValue, {bool activate = false});
 // Get Modificatoin info
-  Map<String, Object>? getModificationInfo(String key);
+  Map<String, dynamic>? getModificationInfo(String key);
 // Synchronize modifications
   Future<void> synchronizeModifications();
 // Activate modification

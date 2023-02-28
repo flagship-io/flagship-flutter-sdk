@@ -4,7 +4,7 @@ import 'package:flagship/hits/hit.dart';
 import 'package:flagship/model/exposed_flag.dart';
 import 'package:flagship/model/flag.dart';
 import 'package:flagship/model/modification.dart';
-import 'package:flagship/model/exposed_user.dart';
+import 'package:flagship/model/visitor_exposed.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/flagship.dart';
@@ -31,10 +31,9 @@ class DefaultStrategy implements IVisitor {
     }
   }
 
-  /// Activate
+  // Activate
   Future<void> _sendActivate(Modification pModification) async {
     // Construct the activate hit
-    // Refractor later the envId
     Activate activateHit = Activate(pModification, visitor.visitorId,
         visitor.anonymousId, Flagship.sharedInstance().envId ?? "");
 
@@ -42,7 +41,8 @@ class DefaultStrategy implements IVisitor {
       if (statusCode >= 200 && statusCode < 300) {
         this.onExposure(pModification);
       } else {
-        Flagship.logger(Level.ERROR, ACTIVATE_FAILED);
+        Flagship.logger(Level.ERROR,
+            ACTIVATE_FAILED + " status code = ${statusCode.toString()}");
       }
     });
   }
@@ -125,7 +125,7 @@ class DefaultStrategy implements IVisitor {
   }
 
   @override
-  Map<String, Object>? getModificationInfo(String key) {
+  Map<String, dynamic>? getModificationInfo(String key) {
     if (visitor.modifications.containsKey(key)) {
       try {
         var modification = visitor.modifications[key];
@@ -217,10 +217,11 @@ class DefaultStrategy implements IVisitor {
 
   @override
   void onExposure(Modification pModification) {
-    var callback = Flagship.sharedInstance().getConfiguration()?.onUserExposure;
+    var callback =
+        Flagship.sharedInstance().getConfiguration()?.onVisitorExposed;
     if (callback != null) {
       callback(
-          ExposedUser(
+          VisitorExposed(
               visitor.visitorId, visitor.anonymousId, visitor.getContext()),
           ExposedFlag(
               pModification.key,
