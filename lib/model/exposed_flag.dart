@@ -7,7 +7,7 @@ import 'package:flagship/model/flag.dart';
 // - Check if the flag exist
 
 class ExposedFlag<T> implements IFlag {
-  // key of the flah
+  // key of the flag
   final String _key;
   // Default value
   final T _defaultValue;
