@@ -2,20 +2,20 @@
 
 class VisitorExposed {
   // visitorId
-  final String visitorId;
+  final String id;
   // AnonymousId
-  final String? visitorAnonymousId;
+  final String? anonymousId;
   // Visitor context
-  final Map<String, Object>? visitorContext;
+  final Map<String, Object>? context;
 
-  VisitorExposed(this.visitorId, this.visitorAnonymousId, this.visitorContext);
+  VisitorExposed(this.id, this.anonymousId, this.context);
 
 // Json representation
   Map<String, dynamic> toJson() {
     return {
-      "visitorId": this.visitorId,
-      "visitorAnonymousId": this.visitorAnonymousId,
-      "visitorContext": this.visitorContext
+      "id": this.id,
+      "anonymousId": this.anonymousId,
+      "context": this.context
     };
   }
 }

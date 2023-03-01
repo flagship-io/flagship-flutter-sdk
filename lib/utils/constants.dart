@@ -38,7 +38,8 @@ const String GETMODIFICATION_NOT_READY =
 const String GETMODIFICATION_INFO_NOT_READY =
     "Not ready to get modification infos";
 const String ACTIVATE_NOT_READY = "The SDK is not ready to send activate";
-const String FETCH_NOT_READY = "The SDK in not ready to fetch flags";
+const String FETCH_NOT_READY =
+    "The SDK in not ready to fetch flags, you should add \"await\" before the start method";
 
 // PANIC
 const String PANIC = "Panic mode is on.";

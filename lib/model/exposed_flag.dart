@@ -34,7 +34,7 @@ class ExposedFlag<T> implements IFlag {
   // Json representation
   Map<String, dynamic> toJson() {
     return {
-      "Key": this.key,
+      "key": this.key,
       "value": this.value,
       "defaultValue": this.defaultValue,
       "metadata": this.metadata().toJson()

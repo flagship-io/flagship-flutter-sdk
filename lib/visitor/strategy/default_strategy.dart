@@ -217,17 +217,13 @@ class DefaultStrategy implements IVisitor {
 
   @override
   void onExposure(Modification pModification) {
-    var callback =
-        Flagship.sharedInstance().getConfiguration()?.onVisitorExposed;
-    if (callback != null) {
-      callback(
-          VisitorExposed(
-              visitor.visitorId, visitor.anonymousId, visitor.getContext()),
-          ExposedFlag(
-              pModification.key,
-              pModification.value,
-              pModification.defaultValue,
-              FlagMetadata.withMap(pModification.toJsonInformation())));
-    }
+    Flagship.sharedInstance().getConfiguration()?.onVisitorExposed?.call(
+        VisitorExposed(
+            visitor.visitorId, visitor.anonymousId, visitor.getContext()),
+        ExposedFlag(
+            pModification.key,
+            pModification.value,
+            pModification.defaultValue,
+            FlagMetadata.withMap(pModification.toJsonInformation())));
   }
 }
