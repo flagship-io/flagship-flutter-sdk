@@ -17,7 +17,7 @@ class Modifications extends StatefulWidget {
 class _ModificationsState extends State<Modifications> {
   var flagType = "string";
   var defaultValueBool = false;
-  final keyFlagController = TextEditingController(text: "");
+  final keyFlagController = TextEditingController(text: "btnTitle");
   final defaultValueFlagController = TextEditingController(text: "");
 
   String variationId = "None";
@@ -49,7 +49,7 @@ class _ModificationsState extends State<Modifications> {
 
     myFlag = currentVisitor?.getFlag(keyFlagController.text, defaultValue);
 
-    var ret = myFlag?.value(userExposed: false);
+    var ret = myFlag?.value(visitorExposed: false);
 
     //  var ret =
     //   currentVisitor?.getModification(keyFlagController.text, defaultValue);
@@ -113,7 +113,8 @@ class _ModificationsState extends State<Modifications> {
 
   // Get json view
   _getJsonView(BuildContext ctx) {
-    Navigator.of(ctx).pushNamed(ModificationsJSONScreen.routeName, arguments: {});
+    Navigator.of(ctx)
+        .pushNamed(ModificationsJSONScreen.routeName, arguments: {});
   }
 
   void _resetField() {
@@ -130,7 +131,11 @@ class _ModificationsState extends State<Modifications> {
       color: Color.fromRGBO(39, 39, 39, 1),
       height: mediaQuery.size.height,
       width: mediaQuery.size.width,
-      padding: EdgeInsets.only(left: 20, top: mediaQuery.viewPadding.top + _spaceBetweenElements, right: 20, bottom: 0),
+      padding: EdgeInsets.only(
+          left: 20,
+          top: mediaQuery.viewPadding.top + _spaceBetweenElements,
+          right: 20,
+          bottom: 0),
       child: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -163,15 +168,21 @@ class _ModificationsState extends State<Modifications> {
                       child: DropdownButton<String>(
                         value: flagType,
                         onChanged: (String? newValue) {
-                          defaultValueFlagController.text = newValue == 'number' ? '0' : 'defaultValue';
+                          defaultValueFlagController.text =
+                              newValue == 'number' ? '0' : 'defaultValue';
                           setState(() {
                             flagType = newValue ?? "";
                           });
                         },
                         dropdownColor: Colors.black,
                         style: const TextStyle(color: Colors.white),
-                        items: <String>['boolean', 'number', 'string', 'array', 'object']
-                            .map<DropdownMenuItem<String>>((String value) {
+                        items: <String>[
+                          'boolean',
+                          'number',
+                          'string',
+                          'array',
+                          'object'
+                        ].map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
                             child: Text(value),
@@ -202,8 +213,12 @@ class _ModificationsState extends State<Modifications> {
                                 });
                               })
                         ])
-                  : FSInputField("Default value", defaultValueFlagController,
-                      flagType == "number" ? TextInputType.number : TextInputType.text),
+                  : FSInputField(
+                      "Default value",
+                      defaultValueFlagController,
+                      flagType == "number"
+                          ? TextInputType.number
+                          : TextInputType.text),
             ),
             SizedBox(height: _spaceBetweenElements),
             FSOutputField("Value", valueForFlag),

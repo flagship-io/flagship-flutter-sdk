@@ -1,3 +1,14 @@
+# 2.1.0 - 02/03/2023
+
+Added
+
+- onVisitorExposed callback in SDK configuration.
+
+Changed
+
+- Deprecate userExposed(). Use visitorExposed() instead.
+
+
 # 2.0.1 - 04/01/2023
 
 Added

@@ -34,6 +34,11 @@ class VisitorDelegate implements IVisitor {
     return getStrategy().activateModification(key);
   }
 
+  @override
+  Future<void> activateFlag(Modification pModification) {
+    return getStrategy().activateFlag(pModification);
+  }
+
 // Get modification
   @override
   T getModification<T>(String key, T defaultValue, {bool activate = false}) {
@@ -47,7 +52,7 @@ class VisitorDelegate implements IVisitor {
 
 // Get modification info
   @override
-  Map<String, Object>? getModificationInfo(String key) {
+  Map<String, dynamic>? getModificationInfo(String key) {
     return getStrategy().getModificationInfo(key);
   }
 
@@ -85,5 +90,10 @@ class VisitorDelegate implements IVisitor {
   @override
   unAuthenticateVisitor() {
     getStrategy().unAuthenticateVisitor();
+  }
+
+  @override
+  void onExposure(Modification pModification) {
+    getStrategy().onExposure(pModification);
   }
 }

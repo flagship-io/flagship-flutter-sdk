@@ -1,5 +1,6 @@
 import 'package:flagship/flagship.dart';
 import 'package:flagship/hits/hit.dart';
+import 'package:flagship/model/modification.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor.dart';
@@ -15,6 +16,11 @@ class NoConsentStrategy extends DefaultStrategy {
     Flagship.logger(Level.INFO, CONSENT_ACTIVATE);
   }
 
+  @override
+  Future<void> activateFlag(Modification pFlag) async {
+    Flagship.logger(Level.INFO, CONSENT_ACTIVATE);
+  }
+
 // The send hits is not allowed, except the consent event
   @override
   Future<void> sendHit(BaseHit hit) async {
@@ -27,5 +33,10 @@ class NoConsentStrategy extends DefaultStrategy {
       default:
         Flagship.logger(Level.INFO, CONSENT_HIT);
     }
+  }
+
+  @override
+  void onExposure(Modification pModification) {
+    Flagship.logger(Level.INFO, CONSENT_ACTIVATE);
   }
 }
