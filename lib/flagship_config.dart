@@ -1,6 +1,8 @@
 import 'package:flagship/decision/api_manager.dart';
 import 'package:flagship/decision/bucketing_manager.dart';
 import 'package:flagship/decision/decision_manager.dart';
+import 'package:flagship/model/exposed_flag.dart';
+import 'package:flagship/model/visitor_exposed.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +14,10 @@ import 'flagship.dart';
 /// Will refarctor this class by using a builder
 // Time out 2 seconds
 const TIMEOUT = 2000;
+
+// On user Exposure
+typedef OnVisitorExposed = void Function(
+    VisitorExposed visitorExposed, ExposedFlag fromFlag)?;
 
 typedef StatusListener = void Function(Status newStatus)?;
 
@@ -27,12 +33,17 @@ class FlagshipConfig {
   late LogManager logManager;
   // Status listner
   StatusListener statusListener;
+  // Callback trigger on flag user exposed
+  OnVisitorExposed onVisitorExposed;
+
   // Interval polling time
   int pollingTime = 60; // every 60 seconds will download the script bucketing.
 
   Level _logLevel;
 
-  FlagshipConfig(this.decisionMode, this.timeout, this.pollingTime, this._logLevel, {this.statusListener}) {
+  FlagshipConfig(this.decisionMode, this.timeout, this.pollingTime,
+      this._logLevel, this.onVisitorExposed,
+      {this.statusListener}) {
     // Set the log Manager
     this.logManager = LogManager(level: _logLevel);
     // Log the timeout value in ms
@@ -59,6 +70,8 @@ class ConfigBuilder {
 
   // StatusListener
   StatusListener? _statusListener;
+
+  OnVisitorExposed? _onVisitorExposed;
 
   ConfigBuilder();
 
@@ -91,7 +104,15 @@ class ConfigBuilder {
     return this;
   }
 
+  // On User exposure
+  ConfigBuilder withOnVisitorExposed(OnVisitorExposed pOnVisitorExposed) {
+    _onVisitorExposed = pOnVisitorExposed;
+    return this;
+  }
+
   FlagshipConfig build() {
-    return FlagshipConfig(_mode, _timeout, _pollingTime, _logLevel, statusListener: _statusListener);
+    return FlagshipConfig(
+        _mode, _timeout, _pollingTime, _logLevel, _onVisitorExposed,
+        statusListener: _statusListener);
   }
 }

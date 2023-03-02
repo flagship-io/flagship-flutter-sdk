@@ -27,8 +27,9 @@ class Modification {
   final String variationId;
   final bool isReference;
   final String campaignType;
-  final String slug;
+  String? slug;
   dynamic value;
+  dynamic defaultValue;
 
   Modification(
       this.key,
@@ -56,8 +57,8 @@ class Modification {
   }
 
   /// Used for getting modification infos
-  Map<String, Object> toJsonInformation() {
-    Map<String, Object> ret = {
+  Map<String, dynamic> toJsonInformation() {
+    Map<String, dynamic> ret = {
       'campaignId': campaignId,
       'variationGroupId': variationGroupId,
       'variationId': variationId,

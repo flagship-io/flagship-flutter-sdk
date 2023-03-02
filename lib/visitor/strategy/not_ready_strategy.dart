@@ -1,5 +1,6 @@
 import 'package:flagship/flagship.dart';
 import 'package:flagship/hits/hit.dart';
+import 'package:flagship/model/modification.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor.dart';
@@ -10,8 +11,18 @@ class NotReadyStrategy extends DefaultStrategy {
   NotReadyStrategy(Visitor visitor) : super(visitor);
 
   @override
+  Future<void> synchronizeModifications() async {
+    Flagship.logger(Level.ERROR, FETCH_NOT_READY);
+  }
+
+  @override
   Future<void> activateModification(String key) async {
-    Flagship.logger(Level.ERROR, ACTIVTAE_NOT_READY);
+    Flagship.logger(Level.ERROR, ACTIVATE_NOT_READY);
+  }
+
+  @override
+  Future<void> activateFlag(Modification pFlag) async {
+    Flagship.logger(Level.ERROR, ACTIVATE_NOT_READY);
   }
 
   @override
@@ -34,5 +45,10 @@ class NotReadyStrategy extends DefaultStrategy {
   @override
   void setConsent(bool isConsent) {
     Flagship.logger(Level.INFO, HIT_NOT_READY);
+  }
+
+  @override
+  void onExposure(Modification pModification) {
+    Flagship.logger(Level.INFO, ACTIVATE_NOT_READY);
   }
 }
