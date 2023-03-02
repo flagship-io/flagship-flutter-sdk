@@ -108,7 +108,6 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
         .withTimeout(int.tryParse(timeoutController.text) ?? defaultTimeout)
         .withOnVisitorExposed((exposedUser, fromFlag) {
           print("L'utilisateur ayant été exposé ");
-
           print(fromFlag.toJson().toString());
           print(exposedUser.toJson().toString());
         })
@@ -291,7 +290,6 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   }
 
   String _createRandomUser() {
-    return "userTest";
     return 'user_' + Random().nextInt(100).toString();
   }
 

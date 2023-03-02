@@ -15,13 +15,13 @@ class Flag<T> implements IFlag {
 
 // Get value for flag
 //
-// vistorExposed is true by default
-  T value({bool vistorExposed: true}) {
+// visitorExposed is true by default
+  T value({bool visitorExposed: true}) {
     Modification? modif = this._visitorDelegate.getFlagModification(this._key);
     if (modif != null) {
       if (_isSameType(modif.value)) {
         // Activate if necessary
-        if (vistorExposed) {
+        if (visitorExposed) {
           this.visitorExposed();
         }
         return modif.value as T;

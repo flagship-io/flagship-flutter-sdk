@@ -2,11 +2,11 @@
 
 Added
 
-- ExposedVisitor callback to froward visitor & falg information to third part.
+- onVisitorExposed callback in SDK configuration.
 
 Changed
 
-- Deprecate userExposed(), use instead visitorExposed()
+- Deprecate userExposed(). Use visitorExposed() instead.
 
 
 # 2.0.1 - 04/01/2023

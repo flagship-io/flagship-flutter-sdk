@@ -33,7 +33,7 @@ class FlagshipConfig {
   late LogManager logManager;
   // Status listner
   StatusListener statusListener;
-  // Callback trigger on flag user exposed
+  // Callback trigger on flag visitor exposed
   OnVisitorExposed onVisitorExposed;
 
   // Interval polling time
