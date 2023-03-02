@@ -22,8 +22,8 @@ class Configuration extends StatefulWidget {
 
 class _ConfigurationState extends State<Configuration> with ShowDialog {
   // keys
-  String apiKey = "DxAcxlnRB9yFBZYtLDue1q01dcXZCw6aM49CQB23";
-  String envId = "bkk9glocmjcg0vtmdlng";
+  String apiKey = "";
+  String envId = "";
 
   final int defaultTimeout = 2000;
   final int defaultPollingTime = 60;
