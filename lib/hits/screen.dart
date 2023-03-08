@@ -1,6 +1,7 @@
 import 'package:flagship/hits/hit.dart';
 
 class Screen extends BaseHit {
+  /// This argument refers to the Screen Name of the app, at the moment the hit is sent.  The maximum permitted length is 2048 Bytes .
   late String location;
 
   Screen({required this.location}) : super() {

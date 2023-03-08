@@ -77,7 +77,7 @@ class VisitorDelegate implements IVisitor {
     hit.visitorId = visitor.visitorId;
     // set anonymousId for hit
     hit.anonymousId = visitor.anonymousId;
-    hit.qt = DateTime.now();
+    hit.qtDate = DateTime.now();
     getStrategy().sendHit(hit);
   }
 

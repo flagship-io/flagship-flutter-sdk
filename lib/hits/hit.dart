@@ -7,27 +7,24 @@ class BaseHit extends Hit {
 
   String dataSource = "APP";
 
-  /// User Ip
+  /// Refers to the IP address of the user. This should be a valid IP address in IPv4 or IPv6 format. The maximum permitted length is 45 Bytes.
   String? userIp;
 
-  /// Screen Resolution
+  /// Refers to the the screen resolution in pixels. The maximum permitted length is 20 Bytes.
   String? screenResolution;
 
-  ///Screen Color Depth
-  String? screenColorDepth;
-
-  /// User Language
+  /// Refers to the user's language. The maximum permitted length is 20 Bytes.
   String? userLanguage;
 
-  /// Session Number
+  /// Indicates the number of sessions the current visitor has logged, including the current session.
   int? sessionNumber;
 
   /// QT time
-  late DateTime qt;
+  late DateTime qtDate;
 
   BaseHit() {
     this.clientId = Flagship.sharedInstance().envId ?? "";
-    qt = DateTime.now();
+    qtDate = DateTime.now();
   }
 
   BaseHit.fromMap(String oldId, Map body) {
@@ -40,12 +37,14 @@ class BaseHit extends Hit {
       this.anonymousId = body["cuid"];
       // Data Source
       this.dataSource = body["ds"] ?? "APP";
-
+      // Screen resolution
       this.screenResolution = body["sr"];
-      this.screenColorDepth = body['sd'];
+      // user language
       this.userLanguage = body['ul'];
+      // Session number
       this.sessionNumber = body['sn'];
-      this.qt = DateTime.parse(body['qt']);
+      // qt time
+      this.qtDate = DateTime.parse(body['qt']);
     } catch (e) {
       Flagship.logger(Level.DEBUG, "Error en parsin hit from map, $e");
     }
@@ -59,20 +58,16 @@ class BaseHit extends Hit {
   Map<String, Object> get communBodyTrack {
     var result = new Map<String, Object>();
 
-    result.addAll({"cid": clientId, /*"vid": visitorId,*/ "ds": dataSource});
+    result.addAll({"cid": clientId, "ds": dataSource});
 
-    // ad xcpc informations
+    // ad xpc informations
     result.addEntries(_createTuple().entries);
 
-    /// Refracto later
     /// user ipx
     if (userIp != null) result["uip"] = dataSource;
 
     /// ScreenResolution
     if (screenResolution != null) result["sr"] = screenResolution ?? "";
-
-    /// Screen Color Depth
-    if (screenColorDepth != null) result["sd"] = screenColorDepth ?? "";
 
     /// user language
     if (userLanguage != null) result["ul"] = userLanguage ?? "";
@@ -81,7 +76,10 @@ class BaseHit extends Hit {
     if (sessionNumber != null) result["sn"] = sessionNumber ?? 0;
 
     // Add qt entries
-    result.addEntries({"qt": qt.toString()}.entries);
+    //Time difference between when the hit was created and when it was sent
+    result.addEntries(
+        {"qt": DateTime.now().difference(qtDate).inMilliseconds}.entries);
+
     return result;
   }
 
@@ -114,12 +112,14 @@ class BaseHit extends Hit {
 
   @override
   bool isLessThan4H() {
-    return (DateTime.now().difference(qt).inHours <= 4);
+    return (DateTime.now().difference(qtDate).inHours <= 4);
   }
 
   @override
   bool isValid() {
-    return true; // Todo implement later
+    return (this.visitorId.isNotEmpty &&
+        this.clientId.isNotEmpty &&
+        this.type != HitCategory.NONE);
   }
 
   Map<String, String> _createTuple() {

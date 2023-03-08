@@ -16,7 +16,7 @@ class _EventState extends State<EventHit> {
   @override
   void initState() {
     super.initState();
-    _eventActionController = TextEditingController(text: 'event_v3');
+    _eventActionController = TextEditingController(text: 'event_0603');
     _eventValueController = TextEditingController(text: '10');
   }
 
@@ -32,9 +32,9 @@ class _EventState extends State<EventHit> {
             ? EventCategory.Action_Tracking
             : EventCategory.User_Engagement);
     event.label = "flutter_label";
+
     event.sessionNumber = 12;
     event.value = (int.tryParse(_eventValueController.text) ?? 0);
-
     var text = "Event sent";
     var subText = "Event has been sent";
     try {

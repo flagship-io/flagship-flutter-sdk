@@ -6,8 +6,6 @@ class Batch extends BaseHit {
 
   Batch(this.listOfHits) {
     super.visitorId = listOfHits.first.visitorId;
-
-    /// Refractor here , bad implement
   }
 
   // Special hit for batch
@@ -18,7 +16,7 @@ class Batch extends BaseHit {
     var batchEvent = new Map<String, Object>();
     batchEvent.addEntries({
       "t": "BATCH",
-      "ds": "APP", /*"visitorId": this.visitorId*/
+      "ds": "APP",
     }.entries);
     List<Map<String, Object>> ret = [];
     this.listOfHits.forEach((element) {
@@ -30,7 +28,7 @@ class Batch extends BaseHit {
 
   @override
   bool isValid() {
-    throw UnimplementedError();
+    return true;
   }
 }
 

@@ -13,13 +13,13 @@ enum EventCategory {
 }
 
 class Event extends BaseHit {
-  /// category of the event (Action_Tracking or User_Engagement).
+  /// Categorizes the event and helps us understand what you want to retrieve inside the reporting.
   EventCategory? category;
 
-  /// name of the event.
+  /// The action corresponds to the KPI name you will be able to select inside the Flagship dashboard reporting. The maximum permitted length is 500 Bytes.
   late String action;
 
-  /// description of the event.
+  /// The label argument is a supplementary description of your event. The maximum permitted length is 500 Bytes.
   String? label;
 
   /// value of the event, must be non-negative.
@@ -40,12 +40,17 @@ class Event extends BaseHit {
           ? ActionTracking
           : UserEngagement
     });
-    // Add label
-    if (label != null) customBody['el'] = label ?? "";
-    // Add value
-    if (value != null) customBody['ev'] = value ?? 0;
+    // Add label if not null
+    if (label != null) {
+      customBody['el'] = label ?? "";
+    }
+    // Add value if not null
+    if (value != null) {
+      customBody['ev'] = value ?? 0;
+    }
     // Add commun body
     customBody.addAll(super.communBodyTrack);
+
     return customBody;
   }
 
@@ -58,6 +63,17 @@ class Event extends BaseHit {
     this.label = body['el'];
     this.value = body["ev"];
     this.type = HitCategory.EVENT;
+  }
+
+  @override
+  bool isValid() {
+    if (this.value != null) {
+      // if the value is not null ==> check the sign of the value
+      if (this.value?.sign == -1) {
+        return false;
+      }
+    }
+    return true;
   }
 }
 

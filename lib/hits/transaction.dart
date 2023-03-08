@@ -4,7 +4,7 @@ class Transaction extends BaseHit {
   /// Transaction unique identifier.
   late String transactionId;
 
-  /// Transaction name. Name of the goal in the reporting.
+  /// Transaction name. Name of the goal in the reporting. The maximum permitted length is 500 Bytes. The maximum permitted length is 500 Bytes.
   late String affiliation;
 
   /// Total revenue associated with the transaction. This value should include any shipping or tax costs
@@ -16,16 +16,16 @@ class Transaction extends BaseHit {
   /// Specifies the total taxes of the transaction.
   double? tax;
 
-  /// Specifies the currency used for all transaction currency values. Value should be a valid ISO 4217 currency code.
+  /// Specifies the currency used for all transaction currency values. Value should be a valid ISO 4217 currency code. The maximum permitted length is 500 Bytes.
   String? currency;
 
-  /// Specifies the coupon code used by the customer for the transaction.
+  /// Specifies the coupon code used by the customer for the transaction. The maximum permitted length is 10 Bytes.
   String? couponCode;
 
-  /// Specifies the payment method for the transaction.
+  /// Specifies the payment method for the transaction. The maximum permitted length is 10 Bytes.
   String? paymentMethod;
 
-  /// Specifies the shipping method of the transaction.
+  /// Specifies the shipping method of the transaction. The maximum permitted length is 10 Bytes.
   String? shippingMethod;
 
   /// Specifies the number of items for the transaction.

@@ -63,10 +63,10 @@ class FSData extends ChangeNotifier {
 }
 
 class UserData extends ChangeNotifier {
-  String _visitorId = "user01";
+  String _visitorId = "user_01";
   Map<String, Object> context = {
     "testing_tracking_manager": true,
-    "customer": "QA"
+    "QA": "flutter"
   };
   bool _hasConsented = true;
   bool _isAuthenticated = false;
