@@ -109,7 +109,18 @@ class TrackingManageContinuousStrategy extends TrackingManager {
 
   @override
   void onCacheHit(Hit hitToBeCached) {
-    fsCacheHit?.cacheHits({hitToBeCached.id: hitToBeCached.bodyTrack});
+    // Before cache the hit we save also the date creation
+    var bodyToCache = hitToBeCached.bodyTrack;
+    if (hitToBeCached.createdAt != null) {
+      //  bodyToCache.addEntries(
+      //     {"createdAt": hitToBeCached.createdAt.toString()}.entries);
+
+      bodyToCache
+          .addEntries({"createdAt": "2023-03-08 10:58:10.942743"}.entries);
+    }
+
+    //
+    fsCacheHit?.cacheHits({hitToBeCached.id: bodyToCache});
   }
 
   // On sucess sending batch activate

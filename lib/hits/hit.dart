@@ -19,17 +19,19 @@ class BaseHit extends Hit {
   /// Indicates the number of sessions the current visitor has logged, including the current session.
   int? sessionNumber;
 
-  /// QT time
-  late DateTime qtDate;
+  /// This argument refers to the Screen Name of the app, at the moment the hit is sent.  The maximum permitted length is 2048 Bytes .
+  String? location;
 
   BaseHit() {
     this.clientId = Flagship.sharedInstance().envId ?? "";
-    qtDate = DateTime.now();
+    createdAt = DateTime.now();
   }
 
   BaseHit.fromMap(String oldId, Map body) {
     try {
       this.id = oldId; // Keep the same id in db
+      // Set the created date
+      this.createdAt = DateTime.parse(body['createdAt']);
       // Set CLient Id
       this.clientId = body["cid"] ?? "";
       // Set the id of visitor
@@ -43,8 +45,6 @@ class BaseHit extends Hit {
       this.userLanguage = body['ul'];
       // Session number
       this.sessionNumber = body['sn'];
-      // qt time
-      this.qtDate = DateTime.parse(body['qt']);
     } catch (e) {
       Flagship.logger(Level.DEBUG, "Error en parsin hit from map, $e");
     }
@@ -60,26 +60,30 @@ class BaseHit extends Hit {
 
     result.addAll({"cid": clientId, "ds": dataSource});
 
-    // ad xpc informations
+    /// Add xpc informations
     result.addEntries(_createTuple().entries);
 
-    /// user ipx
+    /// User ipx
     if (userIp != null) result["uip"] = dataSource;
 
     /// ScreenResolution
     if (screenResolution != null) result["sr"] = screenResolution ?? "";
 
-    /// user language
+    /// User language
     if (userLanguage != null) result["ul"] = userLanguage ?? "";
 
     /// Session number
     if (sessionNumber != null) result["sn"] = sessionNumber ?? 0;
 
-    // Add qt entries
-    //Time difference between when the hit was created and when it was sent
-    result.addEntries(
-        {"qt": DateTime.now().difference(qtDate).inMilliseconds}.entries);
-
+    /// Add qt entries
+    /// Time difference between when the hit was created and when it was sent
+    if (this.createdAt != null) {
+      result.addEntries({
+        "qt": DateTime.now()
+            .difference(createdAt ?? DateTime.now())
+            .inMilliseconds
+      }.entries);
+    }
     return result;
   }
 
@@ -112,7 +116,8 @@ class BaseHit extends Hit {
 
   @override
   bool isLessThan4H() {
-    return (DateTime.now().difference(qtDate).inHours <= 4);
+    return (DateTime.now().difference(createdAt ?? DateTime.now()).inHours <=
+        4);
   }
 
   @override
@@ -138,6 +143,9 @@ class BaseHit extends Hit {
 abstract class Hit {
   // id for the hit
   String id = "";
+
+  /// CreatedAt date
+  DateTime? createdAt;
 
   String? anonymousId;
 

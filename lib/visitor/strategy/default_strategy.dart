@@ -268,16 +268,16 @@ class DefaultStrategy implements IVisitor {
           invalidIds.add(element.id);
         }
       });
-      Flagship.logger(Level.DEBUG,
-          "Adding the founded hits and activate in cache to the pools");
       // Add backed elements of tracking
       if (remainTracking.isNotEmpty) {
+        Flagship.logger(Level.DEBUG,
+            "Adding the founded hits and activate in cache to the pools");
         visitor.trackingManager.addTrackingElementsToBatch(remainTracking);
       }
       // Remove invalide hits or activate
       if (invalidIds.isNotEmpty) {
         Flagship.logger(Level.INFO,
-            "Some tracking found in cache are usless because their date creation is more than 4 hours, the process will remove them");
+            "Some tracking found in cache are useless because their date of creation is more than 4 hours, the process will remove them");
         visitor.config.hitCacheImp?.flushHits(invalidIds);
       }
     }).timeout(

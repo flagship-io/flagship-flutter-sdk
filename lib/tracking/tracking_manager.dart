@@ -96,7 +96,12 @@ class TrackingManager {
     if (hitToBeCached.type != HitCategory.CONSENT) {
       failedIds.add(hitToBeCached.id);
     }
-    fsCacheHit?.cacheHits({hitToBeCached.id: hitToBeCached.bodyTrack});
+    var bodyToCache = hitToBeCached.bodyTrack;
+    if (hitToBeCached.createdAt != null) {
+      bodyToCache.addEntries(
+          {"createdAt": hitToBeCached.createdAt.toString()}.entries);
+    }
+    fsCacheHit?.cacheHits({hitToBeCached.id: bodyToCache});
   }
 
   // Called when close flagship

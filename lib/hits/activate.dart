@@ -27,8 +27,8 @@ class Activate extends BaseHit {
     // Set the client Id
     this.envId = body["cid"] ?? "";
 
-    // Set the qt
-    this.qtDate = DateTime.parse(body['qt']);
+    // Set the createdAt
+    this.createdAt = DateTime.parse(body['createdAt']);
 
     // Create the modification object to set the "caid" & "vaid"
     if ((body["caid"] != null) && (body["vaid"] != null)) {
