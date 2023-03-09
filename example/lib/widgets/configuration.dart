@@ -165,7 +165,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   @override
   Widget build(BuildContext context) {
     FSData fsData = Provider.of<FSData>(context, listen: true);
-    UserData fsUser = Provider.of<UserData>(context, listen: false);
+    UserData fsUser = Provider.of<UserData>(context, listen: true);
     List<String> strategyArray = ["CONTINOUS", "PERIODIC", "NO_STRATEGY"];
     double _spaceBetweenInput = 10;
     envIdController.text = fsData.envId;
@@ -242,12 +242,10 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
                       TextInputType.number),
               SizedBox(height: _spaceBetweenInput),
               SizedBox(height: _spaceBetweenInput),
-              FSInputField(
-                "VisitorId",
-                visitorIdController,
-                TextInputType.text,
-                onChangeInput: (newText) => {fsUser.updateVisitorId(newText)},
-              ),
+              FSInputField("VisitorId", visitorIdController, TextInputType.text,
+                  onChangeInput: (newText) {
+                fsUser.updateVisitorId(newText);
+              }),
               SizedBox(height: _spaceBetweenInput),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,

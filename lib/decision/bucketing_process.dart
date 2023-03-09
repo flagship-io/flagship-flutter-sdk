@@ -51,10 +51,13 @@ extension BucketingProcess on BucketingManager {
           } else {
             varId = selectIdVariationWithMurMurHash(visitorId, itemVarGroup);
 
-            Flagship.logger(
-                Level.ALL, "Adding a new saved variation in the assignation ");
-            this.assignationHistory?.addEntries(
-                {itemVarGroup.idVariationGroup: varId ?? ""}.entries);
+            if (varId != null) {
+              Flagship.logger(Level.ALL,
+                  "Adding a new saved variation in the assignation ");
+              this
+                  .assignationHistory
+                  ?.addEntries({itemVarGroup.idVariationGroup: varId}.entries);
+            }
           }
 
           if (varId != null) {

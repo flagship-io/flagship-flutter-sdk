@@ -23,8 +23,11 @@ class FSInputField extends StatelessWidget {
       style: TextStyle(fontSize: 12, color: Color.fromARGB(221, 13, 13, 13)),
       onChanged: (newText) {
         if (onChangeInput != null) {
-          onChangeInput!(newText);
+          //   onChangeInput!(newText);
         }
+      },
+      onEditingComplete: () {
+        onChangeInput?.call(inputController.text);
       },
     );
 
