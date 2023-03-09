@@ -66,7 +66,7 @@ extension TrackingManagerBatch on TrackingManager {
           return response.statusCode;
         default:
           Flagship.logger(Level.ERROR, HIT_FAILED);
-          activateDelegate?.onFailedToSendBatch(listOfActivate);
+          // activateDelegate?.onFailedToSendBatch(listOfActivate);
           return response.statusCode;
       }
     } on Exception catch (e) {
