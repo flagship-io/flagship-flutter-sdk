@@ -91,7 +91,6 @@ class TrackingManageContinuousStrategy extends TrackingManager {
       switch (statusCode) {
         case 200:
         case 204:
-          Flagship.logger(Level.INFO, ACTIVATE_SUCCESS);
           // Clear all the activate in the pool and clear them from cache
           if (needToClean) {
             _activatePool.flushAllTrackFromQueue();

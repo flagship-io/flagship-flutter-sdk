@@ -1,7 +1,11 @@
-const int DEFAULT_BATCH_LENGTH = 20; // Exctract 20 hits from the loop
+import 'dart:math';
 
-const int DEFAULT_TIME_INTERVAL =
-    20; // On each 10 seconds will launch the batch from the queue
+import 'package:flagship/flagship.dart';
+import 'package:flagship/utils/logger/log_manager.dart';
+
+const int DEFAULT_BATCH_LENGTH = 10; // Exctract 20 hits from the loop
+
+const int DEFAULT_TIME_INTERVAL = 5; // On each 5 seconds will launch the batch.
 
 enum BatchCachingStrategy {
   BATCH_CONTINUOUS_CACHING, // Cache on continous when hit occurs
@@ -13,9 +17,9 @@ enum BatchCachingStrategy {
 
 class TrackingManagerConfig {
   // Define the time intervals the SDK will use to send tracking batches.
-  final int batchIntervals;
+  int batchIntervals;
   // Define the maximum number of tracking hit that each batch can contain.
-  final int poolMaxSize;
+  int poolMaxSize;
 
   // indicate the strategy to adopt for the cache manager
   final BatchCachingStrategy batchStrategy;
@@ -23,5 +27,19 @@ class TrackingManagerConfig {
   TrackingManagerConfig(
       {this.batchIntervals = DEFAULT_TIME_INTERVAL,
       this.poolMaxSize = DEFAULT_BATCH_LENGTH,
-      this.batchStrategy = BatchCachingStrategy.BATCH_CONTINUOUS_CACHING});
+      this.batchStrategy = BatchCachingStrategy.BATCH_CONTINUOUS_CACHING}) {
+    // batchIntervals  should not be greater than 14400 (4h) and less than 1s  otherwise default value should be used
+    if (batchIntervals > 14400 || batchIntervals < 1) {
+      Flagship.logger(Level.INFO,
+          "batchIntervals should not be greater than 14400 (4h) and less than 1s. w'll use a default value: $DEFAULT_TIME_INTERVAL");
+      this.batchIntervals = DEFAULT_TIME_INTERVAL;
+    }
+
+    // poolMaxSize should not be less than 5 otherwise default value should be used
+    if (this.poolMaxSize < 5) {
+      Flagship.logger(Level.INFO,
+          "poolMaxSize should not be less than 5. w'll use a default value: $DEFAULT_BATCH_LENGTH");
+      this.poolMaxSize = DEFAULT_BATCH_LENGTH;
+    }
+  }
 }

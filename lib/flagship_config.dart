@@ -80,7 +80,7 @@ class ConfigBuilder {
   StatusListener? _statusListener;
 
 // Tracking Config
-  TrackingManagerConfig _trackingManagerConfig = TrackingManagerConfig();
+  TrackingManagerConfig? _trackingManagerConfig;
 
   // Cache Hit imp
   IHitCacheImplementation? _hitCacheImp;
@@ -141,8 +141,8 @@ class ConfigBuilder {
   }
 
   FlagshipConfig build() {
-    return FlagshipConfig(
-        _mode, _timeout, _pollingTime, _logLevel, _trackingManagerConfig,
+    return FlagshipConfig(_mode, _timeout, _pollingTime, _logLevel,
+        _trackingManagerConfig ?? TrackingManagerConfig(),
         statusListener: _statusListener,
         hitCacheImp: _hitCacheImp,
         visitorCacheImp: _visitorCacheImp);

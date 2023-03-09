@@ -47,7 +47,7 @@ class BatchManager with TrackingManagerDelegate, FlagshipPoolQueueDelegate {
   }
 
   void batchFromQueue() {
-    Flagship.logger(Level.DEBUG, label + " : process to send batch");
+    // Flagship.logger(Level.DEBUG, label + " : process to send batch");
     cronTimer.reset();
     var listOfHitsToSend =
         fsPool.extractXElementFromQueue(configTracking.poolMaxSize);

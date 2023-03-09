@@ -59,14 +59,10 @@ extension TrackingManagerBatch on TrackingManager {
         case 200:
         case 204:
           Flagship.logger(Level.INFO, ACTIVATE_SUCCESS + ": $objectToSend");
-          Flagship.logger(
-              Level.INFO, jsonEncode(Batch(listOfActivate).bodyTrack),
-              isJsonString: true);
           onSendActivateBatchWithSucess(listOfActivate);
           return response.statusCode;
         default:
           Flagship.logger(Level.ERROR, HIT_FAILED);
-          // activateDelegate?.onFailedToSendBatch(listOfActivate);
           return response.statusCode;
       }
     } on Exception catch (e) {
