@@ -112,14 +112,10 @@ class TrackingManageContinuousStrategy extends TrackingManager {
     // Before cache the hit we save also the date creation
     var bodyToCache = hitToBeCached.bodyTrack;
     if (hitToBeCached.createdAt != null) {
-      //  bodyToCache.addEntries(
-      //     {"createdAt": hitToBeCached.createdAt.toString()}.entries);
-
-      bodyToCache
-          .addEntries({"createdAt": "2023-03-08 10:58:10.942743"}.entries);
+      bodyToCache.addEntries(
+          {"createdAt": hitToBeCached.createdAt.toString()}.entries);
     }
-
-    //
+    // Cache hits
     fsCacheHit?.cacheHits({hitToBeCached.id: bodyToCache});
   }
 

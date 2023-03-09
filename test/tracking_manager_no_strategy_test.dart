@@ -7,7 +7,6 @@ import 'package:flagship/flagship_version.dart';
 import 'package:flagship/hits/screen.dart';
 import 'package:flagship/tracking/tracking_manager.dart';
 import 'package:flagship/tracking/tracking_manager_config.dart';
-import 'package:flagship/tracking/tracking_manager_continuous_strategies.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';

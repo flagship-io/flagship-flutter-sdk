@@ -38,7 +38,7 @@ class DefaultStrategy implements IVisitor {
     Activate activateHit = Activate(pModification, visitor.visitorId,
         visitor.anonymousId, Flagship.sharedInstance().envId ?? "");
 
-    await visitor.trackingManager.sendActivate(activateHit);
+    await visitor.trackingManager?.sendActivate(activateHit);
   }
 
   @override
@@ -148,13 +148,13 @@ class DefaultStrategy implements IVisitor {
       if (camp.panic) {
         state = Status.PANIC_ON;
         // Stop batching loop when the panic mode is ON
-        visitor.trackingManager.stopBatchingLoop();
+        visitor.trackingManager?.stopBatchingLoop();
       } else {
         state = Status.READY;
         var modif = visitor.decisionManager.getModifications(camp.campaigns);
         visitor.modifications.addAll(modif);
         // Start Batching loop
-        visitor.trackingManager.startBatchingLoop();
+        visitor.trackingManager?.startBatchingLoop();
         Flagship.logger(
             Level.INFO,
             SYNCHRONIZE_MODIFICATIONS_RESULTS.replaceFirst(
@@ -175,7 +175,7 @@ class DefaultStrategy implements IVisitor {
 
   @override
   Future<void> sendHit(BaseHit hit) async {
-    await visitor.trackingManager.sendHit(hit);
+    await visitor.trackingManager?.sendHit(hit);
   }
 
   @override
@@ -272,7 +272,7 @@ class DefaultStrategy implements IVisitor {
       if (remainTracking.isNotEmpty) {
         Flagship.logger(Level.DEBUG,
             "Adding the founded hits and activate in cache to the pools");
-        visitor.trackingManager.addTrackingElementsToBatch(remainTracking);
+        visitor.trackingManager?.addTrackingElementsToBatch(remainTracking);
       }
       // Remove invalide hits or activate
       if (invalidIds.isNotEmpty) {

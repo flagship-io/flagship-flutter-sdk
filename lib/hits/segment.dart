@@ -1,7 +1,7 @@
 import 'package:flagship/hits/hit.dart';
 
 class Segment extends BaseHit {
-  late Map<String, dynamic> persona;
+  Map<String, dynamic> persona = {};
 
   Segment({required this.persona}) : super() {
     type = HitCategory.SEGMENT;

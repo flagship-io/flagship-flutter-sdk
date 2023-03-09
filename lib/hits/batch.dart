@@ -41,7 +41,7 @@ class Batch extends BaseHit {
 class ActivateBatch {
   //final List<Hit> batch;
   final List<Hit> batch;
-  late String envId;
+  String envId = "";
 
   ActivateBatch(this.batch) {
     envId = (batch.first as Activate).envId;

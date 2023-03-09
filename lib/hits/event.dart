@@ -17,7 +17,7 @@ class Event extends BaseHit {
   EventCategory? category;
 
   /// The action corresponds to the KPI name you will be able to select inside the Flagship dashboard reporting. The maximum permitted length is 500 Bytes.
-  late String action;
+  String action = "";
 
   /// The label argument is a supplementary description of your event. The maximum permitted length is 500 Bytes.
   String? label;

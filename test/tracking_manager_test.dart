@@ -64,29 +64,49 @@ Future<void> main() async {
     vMock.trackingManager = fakeTrackingMgr;
     vMock.config.decisionManager = fakeApi;
 
-    vMock.fetchFlags().whenComplete(() async {
-      var mockFlag = vMock.getFlag("key_A", "defaultValue");
-      var mockVal = mockFlag.value(userExposed: true);
-      // "key_A":"val_A",
-      expect(mockVal, "val_A");
-      await mockFlag.userExposed();
-      await mockFlag.userExposed();
-      await mockFlag.userExposed();
+    (vMock.trackingManager as TrackingManageContinuousStrategy)
+        .activatePool
+        .fsQueue
+        .clear();
+    await vMock.fetchFlags();
+    var mockFlag = vMock.getFlag("key_A", "defaultValue");
+    var mockVal = mockFlag.value(userExposed: false);
+    // "key_A":"val_A",
+    expect(mockVal, "val_A");
+    await mockFlag.userExposed();
+    // await mockFlag.userExposed();
+    // await mockFlag.userExposed();
 
-      expect(
-          (vMock.trackingManager as TrackingManageContinuousStrategy)
-              .activatePool
-              .fsQueue
-              .length,
-          3);
+    expect(
+        (vMock.trackingManager as TrackingManageContinuousStrategy)
+            .activatePool
+            .fsQueue
+            .length,
+        3);
 
-      when(fakeTrackingService.sendHttpRequest(RequestType.Post,
-              'https://decision.flagship.io/v2/activate', any, any,
-              timeoutMs: TIMEOUT_REQUEST))
-          .thenAnswer((_) async {
-        return http.Response("mock", 200);
-      });
-      await mockFlag.userExposed();
-    });
+    // vMock.fetchFlags().whenComplete(() async {
+    //   var mockFlag = vMock.getFlag("key_A", "defaultValue");
+    //   var mockVal = mockFlag.value(userExposed: true);
+    //   // "key_A":"val_A",
+    //   expect(mockVal, "val_A");
+    //   await mockFlag.userExposed();
+    //   await mockFlag.userExposed();
+    //   await mockFlag.userExposed();
+
+    //   expect(
+    //       (vMock.trackingManager as TrackingManageContinuousStrategy)
+    //           .activatePool
+    //           .fsQueue
+    //           .length,
+    //       3);
+
+    // when(fakeTrackingService.sendHttpRequest(RequestType.Post,
+    //         'https://decision.flagship.io/v2/activate', any, any,
+    //         timeoutMs: TIMEOUT_REQUEST))
+    //     .thenAnswer((_) async {
+    //   return http.Response("mock", 200);
+    // });
+    // await mockFlag.userExposed();
+    // });
   });
 }

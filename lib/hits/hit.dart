@@ -46,7 +46,7 @@ class BaseHit extends Hit {
       // Session number
       this.sessionNumber = body['sn'];
     } catch (e) {
-      Flagship.logger(Level.DEBUG, "Error en parsin hit from map, $e");
+      Flagship.logger(Level.DEBUG, "Error on parsing hit from map, $e");
     }
   }
 

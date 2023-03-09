@@ -17,7 +17,7 @@ const TIMEOUT_REQUEST = 60000; // 60 seconds
 
 class TrackingManager {
   /// api key
-  late String apiKey;
+  String apiKey = "";
 
   /// service
   Service service = Service(http.Client());

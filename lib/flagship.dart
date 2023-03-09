@@ -39,9 +39,7 @@ class Flagship with FlagshipDelegate {
     return _singleton;
   }
 
-  Flagship._internal() {
-    /// implement later
-  }
+  Flagship._internal();
 
   // Start Sdk
   //
@@ -100,7 +98,7 @@ class Flagship with FlagshipDelegate {
   // level : Level of details for logs
   // message : Message to display
   static void logger(Level level, String message, {bool isJsonString = false}) {
-    Flagship._configuration.logManager.printLog(level, message, isJsonString);
+    Flagship._configuration.logManager?.printLog(level, message, isJsonString);
   }
 
   // Set the level for logger
@@ -131,6 +129,6 @@ class Flagship with FlagshipDelegate {
 
 // When close flagship, send hit present in the queue
   void close() {
-    Flagship.getCurrentVisitor()?.trackingManager.close();
+    Flagship.getCurrentVisitor()?.trackingManager?.close();
   }
 }

@@ -21,7 +21,7 @@ class NoConsentStrategy extends DefaultStrategy {
     switch (hit.type) {
       case HitCategory.CONSENT:
         {
-          visitor.trackingManager.sendHit(hit);
+          visitor.trackingManager?.sendHit(hit);
         }
         break;
       default:

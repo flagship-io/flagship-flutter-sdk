@@ -20,16 +20,13 @@ class BucketingManager extends DecisionManager {
 
   Map<String, dynamic>? assignationHistory;
 
-  late Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-  late Campaigns campaigns;
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   String lastModfiedKey = "FSLastModifiedScript";
   String bucketingFolder = "/flagship/Bucketing/";
   String fileName = "bucketing.json";
 
-  BucketingManager(Service service, this.intervalPolling) : super(service) {
-    // startPolling();
-  }
+  BucketingManager(Service service, this.intervalPolling) : super(service);
 
   @override
   Future<Campaigns> getCampaigns(
@@ -95,24 +92,6 @@ class BucketingManager extends DecisionManager {
     });
     this.polling?.start();
   }
-
-  // _sendKeyContext(String envId, String visitorId,
-  //     Map<String, dynamic> currentContext) async {
-  //   // Url string for the /event
-  //   String urlString = Endpoints.DECISION_API + envId + Endpoints.EVENTS;
-  //   Flagship.logger(Level.INFO, 'Send Context :' + urlString);
-
-  //   // Create data to post
-  //   Object dataToPost = json.encode(
-  //       {"visitor_id": visitorId, "data": currentContext, "type": "CONTEXT"});
-
-  //   // send context
-  //   this.service.sendHttpRequest(
-  //       RequestType.Post,
-  //       urlString,
-  //       Endpoints.getFSHeader(Flagship.sharedInstance().apiKey ?? ""),
-  //       dataToPost);
-  // }
 
   // Save the response into the file
   _saveFile(String body) async {

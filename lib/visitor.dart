@@ -56,7 +56,7 @@ class Visitor {
     return this.config.decisionManager;
   }
 
-  late TrackingManager trackingManager;
+  TrackingManager? trackingManager;
 
   /// Consent by default is true
   bool _hasConsented = true;
@@ -229,7 +229,7 @@ class Visitor {
   void setConsent(bool newValue) {
     // flush the hits from the pool
     if (newValue == false) {
-      this.trackingManager.flushAllTracking(this.visitorId);
+      this.trackingManager?.flushAllTracking(this.visitorId);
       // Erase the related data in cache
       this.config.visitorCacheImp?.flushVisitor(this.visitorId);
     }

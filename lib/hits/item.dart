@@ -2,13 +2,13 @@ import 'hit.dart';
 
 class Item extends BaseHit {
   /// TransactionId allows an item to be linked to a transaction with a matching Transaction ID. The maximum permitted length is 500 Bytes.
-  late String transactionId;
+  String transactionId = "";
 
   /// Specifies the name of an item. The maximum permitted length is 500 Bytes.
-  late String name;
+  String name = "";
 
   /// Specifies an item's SKU or product bar code. The maximum permitted length is 500 Bytes.
-  late String code;
+  String code = "";
 
   /// Specifies the item price
   double? price;

@@ -71,12 +71,12 @@ class Flag<T> {
 }
 
 class FlagMetadata {
-  late String campaignId = "";
-  late String variationGroupId = "";
-  late String variationId = "";
-  late bool isReference = false;
-  late String campaignType = "";
-  late String slug = "";
+  String campaignId = "";
+  String variationGroupId = "";
+  String variationId = "";
+  bool isReference = false;
+  String campaignType = "";
+  String slug = "";
 
 // Create metadata from map entry
   FlagMetadata.withMap(Map<String, Object>? infos) {

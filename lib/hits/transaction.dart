@@ -2,10 +2,10 @@ import 'package:flagship/hits/hit.dart';
 
 class Transaction extends BaseHit {
   /// Transaction unique identifier.
-  late String transactionId;
+  String transactionId = "";
 
   /// Transaction name. Name of the goal in the reporting. The maximum permitted length is 500 Bytes. The maximum permitted length is 500 Bytes.
-  late String affiliation;
+  String affiliation = "";
 
   /// Total revenue associated with the transaction. This value should include any shipping or tax costs
   double? revenue;
