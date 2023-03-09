@@ -32,6 +32,8 @@ class _EventState extends State<EventHit> {
             ? EventCategory.Action_Tracking
             : EventCategory.User_Engagement);
     event.label = "flutter_label";
+    // Set screen for event
+    event.location = "screenEvent";
 
     event.sessionNumber = 12;
     event.value = (int.tryParse(_eventValueController.text) ?? 0);
