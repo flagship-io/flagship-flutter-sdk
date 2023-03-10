@@ -1,11 +1,10 @@
-import 'dart:convert';
-
 import 'package:flagship/api/service.dart';
-import 'package:flagship/api/tracking_manager.dart';
 import 'package:flagship/decision/api_manager.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/flagship_config.dart';
+import 'package:flagship/flagship_version.dart';
 import 'package:flagship/model/flag.dart';
+import 'package:flagship/tracking/tracking_manager.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -17,8 +16,16 @@ import 'package:http/http.dart' as http;
 
 @GenerateMocks([Service])
 void main() async {
+  ToolsTest.sqfliteTestInit();
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences.setMockInitialValues({});
+  Map<String, String> fsHeaders = {
+    "x-api-key": "apiKey",
+    "x-sdk-client": "flutter",
+    "x-sdk-version": FlagshipVersion,
+    "Content-type": "application/json"
+  };
+
   MockService fakeService = MockService();
   ApiManager fakeApi = ApiManager(fakeService);
 
@@ -27,7 +34,7 @@ void main() async {
   when(fakeService.sendHttpRequest(
           RequestType.Post,
           'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true',
-          any,
+          fsHeaders,
           any,
           timeoutMs: TIMEOUT))
       .thenAnswer((_) async {
@@ -41,9 +48,6 @@ void main() async {
     return http.Response("fakeResponse", 200);
   });
 
-  TrackingManager fakeTracking = TrackingManager();
-  fakeTracking.setService(fakeService);
-
   FlagshipConfig config = ConfigBuilder()
       .withTimeout(TIMEOUT)
       .withOnVisitorExposed((exposedUser, exposedFlag) {
@@ -52,7 +56,12 @@ void main() async {
     expect(exposedFlag.metadata().variationId, "bsffhle242b2l3igq4f0");
   }).build();
   config.decisionManager = fakeApi;
+  TrackingManager fakeTracking =
+      TrackingManager(fakeService, config.trackingMangerConfig, null);
+
   await Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
+  var v1 = Flagship.newVisitor("flagVisitor").build();
+  v1.config.decisionManager = fakeApi;
 
   test("Test Flag class", (() async {
     var v1 = Flagship.newVisitor("flagVisitor").build();
@@ -141,7 +150,7 @@ void main() async {
         // Check lentgh for metedata json
         expect(myFlag.metadata().toJson().keys.length, 6);
         // Expose
-        await myFlag.userExposed();
+        await myFlag.visitorExposed();
       }
     });
   }));
@@ -204,7 +213,7 @@ void main() async {
     var v5 = Flagship.newVisitor("flagVisitor").build();
     v5.fetchFlags().whenComplete(() async {
       Flag myFlag = v5.getFlag("key_A", "12");
-      myFlag.userExposed();
+      myFlag.visitorExposed();
     });
   });
 }

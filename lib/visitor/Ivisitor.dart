@@ -27,6 +27,15 @@ abstract class IVisitor {
 // unAuthenticateVisitor
   unAuthenticateVisitor();
 
+  // void cache visitor
+  void cacheVisitor(String visitorId, String jsonString);
+
+  // Called right at visitor creation, return a jsonString corresponding to visitor. Return a jsonString
+  void lookupVisitor(String visitoId);
+
+// Lookup Hits
+  void lookupHits();
+
   // onExposure
   void onExposure(Modification pModification);
 }

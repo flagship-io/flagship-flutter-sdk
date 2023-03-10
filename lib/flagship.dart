@@ -18,7 +18,7 @@ enum Status {
 }
 
 class Flagship with FlagshipDelegate {
-  // environement id (provided by flagship)
+  // Environement id (provided by flagship)
   String? envId;
 
   // Api key (provided by flagship)
@@ -27,21 +27,19 @@ class Flagship with FlagshipDelegate {
   // Default configuration DECISION_API
   static FlagshipConfig _configuration = ConfigBuilder().build();
 
-  // Local visitor , see the startClient function
+  // Local visitor
   Visitor? currentVisitor;
 
   Status _status = Status.NOT_INITIALIZED;
 
-  // internal Singelton
+  // Internal Singelton
   static final Flagship _singleton = Flagship._internal();
 
   factory Flagship.sharedInstance() {
     return _singleton;
   }
 
-  Flagship._internal() {
-    /// implement later
-  }
+  Flagship._internal();
 
   // Start Sdk
   //
@@ -49,7 +47,7 @@ class Flagship with FlagshipDelegate {
   // apiKey: Api key (provided by flagship)
   static start(String envId, String apiKey, {FlagshipConfig? config}) async {
     _singleton._status = Status.NOT_INITIALIZED;
-    await FSDevice.loadDeviceInfo();
+    FSDevice.loadDeviceInfo();
     if (FlagshipTools.chekcXidEnvironment(envId)) {
       _singleton.apiKey = apiKey;
       _singleton.envId = envId;
@@ -100,7 +98,7 @@ class Flagship with FlagshipDelegate {
   // level : Level of details for logs
   // message : Message to display
   static void logger(Level level, String message, {bool isJsonString = false}) {
-    Flagship._configuration.logManager.printLog(level, message, isJsonString);
+    Flagship._configuration.logManager?.printLog(level, message, isJsonString);
   }
 
   // Set the level for logger
@@ -127,5 +125,10 @@ class Flagship with FlagshipDelegate {
     if (Flagship._configuration.statusListener != null) {
       Flagship._configuration.statusListener!(newStatus);
     }
+  }
+
+// When close flagship, send hit present in the queue
+  void close() {
+    Flagship.getCurrentVisitor()?.trackingManager?.close();
   }
 }

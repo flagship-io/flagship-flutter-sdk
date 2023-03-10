@@ -1,6 +1,9 @@
+import 'package:flagship/cache/default_cache.dart';
+import 'package:flagship/cache/interface_cache.dart';
 import 'package:flagship/decision/api_manager.dart';
 import 'package:flagship/decision/bucketing_manager.dart';
 import 'package:flagship/decision/decision_manager.dart';
+import 'package:flagship/tracking/tracking_manager_config.dart';
 import 'package:flagship/model/exposed_flag.dart';
 import 'package:flagship/model/visitor_exposed.dart';
 import 'package:flagship/utils/constants.dart';
@@ -11,7 +14,6 @@ import "package:flagship/api/service.dart";
 
 import 'flagship.dart';
 
-/// Will refarctor this class by using a builder
 // Time out 2 seconds
 const TIMEOUT = 2000;
 
@@ -30,7 +32,7 @@ class FlagshipConfig {
   // Decision Manager
   late DecisionManager decisionManager;
   // LogManager
-  late LogManager logManager;
+  LogManager? logManager;
   // Status listner
   StatusListener statusListener;
   // Callback trigger on flag visitor exposed
@@ -41,17 +43,32 @@ class FlagshipConfig {
 
   Level _logLevel;
 
+  TrackingManagerConfig trackingMangerConfig;
+
+  IHitCacheImplementation? hitCacheImp;
+
+  IVisitorCacheImplementation? visitorCacheImp;
+
   FlagshipConfig(this.decisionMode, this.timeout, this.pollingTime,
-      this._logLevel, this.onVisitorExposed,
-      {this.statusListener}) {
+      this._logLevel, this.onVisitorExposed, this.trackingMangerConfig,
+      {this.statusListener, this.visitorCacheImp, this.hitCacheImp}) {
     // Set the log Manager
     this.logManager = LogManager(level: _logLevel);
     // Log the timeout value in ms
-    this.logManager.printLog(Level.ALL, "Flagship The $timeout is : ms", false);
+    this
+        .logManager
+        ?.printLog(Level.ALL, "Flagship The $timeout is : ms", false);
 
     decisionManager = (decisionMode == Mode.DECISION_API)
         ? ApiManager(Service(http.Client()))
         : BucketingManager(Service(http.Client()), this.pollingTime);
+
+    if (this.hitCacheImp == null) {
+      this.hitCacheImp = DefaultCacheHitImp();
+    }
+    if (this.visitorCacheImp == null) {
+      this.visitorCacheImp = DefaultCacheVisitorImp();
+    }
   }
 }
 
@@ -70,6 +87,15 @@ class ConfigBuilder {
 
   // StatusListener
   StatusListener? _statusListener;
+
+  // Tracking Config
+  TrackingManagerConfig? _trackingManagerConfig;
+
+  // Cache Hit imp
+  IHitCacheImplementation? _hitCacheImp;
+
+  // Cache Visitor Imp
+  IVisitorCacheImplementation? _visitorCacheImp;
 
   OnVisitorExposed? _onVisitorExposed;
 
@@ -104,6 +130,27 @@ class ConfigBuilder {
     return this;
   }
 
+  ConfigBuilder withTrackingConfig(
+      TrackingManagerConfig trackingManagerConfig) {
+    _trackingManagerConfig = trackingManagerConfig;
+    return this;
+  }
+
+  ConfigBuilder withCacheHitManager(IHitCacheImplementation hitCacheImp,
+      {int hitCacheTimeout = 200}) {
+    _hitCacheImp = hitCacheImp;
+    _hitCacheImp?.hitCacheLookupTimeout = hitCacheTimeout;
+    return this;
+  }
+
+  ConfigBuilder withCacheVisitorManager(
+      IVisitorCacheImplementation visitorCacheImp,
+      {int visitorCacheTimeout = 200}) {
+    _visitorCacheImp = visitorCacheImp;
+    _visitorCacheImp?.visitorCacheLookupTimeout = visitorCacheTimeout;
+    return this;
+  }
+
   // On User exposure
   ConfigBuilder withOnVisitorExposed(OnVisitorExposed pOnVisitorExposed) {
     _onVisitorExposed = pOnVisitorExposed;
@@ -111,8 +158,10 @@ class ConfigBuilder {
   }
 
   FlagshipConfig build() {
-    return FlagshipConfig(
-        _mode, _timeout, _pollingTime, _logLevel, _onVisitorExposed,
-        statusListener: _statusListener);
+    return FlagshipConfig(_mode, _timeout, _pollingTime, _logLevel,
+        _onVisitorExposed, _trackingManagerConfig ?? TrackingManagerConfig(),
+        statusListener: _statusListener,
+        hitCacheImp: _hitCacheImp,
+        visitorCacheImp: _visitorCacheImp);
   }
 }

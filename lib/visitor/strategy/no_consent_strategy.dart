@@ -25,14 +25,19 @@ class NoConsentStrategy extends DefaultStrategy {
   @override
   Future<void> sendHit(BaseHit hit) async {
     switch (hit.type) {
-      case Type.CONSENT:
+      case HitCategory.CONSENT:
         {
-          visitor.trackingManager.sendHit(hit);
+          visitor.trackingManager?.sendHit(hit);
         }
         break;
       default:
         Flagship.logger(Level.INFO, CONSENT_HIT);
     }
+  }
+
+  @override
+  void lookupHits() async {
+    Flagship.logger(Level.INFO, "No lookup Hits when not ready");
   }
 
   @override

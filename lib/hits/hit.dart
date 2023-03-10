@@ -1,92 +1,130 @@
 import 'package:flagship/flagship.dart';
-
-enum Type { SCREENVIEW, PAGEVIEW, TRANSACTION, ITEM, EVENT, ACTIVATION, CONSENT, NONE }
-
-abstract class Hit {
-  Map<String, Object> get bodyTrack;
-}
+import 'package:flagship/utils/logger/log_manager.dart';
 
 class BaseHit extends Hit {
-  // type for hit
-  Type type = Type.NONE;
-
   // Required
-  late String clientId;
-  late String visitorId;
-  late String? anonymousId;
+  String clientId = "";
 
   String dataSource = "APP";
 
-  /// User Ip
+  /// Refers to the IP address of the user. This should be a valid IP address in IPv4 or IPv6 format. The maximum permitted length is 45 Bytes.
   String? userIp;
 
-  /// Screen Resolution
+  /// Refers to the the screen resolution in pixels. The maximum permitted length is 20 Bytes.
   String? screenResolution;
 
-  ///Screen Color Depth
-  String? screenColorDepth;
-
-  /// User Language
+  /// Refers to the user's language. The maximum permitted length is 20 Bytes.
   String? userLanguage;
 
-  /// Session Number
+  /// Indicates the number of sessions the current visitor has logged, including the current session.
   int? sessionNumber;
+
+  /// This argument refers to the Screen Name of the app, at the moment the hit is sent.  The maximum permitted length is 2048 Bytes .
+  String? location;
+
+  BaseHit() {
+    this.clientId = Flagship.sharedInstance().envId ?? "";
+    createdAt = DateTime.now();
+  }
+
+  BaseHit.fromMap(String oldId, Map body) {
+    try {
+      this.id = oldId; // Keep the same id in db
+      // Set the created date
+      this.createdAt = DateTime.parse(body['createdAt']);
+      // Set CLient Id
+      this.clientId = body["cid"] ?? "";
+      // Set the id of visitor
+      this.visitorId = body["vid"] ?? "";
+      this.anonymousId = body["cuid"];
+      // Data Source
+      this.dataSource = body["ds"] ?? "APP";
+      // Screen resolution
+      this.screenResolution = body["sr"];
+      // user language
+      this.userLanguage = body['ul'];
+      // Session number
+      this.sessionNumber = body['sn'];
+    } catch (e) {
+      Flagship.logger(Level.DEBUG, "Error on parsing hit from map, $e");
+    }
+  }
 
   @override
   Map<String, Object> get bodyTrack {
     return {};
   }
 
-  BaseHit() {
-    this.clientId = Flagship.sharedInstance().envId ?? "";
-  }
-
   Map<String, Object> get communBodyTrack {
     var result = new Map<String, Object>();
 
-    result.addAll({"cid": clientId, /*"vid": visitorId,*/ "ds": dataSource});
+    result.addAll({"cid": clientId, "ds": dataSource});
 
-    // ad xcpc informations
+    /// Add xpc informations
     result.addEntries(_createTuple().entries);
 
-    /// Refracto later
-    /// user ipx
+    /// User ipx
     if (userIp != null) result["uip"] = dataSource;
 
     /// ScreenResolution
     if (screenResolution != null) result["sr"] = screenResolution ?? "";
 
-    /// Screen Color Depth
-    if (screenColorDepth != null) result["sd"] = screenColorDepth ?? "";
-
-    /// user language
+    /// User language
     if (userLanguage != null) result["ul"] = userLanguage ?? "";
 
     /// Session number
     if (sessionNumber != null) result["sn"] = sessionNumber ?? 0;
 
+    /// Add qt entries
+    /// Time difference between when the hit was created and when it was sent
+    if (this.createdAt != null) {
+      result.addEntries({
+        "qt": DateTime.now()
+            .difference(createdAt ?? DateTime.now())
+            .inMilliseconds
+      }.entries);
+    }
     return result;
   }
 
   String get typeOfEvent {
     String ret = "None";
     switch (type) {
-      case Type.SCREENVIEW:
+      case HitCategory.SCREENVIEW:
         ret = 'SCREENVIEW';
         break;
-      case Type.ITEM:
+      case HitCategory.ITEM:
         ret = 'ITEM';
         break;
-      case Type.EVENT:
-      case Type.CONSENT:
+      case HitCategory.EVENT:
+      case HitCategory.CONSENT:
         ret = 'EVENT';
         break;
-      case Type.TRANSACTION:
+      case HitCategory.TRANSACTION:
         ret = 'TRANSACTION';
+        break;
+      case HitCategory.ACTIVATION:
+        ret = 'ACTIVATE';
+        break;
+      case HitCategory.SEGMENT:
+        ret = 'SEGMENT';
         break;
       default:
     }
     return ret;
+  }
+
+  @override
+  bool isLessThan4H() {
+    return (DateTime.now().difference(createdAt ?? DateTime.now()).inHours <=
+        4);
+  }
+
+  @override
+  bool isValid() {
+    return (this.visitorId.isNotEmpty &&
+        this.clientId.isNotEmpty &&
+        this.type != HitCategory.NONE);
   }
 
   Map<String, String> _createTuple() {
@@ -100,4 +138,42 @@ class BaseHit extends Hit {
     }
     return tupleId;
   }
+}
+
+abstract class Hit {
+  // id for the hit
+  String id = "";
+
+  /// CreatedAt date
+  DateTime? createdAt;
+
+  String? anonymousId;
+
+  // Visitor id
+  String visitorId = "";
+
+  // Type for hit
+  HitCategory type = HitCategory.NONE;
+
+  // Body used on posting data
+  Map<String, Object> get bodyTrack;
+
+  // Is less than 4h
+  bool isLessThan4H();
+
+  // Check the validity
+  bool isValid();
+}
+
+enum HitCategory {
+  SCREENVIEW,
+  PAGEVIEW,
+  TRANSACTION,
+  ITEM,
+  EVENT,
+  ACTIVATION,
+  CONSENT,
+  BATCH,
+  SEGMENT,
+  NONE
 }

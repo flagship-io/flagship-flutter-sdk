@@ -1,33 +1,35 @@
-import 'package:flagship/flagshipContext/flagship_context.dart';
+import 'dart:io';
+
+import 'package:flagship/cache/interface_cache.dart';
+import 'package:flagship/flagship.dart';
 import 'package:flagship/flagship_config.dart';
+import 'package:flagship/hits/screen.dart';
+import 'package:flagship/tracking/tracking_manager_config.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor.dart';
+import 'package:flagship_qa/Providers/fs_data.dart';
 import 'package:flagship_qa/mixins/dialog.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import './FSinputField.dart';
 import 'dart:math';
 import '../widgets/context_screen.dart';
-// My package
-import 'package:flagship/flagship.dart';
+import 'package:path_provider/path_provider.dart';
 
+// My package
+
+// ignore: must_be_immutable
 class Configuration extends StatefulWidget {
-  bool isApiMode = true;
-  bool isAuthenticate = false;
-  bool isConsented = true;
+  bool isSdkReady = false;
 
   @override
   _ConfigurationState createState() => _ConfigurationState();
 }
 
 class _ConfigurationState extends State<Configuration> with ShowDialog {
-  // keys
-  String apiKey = "";
-  String envId = "";
-
-  final int defaultTimeout = 2000;
   final int defaultPollingTime = 60;
-
   final envIdController = TextEditingController();
   final apiKeyController = TextEditingController();
   final timeoutController = TextEditingController();
@@ -37,14 +39,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   @override
   void initState() {
     super.initState();
-    visitorContext = Map<String, Object>.from(initialVisitorContext);
-    visitorIdController.text = _createRandomUser();
   }
-
-  final Map<String, Object> initialVisitorContext = {
-    "customer": "QA",
-    "country": "AE"
-  };
 
   Map<String, Object> visitorContext = {};
 
@@ -52,11 +47,9 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   _resetConfig() {
     setState(() {
       print("Reset to default values fields");
-      timeoutController.text = defaultTimeout.toString();
+      //timeoutController.text = widget.defaultTimeout.toString();
       pollingTimeController.text = defaultPollingTime.toString();
       visitorIdController.text = _createRandomUser();
-      visitorContext = initialVisitorContext;
-      widget.isApiMode = true;
       Flagship.sharedInstance().onUpdateState(Status.NOT_INITIALIZED);
     });
   }
@@ -64,81 +57,85 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   /////////////// start sdk ////////////////////
 //start SDK
 
-  _startSdk() {
+  _startSdk() async {
+    // To localize the path of simulator
+    Directory tempDir = await getTemporaryDirectory();
+    print(tempDir.path);
+
     Flagship.sharedInstance().onUpdateState(Status.NOT_INITIALIZED);
+    FSData fsData = Provider.of<FSData>(context, listen: false);
 
     /// we did this to allow start(S)
     Flagship.logger(
         Level.ALL, '--------- Start with $visitorIdController.text ---------');
 
     FlagshipConfig config = ConfigBuilder()
-        .withMode(widget.isApiMode ? Mode.DECISION_API : Mode.BUCKETING)
+        .withLogLevel(Level.ALL)
+        .withMode(fsData.sdkMode)
         .withStatusListener((newStatus) {
           print('--------- Callback with $newStatus ---------');
-          var titleMsg = '';
-          var newVisitor;
+          //var newVisitor;
           if (newStatus == Status.READY) {
-            //Get the visitor
-            // visitor = Flagship.getCurrentVisitor();
-            // if (visitor == null) {
-            // Create visitor if null
-            newVisitor = Flagship.newVisitor(visitorIdController.text)
-                .withContext(visitorContext)
-                .hasConsented(widget.isConsented)
-                .isAuthenticated(widget.isAuthenticate)
-                .build();
-            // Set current visitor singleton instance for future use
-            Flagship.setCurrentVisitor(newVisitor);
-            // }
-
-            newVisitor.fetchFlags().whenComplete(() {
-              switch (Flagship.getStatus()) {
-                case Status.PANIC_ON:
-                  titleMsg = "SDK is on panic mode, will use default value";
-                  break;
-                case Status.READY:
-                  titleMsg = "SDK is ready to use";
-                  break;
-                default:
-              }
-              showBasicDialog(titleMsg, '');
+            setState(() {
+              widget.isSdkReady = ((newStatus == Status.PANIC_ON) ||
+                      (newStatus == Status.READY))
+                  ? true
+                  : false;
             });
           }
         })
-        .withTimeout(int.tryParse(timeoutController.text) ?? defaultTimeout)
-        .withOnVisitorExposed((exposedUser, fromFlag) {
-          print("L'utilisateur ayant été exposé ");
-          print(fromFlag.toJson().toString());
-          print(exposedUser.toJson().toString());
-        })
+        .withTimeout(int.tryParse(timeoutController.text) ?? fsData.timeout)
+        .withTrackingConfig(TrackingManagerConfig(
+            batchIntervals: 5, poolMaxSize: 10, batchStrategy: fsData.strategy))
         .build();
     Flagship.start(envIdController.text, apiKeyController.text, config: config);
   }
 
-  // .withUserExposureCallback((exposedUser, exposedFlag) {
-  //   ////
-  //   ///
-  //   ///
+  _createVisitor() {
+    UserData fsUser = Provider.of<UserData>(context, listen: false);
+    visitorIdController.text = fsUser.visitorId;
+    var newVisitor;
+    newVisitor = Flagship.newVisitor(fsUser.visitorId)
+        .withContext(fsUser.context)
+        .hasConsented(fsUser.hasConsented)
+        .isAuthenticated(fsUser.isAuthenticated)
+        .build();
+    // Set current visitor singleton instance for future use
+    Flagship.setCurrentVisitor(newVisitor);
+  }
 
-  //   // -----------------------
-  //   print("Exposed flag value are : ${exposedFlag.toJson().toString()}");
-  //   print("Exposed flag value are : ${exposedUser.toJson().toString()}");
-  //   // -----------------------
-  // })
-// Change Mode
-  _changeMode() {
-    setState(() {
-      widget.isApiMode = !widget.isApiMode;
+// Fetch flags
+  _fetchFalgs() {
+    var titleMsg = '';
+    Flagship.getCurrentVisitor()?.fetchFlags().whenComplete(() {
+      switch (Flagship.getStatus()) {
+        case Status.PANIC_ON:
+          titleMsg = "SDK is on panic mode, will use default value";
+          break;
+        case Status.READY:
+          titleMsg = "SDK is ready to use";
+          break;
+        default:
+      }
+      showBasicDialog(titleMsg, '');
     });
   }
 
-  // Consent Mode
-  _consent() {
-    // For now, disabled bucketing mode
-    setState(() {
-      widget.isConsented = !widget.isConsented;
-    });
-    Flagship.getCurrentVisitor()?.setConsent(widget.isConsented);
+  _onChangeStrategy(FSData pFsData, String value) {
+    switch (value) {
+      case "CONTINOUS":
+        pFsData.updateStrategy(BatchCachingStrategy.BATCH_CONTINUOUS_CACHING);
+        break;
+      case "PERIODIC":
+        pFsData.updateStrategy(BatchCachingStrategy.BATCH_PERIODIC_CACHING);
+        break;
+      case "NO_STRATEGY":
+        pFsData.updateStrategy(
+            BatchCachingStrategy.NO_BATCHING_CONTINUOUS_CACHING_STRATEGY);
+        break;
+    }
+    print(
+        " ------------- The choosen strategy is ${pFsData.strategy} ----------------");
   }
 
   void _onTapContext(BuildContext ctx) {
@@ -167,10 +164,15 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
 
   @override
   Widget build(BuildContext context) {
+    FSData fsData = Provider.of<FSData>(context, listen: true);
+    UserData fsUser = Provider.of<UserData>(context, listen: true);
+    List<String> strategyArray = ["CONTINOUS", "PERIODIC", "NO_STRATEGY"];
     double _spaceBetweenInput = 10;
-    envIdController.text = envId;
-    apiKeyController.text = apiKey;
-    timeoutController.text = defaultTimeout.toString();
+    envIdController.text = fsData.envId;
+    apiKeyController.text = fsData.apiKey;
+    timeoutController.text = fsData.timeout.toString();
+    visitorIdController.text = fsUser.visitorId;
+    bool isApiMode = (fsData.sdkMode == Mode.DECISION_API) ? true : false;
     pollingTimeController.text = defaultPollingTime.toString();
 
     final mediaQuery = MediaQuery.of(context);
@@ -208,7 +210,12 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
               FSInputField("ApiKey", apiKeyController, TextInputType.text),
               SizedBox(height: _spaceBetweenInput),
               FSInputField(
-                  "Timeout(ms)", timeoutController, TextInputType.number),
+                "Timeout(ms)",
+                timeoutController,
+                TextInputType.number,
+                onChangeInput: (newText) =>
+                    {fsData.updaeTimeout(int.tryParse(newText) ?? 2000)},
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -219,18 +226,26 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
                   )),
                   Expanded(
                       child: ElevatedButton(
-                          onPressed: () => {_changeMode()},
-                          child: Text(widget.isApiMode ? "API" : "BUCKETING")))
+                          onPressed: () => {
+                                fsData.updateSdkMode(!isApiMode
+                                    ? Mode.DECISION_API
+                                    : Mode.BUCKETING)
+                              },
+                          child: Text((fsData.sdkMode == Mode.DECISION_API)
+                              ? "API"
+                              : "BUCKETING")))
                 ],
               ),
-              (widget.isApiMode == true)
+              (fsData.sdkMode == Mode.DECISION_API)
                   ? SizedBox(height: _spaceBetweenInput)
                   : FSInputField("Polling Interval(s)", pollingTimeController,
                       TextInputType.number),
               SizedBox(height: _spaceBetweenInput),
               SizedBox(height: _spaceBetweenInput),
-              FSInputField(
-                  "VisitorId", visitorIdController, TextInputType.text),
+              FSInputField("VisitorId", visitorIdController, TextInputType.text,
+                  onChangeInput: (newText) {
+                fsUser.updateVisitorId(newText);
+              }),
               SizedBox(height: _spaceBetweenInput),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -242,10 +257,45 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
                   )),
                   Expanded(
                       child: ElevatedButton(
-                          onPressed: () => {_consent()},
-                          child: Text(widget.isConsented
+                          onPressed: () => {
+                                fsUser.updateConsent(!fsUser.hasConsented),
+                                Flagship.getCurrentVisitor()
+                                    ?.setConsent(fsUser.hasConsented),
+                                // _consent()
+                              },
+                          child: Text(fsUser.hasConsented
                               ? "Consented"
                               : "Not Consented")))
+                ],
+              ),
+              SizedBox(height: _spaceBetweenInput),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Expanded(
+                      child: Text(
+                    "Strategy",
+                    style: TextStyle(color: Colors.white),
+                  )),
+                  Expanded(
+                      child: CupertinoPicker.builder(
+                          scrollController: FixedExtentScrollController(
+                              initialItem: fsData.strategy.index),
+                          itemExtent: 30,
+                          childCount: 3,
+                          backgroundColor: Color.fromARGB(255, 165, 31, 49),
+                          onSelectedItemChanged: (range) =>
+                              {_onChangeStrategy(fsData, strategyArray[range])},
+                          itemBuilder: (context, range) {
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                strategyArray[range],
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 14),
+                              ),
+                            );
+                          }))
                 ],
               ),
               SizedBox(height: _spaceBetweenInput),
@@ -259,10 +309,10 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
                   )),
                   Container(
                       child: Switch.adaptive(
-                    value: widget.isAuthenticate,
+                    value: fsUser.isAuthenticated,
                     onChanged: (val) {
                       setState(() {
-                        widget.isAuthenticate = val;
+                        fsUser.updateIsAuthenticated(val);
                       });
                     },
                   )),
@@ -276,12 +326,39 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
                     onPressed: () => {_startSdk()},
                   )),
               SizedBox(height: _spaceBetweenInput),
+              SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    child: Text("CREATE VISITOR"),
+                    onPressed: () => {
+                      //fsUser.updateVisitorId(_createRandomUser()),
+                      _createVisitor()
+                    },
+                  )),
+              SizedBox(height: _spaceBetweenInput),
               Container(
                   width: double.infinity,
                   child: ElevatedButton(
-                    child: Text("Update context & synchronize"),
-                    onPressed: () => {_onTapContext(context)},
+                    child: Text("FETCH FLAGS"),
+                    onPressed: widget.isSdkReady ? () => {_fetchFalgs()} : null,
                   )),
+              SizedBox(height: _spaceBetweenInput),
+              Container(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    child: Text("UPDATE CONTEXT"),
+                    onPressed: widget.isSdkReady
+                        ? () => {_onTapContext(context)}
+                        : null,
+                  )),
+              SizedBox(height: _spaceBetweenInput),
+              Container(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                      child: Text("CUSTOM SCENARIOS"),
+                      onPressed: () {
+                        _customTest();
+                      })),
             ],
           ),
         ),
@@ -290,75 +367,80 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   }
 
   String _createRandomUser() {
-    return 'user_' + Random().nextInt(100).toString();
+    return 'visitor-A' + Random().nextInt(100).toString();
   }
 
-  doMe() {
-// Create a visitor
-
-    Visitor visitor =
-        Flagship.newVisitor("random_Id").withContext({"isVip": true}).build();
-
-// Call the authenticate function
-
-    visitor.authenticate("random_Id");
-
-// Fetch the flags to update the visitor decision
-
-    visitor.fetchFlags().whenComplete(() {
-      // ... Do things ....
-    });
-
-// If you want to unauthenticate the visitor
-
-    visitor.unauthenticate();
-
-// Fetch the flags to update the visitor decision
-
-    visitor.fetchFlags().whenComplete(() {
-      // ... Do things ....
-    });
-
-    // Update the location country
-    visitor.updateFlagshipContext(FlagshipContext.LOCATION_COUNTRY, "FRANCE");
-    // Update the carrier name
-    visitor.updateFlagshipContext(FlagshipContext.CARRIER_NAME, "SFR");
-
-//////////////////////////////////////////////
-/////// Start sdk with default options ///////
-//////////////////////////////////////////////
-
-    Flagship.start("your_env_id", "your_api_key");
-
-//////////////////////////////////////////////
-/////// Start sdk with custom options  ///////
-//////////////////////////////////////////////
-
-// - timeout   = 1500 ms
-// - level     = warning message
-// - activated = true
-// - statusListener callback
-
-// create a config :
-
-//////////////////////////////////////////////
-/////// Start SDK with custom options  ///////
-//////////////////////////////////////////////
-
-// - timeout   = 1500 ms
-// - level     = warning message
-// - statusListener callback
-
-    FlagshipConfig customConfig = ConfigBuilder()
-        .withMode(Mode.DECISION_API)
-        .withStatusListener((newStatus) {
-          // Do things when status change ...
-        })
-        .withTimeout(1500)
-        .withLogLevel(Level.WARNING)
+  _customTest() async {
+    Visitor vA = Flagship.newVisitor("visitor_A")
+        .withContext({"testing_tracking_manager": true})
+        .isAuthenticated(true)
         .build();
 
-// Start SDK
-    Flagship.start("envId", "apiKey", config: customConfig);
+    vA.fetchFlags().whenComplete(() {
+      print("stop");
+      //Activate
+      var value = vA.getFlag("btnTitle", "defaultValue").value();
+      print("the vlaue of flag is " + value);
+      vA.sendHit(Screen(location: "screenQA"));
+      print("stop"); // to go online mode
+
+      Flagship.sharedInstance().close();
+    });
+    // to go offline mode
+
+    // Flagship.sharedInstance().close();
+
+    /// mode online
+
+    // var vB = Flagship.newVisitor("visitorB")
+    //     .withContext({"testing_tracking_manager": true}).build();
+
+    // await vB.fetchFlags();
+    // //Activate
+    // var valueBis = vB.getFlag("my_flag", "defaultValue").value();
+    // print(valueBis);
+    // vB.sendHit(Screen(location: "screenQA"));
+  }
+}
+
+class CustomCacheHit with IHitCacheImplementation {
+  @override
+  void cacheHits(Map<String, Map<String, Object>> hits) {
+    print("-------------- CUSTOM ------------");
+  }
+
+  @override
+  void flushAllHits() {
+    print("-------------- CUSTOM ------------");
+  }
+
+  @override
+  void flushHits(List<String> hitIds) {
+    print("-------------- CUSTOM ------------");
+  }
+
+  @override
+  Future<List<Map>> lookupHits() {
+    print("-------------- CUSTOM ------------");
+    return Future.value([]);
+  }
+}
+
+class CustomVisitorCache with IVisitorCacheImplementation {
+  @override
+  void cacheVisitor(String visitorId, String jsonString) {
+    print("-------------- CUSTOM VISITOR CACHE------------");
+  }
+
+  @override
+  void flushVisitor(String visitorId) {
+    print("--------------  CUSTOM VISITOR CACHE- ------------");
+  }
+
+  @override
+  Future<String> lookupVisitor(String visitoId) async {
+    Future.delayed(Duration(milliseconds: 200));
+    print("--------------  CUSTOM VISITOR CACHE- ------------");
+    return Future.value("");
   }
 }

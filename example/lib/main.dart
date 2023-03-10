@@ -1,9 +1,9 @@
-import 'dart:io';
-
 import 'package:flagship/flagship.dart';
+import 'package:flagship_qa/Providers/fs_data.dart';
 import 'package:flagship_qa/widgets/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import './widgets/configuration.dart';
 import './widgets/Modifications.dart';
 import './widgets/Hits.dart';
@@ -12,7 +12,7 @@ import './widgets/modifications_json_screen.dart';
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
-  HttpOverrides.global = MyHttpOverrides();
+  // HttpOverrides.global = MyHttpOverrides();
   runApp(MyApp());
 }
 
@@ -20,17 +20,24 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: MainScreen(title: "FlagshipQA"),
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.pink).copyWith(secondary: Colors.amber),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (ctx) => FSData()),
+        ChangeNotifierProvider(create: (ctx) => UserData()),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: MainScreen(title: "FlagshipQA"),
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.pink)
+              .copyWith(secondary: Colors.amber),
+        ),
+        initialRoute: '/',
+        routes: {
+          ContextScreen.routeName: (ctx) => ContextScreen(),
+          ModificationsJSONScreen.routeName: (ctx) => ModificationsJSONScreen()
+        },
       ),
-      initialRoute: '/',
-      routes: {
-        ContextScreen.routeName: (ctx) => ContextScreen(),
-        ModificationsJSONScreen.routeName: (ctx) => ModificationsJSONScreen()
-      },
     );
   }
 }
@@ -72,9 +79,16 @@ class MainScreenState extends State<MainScreen> {
       label: "configuration",
       backgroundColor: Colors.blueGrey,
     ),
-    BottomNavigationBarItem(icon: Icon(Icons.person), label: "User", backgroundColor: Colors.blueGrey),
-    BottomNavigationBarItem(icon: Icon(Icons.flag), label: "Modifications", backgroundColor: Colors.blueGrey),
-    BottomNavigationBarItem(icon: Icon(Icons.api), label: "Hits", backgroundColor: Colors.blueGrey)
+    BottomNavigationBarItem(
+        icon: Icon(Icons.person),
+        label: "User",
+        backgroundColor: Colors.blueGrey),
+    BottomNavigationBarItem(
+        icon: Icon(Icons.flag),
+        label: "Modifications",
+        backgroundColor: Colors.blueGrey),
+    BottomNavigationBarItem(
+        icon: Icon(Icons.api), label: "Hits", backgroundColor: Colors.blueGrey)
   ];
 
   @override
@@ -98,11 +112,11 @@ class MainScreenState extends State<MainScreen> {
   }
 }
 
-class MyHttpOverrides extends HttpOverrides {
-  @override
-  HttpClient createHttpClient(SecurityContext? context) {
-    HttpClient htClient = super.createHttpClient(context)
-      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
-    return htClient;
-  }
-}
+// class MyHttpOverrides extends HttpOverrides {
+//   @override
+//   HttpClient createHttpClient(SecurityContext? context) {
+//     HttpClient htClient = super.createHttpClient(context)
+//       ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+//     return htClient;
+//   }
+//}

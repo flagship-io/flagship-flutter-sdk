@@ -2,10 +2,10 @@ import 'package:flagship/hits/hit.dart';
 
 class Transaction extends BaseHit {
   /// Transaction unique identifier.
-  String transactionId;
+  String transactionId = "";
 
-  /// Transaction name. Name of the goal in the reporting.
-  String affiliation;
+  /// Transaction name. Name of the goal in the reporting. The maximum permitted length is 500 Bytes. The maximum permitted length is 500 Bytes.
+  String affiliation = "";
 
   /// Total revenue associated with the transaction. This value should include any shipping or tax costs
   double? revenue;
@@ -16,16 +16,16 @@ class Transaction extends BaseHit {
   /// Specifies the total taxes of the transaction.
   double? tax;
 
-  /// Specifies the currency used for all transaction currency values. Value should be a valid ISO 4217 currency code.
+  /// Specifies the currency used for all transaction currency values. Value should be a valid ISO 4217 currency code. The maximum permitted length is 500 Bytes.
   String? currency;
 
-  /// Specifies the coupon code used by the customer for the transaction.
+  /// Specifies the coupon code used by the customer for the transaction. The maximum permitted length is 10 Bytes.
   String? couponCode;
 
-  /// Specifies the payment method for the transaction.
+  /// Specifies the payment method for the transaction. The maximum permitted length is 10 Bytes.
   String? paymentMethod;
 
-  /// Specifies the shipping method of the transaction.
+  /// Specifies the shipping method of the transaction. The maximum permitted length is 10 Bytes.
   String? shippingMethod;
 
   /// Specifies the number of items for the transaction.
@@ -43,7 +43,7 @@ class Transaction extends BaseHit {
       this.shipping,
       this.shippingMethod})
       : super() {
-    type = Type.TRANSACTION;
+    type = HitCategory.TRANSACTION;
   }
 
   @override
@@ -72,5 +72,29 @@ class Transaction extends BaseHit {
     // Add commun data
     customBody.addAll(super.communBodyTrack);
     return customBody;
+  }
+
+  Transaction.fromMap(String oldId, Map body) : super.fromMap(oldId, body) {
+    this.type = HitCategory.TRANSACTION;
+
+    this.affiliation = body['ta'] ?? "";
+    this.transactionId = body['tid'] ?? "";
+
+    // Add revenue
+    this.revenue = body['tr'];
+    // Add shipping
+    this.shipping = body['ts'];
+    // Add Tax
+    this.tax = body['tt'];
+    // Add currency
+    this.currency = body['tc'];
+    // Add coupon code
+    this.couponCode = body['tcc'];
+    // Add paymentMethod
+    this.paymentMethod = body['pm'];
+    // Add shippingMethod
+    this.shippingMethod = body['sm'];
+    // Add item count
+    this.itemCount = body['icn'];
   }
 }

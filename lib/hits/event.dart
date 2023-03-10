@@ -13,20 +13,21 @@ enum EventCategory {
 }
 
 class Event extends BaseHit {
-  /// category of the event (Action_Tracking or User_Engagement).
+  /// Categorizes the event and helps us understand what you want to retrieve inside the reporting.
   EventCategory? category;
 
-  /// name of the event.
-  String action;
+  /// The action corresponds to the KPI name you will be able to select inside the Flagship dashboard reporting. The maximum permitted length is 500 Bytes.
+  String action = "";
 
-  /// description of the event.
+  /// The label argument is a supplementary description of your event. The maximum permitted length is 500 Bytes.
   String? label;
 
   /// value of the event, must be non-negative.
   int? value;
 
-  Event({required this.action, required this.category, this.label, this.value}) : super() {
-    type = Type.EVENT;
+  Event({required this.action, required this.category, this.label, this.value})
+      : super() {
+    type = HitCategory.EVENT;
   }
 
   @override
@@ -35,21 +36,55 @@ class Event extends BaseHit {
     customBody.addAll({
       "t": typeOfEvent,
       "ea": this.action,
-      "ec": (this.category == EventCategory.Action_Tracking) ? ActionTracking : UserEngagement
+      "ec": (this.category == EventCategory.Action_Tracking)
+          ? ActionTracking
+          : UserEngagement
     });
-    // Add label
-    if (label != null) customBody['el'] = label ?? "";
-    // Add value
-    if (value != null) customBody['ev'] = value ?? 0;
+    // Add label if not null
+    if (label != null) {
+      customBody['el'] = label ?? "";
+    }
+    // Add value if not null
+    if (value != null) {
+      customBody['ev'] = value ?? 0;
+    }
     // Add commun body
     customBody.addAll(super.communBodyTrack);
+
     return customBody;
+  }
+
+  Event.fromMap(String oldId, Map body) : super.fromMap(oldId, body) {
+    // this.location = body['dl'];
+    this.category = (body['ec'] == ActionTracking)
+        ? EventCategory.Action_Tracking
+        : EventCategory.User_Engagement;
+    this.action = body['ea'] ?? "";
+    this.label = body['el'];
+    this.value = body["ev"];
+    this.type = HitCategory.EVENT;
+  }
+
+  @override
+  bool isValid() {
+    if (this.value != null) {
+      // if the value is not null ==> check the sign of the value
+      if (this.value?.sign == -1) {
+        return false;
+      }
+    }
+    return true;
   }
 }
 
 class Consent extends Event {
-  Consent({required bool hasConsented}) : super(action: "fs_consent", category: EventCategory.User_Engagement) {
-    type = Type.CONSENT;
+  Consent({required bool hasConsented})
+      : super(action: "fs_consent", category: EventCategory.User_Engagement) {
+    type = HitCategory.CONSENT;
     label = hasConsented ? "Flutter:true" : "Flutter:false";
+  }
+
+  Consent.fromMap(String oldId, Map body) : super.fromMap(oldId, body) {
+    this.type = HitCategory.CONSENT;
   }
 }

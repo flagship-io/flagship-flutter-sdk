@@ -22,7 +22,6 @@ class Service {
       case RequestType.Post:
         {
           Flagship.logger(Level.INFO, data.toString(), isJsonString: true);
-
           try {
             var response = await this
                 .httpClient
@@ -41,6 +40,8 @@ class Service {
             Flagship.logger(
                 Level.INFO, REQUEST_ERROR.replaceFirst("%s", error.toString()));
             return Response(error.toString(), 400);
+          } on Exception catch (e) {
+            return Response(e.toString(), 511);
           }
         }
       case RequestType.Get:
@@ -55,4 +56,5 @@ class Service {
     }
   }
 }
-/// Refractor later with rich code errors 
+
+/// Refractor later with rich code errors

@@ -13,7 +13,8 @@ class Polling {
 
   start() {
     getScript().whenComplete(() {
-      timer = Timer.periodic(Duration(seconds: intervalTimePolling), (Timer t) async {
+      timer = Timer.periodic(Duration(seconds: intervalTimePolling),
+          (Timer t) async {
         await getScript();
       });
     });

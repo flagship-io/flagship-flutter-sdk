@@ -17,39 +17,14 @@ class _ScreenState extends State<ScreenHit> {
     _textController = TextEditingController(text: 'flutter_screen');
   }
 
-  _onSendScreenHit() async {
-    Screen screenEvent = Screen(location: _textController.text);
-    var text = "Screen hit sent";
+  _onSendScreenHit() {
     var currentVisitor = Flagship.getCurrentVisitor();
-    var subText = "Screen hit has been sent";
     try {
-      await currentVisitor?.sendHit(screenEvent);
+      Screen screenEvent = Screen(location: _textController.text);
+      currentVisitor?.sendHit(screenEvent);
     } catch (e) {
-      text = "Screen send error";
-      subText = e.toString();
+      print(e.toString());
     }
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return new AlertDialog(
-            title: new Text(text),
-            content: new Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(subText),
-              ],
-            ),
-            actions: <Widget>[
-              new TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('Close'),
-              ),
-            ],
-          );
-        });
   }
 
   final double _vertcialSpace = 20;

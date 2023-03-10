@@ -26,9 +26,8 @@ class _TransactionState extends State<TransactionHit> {
   @override
   void initState() {
     super.initState();
-    _textControllerId = TextEditingController(text: 'flutter_TransactioId');
-    _textControllerAffiliation =
-        TextEditingController(text: 'flutter_transaction');
+    _textControllerId = TextEditingController(text: 'transac_v3');
+    _textControllerAffiliation = TextEditingController(text: 'transac_v3');
     _textControllerCoupon = TextEditingController(text: 'coupon');
     _textControllerCurrency = TextEditingController(text: 'EUR');
     _textControllerItemCount = TextEditingController(text: '5');
