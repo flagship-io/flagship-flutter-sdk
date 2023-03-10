@@ -58,6 +58,17 @@ class PanicStrategy extends DefaultStrategy {
     Flagship.logger(Level.INFO, PANIC_UNAUTHENTICATE);
   }
 
+  @override
+  void cacheVisitor(String visitorId, String jsonString) {
+    Flagship.logger(Level.INFO, "No caching on panic mode");
+  }
+
+  @override
+  void lookupHits() async {
+    Flagship.logger(Level.INFO, "No lookup Hits when panic mode");
+  }
+
+  @override
   void onExposure(Modification pModification) {
     Flagship.logger(Level.INFO, PANIC_ACTIVATE);
   }

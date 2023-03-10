@@ -29,4 +29,7 @@ abstract class DecisionManager extends IDecisionManager {
   }
 
   void startPolling() {} // used by the bucketing
+
+  void updateAssignationHistory(
+      Map<String, dynamic> newAssign) {} // used by the bucketing
 }
