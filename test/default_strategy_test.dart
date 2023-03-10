@@ -131,7 +131,7 @@ void main() {
 
     config.decisionManager = fakeApi;
 
-    Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
+    await Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
 
     var v1 = Flagship.newVisitor("visitorId").build();
     Flagship.setCurrentVisitor(v1);

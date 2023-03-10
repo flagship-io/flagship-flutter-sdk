@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flagship/flagship.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 

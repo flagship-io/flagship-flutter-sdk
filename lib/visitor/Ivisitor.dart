@@ -7,11 +7,13 @@ abstract class IVisitor {
 // Get Modification
   T getModification<T>(String key, T defaultValue, {bool activate = false});
 // Get Modificatoin info
-  Map<String, Object>? getModificationInfo(String key);
+  Map<String, dynamic>? getModificationInfo(String key);
 // Synchronize modifications
   Future<void> synchronizeModifications();
 // Activate modification
   Future<void> activateModification(String key);
+// Activate flag
+  Future<void> activateFlag(Modification pModification);
 // Send Hits
   Future<void> sendHit(BaseHit hit);
 // send Consent
@@ -33,4 +35,7 @@ abstract class IVisitor {
 
 // Lookup Hits
   void lookupHits();
+
+  // onExposure
+  void onExposure(Modification pModification);
 }

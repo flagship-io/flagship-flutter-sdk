@@ -73,7 +73,7 @@ class TrackingManager {
   }
 
   // Send Activate
-  Future<void> sendActivate(Activate activateHit) async {
+  Future<int> sendActivate(Activate activateHit) async {
     // Create url
     String urlString = Endpoints.DECISION_API + Endpoints.ACTIVATION;
     var response = await service.sendHttpRequest(RequestType.Post, urlString,
@@ -88,6 +88,7 @@ class TrackingManager {
         this.onCacheHit(activateHit);
         Flagship.logger(Level.ERROR, ACTIVATE_FAILED);
     }
+    return response.statusCode;
   }
 
   void onCacheHit(Hit hitToBeCached) {

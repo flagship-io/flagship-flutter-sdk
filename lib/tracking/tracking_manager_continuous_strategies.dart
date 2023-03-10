@@ -9,7 +9,6 @@ import 'package:flagship/tracking/Batching/pool_queue.dart';
 import 'package:flagship/tracking/tracking_manager.dart';
 import 'package:flagship/tracking/tracking_manager_batch.dart';
 import 'package:flagship/tracking/tracking_manager_config.dart';
-import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 
 class TrackingManageContinuousStrategy extends TrackingManager {
@@ -71,7 +70,7 @@ class TrackingManageContinuousStrategy extends TrackingManager {
   }
 
   // later add code error in the future
-  Future<void> sendActivate(Activate activateHit) async {
+  Future<int> sendActivate(Activate activateHit) async {
     // Add the current activate by default
     List<Hit> listOfActivate = [activateHit];
     bool needToClean = false;
@@ -87,23 +86,23 @@ class TrackingManageContinuousStrategy extends TrackingManager {
     } else {
       // We dont have any failed activate in the pool
     }
-    sendActivateBatch(listOfActivate).then((statusCode) {
-      switch (statusCode) {
-        case 200:
-        case 204:
-          // Clear all the activate in the pool and clear them from cache
-          if (needToClean) {
-            _activatePool.flushAllTrackFromQueue();
-            listOfActivate.remove(
-                activateHit); // Remove the current hit before because is not already present in the cache.
-            onSendActivateBatchWithSucess(listOfActivate);
-          }
-          break;
-        default:
-          _activatePool.addNewTrackElement(activateHit);
-          this.onCacheHit(activateHit);
-      }
-    });
+    var statusCode = await sendActivateBatch(listOfActivate);
+    switch (statusCode) {
+      case 200:
+      case 204:
+        // Clear all the activate in the pool and clear them from cache
+        if (needToClean) {
+          _activatePool.flushAllTrackFromQueue();
+          listOfActivate.remove(
+              activateHit); // Remove the current hit before because is not already present in the cache.
+          onSendActivateBatchWithSucess(listOfActivate);
+        }
+        break;
+      default:
+        _activatePool.addNewTrackElement(activateHit);
+        this.onCacheHit(activateHit);
+    }
+    return statusCode;
   }
 
   @override

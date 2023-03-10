@@ -70,12 +70,12 @@ Future<void> main() async {
         .clear();
     await vMock.fetchFlags();
     var mockFlag = vMock.getFlag("key_A", "defaultValue");
-    var mockVal = mockFlag.value(userExposed: false);
+    var mockVal = mockFlag.value(visitorExposed: false);
     // "key_A":"val_A",
     expect(mockVal, "val_A");
-    await mockFlag.userExposed();
-    await mockFlag.userExposed();
-    await mockFlag.userExposed();
+    await mockFlag.visitorExposed();
+    await mockFlag.visitorExposed();
+    await mockFlag.visitorExposed();
 
     expect(
         (vMock.trackingManager as TrackingManageContinuousStrategy)
@@ -90,7 +90,7 @@ Future<void> main() async {
         .thenAnswer((_) async {
       return http.Response("mock", 200);
     });
-    await mockFlag.userExposed();
+    await mockFlag.visitorExposed();
     // After sucess the pool should be empty
     expect(
         (vMock.trackingManager as TrackingManageContinuousStrategy)

@@ -8,13 +8,13 @@ enum Mode {
 // START
 const String STARTED = "SDK (version: $FlagshipVersion) is started";
 const String INITIALIZATION_PARAM_ERROR = "Params 'envId' is not valide.";
-// ToDo: update this wording when the sdk manage other type
 
 // CONTEXT
 const String CONTEXT_UPDATE = "Update context with Map %s";
 const String CONTEXT_PARAM_ERROR =
     "params 'key' must be a non null String, and 'value' must be one of the " +
-        "following types                                  : String, Number, Boolean.";
+        "following types : String, Number, Boolean.";
+
 const String PARSING_ERROR = "An error occured whil parsing ";
 
 // MODIFICATION
@@ -37,7 +37,10 @@ const String GETMODIFICATION_NOT_READY =
     "Not ready to get modification, sdk will return the default value";
 const String GETMODIFICATION_INFO_NOT_READY =
     "Not ready to get modification infos";
-const String ACTIVTAE_NOT_READY = "Not ready to send activate";
+
+const String ACTIVATE_NOT_READY = "The SDK is not ready to send activate";
+const String FETCH_NOT_READY =
+    "The SDK in not ready to fetch flags, you should add \"await\" before the start method";
 
 // PANIC
 const String PANIC = "Panic mode is on.";

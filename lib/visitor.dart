@@ -195,7 +195,7 @@ class Visitor {
   /// key : the name of the key relative to modification
   /// Return map {"campaignId":"xxx", "variationId" : "xxxx", "variationGroupId":"xxxxx", "isReference": true/false}
   @Deprecated('Use metadata() in Flag class instead')
-  Map<String, Object>? getModificationInfo(String key) {
+  Map<String, dynamic>? getModificationInfo(String key) {
     // Delegate the action to strategy
     return _visitorDelegate.getModificationInfo(key);
   }

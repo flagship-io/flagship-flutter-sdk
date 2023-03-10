@@ -4,6 +4,8 @@ import 'package:flagship/decision/api_manager.dart';
 import 'package:flagship/decision/bucketing_manager.dart';
 import 'package:flagship/decision/decision_manager.dart';
 import 'package:flagship/tracking/tracking_manager_config.dart';
+import 'package:flagship/model/exposed_flag.dart';
+import 'package:flagship/model/visitor_exposed.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +16,10 @@ import 'flagship.dart';
 
 // Time out 2 seconds
 const TIMEOUT = 2000;
+
+// On user Exposure
+typedef OnVisitorExposed = void Function(
+    VisitorExposed visitorExposed, ExposedFlag fromFlag)?;
 
 typedef StatusListener = void Function(Status newStatus)?;
 
@@ -29,6 +35,9 @@ class FlagshipConfig {
   LogManager? logManager;
   // Status listner
   StatusListener statusListener;
+  // Callback trigger on flag visitor exposed
+  OnVisitorExposed onVisitorExposed;
+
   // Interval polling time
   int pollingTime = 60; // every 60 seconds will download the script bucketing.
 
@@ -41,7 +50,7 @@ class FlagshipConfig {
   IVisitorCacheImplementation? visitorCacheImp;
 
   FlagshipConfig(this.decisionMode, this.timeout, this.pollingTime,
-      this._logLevel, this.trackingMangerConfig,
+      this._logLevel, this.onVisitorExposed, this.trackingMangerConfig,
       {this.statusListener, this.visitorCacheImp, this.hitCacheImp}) {
     // Set the log Manager
     this.logManager = LogManager(level: _logLevel);
@@ -79,7 +88,7 @@ class ConfigBuilder {
   // StatusListener
   StatusListener? _statusListener;
 
-// Tracking Config
+  // Tracking Config
   TrackingManagerConfig? _trackingManagerConfig;
 
   // Cache Hit imp
@@ -87,6 +96,8 @@ class ConfigBuilder {
 
   // Cache Visitor Imp
   IVisitorCacheImplementation? _visitorCacheImp;
+
+  OnVisitorExposed? _onVisitorExposed;
 
   ConfigBuilder();
 
@@ -140,9 +151,15 @@ class ConfigBuilder {
     return this;
   }
 
+  // On User exposure
+  ConfigBuilder withOnVisitorExposed(OnVisitorExposed pOnVisitorExposed) {
+    _onVisitorExposed = pOnVisitorExposed;
+    return this;
+  }
+
   FlagshipConfig build() {
     return FlagshipConfig(_mode, _timeout, _pollingTime, _logLevel,
-        _trackingManagerConfig ?? TrackingManagerConfig(),
+        _onVisitorExposed, _trackingManagerConfig ?? TrackingManagerConfig(),
         statusListener: _statusListener,
         hitCacheImp: _hitCacheImp,
         visitorCacheImp: _visitorCacheImp);

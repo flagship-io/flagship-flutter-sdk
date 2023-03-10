@@ -21,14 +21,6 @@ class ApiManager extends DecisionManager {
 
     Flagship.logger(Level.INFO, 'GET CAMPAIGNS :' + urlString);
 
-    // // create headers
-    // Map<String, String> fsHeaders = {
-    //   "x-api-key": Flagship.sharedInstance().apiKey ?? "",
-    //   "x-sdk-client": "flutter",
-    //   "x-sdk-version": FlagshipVersion,
-    //   "Content-type": "application/json"
-    // };
-
     /// Map to send
     Map<String, Object> params = {
       "visitorId": visitorId,

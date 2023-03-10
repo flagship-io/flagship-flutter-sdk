@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/utils/constants.dart';
@@ -35,6 +36,10 @@ class Service {
             Flagship.logger(
                 Level.INFO, REQUEST_ERROR.replaceFirst("%s", urlString));
             return Response(e.toString(), 400);
+          } on SocketException catch (error) {
+            Flagship.logger(
+                Level.INFO, REQUEST_ERROR.replaceFirst("%s", error.toString()));
+            return Response(error.toString(), 400);
           } on Exception catch (e) {
             return Response(e.toString(), 511);
           }

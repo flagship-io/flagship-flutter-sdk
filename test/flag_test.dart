@@ -4,6 +4,7 @@ import 'package:flagship/flagship.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/flagship_version.dart';
 import 'package:flagship/model/flag.dart';
+import 'package:flagship/tracking/tracking_manager.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -40,13 +41,32 @@ void main() async {
     return http.Response(fakeResponse, 200);
   });
 
-  FlagshipConfig config = ConfigBuilder().withTimeout(TIMEOUT).build();
+  when(fakeService.sendHttpRequest(RequestType.Post,
+          'https://decision.flagship.io/v2/activate', any, any,
+          timeoutMs: 60000))
+      .thenAnswer((_) async {
+    return http.Response("fakeResponse", 200);
+  });
+
+  FlagshipConfig config = ConfigBuilder()
+      .withTimeout(TIMEOUT)
+      .withOnVisitorExposed((exposedUser, exposedFlag) {
+    expect(exposedFlag.metadata().campaignId, "bsffhle242b2l3igq4dg");
+    expect(exposedFlag.metadata().variationGroupId, "bsffhle242b2l3igq4egaa");
+    expect(exposedFlag.metadata().variationId, "bsffhle242b2l3igq4f0");
+  }).build();
   config.decisionManager = fakeApi;
+  TrackingManager fakeTracking =
+      TrackingManager(fakeService, config.trackingMangerConfig, null);
+
   await Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
   var v1 = Flagship.newVisitor("flagVisitor").build();
   v1.config.decisionManager = fakeApi;
+
   test("Test Flag class", (() async {
-    v1.fetchFlags().whenComplete(() {
+    var v1 = Flagship.newVisitor("flagVisitor").build();
+    v1.trackingManager = fakeTracking;
+    v1.fetchFlags().whenComplete(() async {
       // List of flags
       List<Map<String, dynamic>> listEntry = [
         // Correct Flag
@@ -124,20 +144,21 @@ void main() async {
           expect(metadata.variationGroupId, "");
           expect(metadata.variationId, "");
           expect(metadata.isReference, false);
-          expect(metadata.slug, "");
+          expect(metadata.slug, null);
           expect(metadata.campaignType, "");
         }
         // Check lentgh for metedata json
         expect(myFlag.metadata().toJson().keys.length, 6);
         // Expose
-        myFlag.userExposed();
+        await myFlag.visitorExposed();
       }
     });
   }));
 
   test("Flag with bad type", () {
-    v1.fetchFlags().whenComplete(() {
-      Flag myFlag = v1.getFlag("key_A", 3.14);
+    var v2 = Flagship.newVisitor("flagVisitor").build();
+    v2.fetchFlags().whenComplete(() {
+      Flag myFlag = v2.getFlag("key_A", 3.14);
       expect(myFlag.value(), 3.14);
       expect(myFlag.exists(), true);
       FlagMetadata metadata = myFlag.metadata();
@@ -145,14 +166,15 @@ void main() async {
       expect(metadata.variationGroupId, "");
       expect(metadata.variationId, "");
       expect(metadata.isReference, false);
-      expect(metadata.slug, "");
+      expect(metadata.slug, null);
       expect(metadata.campaignType, "");
     });
   });
 
   test("Flag with null as value", () {
-    v1.fetchFlags().whenComplete(() {
-      Flag myFlag = v1.getFlag("keyNull", "nullValue");
+    var v3 = Flagship.newVisitor("flagVisitor").build();
+    v3.fetchFlags().whenComplete(() {
+      Flag myFlag = v3.getFlag("keyNull", "nullValue");
       expect(myFlag.value(), "nullValue");
       expect(myFlag.exists(), true);
       FlagMetadata metadata = myFlag.metadata();
@@ -166,8 +188,9 @@ void main() async {
   });
 
   test("Flag value & default value = null", () {
-    v1.fetchFlags().whenComplete(() {
-      Flag myFlag = v1.getFlag("keyNull", null);
+    var v4 = Flagship.newVisitor("flagVisitor").build();
+    v4.fetchFlags().whenComplete(() {
+      Flag myFlag = v4.getFlag("keyNull", null);
       expect(myFlag.value(), null);
       expect(myFlag.exists(), true);
       FlagMetadata metadata = myFlag.metadata();
@@ -177,6 +200,20 @@ void main() async {
       expect(metadata.isReference, true);
       expect(metadata.slug, "flutter");
       expect(metadata.campaignType, "ab");
+    });
+  });
+
+  test("Failed Activate Flag", () {
+    when(fakeService.sendHttpRequest(RequestType.Post,
+            'https://decision.flagship.io/v2/activate', any, any,
+            timeoutMs: 60000))
+        .thenAnswer((_) async {
+      return http.Response("fakeResponse", 400);
+    });
+    var v5 = Flagship.newVisitor("flagVisitor").build();
+    v5.fetchFlags().whenComplete(() async {
+      Flag myFlag = v5.getFlag("key_A", "12");
+      myFlag.visitorExposed();
     });
   });
 }

@@ -7,7 +7,7 @@ class Campaign {
   String variationGroupId = "";
   Variation? variation;
   String campaignType = "";
-  String slug = "";
+  String? slug;
 
   Campaign(
       this.idCampaign, this.variationGroupId, this.campaignType, this.slug);
@@ -24,7 +24,7 @@ class Campaign {
     // Set Type of cmapaign
     campaignType = (json['type'] ?? "") as String;
     // Set slug
-    slug = (json['slug'] ?? "") as String;
+    slug = json['slug'];
   }
 
   Map<String, dynamic> toJson() => {};
