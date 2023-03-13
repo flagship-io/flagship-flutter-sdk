@@ -22,13 +22,13 @@ class PanicStrategy extends DefaultStrategy {
 
   @override
   T getModification<T>(String key, T defaultValue, {bool activate = false}) {
-    Flagship.logger(Level.ERROR, PANIC_MODIFICATION);
+    Flagship.logger(Level.INFO, PANIC_MODIFICATION);
     return defaultValue;
   }
 
   @override
   void updateContext<T>(String key, T value) {
-    Flagship.logger(Level.ERROR, PANIC_UPDATE_CONTEXT);
+    Flagship.logger(Level.INFO, PANIC_UPDATE_CONTEXT);
   }
 
   @override

@@ -16,7 +16,7 @@ class Flag<T> implements IFlag {
 // Get value for flag
 //
 // visitorExposed is true by default
-  T value({bool visitorExposed: true}) {
+  T value({bool visitorExposed = true}) {
     Modification? modif = this._visitorDelegate.getFlagModification(this._key);
     if (modif != null) {
       if (_isSameType(modif.value)) {

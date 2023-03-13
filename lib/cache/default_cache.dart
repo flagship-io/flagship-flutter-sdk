@@ -31,7 +31,6 @@ class DefaultCacheHitImp with IHitCacheImplementation {
 
   @override
   void flushHits(List<String> hitIds) async {
-    print("Flush Hits from Default cache Implementation $hitIds");
     await _checkDatabase();
     hitIds.forEach((element) {
       dbMgt.deleteHitWithId(element, 'table_hits').whenComplete(() {
@@ -94,7 +93,7 @@ class DefaultCacheVisitorImp with IVisitorCacheImplementation {
   @override
   Future<String> lookupVisitor(String visitoId) async {
     Flagship.logger(
-        Level.DEBUG, "lookupVisitor from default cache Implementation ");
+        Level.DEBUG, "lookupVisitor from default cache Implementation");
     await _checkDatabase();
     return dbMgt.readVisitor(visitoId, 'table_visitors');
   }
