@@ -102,6 +102,7 @@ class BucketingManager extends DecisionManager {
             .catchError((error) {
       Flagship.logger(Level.DEBUG,
           "Enable to create the directory to save the buckting file ");
+      throw Exception('Flagship, Failed to save file');
     });
     // We got the path to save the json file
     File jsonFile = File(bucketingDirectory.path + fileName);
