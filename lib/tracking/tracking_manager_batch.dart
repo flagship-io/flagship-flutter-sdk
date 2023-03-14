@@ -14,7 +14,7 @@ extension TrackingManagerBatch on TrackingManager {
   Future<void> sendBatch(List<Hit> listOfHitToSend) async {
     // Create url
     String urlString = Endpoints.EVENT;
-    Flagship.logger(Level.INFO, 'Sending hits using batch :' + urlString);
+    Flagship.logger(Level.DEBUG, 'Sending hits using batch : ' + urlString);
 
     try {
       var response = await service.sendHttpRequest(

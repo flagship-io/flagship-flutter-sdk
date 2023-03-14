@@ -21,7 +21,7 @@ class Service {
     switch (type) {
       case RequestType.Post:
         {
-          Flagship.logger(Level.INFO, data.toString(), isJsonString: true);
+          Flagship.logger(Level.DEBUG, data.toString(), isJsonString: true);
           try {
             var response = await this
                 .httpClient

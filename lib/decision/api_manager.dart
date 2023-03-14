@@ -19,7 +19,7 @@ class ApiManager extends DecisionManager {
     // Create url
     String urlString = Endpoints.DECISION_API + envId + Endpoints.CAMPAIGNS;
 
-    Flagship.logger(Level.INFO, 'GET CAMPAIGNS :' + urlString);
+    Flagship.logger(Level.DEBUG, 'GET CAMPAIGNS :' + urlString);
 
     /// Map to send
     Map<String, Object> params = {
