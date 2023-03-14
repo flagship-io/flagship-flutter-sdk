@@ -29,8 +29,8 @@ const String GET_MODIFICATION_INFO_ERROR = "No modification for key '%s'.";
 // HITS
 const String HIT_SUCCESS = "Hits sent with success";
 const String HIT_FAILED = "Failed to send hit";
-const String ACTIVATE_SUCCESS = "Activate sent with success";
-const String ACTIVATE_FAILED = "Failed to send activate";
+const String ACTIVATE_SUCCESS = "Exposure flag (activate) sent with success";
+const String ACTIVATE_FAILED = "Failed to send exposure flag (activate)";
 const String HIT_INVALID_DATA_ERROR = "'%s' hit invalid format error. \n %s";
 const String HIT_NOT_READY = "Not ready to send hits";
 const String GETMODIFICATION_NOT_READY =

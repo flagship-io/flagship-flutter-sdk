@@ -12,17 +12,15 @@ class DefaultCacheHitImp with IHitCacheImplementation {
 
   Future<void> _checkDatabase() async {
     if (dbMgt.isHDatabaseOpen == false) {
-      Flagship.logger(Level.DEBUG, "initialize Database for cache hits");
+      // Flagship.logger(Level.DEBUG, "initialize Database for cache hits");
       await dbMgt.openDb();
     }
   }
 
   @override
   void cacheHits(Map<String, Map<String, Object>> hits) async {
-    Flagship.logger(
-        Level.DEBUG, "Cache Hits from Default Cache Hit Implementation : \n");
-    Flagship.logger(Level.ALL, JsonEncoder().convert(hits).toString(),
-        isJsonString: true);
+    // Flagship.logger(Level.DEBUG, JsonEncoder().convert(hits).toString(),
+    //     isJsonString: true);
     await _checkDatabase();
     hits.forEach((key, value) {
       dbMgt.insertHitMap({'id': key, 'data_hit': jsonEncode(value)});
@@ -43,7 +41,7 @@ class DefaultCacheHitImp with IHitCacheImplementation {
   @override
   Future<List<Map>> lookupHits() async {
     Flagship.logger(
-        Level.DEBUG, "lookupHits Hit from Default cache Implementation");
+        Level.DEBUG, "lookupHits Hits from default cache Implementation");
     await _checkDatabase();
     return dbMgt.readHits("table_hits");
   }
@@ -69,7 +67,7 @@ class DefaultCacheVisitorImp with IVisitorCacheImplementation {
 
   Future<void> _checkDatabase() async {
     if (dbMgt.isVDatabaseOpen == false) {
-      Flagship.logger(Level.INFO, "initialize Database for cache visitor");
+      //Flagship.logger(Level.INFO, "initialize Database for cache visitor");
       await dbMgt.openDb();
     }
   }

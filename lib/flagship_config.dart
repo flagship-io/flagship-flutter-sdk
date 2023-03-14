@@ -55,9 +55,8 @@ class FlagshipConfig {
     // Set the log Manager
     this.logManager = LogManager(level: _logLevel);
     // Log the timeout value in ms
-    this
-        .logManager
-        ?.printLog(Level.ALL, "Flagship The $timeout is : ms", false);
+    this.logManager?.printLog(Level.INFO,
+        "The timeout for fetching campaigns is $timeout: ms", false);
 
     decisionManager = (decisionMode == Mode.DECISION_API)
         ? ApiManager(Service(http.Client()))

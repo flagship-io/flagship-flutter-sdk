@@ -10,7 +10,7 @@ class FSData extends ChangeNotifier {
   // Mode
   Mode _mode = Mode.DECISION_API;
   // Timeout
-  int _timeout = 4000;
+  int _timeout = 2000;
 
   // Strategy
   BatchCachingStrategy _strategy =

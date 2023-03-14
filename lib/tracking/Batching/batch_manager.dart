@@ -37,12 +37,12 @@ class BatchManager with TrackingManagerDelegate, FlagshipPoolQueueDelegate {
   }
 
   void start() {
-    Flagship.logger(Level.DEBUG, "Start batching loop " + label);
+    // Flagship.logger(Level.DEBUG, "Start batching loop " + label);
     cronTimer.start();
   }
 
   void pause() {
-    Flagship.logger(Level.DEBUG, "Stop batching loop " + label);
+    // Flagship.logger(Level.DEBUG, "Stop batching loop " + label);
     cronTimer.pause();
   }
 
