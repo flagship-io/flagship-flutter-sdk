@@ -2,7 +2,7 @@
 
 Added
 
-- Preventing from a data lost and bandwidth hogs.Config Tracking Manager.
+- Preventing from a data lost and bandwidth hogs. See Config Tracking Manager for more information.
 
 - Dealing with offline mode. Managing visitor cache
 
