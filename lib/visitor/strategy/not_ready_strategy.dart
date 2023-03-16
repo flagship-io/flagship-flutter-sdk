@@ -48,6 +48,16 @@ class NotReadyStrategy extends DefaultStrategy {
   }
 
   @override
+  void cacheVisitor(String visitorId, String jsonString) {
+    Flagship.logger(Level.INFO, CACHE_VISITOR_NOT_READY);
+  }
+
+  @override
+  void lookupHits() async {
+    Flagship.logger(Level.INFO, CACHE_HITS_NOT_READY);
+  }
+
+  @override
   void onExposure(Modification pModification) {
     Flagship.logger(Level.INFO, ACTIVATE_NOT_READY);
   }

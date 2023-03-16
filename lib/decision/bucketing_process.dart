@@ -10,17 +10,20 @@ import 'package:murmurhash/murmurhash.dart';
 import 'package:collection/collection.dart';
 
 extension BucketingProcess on BucketingManager {
-  Campaigns bucketVariations(String visitorId, Bucketing scriptBucket, Map<String, dynamic> context) {
-    /// Check the panic mode
+  Campaigns bucketVariations(String visitorId, Bucketing scriptBucket,
+      Map<String, dynamic> context, Map<String, dynamic> assignHistory) {
+    // Check the panic mode
     if (scriptBucket.panic == true) {
       return Campaigns(visitorId, true, []);
     }
     // Check the targeting and filter the variation he can run
-    Campaigns result = processBucketing(visitorId, scriptBucket, context);
+    Campaigns result =
+        processBucketing(visitorId, scriptBucket, context, assignHistory);
     return result;
   }
 
-  Campaigns processBucketing(String visitorId, Bucketing scriptBucket, Map<String, dynamic> context) {
+  Campaigns processBucketing(String visitorId, Bucketing scriptBucket,
+      Map<String, dynamic> context, Map<String, dynamic> assignHistory) {
     Campaigns result = Campaigns(visitorId, false, []);
     TargetingManager targetManager = TargetingManager(visitorId, context);
     // Campaign
@@ -28,39 +31,69 @@ extension BucketingProcess on BucketingManager {
       // Variation group
       for (VariationGroup itemVarGroup in itemCamp.variationGroups) {
         // Check the targeting
-        if (targetManager.isTargetingGroupIsOkay(itemVarGroup.targeting) == true) {
-          Flagship.logger(Level.DEBUG, "The Targeting for " + itemVarGroup.idVariationGroup + "is OK 👍");
+        if (targetManager.isTargetingGroupIsOkay(itemVarGroup.targeting) ==
+            true) {
+          Flagship.logger(
+              Level.DEBUG,
+              "The Targeting for " +
+                  itemVarGroup.idVariationGroup +
+                  "is OK 👍");
 
-          String? varId = selectIdVariationWithMurMurHash(visitorId, itemVarGroup);
+          // Check if the variationId already exist in the history before selecting by the MurMurHash
+          String? varId;
+          if (assignHistory.containsKey(itemVarGroup.idVariationGroup) ==
+              true) {
+            // The variation group already exist
+            varId = assignHistory[
+                itemVarGroup.idVariationGroup]; // add more security
+            Flagship.logger(Level.DEBUG,
+                "This variation: $varId' already selected for the visitor: $visitorId event if the allocation changed this visitor still belong to the initial bucket");
+          } else {
+            varId = selectIdVariationWithMurMurHash(visitorId, itemVarGroup);
+
+            if (varId != null) {
+              Flagship.logger(Level.ALL,
+                  "Adding a new saved variation in the assignation ");
+              this
+                  .assignationHistory
+                  ?.addEntries({itemVarGroup.idVariationGroup: varId}.entries);
+            }
+          }
 
           if (varId != null) {
             // Create variation group
-            Campaign camp = Campaign(itemCamp.idCampaign, itemVarGroup.idVariationGroup, itemCamp.type, itemCamp.slug);
-            Flagship.logger(Level.DEBUG, "#### The variation choosen is $varId ###########");
+            Campaign camp = Campaign(itemCamp.idCampaign,
+                itemVarGroup.idVariationGroup, itemCamp.type, itemCamp.slug);
+            Flagship.logger(Level.DEBUG,
+                "#### The variation choosen is $varId ###########");
 
-            var matchedVariation = itemVarGroup.variations.firstWhereOrNull((v) => v.idVariation == varId);
+            var matchedVariation = itemVarGroup.variations
+                .firstWhereOrNull((v) => v.idVariation == varId);
 
             if (matchedVariation != null) {
               camp.variation = matchedVariation;
 
               /// Add this camp to the result
               result.campaigns.add(camp);
+            } else {
+              Flagship.logger(Level.DEBUG,
+                  "Variation $varId not found in the recent bucketing script, this variation could be removed, will return a default value ");
             }
-            // for (Variation itemVar in itemVarGroup.variations) {
-            //   if (itemVar.idVariation == varId) {
-            //     camp.variation = itemVar;
-            //   }
-            // }
           }
         } else {
-          Flagship.logger(Level.DEBUG, "The Targeting for " + itemVarGroup.idVariationGroup + "is NOT OK 👎 ");
+          Flagship.logger(
+              Level.DEBUG,
+              "The Targeting for " +
+                  itemVarGroup.idVariationGroup +
+                  "is NOT OK 👎 ");
         }
       }
     }
     return result;
   }
 
-  String? selectIdVariationWithMurMurHash(String visitorId, VariationGroup varGroup) {
+  String? selectIdVariationWithMurMurHash(
+      String visitorId, VariationGroup varGroup) {
     int hashAlloc;
     // We calculate the Hash allocation by the combination of : visitorId + idVariationGroup
     String combinedId = varGroup.idVariationGroup + visitorId;

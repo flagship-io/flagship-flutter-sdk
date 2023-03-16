@@ -1,3 +1,13 @@
+# 3.0.0 - 16/03/2023
+
+Added
+
+- Preventing from a data lost and bandwidth hogs. See Config Tracking Manager for more information.
+
+- Dealing with offline mode. Managing visitor cache
+
+- Customisable interfaces IVisitorCacheImplementation & IHitCacheImplementation to control data. A default implementation is provided by the SDK.
+
 # 2.1.0 - 02/03/2023
 
 Added
@@ -7,7 +17,6 @@ Added
 Changed
 
 - Deprecate userExposed(). Use visitorExposed() instead.
-
 
 # 2.0.1 - 04/01/2023
 

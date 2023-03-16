@@ -16,7 +16,7 @@ class Flag<T> implements IFlag {
 // Get value for flag
 //
 // visitorExposed is true by default
-  T value({bool visitorExposed: true}) {
+  T value({bool visitorExposed = true}) {
     Modification? modif = this._visitorDelegate.getFlagModification(this._key);
     if (modif != null) {
       if (_isSameType(modif.value)) {
@@ -43,7 +43,8 @@ class Flag<T> implements IFlag {
         this._visitorDelegate.getFlagModification(this._key);
     if (modification != null) {
       if (modification.value == null || _isSameType(modification.value)) {
-        Flagship.logger(Level.DEBUG, "Send activate for the flag: " + _key);
+        Flagship.logger(
+            Level.DEBUG, "Send exposure flag (activate) for : " + _key);
 
         // Update modification with default value
         modification.defaultValue = this._defaultValue;

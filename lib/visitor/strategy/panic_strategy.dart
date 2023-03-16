@@ -22,13 +22,13 @@ class PanicStrategy extends DefaultStrategy {
 
   @override
   T getModification<T>(String key, T defaultValue, {bool activate = false}) {
-    Flagship.logger(Level.ERROR, PANIC_MODIFICATION);
+    Flagship.logger(Level.INFO, PANIC_MODIFICATION);
     return defaultValue;
   }
 
   @override
   void updateContext<T>(String key, T value) {
-    Flagship.logger(Level.ERROR, PANIC_UPDATE_CONTEXT);
+    Flagship.logger(Level.INFO, PANIC_UPDATE_CONTEXT);
   }
 
   @override
@@ -58,6 +58,17 @@ class PanicStrategy extends DefaultStrategy {
     Flagship.logger(Level.INFO, PANIC_UNAUTHENTICATE);
   }
 
+  @override
+  void cacheVisitor(String visitorId, String jsonString) {
+    Flagship.logger(Level.INFO, "No caching on panic mode");
+  }
+
+  @override
+  void lookupHits() async {
+    Flagship.logger(Level.INFO, "No lookup Hits when panic mode");
+  }
+
+  @override
   void onExposure(Modification pModification) {
     Flagship.logger(Level.INFO, PANIC_ACTIVATE);
   }

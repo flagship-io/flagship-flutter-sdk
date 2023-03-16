@@ -35,11 +35,13 @@ class _ContextScreenState extends State<ContextScreen> with ShowDialog {
             Container(
                 color: Colors.black,
                 child: TextField(
-                  style: TextStyle(color: Colors.white, backgroundColor: Colors.black),
+                  style: TextStyle(
+                      color: Colors.white, backgroundColor: Colors.black),
                   controller: ctxInput,
                   decoration: null,
                   keyboardType: TextInputType.multiline,
                   maxLines: null,
+                  smartQuotesType: SmartQuotesType.enabled,
                 )),
             SizedBox(
                 width: double.infinity,

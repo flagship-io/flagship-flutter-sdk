@@ -8,17 +8,27 @@ class FSInputField extends StatelessWidget {
 
   TextEditingController inputController;
 
+  Function? onChangeInput;
+
   final TextInputType keyboardType;
 
-  FSInputField(this.label, this.inputController, this.keyboardType);
+  FSInputField(this.label, this.inputController, this.keyboardType,
+      {this.onChangeInput});
   @override
   Widget build(BuildContext context) {
     var appleWidget = CupertinoTextField(
       controller: inputController,
       placeholder: label,
       keyboardType: keyboardType,
-      style: TextStyle(fontSize: 12, color: Colors.black87),
-      onChanged: (newText) {},
+      style: TextStyle(fontSize: 12, color: Color.fromARGB(221, 13, 13, 13)),
+      onChanged: (newText) {
+        if (onChangeInput != null) {
+          //   onChangeInput!(newText);
+        }
+      },
+      onEditingComplete: () {
+        onChangeInput?.call(inputController.text);
+      },
     );
 
     return Container(

@@ -16,7 +16,7 @@ class _EventState extends State<EventHit> {
   @override
   void initState() {
     super.initState();
-    _eventActionController = TextEditingController(text: 'flutter_event');
+    _eventActionController = TextEditingController(text: 'event_0603');
     _eventValueController = TextEditingController(text: '10');
   }
 
@@ -28,11 +28,15 @@ class _EventState extends State<EventHit> {
     var currentVisitor = Flagship.getCurrentVisitor();
     Event event = Event(
         action: _eventActionController.text,
-        category: _isActionTracking ? EventCategory.Action_Tracking : EventCategory.User_Engagement);
+        category: _isActionTracking
+            ? EventCategory.Action_Tracking
+            : EventCategory.User_Engagement);
     event.label = "flutter_label";
+    // Set screen for event
+    event.location = "screenEvent";
+
     event.sessionNumber = 12;
     event.value = (int.tryParse(_eventValueController.text) ?? 0);
-
     var text = "Event sent";
     var subText = "Event has been sent";
     try {
@@ -77,8 +81,10 @@ class _EventState extends State<EventHit> {
             style: TextStyle(color: Colors.white),
           ),
           SizedBox(height: _verticalSpace),
-          FSInputField("Event action", _eventActionController, TextInputType.text),
-          FSInputField("Event value", _eventValueController, TextInputType.text),
+          FSInputField(
+              "Event action", _eventActionController, TextInputType.text),
+          FSInputField(
+              "Event value", _eventValueController, TextInputType.text),
           SizedBox(height: _verticalSpace),
           Row(
             children: [

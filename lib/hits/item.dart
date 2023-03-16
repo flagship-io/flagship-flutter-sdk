@@ -1,22 +1,22 @@
 import 'hit.dart';
 
 class Item extends BaseHit {
-  /// Transaction unique identifier
-  String transactionId;
+  /// TransactionId allows an item to be linked to a transaction with a matching Transaction ID. The maximum permitted length is 500 Bytes.
+  String transactionId = "";
 
-  /// Product name
-  String name;
+  /// Specifies the name of an item. The maximum permitted length is 500 Bytes.
+  String name = "";
 
-  /// Specifies the item code or SKU
-  String code;
+  /// Specifies an item's SKU or product bar code. The maximum permitted length is 500 Bytes.
+  String code = "";
 
   /// Specifies the item price
   double? price;
 
-  /// Specifies the item quantity
+  /// Indicates the number of units of an item that are purchased.
   int? quantity;
 
-  /// Specifies the item category
+  /// Specifies the product category that an item belongs to. The maximum permitted length is 500 Bytes.
   String? category;
 
   Item(
@@ -27,7 +27,7 @@ class Item extends BaseHit {
       this.category,
       this.quantity})
       : super() {
-    type = Type.ITEM;
+    type = HitCategory.ITEM;
   }
 
   @override
@@ -46,5 +46,15 @@ class Item extends BaseHit {
     // Add commun body
     customBody.addAll(super.communBodyTrack);
     return customBody;
+  }
+
+  Item.fromMap(String oldId, Map body) : super.fromMap(oldId, body) {
+    this.type = HitCategory.ITEM;
+    this.transactionId = body['tid'] ?? "";
+    this.name = body['in'] ?? "";
+    this.code = body['ic'] ?? "";
+    this.price = body['ip'];
+    this.quantity = body['iq'];
+    this.category = body['iv'];
   }
 }
