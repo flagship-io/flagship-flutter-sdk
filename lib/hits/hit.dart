@@ -93,6 +93,9 @@ class BaseHit extends Hit {
       case HitCategory.SCREENVIEW:
         ret = 'SCREENVIEW';
         break;
+      case HitCategory.PAGEVIEW:
+        ret = 'PAGEVIEW';
+        break;
       case HitCategory.ITEM:
         ret = 'ITEM';
         break;

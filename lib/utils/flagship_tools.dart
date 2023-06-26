@@ -6,6 +6,7 @@ import 'package:flagship/hits/activate.dart';
 import 'package:flagship/hits/event.dart';
 import 'package:flagship/hits/hit.dart';
 import 'package:flagship/hits/item.dart';
+import 'package:flagship/hits/page.dart';
 import 'package:flagship/hits/screen.dart';
 import 'package:flagship/hits/transaction.dart';
 import 'package:flagship/model/modification.dart';
@@ -67,6 +68,9 @@ class FlagshipTools {
       switch (subMap['t']) {
         case 'SCREENVIEW':
           result.add(Screen.fromMap(element['id'], subMap));
+          break;
+        case 'PAGEVIEW':
+          result.add(Page.fromMap(element['id'], subMap));
           break;
         case 'EVENT':
           result.add(Event.fromMap(element['id'], subMap));
