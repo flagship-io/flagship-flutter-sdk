@@ -1,4 +1,4 @@
-import 'package:flagship/hits/screen.dart';
+import 'package:flagship/hits/page.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
