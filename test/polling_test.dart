@@ -36,5 +36,10 @@ void main() {
 
     sleep(Duration(seconds: 2));
     expect(isCalled, true);
+
+    tp.getScript().whenComplete(() {
+      tp.stop();
+      expect(tp.timer.isActive, false);
+    });
   });
 }
