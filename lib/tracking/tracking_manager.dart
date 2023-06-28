@@ -137,13 +137,13 @@ class TrackingManager {
   }
 
   // Delegate on sending batch
-  void onSendBatchWithSucess(List<Hit> listOfHitToSend) {
+  void onSendBatchWithSuccess(List<Hit> listOfHitToSend) {
     // Remove from data base the stored hits
     this.fsCacheHit?.flushHits(listOfHitToSend.map((e) => e.id).toList());
   }
 
   // Delegate on sending activate batch
-  void onSendActivateBatchWithSucess(List<Hit> listOfActivate) {
+  void onSendActivateBatchWithSuccess(List<Hit> listOfActivate) {
     // Remove from data base the stored activate
     this.fsCacheHit?.flushHits(listOfActivate.map((e) => e.id).toList());
   }
@@ -156,7 +156,7 @@ class TrackingManager {
 
 mixin TrackingManagerDelegate {
   // On Sucess Sendig Batch
-  onSendBatchWithSucess(
+  onSendBatchWithSuccess(
       List<Hit> listOfSendedHits, BatchCachingStrategy strategy);
 
   // On Failed Sending Batch

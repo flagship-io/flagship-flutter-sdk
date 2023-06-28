@@ -31,7 +31,7 @@ extension TrackingManagerBatch on TrackingManager {
           // Flagship.logger(
           //     Level.INFO, jsonEncode(Batch(listOfHitToSend).bodyTrack),
           //     isJsonString: true);
-          onSendBatchWithSucess(listOfHitToSend);
+          onSendBatchWithSuccess(listOfHitToSend);
           break;
         default:
           Flagship.logger(Level.ERROR, HIT_FAILED);
@@ -61,7 +61,7 @@ extension TrackingManagerBatch on TrackingManager {
         case 200:
         case 204:
           Flagship.logger(Level.INFO, ACTIVATE_SUCCESS + ": $objectToSend");
-          onSendActivateBatchWithSucess(listOfActivate);
+          onSendActivateBatchWithSuccess(listOfActivate);
           return response.statusCode;
         default:
           Flagship.logger(Level.ERROR, HIT_FAILED);

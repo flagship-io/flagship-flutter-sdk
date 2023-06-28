@@ -95,7 +95,7 @@ class TrackingManageContinuousStrategy extends TrackingManager {
           _activatePool.flushAllTrackFromQueue();
           listOfActivate.remove(
               activateHit); // Remove the current hit before because is not already present in the cache.
-          onSendActivateBatchWithSucess(listOfActivate);
+          onSendActivateBatchWithSuccess(listOfActivate);
         }
         break;
       default:
@@ -118,14 +118,14 @@ class TrackingManageContinuousStrategy extends TrackingManager {
   }
 
   // On sucess sending batch activate
-  onSendActivateBatchWithSucess(List<Hit> listOfSendedHits) {
-    activateDelegate?.onSendBatchWithSucess(
+  onSendActivateBatchWithSuccess(List<Hit> listOfSendedHits) {
+    activateDelegate?.onSendBatchWithSuccess(
         listOfSendedHits, BatchCachingStrategy.BATCH_CONTINUOUS_CACHING);
   }
 
   // On sucess sendig batch hits
-  onSendBatchWithSucess(List<Hit> listOfSendedHits) {
-    hitDelegate?.onSendBatchWithSucess(
+  onSendBatchWithSuccess(List<Hit> listOfSendedHits) {
+    hitDelegate?.onSendBatchWithSuccess(
         listOfSendedHits, BatchCachingStrategy.BATCH_CONTINUOUS_CACHING);
   }
 
