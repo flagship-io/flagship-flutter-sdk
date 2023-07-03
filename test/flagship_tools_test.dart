@@ -66,15 +66,19 @@ void main() {
     String pageJson =
         '{"cid": "bkk9glocmjcg0vtmdlng", "createdAt": "2023-07-03 11:24:05.312950","dl": "https://github.com/","ds": "APP","qt": 0,"t": "PAGEVIEW","vid": "flutterUser"}';
 
+    String activateJson =
+        '{ "caid": "cicqtrvo093iea8sr4fg", "cid": "bkk9glocmjcg0vtmdlng","createdAt": "2023-07-03 13:27:33.849940", "qt": 60011,"t": "ACTIVATE","vaid": "cicqtrvo093iea8sr4g0","vid": "flutterUser"}';
+
     List<Map> list = [
       {"data_hit": itemJson, 'id': "idTest1"},
       {"data_hit": transacJson, 'id': "idTest2"},
       {"data_hit": eventJson, 'id': "idTest3"},
       {"data_hit": screenJson, 'id': "idTest4"},
       {"data_hit": pageJson, 'id': "idTest5"},
+      {"data_hit": activateJson, 'id': "idTest6"},
     ];
     var listBase = FlagshipTools.converMapToListOfHits(list);
-    // List should have 5 items
-    expect(listBase.length, 5);
+    // List should have 6 items
+    expect(listBase.length, 6);
   });
 }
