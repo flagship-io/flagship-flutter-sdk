@@ -24,10 +24,11 @@ class DatabaseManagement {
   DatabaseManagement();
 
   Future<void> openDb() async {
-    String pathToDataBase = join(await getDatabasesPath(), 'hits_database.db');
+    String pathToDataBase =
+        join(await getDatabasesPath(), 'Flagship/hits_database.db');
 
     String pathToDataBaseVisitor =
-        join(await getDatabasesPath(), 'visitor_database.db');
+        join(await getDatabasesPath(), 'Flagship/visitor_database.db');
 
     _hitDatabase = await openDatabase(pathToDataBase, onCreate: (db, version) {
       Flagship.logger(

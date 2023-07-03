@@ -1,7 +1,11 @@
 import 'package:flagship/cache/default_cache.dart';
 import 'package:flagship/cache/interface_cache.dart';
+import 'package:flagship/hits/Page.dart';
 import 'package:flagship/hits/event.dart';
 import 'package:flagship/hits/hit.dart';
+import 'package:flagship/hits/item.dart';
+import 'package:flagship/hits/screen.dart';
+import 'package:flagship/hits/transaction.dart';
 import 'package:flagship/tracking/Batching/batch_manager.dart';
 import 'package:flagship/tracking/Batching/pool_queue.dart';
 import 'package:flagship/tracking/tracking_manager_config.dart';
@@ -26,11 +30,33 @@ void main() {
 
     FlagshipPoolQueue testPool =
         FlagshipPoolQueue(configTrackingTest.poolMaxSize);
-    for (int i = 0; i < 50; i++) {
+    for (int i = 0; i < 10; i++) {
       Event testEvent = Event(
           action: "testPool" + "$i", category: EventCategory.Action_Tracking);
       testEvent.visitorId = "user_" + "$i";
       testPool.addNewTrackElement(testEvent);
+
+      // Create transac
+      Transaction testTransac = Transaction(
+          transactionId: "user_" + "$i", affiliation: "testAffiliation");
+      testTransac.visitorId = "user_" + "$i";
+      testPool.addNewTrackElement(testTransac);
+
+      // create Pageview
+      Page testPage = Page(location: "testPage");
+      testPage.visitorId = "user_" + "$i";
+      testPool.addNewTrackElement(testPage);
+
+      // Create Item
+      Item testItem = Item(
+          transactionId: "user_" + "$i", name: "testItem", code: "testCode");
+      testItem.visitorId = "user_" + "$i";
+      testPool.addNewTrackElement(testItem);
+
+      // Create Screen
+      Screen testScreen = Screen(location: "testScreen");
+      testScreen.visitorId = "user_" + "$i";
+      testPool.addNewTrackElement(testScreen);
     }
 
     // Create batch object

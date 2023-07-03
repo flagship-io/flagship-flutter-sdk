@@ -21,6 +21,14 @@
                     ]
                   },
                   {
+                    "operator": "NOT_EQUALS",
+                    "key": "fs_users",
+                    "value": [
+                      "aaa",
+                      "bbbb"
+                    ]
+                  },
+                  {
                     "operator": "EQUALS",
                     "key": "basketNumber",
                     "value": 100
@@ -54,6 +62,41 @@
                     "operator": "GREATER_THAN_OR_EQUALS",
                     "key": "testKey3",
                     "value": "abcd"
+                  },
+                  {
+                    "operator": "GREATER_THAN",
+                    "key": "testKey4",
+                    "value": 3
+                  },
+                  {
+                    "operator": "LOWER_THAN",
+                    "key": "testKey5",
+                    "value": 10
+                  },
+                  {
+                    "operator": "LOWER_THAN_OR_EQUALS",
+                    "key": "testKey6",
+                    "value": 8
+                  },
+                  {
+                    "operator": "GREATER_THAN_OR_EQUALS",
+                    "key": "testKey7",
+                    "value": 10
+                  },
+                  {
+                    "operator": "LOWER_THAN",
+                    "key": "testKey8",
+                    "value": "10"
+                  },
+                  {
+                    "operator": "LOWER_THAN_OR_EQUALS",
+                    "key": "testKey9",
+                    "value": "9"
+                  },
+                  {
+                    "operator": "GREATER_THAN",
+                    "key": "testKey10",
+                    "value": "10"
                   }
                 ]
               }, {

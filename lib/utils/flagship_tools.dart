@@ -93,45 +93,45 @@ class FlagshipTools {
     return result;
   }
 
-  Future<List<Map>> readJsonFile(String filePath) async {
-    var input = await File(filePath).readAsString();
-    var map = jsonDecode(input);
-    return map;
-  }
+  // Future<List<Map>> readJsonFile(String filePath) async {
+  //   var input = await File(filePath).readAsString();
+  //   var map = jsonDecode(input);
+  //   return map;
+  // }
 
   // Create a visitorCache from the response
-  static VisitorCache createVisitorCache(
-      {required String visitorId,
-      required Map<String, dynamic> context,
-      required bool consent,
-      required String? anonymId,
-      required Map<String, Modification> modifications}) {
-    Data cachedData = Data(
-        visitorId: visitorId,
-        context: context,
-        anonymousId: anonymId,
-        consent: consent);
+  // static VisitorCache createVisitorCache(
+  //     {required String visitorId,
+  //     required Map<String, dynamic> context,
+  //     required bool consent,
+  //     required String? anonymId,
+  //     required Map<String, Modification> modifications}) {
+  //   Data cachedData = Data(
+  //       visitorId: visitorId,
+  //       context: context,
+  //       anonymousId: anonymId,
+  //       consent: consent);
 
-    VisitorCache cachedVisitor = VisitorCache(version: 1, data: cachedData);
+  //   VisitorCache cachedVisitor = VisitorCache(version: 1, data: cachedData);
 
-    List<CampaignCache> listCampCache = [];
-    modifications.forEach((key, modificationItem) {
-      // should create a new campignCache
-      CampaignCache newCampCache = listCampCache.firstWhere(
-          (element) => (element.variationId == modificationItem.variationId),
-          orElse: () {
-        return CampaignCache.fromModification(modificationItem);
-      });
+  //   List<CampaignCache> listCampCache = [];
+  //   modifications.forEach((key, modificationItem) {
+  //     // should create a new campignCache
+  //     CampaignCache newCampCache = listCampCache.firstWhere(
+  //         (element) => (element.variationId == modificationItem.variationId),
+  //         orElse: () {
+  //       return CampaignCache.fromModification(modificationItem);
+  //     });
 
-      if (newCampCache.flags == null) {
-        newCampCache.flags = Map.from({key: modificationItem.value});
-        listCampCache.add(newCampCache);
-      } else {
-        newCampCache.updateFlags({key: modificationItem.value});
-      }
-      // Add the new campaign cache
-    });
-    cachedVisitor.data?.campaigns = listCampCache;
-    return cachedVisitor;
-  }
+  //     if (newCampCache.flags == null) {
+  //       newCampCache.flags = Map.from({key: modificationItem.value});
+  //       listCampCache.add(newCampCache);
+  //     } else {
+  //       newCampCache.updateFlags({key: modificationItem.value});
+  //     }
+  //     // Add the new campaign cache
+  //   });
+  //   cachedVisitor.data?.campaigns = listCampCache;
+  //   return cachedVisitor;
+  // }
 }
