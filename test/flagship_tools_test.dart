@@ -1,4 +1,3 @@
-import 'package:flagship/flagship.dart';
 import 'package:flagship/hits/event.dart';
 import 'package:flagship/hits/item.dart';
 import 'package:flagship/hits/page.dart';
