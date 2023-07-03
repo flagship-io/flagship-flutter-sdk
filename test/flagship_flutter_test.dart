@@ -3,15 +3,18 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences.setMockInitialValues({});
+  databaseFactory = databaseFactoryFfi;
+
   test('Start Client ', () {
     Flagship.start("envId", "apiKey");
 
-    Flagship.setCurrentVisitor(
-        Flagship.newVisitor("user1").withContext({"key1": "val1", "key2": 2, "key3": true, "key4": 12.01}).build());
+    Flagship.setCurrentVisitor(Flagship.newVisitor("user1").withContext(
+        {"key1": "val1", "key2": 2, "key3": true, "key4": 12.01}).build());
     var v1 = Flagship.getCurrentVisitor();
 
     // Check the user id

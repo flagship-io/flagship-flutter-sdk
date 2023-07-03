@@ -1,6 +1,8 @@
 import 'package:flagship_qa/widgets/FSinputField.dart';
 import 'package:flutter/material.dart';
 import 'package:flagship/hits/screen.dart';
+import 'package:flagship/hits/page.dart' as FSPage;
+
 import 'package:flagship/flagship.dart';
 
 class ScreenHit extends StatefulWidget {
@@ -22,6 +24,10 @@ class _ScreenState extends State<ScreenHit> {
     try {
       Screen screenEvent = Screen(location: _textController.text);
       currentVisitor?.sendHit(screenEvent);
+
+      /// Send page in the same action
+      FSPage.Page p1 = FSPage.Page(location: "https://github.com/");
+      currentVisitor?.sendHit(p1);
     } catch (e) {
       print(e.toString());
     }

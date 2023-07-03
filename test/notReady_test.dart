@@ -3,10 +3,12 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flagship/hits/event.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences.setMockInitialValues({});
+  databaseFactory = databaseFactoryFfi;
   test('Test API with bad envId format', () async {
     Flagship.start("bkk9g", "apiKey");
 
@@ -37,6 +39,7 @@ void main() {
     expect(v1.getContext().keys.contains('newKey'), true);
 
     /// Send hit
-    v1.sendHit(Event(action: "action", category: EventCategory.Action_Tracking));
+    v1.sendHit(
+        Event(action: "action", category: EventCategory.Action_Tracking));
   });
 }

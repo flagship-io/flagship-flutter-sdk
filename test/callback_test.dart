@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'service_test.mocks.dart';
 import 'package:flagship/api/service.dart';
 import 'package:flagship/flagship_config.dart';
@@ -17,6 +18,7 @@ import 'test_tools.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences.setMockInitialValues({});
+  databaseFactory = databaseFactoryFfi;
 
   Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey");
   MockService fakePanicService = MockService();

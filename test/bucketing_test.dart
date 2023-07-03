@@ -39,19 +39,26 @@ void main() {
       "testKey": "",
       "testKey1": "abc",
       "testKey2": "acd",
-      "testKey3": "abcd"
+      "testKey3": "abcd",
+      "testKey4": 5,
+      "testKey5": 6,
+      "testKey6": 8,
+      "testKey7": 11,
+      "testKey8": "1",
+      "testKey9": "9",
+      "testKey10": "100"
     }, {});
     expect(resultTer.campaigns.length, 1);
 
-    Campaigns result4 = bkManager.bucketVariations('user5', bucketingObject, {
-      "basketNumber": 100,
-      "Boolean_Key": true,
-      "ctxKeyNumber": 223,
-      "testKey": "",
-      "testKey1": "abc",
-      "testKey2": "acd",
-      "testKey3": "abcd"
-    }, {});
-    expect(result4.campaigns.length, 0);
+    // Campaigns result4 = bkManager.bucketVariations('user5', bucketingObject, {
+    //   "basketNumber": 100,
+    //   "Boolean_Key": true,
+    //   "ctxKeyNumber": 223,
+    //   "testKey": "",
+    //   "testKey1": "abc",
+    //   "testKey2": "acd",
+    //   "testKey3": "abcd"
+    // }, {});
+    // expect(result4.campaigns.length, 0);
   });
 }

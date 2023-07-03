@@ -20,8 +20,10 @@ jobs:
           channel: ${{ matrix.flutter }}
       - run: flutter pub get
       - run: flutter test --coverage
-      - name: Upload coverage to codecov
-        uses: codecov/codecov-action@v2
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1.2.1   
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           
   build_qa_apk:
     runs-on: ubuntu-latest

@@ -72,7 +72,7 @@ class BatchManager with TrackingManagerDelegate, FlagshipPoolQueueDelegate {
   }
 
   @override
-  onSendBatchWithSucess(
+  onSendBatchWithSuccess(
       List<Hit> listOfSendedHits, BatchCachingStrategy strategy) {
     // Remove old cache before save a fresh data
     if (strategy == BatchCachingStrategy.BATCH_CONTINUOUS_CACHING) {

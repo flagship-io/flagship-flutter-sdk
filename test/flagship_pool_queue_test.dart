@@ -1,4 +1,7 @@
 import 'package:flagship/hits/event.dart';
+import 'package:flagship/hits/item.dart';
+import 'package:flagship/hits/page.dart';
+import 'package:flagship/hits/transaction.dart';
 import 'package:flagship/tracking/Batching/pool_queue.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -97,5 +100,47 @@ void main() {
     expect(poolTest.fsQueue.length, 1);
     poolTest.flushAllTrackFromQueue();
     expect(poolTest.fsQueue.length, 0);
+  });
+
+  test("add_hits", () async {
+    poolTest.delegate = MockFlagshipPoolQueueDelegate();
+
+    // create 100 hits
+    for (int i = 0; i < 5; i++) {
+      Event testEvent = Event(
+          action: "testPool" + "$i", category: EventCategory.Action_Tracking);
+      testEvent.visitorId = "user_" + "$i";
+      poolTest.addNewTrackElement(testEvent);
+
+      // Create transac
+      Transaction testTransac = Transaction(
+          transactionId: "user_" + "$i", affiliation: "testAffiliation");
+      testTransac.visitorId = "user_" + "$i";
+      poolTest.addNewTrackElement(testTransac);
+
+      // create Pageview
+      Page testPage = Page(location: "testPage");
+      testPage.visitorId = "user_" + "$i";
+      poolTest.addNewTrackElement(testPage);
+
+      // Create Item
+      Item testItem = Item(
+          transactionId: "user_" + "$i", name: "testItem", code: "testCode");
+      testItem.visitorId = "user_" + "$i";
+      poolTest.addNewTrackElement(testItem);
+
+      // check the creattion id after adding the hit in the pool
+      expect(testEvent.id.contains(testEvent.visitorId), true);
+    }
+    // check the size limiation
+    expect(poolTest.fsQueue.length, 20);
+
+    var extractedList = poolTest.extractXElementFromQueue(20);
+
+    // Check the axtraction length
+    expect(extractedList.length, 20);
+
+    // Check the empty
+    expect(poolTest.isEmpty(), true);
   });
 }

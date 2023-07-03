@@ -15,15 +15,15 @@ class TrackingManagerPeriodicStrategy extends TrackingManageContinuousStrategy {
 
   // On sucess sending hits batch
   @override
-  onSendBatchWithSucess(List<Hit> listOfSendedHits) {
-    hitDelegate?.onSendBatchWithSucess(
+  onSendBatchWithSuccess(List<Hit> listOfSendedHits) {
+    hitDelegate?.onSendBatchWithSuccess(
         listOfSendedHits, BatchCachingStrategy.BATCH_PERIODIC_CACHING);
   }
 
   // On sucess sending activate batch
   @override
-  onSendActivateBatchWithSucess(List<Hit> listOfSendedHits) {
-    activateDelegate?.onSendBatchWithSucess(
+  onSendActivateBatchWithSuccess(List<Hit> listOfSendedHits) {
+    activateDelegate?.onSendBatchWithSuccess(
         listOfSendedHits, BatchCachingStrategy.BATCH_PERIODIC_CACHING);
   }
 }

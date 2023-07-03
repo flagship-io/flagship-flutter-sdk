@@ -38,7 +38,7 @@ class Activate extends BaseHit {
   }
 
   Map<String, Object> toJson() {
-    Map<String, String> result;
+    Map<String, Object> result;
 
     result = {
       "vaid": modification?.variationId ?? "",
@@ -50,6 +50,16 @@ class Activate extends BaseHit {
     if (this.anonymousId != null) {
       result.addEntries({"aid": anonymousId ?? ""}.entries);
     }
+
+    /// Add qt entries
+    /// Time difference between when the activate hit was created and when it about to send it
+    if (this.createdAt != null) {
+      result.addEntries({
+        "qt": DateTime.now()
+            .difference(createdAt ?? DateTime.now())
+            .inMilliseconds
+      }.entries);
+    }
     return result;
   }
 
@@ -58,6 +68,8 @@ class Activate extends BaseHit {
     // Create with basic information
     var customBody = new Map<String, Object>();
     customBody.addEntries(this.toJson().entries);
+    // Add Type t , to identify this hit as activate from the lookup hits
+    customBody.addEntries({'t': typeOfEvent}.entries);
     return customBody;
   }
 

@@ -5,6 +5,7 @@ import 'package:flagship/flagship.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/flagship_version.dart';
 import 'package:flagship/hits/screen.dart';
+import 'package:flagship/hits/Page.dart' as FSPage;
 import 'package:flagship/tracking/tracking_manager.dart';
 import 'package:flagship/tracking/tracking_manager_config.dart';
 import 'package:flutter/cupertino.dart';
@@ -74,6 +75,8 @@ Future<void> main() async {
     user.fetchFlags().whenComplete(() async {});
     // Send hit
     await user.sendHit(Screen(location: "locationTest"));
+    await user.sendHit(FSPage.Page(location: "https://github.com/"));
+
     // Failed the hit
     when(fakeTrackingService.sendHttpRequest(
             RequestType.Post, 'https://events.flagship.io', any, any,
@@ -83,6 +86,7 @@ Future<void> main() async {
     });
     await user.sendHit(Screen(location: "locationTest"));
     await user.sendHit(Screen(location: "locationTest"));
+    await user.sendHit(FSPage.Page(location: "https://github.com/"));
 
     when(fakeTrackingService.sendHttpRequest(
             RequestType.Post, 'https://events.flagship.io', any, any,

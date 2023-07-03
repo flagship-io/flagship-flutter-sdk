@@ -1,3 +1,11 @@
+# 3.0.1 - 03/07/2023
+
+Added
+
+- Page, hit tracking for embedded web view
+
+- qt field in activate batch it indicate the time duration between the occurrence sending.
+
 # 3.0.0 - 16/03/2023
 
 Added
