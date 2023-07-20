@@ -43,14 +43,14 @@ class FlagshipConfig {
 
   Level _logLevel;
 
-  TrackingManagerConfig trackingMangerConfig;
+  TrackingManagerConfig trackingManagerConfig;
 
   IHitCacheImplementation? hitCacheImp;
 
   IVisitorCacheImplementation? visitorCacheImp;
 
   FlagshipConfig(this.decisionMode, this.timeout, this.pollingTime,
-      this._logLevel, this.onVisitorExposed, this.trackingMangerConfig,
+      this._logLevel, this.onVisitorExposed, this.trackingManagerConfig,
       {this.statusListener, this.visitorCacheImp, this.hitCacheImp}) {
     // Set the log Manager
     this.logManager = LogManager(level: _logLevel);

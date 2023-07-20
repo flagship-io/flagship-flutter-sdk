@@ -88,22 +88,22 @@ class Visitor {
     }
 
     /// Init Tracking manager
-    switch (config.trackingMangerConfig.batchStrategy) {
+    switch (config.trackingManagerConfig.batchStrategy) {
       case BatchCachingStrategy.BATCH_CONTINUOUS_CACHING:
         trackingManager = TrackingManageContinuousStrategy(
             Service(http.Client()),
-            config.trackingMangerConfig,
+            config.trackingManagerConfig,
             this.config.hitCacheImp ?? DefaultCacheHitImp());
         break;
       case BatchCachingStrategy.BATCH_PERIODIC_CACHING:
         trackingManager = TrackingManagerPeriodicStrategy(
             Service(http.Client()),
-            config.trackingMangerConfig,
+            config.trackingManagerConfig,
             this.config.hitCacheImp ?? DefaultCacheHitImp());
         break;
       default:
         trackingManager = TrackingManager(Service(http.Client()),
-            config.trackingMangerConfig, DefaultCacheHitImp());
+            config.trackingManagerConfig, DefaultCacheHitImp());
         break;
     }
 
