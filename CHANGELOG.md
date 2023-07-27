@@ -1,8 +1,8 @@
 # 3.0.2 - 27/07/2023
 
-- #### Fixed
+#### Fixed
 
-- Correct typo
+- Correct typo "trackingMangerConfig" to "trackingManagerConfig
 
 # 3.0.1 - 03/07/2023
 
