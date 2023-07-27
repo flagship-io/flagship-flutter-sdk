@@ -57,7 +57,7 @@ void main() async {
   }).build();
   config.decisionManager = fakeApi;
   TrackingManager fakeTracking =
-      TrackingManager(fakeService, config.trackingMangerConfig, null);
+      TrackingManager(fakeService, config.trackingManagerConfig, null);
 
   await Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
   var v1 = Flagship.newVisitor("flagVisitor").build();
