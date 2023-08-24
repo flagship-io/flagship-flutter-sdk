@@ -60,7 +60,7 @@ class VisitorDelegate implements IVisitor {
 
 // Fetch modification
   @override
-  Future<void> synchronizeModifications() async {
+  Future<Error?> synchronizeModifications() async {
     return getStrategy().synchronizeModifications().whenComplete(() {
       if (visitor.config.decisionMode == Mode.BUCKETING &&
           Flagship.getStatus() != Status.PANIC_ON) {

@@ -21,6 +21,8 @@ import 'package:flagship/visitor/visitor_delegate.dart';
 import 'flagship_delegate.dart';
 import 'package:http/http.dart' as http;
 
+//export './visitor/Ivisitor.dart' hide FlagSyncStatus;
+
 enum Instance {
   // The  newly created visitor instance will be returned and saved into the Flagship singleton. Call `Flagship.getVisitor()` to retrieve the instance.
   // This option should be adopted on applications that handle only one visitor at the same time.
@@ -72,6 +74,9 @@ class Visitor {
 
   /// Delegate to update the status
   final FlagshipDelegate flagshipDelegate = Flagship.sharedInstance();
+
+  /// flagSyncStatus
+  FlagSyncStatus _flagSyncStatus = FlagSyncStatus.CREATED;
 
   /// Create new instance for visitor
   ///
@@ -139,6 +144,8 @@ class Visitor {
     _context.addAll(context);
     Flagship.logger(
         Level.DEBUG, CONTEXT_UPDATE.replaceFirst("%s", "$_context"));
+    // Update flagSyncStatus
+    this._flagSyncStatus = FlagSyncStatus.CONTEXT_UPDATED;
   }
 
   /// Get the current context for the visitor
@@ -155,6 +162,9 @@ class Visitor {
   /// otherwise the update context skip with warnning log
 
   void updateContext<T>(String key, T value) {
+    // Update flagSyncStatus
+    this._flagSyncStatus = FlagSyncStatus.CONTEXT_UPDATED;
+
     /// Delegate the action to strategy
     _visitorDelegate.updateContext(key, value);
   }
@@ -175,6 +185,10 @@ class Visitor {
   /// defaultValue: the returned value if the key is not found
   /// return Flag object. See Flag class
   Flag getFlag<T>(String key, T defaultValue) {
+    if (_flagSyncStatus != FlagSyncStatus.FLAGS_FETCHED) {
+      Flagship.logger(
+          Level.ALL, _flagSyncStatus.warningMessage(visitorId, key));
+    }
     return Flag<T>(key, defaultValue, this._visitorDelegate);
   }
 
@@ -204,12 +218,20 @@ class Visitor {
   @Deprecated('Use fetchFlags instead')
   Future<void> synchronizeModifications() async {
     // Delegate the action to strategy
-    return _visitorDelegate.synchronizeModifications();
+    _visitorDelegate.synchronizeModifications().then((error) {
+      if (error == null) {
+        _flagSyncStatus = FlagSyncStatus.FLAGS_FETCHED;
+      }
+    });
   }
 
   Future<void> fetchFlags() async {
     /// Delegate the action to strategy
-    return _visitorDelegate.synchronizeModifications();
+    return _visitorDelegate.synchronizeModifications().then((error) {
+      if (error == null) {
+        _flagSyncStatus = FlagSyncStatus.FLAGS_FETCHED;
+      }
+    });
   }
 
   /// Activate modificationx
@@ -253,11 +275,15 @@ class Visitor {
   /// - Requires: Make sure that the experience continuity option is enabled on the flagship platform before using this method
 
   authenticate(String visitorId) {
+    // Update flagSyncStatus
+    this._flagSyncStatus = FlagSyncStatus.AUTHENTICATED;
     _visitorDelegate.getStrategy().authenticateVisitor(visitorId);
   }
 
   /// Use authenticate methode to go from Logged in  session to logged out session
   unauthenticate() {
+    // Update flagSyncStatus
+    this._flagSyncStatus = FlagSyncStatus.UNAUTHENTICATED;
     _visitorDelegate.getStrategy().unAuthenticateVisitor();
   }
 }
