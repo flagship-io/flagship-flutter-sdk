@@ -18,6 +18,7 @@ import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor/visitor_delegate.dart';
+import 'package:flutter/material.dart';
 import 'flagship_delegate.dart';
 import 'package:http/http.dart' as http;
 
@@ -171,6 +172,9 @@ class Visitor {
 
   /// Update with predefined context
   void updateFlagshipContext<T>(FlagshipContext flagshipContext, T value) {
+    // Update flagSyncStatus
+    this._flagSyncStatus = FlagSyncStatus.CONTEXT_UPDATED;
+
     if (FlagshipContextManager.chekcValidity(flagshipContext, value)) {
       _visitorDelegate.updateContext(rawValue(flagshipContext), value);
     } else {
@@ -285,6 +289,11 @@ class Visitor {
     // Update flagSyncStatus
     this._flagSyncStatus = FlagSyncStatus.UNAUTHENTICATED;
     _visitorDelegate.getStrategy().unAuthenticateVisitor();
+  }
+
+  @visibleForTesting
+  FlagSyncStatus getFlagSyncStatus() {
+    return _flagSyncStatus;
   }
 }
 

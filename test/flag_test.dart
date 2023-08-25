@@ -1,6 +1,7 @@
 import 'package:flagship/api/service.dart';
 import 'package:flagship/decision/api_manager.dart';
 import 'package:flagship/flagship.dart';
+import 'package:flagship/flagshipContext/flagship_context.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/flagship_version.dart';
 import 'package:flagship/model/flag.dart';
@@ -67,6 +68,7 @@ void main() async {
     var v1 = Flagship.newVisitor("flagVisitor").build();
     v1.trackingManager = fakeTracking;
     v1.fetchFlags().whenComplete(() async {
+      expect(v1.getFlagSyncStatus(), FlagSyncStatus.FLAGS_FETCHED);
       // List of flags
       List<Map<String, dynamic>> listEntry = [
         // Correct Flag
@@ -154,6 +156,27 @@ void main() async {
       }
     });
   }));
+
+  test('Test Flag warning message', () {
+    // Update Context
+    Flagship.getCurrentVisitor()?.updateContext("keyFalg", "valueFlag");
+    expect(Flagship.getCurrentVisitor()?.getFlagSyncStatus(),
+        FlagSyncStatus.CONTEXT_UPDATED);
+
+    // Authetictae
+    Flagship.getCurrentVisitor()?.authenticate("xpcUser");
+    expect(Flagship.getCurrentVisitor()?.getFlagSyncStatus(),
+        FlagSyncStatus.AUTHENTICATED);
+    // Update Flagship Context
+    Flagship.getCurrentVisitor()
+        ?.updateFlagshipContext(FlagshipContext.CARRIER_NAME, "SFR");
+    expect(Flagship.getCurrentVisitor()?.getFlagSyncStatus(),
+        FlagSyncStatus.CONTEXT_UPDATED);
+    // unAuthetictae
+    Flagship.getCurrentVisitor()?.unauthenticate();
+    expect(Flagship.getCurrentVisitor()?.getFlagSyncStatus(),
+        FlagSyncStatus.UNAUTHENTICATED);
+  });
 
   test("Flag with bad type", () {
     var v2 = Flagship.newVisitor("flagVisitor").build();
