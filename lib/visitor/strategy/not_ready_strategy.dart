@@ -11,8 +11,9 @@ class NotReadyStrategy extends DefaultStrategy {
   NotReadyStrategy(Visitor visitor) : super(visitor);
 
   @override
-  Future<void> synchronizeModifications() async {
+  Future<Error?> synchronizeModifications() async {
     Flagship.logger(Level.ERROR, FETCH_NOT_READY);
+    return null;
   }
 
   @override

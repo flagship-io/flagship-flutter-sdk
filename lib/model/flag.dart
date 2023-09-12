@@ -134,3 +134,40 @@ abstract class IFlag<T> {
   // Get metadata
   FlagMetadata metadata();
 }
+
+// Flag Sync Status
+enum FlagSyncStatus {
+  CREATED,
+  CONTEXT_UPDATED,
+  FLAGS_FETCHED,
+  AUTHENTICATED,
+  UNAUTHENTICATED
+}
+
+extension FlagSyncLogMessage on FlagSyncStatus {
+  String warningMessage(String visitorId, String flagKey) {
+    String ret = "";
+    switch (this) {
+      case FlagSyncStatus.CREATED:
+        ret =
+            "Visitor `$visitorId` has been created without calling `fetchFlags` method afterwards, the value of the flag `$flagKey` may be outdated.";
+        break;
+      case FlagSyncStatus.CONTEXT_UPDATED:
+        ret =
+            " Visitor context for visitor `$visitorId` has been updated without calling `fetchFlags` method afterwards, the value of the flag `$flagKey` may be outdated.";
+        break;
+      case FlagSyncStatus.AUTHENTICATED:
+        ret =
+            "Visitor `$visitorId` has been authenticated without calling `fetchFlags` method afterwards, the value of the flag `$flagKey` may be outdated.";
+        break;
+      case FlagSyncStatus.UNAUTHENTICATED:
+        ret =
+            "Visitor `$visitorId` has been unauthenticated without calling `fetchFlags` method afterwards, the value of the flag `$flagKey` may be outdated.";
+        break;
+      case FlagSyncStatus.FLAGS_FETCHED:
+      default:
+        break;
+    }
+    return ret;
+  }
+}

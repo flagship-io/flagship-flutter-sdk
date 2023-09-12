@@ -16,7 +16,7 @@ class _EventState extends State<EventHit> {
   @override
   void initState() {
     super.initState();
-    _eventActionController = TextEditingController(text: 'event_0603');
+    _eventActionController = TextEditingController(text: 'flutter_event');
     _eventValueController = TextEditingController(text: '10');
   }
 

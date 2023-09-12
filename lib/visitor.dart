@@ -18,6 +18,7 @@ import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor/visitor_delegate.dart';
+import 'package:flutter/material.dart';
 import 'flagship_delegate.dart';
 import 'package:http/http.dart' as http;
 
@@ -72,6 +73,9 @@ class Visitor {
 
   /// Delegate to update the status
   final FlagshipDelegate flagshipDelegate = Flagship.sharedInstance();
+
+  /// flagSyncStatus
+  FlagSyncStatus _flagSyncStatus = FlagSyncStatus.CREATED;
 
   /// Create new instance for visitor
   ///
@@ -139,6 +143,8 @@ class Visitor {
     _context.addAll(context);
     Flagship.logger(
         Level.DEBUG, CONTEXT_UPDATE.replaceFirst("%s", "$_context"));
+    // Update flagSyncStatus
+    this._flagSyncStatus = FlagSyncStatus.CONTEXT_UPDATED;
   }
 
   /// Get the current context for the visitor
@@ -155,12 +161,18 @@ class Visitor {
   /// otherwise the update context skip with warnning log
 
   void updateContext<T>(String key, T value) {
+    // Update flagSyncStatus
+    this._flagSyncStatus = FlagSyncStatus.CONTEXT_UPDATED;
+
     /// Delegate the action to strategy
     _visitorDelegate.updateContext(key, value);
   }
 
   /// Update with predefined context
   void updateFlagshipContext<T>(FlagshipContext flagshipContext, T value) {
+    // Update flagSyncStatus
+    this._flagSyncStatus = FlagSyncStatus.CONTEXT_UPDATED;
+
     if (FlagshipContextManager.chekcValidity(flagshipContext, value)) {
       _visitorDelegate.updateContext(rawValue(flagshipContext), value);
     } else {
@@ -175,6 +187,10 @@ class Visitor {
   /// defaultValue: the returned value if the key is not found
   /// return Flag object. See Flag class
   Flag getFlag<T>(String key, T defaultValue) {
+    if (_flagSyncStatus != FlagSyncStatus.FLAGS_FETCHED) {
+      Flagship.logger(
+          Level.ALL, _flagSyncStatus.warningMessage(visitorId, key));
+    }
     return Flag<T>(key, defaultValue, this._visitorDelegate);
   }
 
@@ -204,15 +220,23 @@ class Visitor {
   @Deprecated('Use fetchFlags instead')
   Future<void> synchronizeModifications() async {
     // Delegate the action to strategy
-    return _visitorDelegate.synchronizeModifications();
+    _visitorDelegate.synchronizeModifications().then((error) {
+      if (error == null) {
+        _flagSyncStatus = FlagSyncStatus.FLAGS_FETCHED;
+      }
+    });
   }
 
   Future<void> fetchFlags() async {
     /// Delegate the action to strategy
-    return _visitorDelegate.synchronizeModifications();
+    return _visitorDelegate.synchronizeModifications().then((error) {
+      if (error == null) {
+        _flagSyncStatus = FlagSyncStatus.FLAGS_FETCHED;
+      }
+    });
   }
 
-  /// Activate modificationx
+  /// Activate modification
   @Deprecated('Use userExposed() in Flag class instead')
   Future<void> activateModification(String key) async {
     // Delegate the action to strategy
@@ -253,12 +277,21 @@ class Visitor {
   /// - Requires: Make sure that the experience continuity option is enabled on the flagship platform before using this method
 
   authenticate(String visitorId) {
+    // Update flagSyncStatus
+    this._flagSyncStatus = FlagSyncStatus.AUTHENTICATED;
     _visitorDelegate.getStrategy().authenticateVisitor(visitorId);
   }
 
   /// Use authenticate methode to go from Logged in  session to logged out session
   unauthenticate() {
+    // Update flagSyncStatus
+    this._flagSyncStatus = FlagSyncStatus.UNAUTHENTICATED;
     _visitorDelegate.getStrategy().unAuthenticateVisitor();
+  }
+
+  @visibleForTesting
+  FlagSyncStatus getFlagSyncStatus() {
+    return _flagSyncStatus;
   }
 }
 

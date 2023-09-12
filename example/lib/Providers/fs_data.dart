@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 
 class FSData extends ChangeNotifier {
   // Apikey
-  String _apiKey = "apiKey";
+  String _apiKey = "";
   // EnvId
-  String _envId = "bkk9glivmjcg0vtmdedr";
+  String _envId = "";
   // Mode
   Mode _mode = Mode.DECISION_API;
   // Timeout
