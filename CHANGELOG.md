@@ -1,3 +1,9 @@
+# 3.0.3 - 12/09/2023
+
+#### Added
+
+- New warnings logs when flags are out of date
+
 # 3.0.2 - 27/07/2023
 
 #### Fixed
