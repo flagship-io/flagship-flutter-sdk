@@ -389,9 +389,6 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
       print("the vlaue of flag is " + value);
       vA.sendHit(Screen(location: "screenQA"));
       print("stop"); // to go online mode
-
-      //  vA.flagSyncStatus = FlagSyncStatus.FLAGS_FETCHED;
-
       Flagship.sharedInstance().close();
     });
     // to go offline mode
