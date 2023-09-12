@@ -22,8 +22,6 @@ import 'package:flutter/material.dart';
 import 'flagship_delegate.dart';
 import 'package:http/http.dart' as http;
 
-//export './visitor/Ivisitor.dart' hide FlagSyncStatus;
-
 enum Instance {
   // The  newly created visitor instance will be returned and saved into the Flagship singleton. Call `Flagship.getVisitor()` to retrieve the instance.
   // This option should be adopted on applications that handle only one visitor at the same time.
@@ -238,7 +236,7 @@ class Visitor {
     });
   }
 
-  /// Activate modificationx
+  /// Activate modification
   @Deprecated('Use userExposed() in Flag class instead')
   Future<void> activateModification(String key) async {
     // Delegate the action to strategy

@@ -135,6 +135,15 @@ abstract class IFlag<T> {
   FlagMetadata metadata();
 }
 
+// Flag Sync Status
+enum FlagSyncStatus {
+  CREATED,
+  CONTEXT_UPDATED,
+  FLAGS_FETCHED,
+  AUTHENTICATED,
+  UNAUTHENTICATED
+}
+
 extension FlagSyncLogMessage on FlagSyncStatus {
   String warningMessage(String visitorId, String flagKey) {
     String ret = "";
@@ -155,18 +164,10 @@ extension FlagSyncLogMessage on FlagSyncStatus {
         ret =
             "Visitor `$visitorId` has been unauthenticated without calling `fetchFlags` method afterwards, the value of the flag `$flagKey` may be outdated.";
         break;
+      case FlagSyncStatus.FLAGS_FETCHED:
       default:
         break;
     }
     return ret;
   }
-}
-
-enum FlagSyncStatus {
-  CREATED,
-  CONTEXT_UPDATED,
-  // ignore: unused_field
-  FLAGS_FETCHED,
-  AUTHENTICATED,
-  UNAUTHENTICATED
 }
