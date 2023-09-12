@@ -75,6 +75,7 @@ class _ContextScreenState extends State<ContextScreen> with ShowDialog {
         // : "Context updated but the synchronized failed";
         showBasicDialog("Context validation", subMsg);
       });
+      showBasicDialog("Context validation", subMsg);
     } catch (error) {
       subMsg = "Validation failed : $error";
       showBasicDialog("Context validation", subMsg);
