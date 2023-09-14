@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flagship/api/service.dart';
 import 'package:flagship/cache/default_cache.dart';
+import 'package:flagship/dataUsageTracking/data_usage_tracking.dart';
 import 'package:flagship/flagshipContext/flagship_context.dart';
 import 'package:flagship/flagshipContext/flagship_context_manager.dart';
 import 'package:flagship/hits/event.dart';
@@ -76,6 +77,9 @@ class Visitor {
 
   /// flagSyncStatus
   FlagSyncStatus _flagSyncStatus = FlagSyncStatus.CREATED;
+
+  /// DataUsageTracking
+  DataUsageTracking? dataUsageTracking = DataUsageTracking(null);
 
   /// Create new instance for visitor
   ///
