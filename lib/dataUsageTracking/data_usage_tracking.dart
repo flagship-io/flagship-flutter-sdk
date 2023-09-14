@@ -1,11 +1,19 @@
+import 'package:flagship/flagship.dart';
 import 'package:flagship/model/account_settings.dart';
+import 'package:flagship/model/bucketing.dart';
+import 'package:flagship/model/variation.dart';
+import 'package:flagship/utils/logger/log_manager.dart';
+import 'package:murmurhash/murmurhash.dart';
 
 class DataUsageTracking {
+  // TroubleShooting
   Troubleshooting? _troubleshooting;
-
+  // VisitorId
+  String visitorId;
+  // Is data tracking is allowed
   bool dataUsageIsAllowed = false;
 
-  DataUsageTracking(this._troubleshooting);
+  DataUsageTracking(this._troubleshooting, this.visitorId);
 
   void updateTroubleshooting(Troubleshooting? trblShooting) {
     _troubleshooting = trblShooting;
@@ -38,6 +46,21 @@ class DataUsageTracking {
   }
 
   bool isBucketAllocationValide() {
+    // Calculate the bucket allocation
+
+    int hashAlloc;
+
+    if (_troubleshooting != null){
+      
+      String combinedId = _troubleshooting?.endDate;
+    }
+    // We calculate the Hash allocation by the combination of : visitorId + endDate
+    
+
+    
+
+    MurmurHash(
+
     return true;
   }
 
@@ -49,4 +72,33 @@ class DataUsageTracking {
   void sendDataUsageTracking() {
     print("Send Data Usage Tracking ...........");
   }
+
+
+    String? selectIdVariationWithMurMurHash(
+      String visitorId, VariationGroup varGroup) {
+    int hashAlloc;
+    // We calculate the Hash allocation by the combination of : visitorId + idVariationGroup
+    String combinedId = varGroup.idVariationGroup + visitorId;
+
+    // Calculate the murmurHash algorithm
+    hashAlloc = (MurmurHash.v3(combinedId, 0) % 100);
+    Flagship.logger(
+        Level.DEBUG,
+        "########### The MurMurHash for the combined " +
+            varGroup.idVariationGroup +
+            " " +
+            visitorId +
+            " is : $hashAlloc #############");
+
+    int offsetAlloc = 0;
+    for (Variation itemVar in varGroup.variations) {
+      if (hashAlloc < itemVar.allocation + offsetAlloc) {
+        return itemVar.idVariation;
+      }
+      offsetAlloc += itemVar.allocation;
+    }
+    return null;
+  }
+
+  
 }

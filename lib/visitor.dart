@@ -79,7 +79,7 @@ class Visitor {
   FlagSyncStatus _flagSyncStatus = FlagSyncStatus.CREATED;
 
   /// DataUsageTracking
-  DataUsageTracking? dataUsageTracking = DataUsageTracking(null);
+  DataUsageTracking? dataUsageTracking;
 
   /// Create new instance for visitor
   ///
@@ -135,6 +135,9 @@ class Visitor {
 
     /// Send the consent hit
     _visitorDelegate.sendHit(Consent(hasConsented: _hasConsented));
+
+    // Init data usage tracking
+    dataUsageTracking = DataUsageTracking(null, visitorId);
   }
 
   /// Update context directely with map for <String, Object>
