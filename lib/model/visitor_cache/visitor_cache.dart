@@ -74,8 +74,11 @@ class VisitorCache {
         Modification newModification = Modification(
             keyFalg,
             campItem.campaignId ?? "",
+            campItem.campaignName ?? "",
             campItem.variationGroupId ?? "",
+            campItem.variationGroupName ?? "",
             campItem.variationId ?? "",
+            campItem.variationName ?? "",
             campItem.isReference ?? false,
             campItem.type ?? "",
             "slug",

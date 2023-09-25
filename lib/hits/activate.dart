@@ -32,8 +32,8 @@ class Activate extends BaseHit {
 
     // Create the modification object to set the "caid" & "vaid"
     if ((body["caid"] != null) && (body["vaid"] != null)) {
-      modification = Modification("", "", body["caid"], body["vaid"], false,
-          "campaignType", "slug", null);
+      modification = Modification("", "", "", body["caid"], "", body["vaid"],
+          "", false, "campaignType", "slug", null);
     }
   }
 

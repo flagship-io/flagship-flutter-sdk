@@ -62,8 +62,13 @@ extension BucketingProcess on BucketingManager {
 
           if (varId != null) {
             // Create variation group
-            Campaign camp = Campaign(itemCamp.idCampaign,
-                itemVarGroup.idVariationGroup, itemCamp.type, itemCamp.slug);
+            Campaign camp = Campaign(
+                itemCamp.idCampaign,
+                itemCamp.campaignName,
+                itemVarGroup.idVariationGroup,
+                itemVarGroup.variationGroupName,
+                itemCamp.type,
+                itemCamp.slug);
             Flagship.logger(Level.DEBUG,
                 "#### The variation choosen is $varId ###########");
 

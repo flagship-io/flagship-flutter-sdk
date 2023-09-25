@@ -93,8 +93,11 @@ class Flag<T> implements IFlag {
 
 class FlagMetadata {
   String campaignId = "";
+  String campaignName = "";
   String variationGroupId = "";
+  String variationGroupName = "";
   String variationId = "";
+  String variationName = "";
   bool isReference = false;
   String campaignType = "";
   String? slug;
@@ -103,8 +106,14 @@ class FlagMetadata {
   FlagMetadata.withMap(Map<String, dynamic>? infos) {
     if (infos != null) {
       this.campaignId = (infos['campaignId'] as String);
+      this.campaignName = (infos['campaignName'] as String);
+
       this.variationGroupId = infos['variationGroupId'] as String;
+      this.variationGroupName = infos['variationGroupName'] as String;
+
       this.variationId = infos['variationId'] as String;
+      this.variationName = infos['variationName'] as String;
+
       this.isReference = infos['isReference'] as bool;
       this.campaignType = infos['campaignType'] as String;
       this.slug = infos['slug'];
@@ -115,8 +124,11 @@ class FlagMetadata {
   Map<String, dynamic> toJson() {
     return {
       "campaignId": this.campaignId,
+      "campaignName": this.campaignName,
       "variationGroupId": this.variationGroupId,
+      "variationGroupName": this.variationGroupName,
       "variationId": this.variationId,
+      "variationName": this.variationName,
       "isReference": this.isReference,
       "campaignType": this.campaignType,
       "slug": this.slug,

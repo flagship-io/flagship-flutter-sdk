@@ -8,15 +8,21 @@ class Campaign {
   Variation? variation;
   String campaignType = "";
   String? slug;
+  String name = "";
+  String variationGroupName = "";
 
-  Campaign(
-      this.idCampaign, this.variationGroupId, this.campaignType, this.slug);
+  Campaign(this.idCampaign, this.name, this.variationGroupId,
+      this.variationGroupName, this.campaignType, this.slug);
 
   Campaign.fromJson(Map<String, dynamic> json) {
     // Set the id campaign
     idCampaign = (json['id'] ?? "") as String;
+    // Set the name of campaign
+    name = (json['name'] ?? "") as String;
     // Set the variation groupId
     variationGroupId = (json['variationGroupId'] ?? "") as String;
+    // Set the name of variation group name
+    variationGroupName = (json['variationGroupName'] ?? "") as String;
     // Set variation object
     if (json.keys.contains('variation')) {
       variation = Variation.fromJson(json['variation'] as Map<String, dynamic>);
@@ -43,8 +49,11 @@ class Campaign {
           key: Modification(
               key,
               this.idCampaign,
+              this.name,
               this.variationGroupId,
+              this.variationGroupName,
               this.variation?.idVariation ?? "",
+              this.variation?.name ?? "",
               this.variation?.reference ?? false,
               this.campaignType,
               this.slug,
