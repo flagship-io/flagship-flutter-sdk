@@ -48,7 +48,7 @@ class CampaignCache {
     this.activated = false; // For the moment is false
     // Let the flag to null , we need it for the check later
     this.campaignName = modification.campaignName;
-    this.variationGroupName = modification.variationGroupId;
+    this.variationGroupName = modification.variationGroupName;
     this.variationName = modification.variationName;
   }
 

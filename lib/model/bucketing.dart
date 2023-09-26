@@ -32,7 +32,7 @@ class BucketCampaign {
 
     // Set Campaign name
     if (json.keys.contains("name")) {
-      idCampaign = json['name'] as String;
+      campaignName = json['name'] as String;
     }
 
     // Set type Campaign
@@ -67,7 +67,7 @@ class VariationGroup {
 
     // Set idVariationGroup Name
     if (json.keys.contains("name")) {
-      idVariationGroup = json['name'] as String;
+      variationGroupName = json['name'] as String;
     }
 
     // Create targeting

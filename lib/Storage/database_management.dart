@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -8,6 +10,7 @@ import 'package:path/path.dart';
 
 String lastModfiedKey = "FSLastModifiedScript";
 String fileName = "cacheHits.json";
+String fsDirectory = "/flagship";
 
 class DatabaseManagement {
   Database? _hitDatabase;
@@ -24,12 +27,27 @@ class DatabaseManagement {
   DatabaseManagement();
 
   Future<void> openDb() async {
-    String pathToDataBase =
-        join(await getDatabasesPath(), 'Flagship/hits_database.db');
+    // Get the document path
+    final directory = await getApplicationDocumentsDirectory();
 
+    // Get path for flagship directory or create if not exist
+    Directory hitDerectory =
+        await Directory.fromUri(Uri.file(directory.path + fsDirectory))
+            .create(recursive: true)
+            .catchError((error) {
+      Flagship.logger(Level.DEBUG,
+          "Enable to create the flagship directory to save hit and visitor data ");
+      throw Exception('Flagship, Failed to create directory flagship');
+    });
+
+    // Format the path of the hit database
+    String pathToDataBase = join(hitDerectory.path, 'hits_database.db');
+
+    // Format the path for the visitor database
     String pathToDataBaseVisitor =
-        join(await getDatabasesPath(), 'Flagship/visitor_database.db');
+        join(hitDerectory.path, 'visitor_database.db');
 
+    // Open database for hits
     _hitDatabase = await openDatabase(pathToDataBase, onCreate: (db, version) {
       Flagship.logger(
           Level.DEBUG, " Run the CREATE TABLE hits on the database.");
@@ -38,6 +56,7 @@ class DatabaseManagement {
       );
     }, version: 1);
 
+    // Open database for visitor data
     _visitorDatabase =
         await openDatabase(pathToDataBaseVisitor, onCreate: (db, version) {
       Flagship.logger(
