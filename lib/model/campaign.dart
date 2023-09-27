@@ -22,7 +22,7 @@ class Campaign {
     // Set the variation groupId
     variationGroupId = (json['variationGroupId'] ?? "") as String;
     // Set the name of variation group name
-    variationGroupName = (json['variationGroupName'] ?? "") as String;
+    variationGroupName = (json["variationGroupName"] ?? "") as String;
     // Set variation object
     if (json.keys.contains('variation')) {
       variation = Variation.fromJson(json['variation'] as Map<String, dynamic>);
@@ -36,7 +36,7 @@ class Campaign {
   Map<String, dynamic> toJson() => {};
 
   Map<String, dynamic> getAllModificationsValue() {
-    return variation?.modifications.vals ?? {};
+    return variation?.modifications?.vals ?? {};
   }
 
   Map<String, Modification> getAllModification() {

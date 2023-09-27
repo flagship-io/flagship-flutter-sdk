@@ -17,8 +17,8 @@ import 'package:http/http.dart' as http;
 
 @GenerateMocks([Service])
 void main() async {
-  ToolsTest.sqfliteTestInit();
   WidgetsFlutterBinding.ensureInitialized();
+  ToolsTest.sqfliteTestInit();
   SharedPreferences.setMockInitialValues({});
   Map<String, String> fsHeaders = {
     "x-api-key": "apiKey",

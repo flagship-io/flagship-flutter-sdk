@@ -74,7 +74,7 @@ void main() {
       /// Get infos
       // ignore: deprecated_member_use_from_same_package
       var infos = v1.getModificationInfo('alias');
-      expect(infos?.length, 6);
+      expect(infos?.length, 9);
       expect(infos!['campaignId'], "bsffhle242b2l3igq4dg");
       expect(infos['variationGroupId'], "bsffhle242b2l3igq4egaa");
       expect(infos['variationId'], "bsffhle242b2l3igq4f0");
