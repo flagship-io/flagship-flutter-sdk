@@ -54,8 +54,18 @@ void main() {
   });
 
   test("Modification", () {
-    Modification itemModif =
-        Modification("key1", "campaignId", "variationGroupId", "variationId", true, "ab", "slug", 12);
+    Modification itemModif = Modification(
+        "key1",
+        "campaignId",
+        "campName",
+        "variationGroupId",
+        "vargName",
+        "variationId",
+        "varName",
+        true,
+        "ab",
+        "slug",
+        12);
 
     expect(itemModif.toJson().length, 6);
     expect(itemModif.value, 12);
