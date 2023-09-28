@@ -31,7 +31,7 @@ class DatabaseManagement {
     final directory = await getApplicationDocumentsDirectory();
 
     // Get path for flagship directory or create if not exist
-    Directory hitDerectory =
+    Directory fsFlagshipDir =
         await Directory.fromUri(Uri.file(directory.path + fsDirectory))
             .create(recursive: true)
             .catchError((error) {
@@ -41,11 +41,11 @@ class DatabaseManagement {
     });
 
     // Format the path of the hit database
-    String pathToDataBase = join(hitDerectory.path, 'hits_database.db');
+    String pathToDataBase = join(fsFlagshipDir.path, 'hits_database.db');
 
     // Format the path for the visitor database
     String pathToDataBaseVisitor =
-        join(hitDerectory.path, 'visitor_database.db');
+        join(fsFlagshipDir.path, 'visitor_database.db');
 
     // Open database for hits
     _hitDatabase = await openDatabase(pathToDataBase, onCreate: (db, version) {
