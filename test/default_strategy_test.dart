@@ -8,11 +8,13 @@ import 'package:http/http.dart' as http;
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'fake_path_provider_platform.dart';
 import 'service_test.mocks.dart';
 import 'package:flagship/api/service.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/hits/event.dart';
 import 'test_tools.dart';
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
 @GenerateMocks([Service])
 void main() {
@@ -47,6 +49,7 @@ void main() {
     await Flagship.start("bkk9glocmjcg0vtmdlng", "apiKey", config: config);
     Flagship.enableLog(true);
     Flagship.setLoggerLevel(Level.WARNING);
+    PathProviderPlatform.instance = FakePathProviderPlatform();
 
     var v1 = Flagship.newVisitor("visitorId").withContext({}).build();
 
