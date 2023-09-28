@@ -10,7 +10,7 @@ import 'package:path/path.dart';
 
 String lastModfiedKey = "FSLastModifiedScript";
 String fileName = "cacheHits.json";
-String fsDirectory = "/flagship";
+String fsDirectory = "/Flagship";
 
 class DatabaseManagement {
   Database? _hitDatabase;
