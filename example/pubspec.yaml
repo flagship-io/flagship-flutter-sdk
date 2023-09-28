@@ -24,6 +24,7 @@ dependencies:
   flutter:
     sdk: flutter
   http: ^0.13.1 
+  #flagship: ^3.0.3
   flagship: 
     path: ../
   provider: ^6.0.3

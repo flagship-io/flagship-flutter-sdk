@@ -23,7 +23,7 @@ class BucketingManager extends DecisionManager {
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   String lastModfiedKey = "FSLastModifiedScript";
-  String bucketingFolder = "/flagship/Bucketing/";
+  String bucketingFolder = "/flagship_bucketing/";
   String fileName = "bucketing.json";
 
   BucketingManager(Service service, this.intervalPolling) : super(service);
