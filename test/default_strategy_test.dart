@@ -135,20 +135,10 @@ void main() {
     config.decisionManager = fakeApi;
 
     await Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
-
+    PathProviderPlatform.instance = FakePathProviderPlatform();
     var v1 = Flagship.newVisitor("visitorId").build();
     Flagship.setCurrentVisitor(v1);
     expect(v1.getConsent(), true);
-    // ignore: deprecated_member_use_from_same_package
-
-    // v1.synchronizeModifications().whenComplete(() {
-    //   // ignore: deprecated_member_use_from_same_package
-    //   expect(v1.getModification('aliasTer', 'default'), "testValue");
-    //   // Test the case when the modificattion is empty
-    //   v1.modifications.clear();
-    //   // ignore: deprecated_member_use_from_same_package
-    //   expect(v1.getModification('aliasTer', 'default'), "default");
-    // });
 
     // ignore: deprecated_member_use_from_same_package
     await v1.synchronizeModifications().then((value) {
@@ -187,7 +177,7 @@ void main() {
     config.decisionManager = fakeApi;
 
     Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
-
+    PathProviderPlatform.instance = FakePathProviderPlatform();
     var v1 = Flagship.newVisitor("visitorId").build();
     Flagship.setCurrentVisitor(v1);
     expect(v1.getConsent(), true);
