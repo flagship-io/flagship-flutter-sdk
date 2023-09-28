@@ -11,15 +11,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'fake_path_provider_platform.dart';
 import 'service_test.mocks.dart';
 import 'test_tools.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
 @GenerateMocks([Service])
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   ToolsTest.sqfliteTestInit();
   SharedPreferences.setMockInitialValues({});
+
   Map<String, String> fsHeaders = {
     "x-api-key": "apiKey",
     "x-sdk-client": "flutter",
@@ -61,11 +64,14 @@ void main() async {
       TrackingManager(fakeService, config.trackingManagerConfig, null);
 
   await Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
+  PathProviderPlatform.instance = FakePathProviderPlatform();
   var v1 = Flagship.newVisitor("flagVisitor").build();
   v1.config.decisionManager = fakeApi;
 
   test("Test Flag class", (() async {
+    // PathProviderPlatform.instance = FakePathProviderPlatform();
     var v1 = Flagship.newVisitor("flagVisitor").build();
+
     v1.trackingManager = fakeTracking;
     v1.fetchFlags().whenComplete(() async {
       expect(v1.getFlagSyncStatus(), FlagSyncStatus.FLAGS_FETCHED);
@@ -150,7 +156,8 @@ void main() async {
           expect(metadata.campaignType, "");
         }
         // Check lentgh for metedata json
-        expect(myFlag.metadata().toJson().keys.length, 6);
+        expect(myFlag.metadata().toJson().keys.length, 9);
+
         // Expose
         await myFlag.visitorExposed();
       }
@@ -179,6 +186,7 @@ void main() async {
   });
 
   test("Flag with bad type", () {
+    //  PathProviderPlatform.instance = FakePathProviderPlatform();
     var v2 = Flagship.newVisitor("flagVisitor").build();
     v2.fetchFlags().whenComplete(() {
       Flag myFlag = v2.getFlag("key_A", 3.14);
@@ -195,6 +203,7 @@ void main() async {
   });
 
   test("Flag with null as value", () {
+    //  PathProviderPlatform.instance = FakePathProviderPlatform();
     var v3 = Flagship.newVisitor("flagVisitor").build();
     v3.fetchFlags().whenComplete(() {
       Flag myFlag = v3.getFlag("keyNull", "nullValue");
@@ -211,6 +220,7 @@ void main() async {
   });
 
   test("Flag value & default value = null", () {
+    //PathProviderPlatform.instance = FakePathProviderPlatform();
     var v4 = Flagship.newVisitor("flagVisitor").build();
     v4.fetchFlags().whenComplete(() {
       Flag myFlag = v4.getFlag("keyNull", null);

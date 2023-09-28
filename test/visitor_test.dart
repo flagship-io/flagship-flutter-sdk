@@ -8,12 +8,16 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'fake_path_provider_platform.dart';
 import 'test_tools.dart';
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
 void main() {
   ToolsTest.sqfliteTestInit();
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences.setMockInitialValues({});
+  PathProviderPlatform.instance = FakePathProviderPlatform();
+
   var v1 = Visitor(
       ConfigBuilder().build(), "user1", true, {"key1": "val1", "key2": "val2"});
 
