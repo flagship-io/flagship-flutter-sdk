@@ -8,12 +8,16 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'fake_path_provider_platform.dart';
 import 'test_tools.dart';
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
 void main() {
   ToolsTest.sqfliteTestInit();
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences.setMockInitialValues({});
+  PathProviderPlatform.instance = FakePathProviderPlatform();
+
   var v1 = Visitor(
       ConfigBuilder().build(), "user1", true, {"key1": "val1", "key2": "val2"});
 
@@ -91,8 +95,11 @@ void main() {
       v1.modifications["test_string"] = new Modification(
           "test_string",
           "campaignId",
+          "campName",
           "variationGroupId",
+          "vargName",
           "variationId",
+          "varName",
           true,
           "ab",
           "slug",
@@ -103,8 +110,11 @@ void main() {
       v1.modifications["test_bool"] = new Modification(
           "test_bool",
           "campaignId",
+          "campName",
           "variationGroupId",
+          "vargName",
           "variationId",
+          "varName",
           true,
           "ab",
           "slug",
@@ -115,8 +125,11 @@ void main() {
       v1.modifications["test_double"] = new Modification(
           "test_double",
           "campaignId",
+          "campName",
           "variationGroupId",
+          "vargName",
           "variationId",
+          "varName",
           true,
           "ab",
           "slug",
@@ -124,16 +137,29 @@ void main() {
       // ignore: deprecated_member_use_from_same_package
       expect(v1.getModification("test_double", 13.5), 23.5);
 
-      v1.modifications["test_int"] = new Modification("test_int", "campaignId",
-          "variationGroupId", "variationId", true, "ab", "slug", 23);
+      v1.modifications["test_int"] = new Modification(
+          "test_int",
+          "campaignId",
+          "",
+          "variationGroupId",
+          "",
+          "variationId",
+          "",
+          true,
+          "ab",
+          "slug",
+          23);
       // ignore: deprecated_member_use_from_same_package
       expect(v1.getModification("test_int", 13), 23);
 
       v1.modifications["test_mismatch"] = new Modification(
           "test_mismatch",
           "campaignId",
+          "",
           "variationGroupId",
+          "",
           "variationId",
+          "",
           true,
           "ab",
           "slug",
@@ -147,8 +173,11 @@ void main() {
       v1.modifications["test_mismatch_castable"] = new Modification(
           "test_mismatch_castable",
           "campaignId",
+          "",
           "variationGroupId",
+          "",
           "variationId",
+          "",
           true,
           "ab",
           "slug",
@@ -159,8 +188,11 @@ void main() {
       v1.modifications["test_list"] = new Modification(
           "test_mismatch_castable",
           "campaignId",
+          "",
           "variationGroupId",
+          "",
           "variationId",
+          "",
           true,
           "ab",
           "slug",
@@ -173,8 +205,11 @@ void main() {
       v1.modifications["test_object"] = new Modification(
           "test_mismatch_castable",
           "campaignId",
+          "",
           "variationGroupId",
+          "",
           "variationId",
+          "",
           true,
           "ab",
           "slug",
@@ -187,8 +222,11 @@ void main() {
       v1.modifications["badType"] = new Modification(
           "test_mismatch_castable",
           "campaignId",
+          "",
           "variationGroupId",
+          "",
           "variationId",
+          "",
           true,
           "ab",
           "slug",
@@ -199,8 +237,11 @@ void main() {
       v1.modifications["null"] = new Modification(
           "test_mismatch_castable",
           "campaignId",
+          "",
           "variationGroupId",
+          "",
           "variationId",
+          "",
           true,
           "ab",
           "slug",

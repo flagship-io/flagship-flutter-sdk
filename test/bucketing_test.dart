@@ -22,11 +22,11 @@ void main() {
     expect(result.campaigns.first.idCampaign, "br8dca47pe0g1648p34g");
     expect(
         result.campaigns.first.variation?.idVariation, "br8dihk7pe0g16ag5img");
-    expect(result.campaigns.first.variation?.modifications.vals.length, 7);
+    expect(result.campaigns.first.variation?.modifications?.vals.length, 7);
     expect(
-        result.campaigns.first.variation?.modifications.vals["key5"], "value");
-    expect(result.campaigns.first.variation?.modifications.vals["key6"], 12);
-    expect(result.campaigns.first.variation?.modifications.vals["key7"], true);
+        result.campaigns.first.variation?.modifications?.vals["key5"], "value");
+    expect(result.campaigns.first.variation?.modifications?.vals["key6"], 12);
+    expect(result.campaigns.first.variation?.modifications?.vals["key7"], true);
 
     Campaigns resultBis = bkManager.bucketVariations(
         'alias', bucketingObject, {"condition4": "value5"}, {});

@@ -27,12 +27,15 @@ void main() {
 
     Map<String, dynamic> inputsBis = {
       "visitorId": "2020072318165329233",
+      "name": "campName",
       "campaigns": [
         {
           "id": "bsffhle242b2l3igq4dgb",
           "variationGroupId": "bsffhle242b2l3igq4egaab",
+          "variationGroupName": "varGName",
           "variation": {
             "id": "bsffhle242b2l3igq4f0b",
+            "name": "varName",
             "modifications": {
               "type": "JSON",
               "value": {"key1": "val1", "key2": 12}
@@ -54,11 +57,21 @@ void main() {
   });
 
   test("Modification", () {
-    Modification itemModif =
-        Modification("key1", "campaignId", "variationGroupId", "variationId", true, "ab", "slug", 12);
+    Modification itemModif = Modification(
+        "key1",
+        "campaignId",
+        "campName",
+        "variationGroupId",
+        "vargName",
+        "variationId",
+        "varName",
+        true,
+        "ab",
+        "slug",
+        12);
 
-    expect(itemModif.toJson().length, 6);
+    expect(itemModif.toJson().length, 9);
     expect(itemModif.value, 12);
-    expect(itemModif.toJsonInformation().length, 6);
+    expect(itemModif.toJsonInformation().length, 9);
   });
 }

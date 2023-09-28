@@ -1,3 +1,9 @@
+# 3.0.4 - 28/09/2023
+
+#### Added
+
+-  Add campaignName, variationGroupName and variationName in flags & campaigns metadata
+
 # 3.0.3 - 12/09/2023
 
 #### Added

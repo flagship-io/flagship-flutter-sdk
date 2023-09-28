@@ -1,6 +1,6 @@
 name: flagship
 description: Flutter SDK for Flagship Feature management & Experiment platform for modern engineering and product teams
-version: 3.0.3
+version: 3.0.4
 homepage: https://flagship.io
 
 environment:
@@ -22,7 +22,7 @@ dependencies:
   provider: ^6.0.3
   shared_preferences: ^2.0.15
   uuid: ^3.0.6
-  sqflite: ^2.2.2
+  sqflite: ^2.3.0
   json_annotation: ^4.7.0
   path: ^1.8.2
 dev_dependencies:
@@ -31,7 +31,7 @@ dev_dependencies:
   mockito: ^5.0.16
   build_runner: ^2.1.4
   json_serializable: ^6.5.4
-  sqflite_common_ffi: ^2.2.1
+  sqflite_common_ffi: ^2.3.0+2
   #test: <latest_version>
 
 # For information on the generic Dart part of this file, see the

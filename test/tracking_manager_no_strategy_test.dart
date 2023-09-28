@@ -15,8 +15,10 @@ import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'default_strategy_test.mocks.dart';
+import 'fake_path_provider_platform.dart';
 import 'test_tools.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
 @GenerateMocks([Service])
 Future<void> main() async {
@@ -67,6 +69,7 @@ Future<void> main() async {
                     .NO_BATCHING_CONTINUOUS_CACHING_STRATEGY))
             .build());
 // create new visitor
+    PathProviderPlatform.instance = FakePathProviderPlatform();
     var user = Flagship.newVisitor("userWithHidden").build();
     // Set the mocks
     user.trackingManager = fakeTrackingMgr;
@@ -127,6 +130,8 @@ Future<void> main() async {
                 batchStrategy: BatchCachingStrategy
                     .NO_BATCHING_CONTINUOUS_CACHING_STRATEGY))
             .build());
+
+    PathProviderPlatform.instance = FakePathProviderPlatform();
     // create new visitor
     var user = Flagship.newVisitor("userWithHidden").build();
     // Set the mocks

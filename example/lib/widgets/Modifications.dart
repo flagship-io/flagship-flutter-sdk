@@ -17,14 +17,21 @@ class Modifications extends StatefulWidget {
 class _ModificationsState extends State<Modifications> {
   var flagType = "string";
   var defaultValueBool = false;
-  final keyFlagController = TextEditingController(text: "flutter_key");
+  final keyFlagController = TextEditingController(text: "btnColor");
 
   final defaultValueFlagController = TextEditingController(text: "");
 
   String variationId = "None";
+  String variationName = "None";
+
   String variationGroupId = "None";
+  String variationGroupName = "None";
+
   String campaignId = "None";
+  String campaignName = "None";
+
   bool isReference = false;
+
   String valueForFlag = "None";
   String slug = "None";
   String campaignType = "None";
@@ -70,6 +77,11 @@ class _ModificationsState extends State<Modifications> {
         isReference = (mapResult['isReference'] ?? false) as bool;
         slug = (mapResult['slug'] ?? "None") as String;
         campaignType = (mapResult['campaignType'] ?? "None") as String;
+
+        variationName = (mapResult['variationName'] ?? "None") as String;
+        campaignName = (mapResult['campaignName'] ?? "None") as String;
+        variationGroupName =
+            (mapResult['variationGroupName'] ?? "None") as String;
       });
     } else {
       setState(() {
@@ -85,9 +97,6 @@ class _ModificationsState extends State<Modifications> {
   _activate() async {
     // var currentVisitor = Flagship.getCurrentVisitor();
     await myFlag?.visitorExposed();
-
-    //await currentVisitor?.activateModification(keyFlagController.text);
-
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -224,11 +233,17 @@ class _ModificationsState extends State<Modifications> {
             SizedBox(height: _spaceBetweenElements),
             FSOutputField("Value", valueForFlag),
             SizedBox(height: _spaceBetweenElements),
+            // Variation
             FSOutputField("VariationId", variationId),
+            FSOutputField("VariationName", variationName),
             SizedBox(height: _spaceBetweenElements),
+            // Campaign
             FSOutputField("CampaignId", campaignId),
+            FSOutputField("CampaignName", campaignName),
             SizedBox(height: _spaceBetweenElements),
+            // Variation Group
             FSOutputField("VariationGroupId", variationGroupId),
+            FSOutputField("VariationGroupName", variationGroupName),
             SizedBox(height: _spaceBetweenElements),
             FSOutputField("IsReference", isReference.toString()),
             SizedBox(height: _spaceBetweenElements),

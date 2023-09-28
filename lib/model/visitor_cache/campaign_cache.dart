@@ -5,8 +5,11 @@ part 'campaign_cache.g.dart';
 @JsonSerializable()
 class CampaignCache {
   String? campaignId;
+  String? campaignName;
   String? variationGroupId;
+  String? variationGroupName;
   String? variationId;
+  String? variationName;
   bool? isReference;
   String? type;
   bool? activated;
@@ -14,8 +17,11 @@ class CampaignCache {
 
   CampaignCache({
     this.campaignId,
+    this.campaignName,
     this.variationGroupId,
+    this.variationGroupName,
     this.variationId,
+    this.variationName,
     this.isReference,
     this.type,
     this.activated,
@@ -41,6 +47,9 @@ class CampaignCache {
     this.isReference = modification.isReference;
     this.activated = false; // For the moment is false
     // Let the flag to null , we need it for the check later
+    this.campaignName = modification.campaignName;
+    this.variationGroupName = modification.variationGroupName;
+    this.variationName = modification.variationName;
   }
 
   void updateFlags(Map<dynamic, dynamic> itemFlag) {

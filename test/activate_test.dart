@@ -4,8 +4,18 @@ import 'package:flagship/hits/activate.dart';
 
 void main() {
   test("Activate with Modification object ", () {
-    Modification fakeModif = Modification("key", "campaignId",
-        "variationGroupId", "variationId", true, "ab", "slug", 12);
+    Modification fakeModif = Modification(
+        "key",
+        "campaignId",
+        "campName",
+        "variationGroupId",
+        "varGName",
+        "variationId",
+        "varName",
+        true,
+        "ab",
+        "slug",
+        12);
 
     Activate activateTest =
         Activate(fakeModif, "visitorId", "anonym1", "envId");

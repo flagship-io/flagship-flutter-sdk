@@ -19,6 +19,7 @@ class Bucketing {
 
 class BucketCampaign {
   String idCampaign = "";
+  String campaignName = "";
   String type = "";
   String slug = "";
   List<VariationGroup> variationGroups = [];
@@ -29,7 +30,12 @@ class BucketCampaign {
       idCampaign = json['id'] as String;
     }
 
-    // Set idCampaign
+    // Set Campaign name
+    if (json.keys.contains("name")) {
+      campaignName = json['name'] as String;
+    }
+
+    // Set type Campaign
     if (json.keys.contains("type")) {
       type = json['type'] as String;
     }
@@ -48,7 +54,7 @@ class BucketCampaign {
 
 class VariationGroup {
   String idVariationGroup = "";
-
+  String variationGroupName = "";
   Targeting? targeting;
 
   List<Variation> variations = [];
@@ -57,6 +63,11 @@ class VariationGroup {
     // Set idVariationGroup
     if (json.keys.contains("id")) {
       idVariationGroup = json['id'] as String;
+    }
+
+    // Set idVariationGroup Name
+    if (json.keys.contains("name")) {
+      variationGroupName = json['name'] as String;
     }
 
     // Create targeting
