@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flagship/api/service.dart';
 import 'package:flagship/cache/default_cache.dart';
+import 'package:flagship/dataUsage/data_usage_tracking.dart';
 import 'package:flagship/flagshipContext/flagship_context.dart';
 import 'package:flagship/flagshipContext/flagship_context_manager.dart';
 import 'package:flagship/hits/event.dart';
@@ -77,6 +78,9 @@ class Visitor {
   /// flagSyncStatus
   FlagSyncStatus _flagSyncStatus = FlagSyncStatus.CREATED;
 
+  /// DataUsageTracking
+  DataUsageTracking? dataUsageTracking;
+
   /// Create new instance for visitor
   ///
   /// config: this object manage the mode of the sdk and other params
@@ -131,6 +135,9 @@ class Visitor {
 
     /// Send the consent hit
     _visitorDelegate.sendHit(Consent(hasConsented: _hasConsented));
+
+    // Init data usage tracking
+    dataUsageTracking = DataUsageTracking(null, visitorId, this._hasConsented);
   }
 
   /// Update context directely with map for <String, Object>
@@ -262,6 +269,9 @@ class Visitor {
 
     // Delegate the action to strategy
     _visitorDelegate.setConsent(_hasConsented);
+
+    // Update the value for the data usage tracking
+    dataUsageTracking?.updateConsent(newValue);
   }
 
   // Get consent

@@ -181,6 +181,9 @@ class DefaultStrategy implements IVisitor {
       // Save the response for the visitor database
       cacheVisitor(visitor.visitorId,
           jsonEncode(VisitorCache.fromVisitor(this.visitor).toJson()));
+      // Update the dataUsage tracking
+      visitor.dataUsageTracking
+          ?.updateTroubleshooting(camp.accountSettings?.troubleshooting);
       return null;
     } catch (error) {
       Flagship.logger(Level.EXCEPTIONS,
