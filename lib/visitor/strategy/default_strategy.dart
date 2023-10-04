@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flagship/dataUsage/data_report_queue.dart';
 import 'package:flagship/hits/activate.dart';
 import 'package:flagship/hits/event.dart';
 import 'package:flagship/hits/hit.dart';
@@ -68,6 +69,8 @@ class DefaultStrategy implements IVisitor {
 
   @override
   Future<void> activateFlag(Modification pModification) async {
+    visitor
+        .notifyObservers({"label": CriticalPoints.VISITIR_SEND_ACTIVATE.name});
     return _sendActivate(pModification);
   }
 
@@ -184,6 +187,9 @@ class DefaultStrategy implements IVisitor {
       // Update the dataUsage tracking
       visitor.dataUsageTracking
           ?.updateTroubleshooting(camp.accountSettings?.troubleshooting);
+      // Notify the data report
+      visitor.notifyObservers(
+          {"label": CriticalPoints.VISITOR_FETCH_AMPAIGNS.name});
       return null;
     } catch (error) {
       Flagship.logger(Level.EXCEPTIONS,
@@ -194,6 +200,7 @@ class DefaultStrategy implements IVisitor {
 
   @override
   Future<void> sendHit(BaseHit hit) async {
+    visitor.notifyObservers({"label": CriticalPoints.VISITOR_SEND_HIT.name});
     await visitor.trackingManager?.sendHit(hit);
   }
 
@@ -208,6 +215,8 @@ class DefaultStrategy implements IVisitor {
   @override
   authenticateVisitor(String pVisitorId) {
     if (visitor.config.decisionMode == Mode.DECISION_API) {
+      visitor
+          .notifyObservers({"label": CriticalPoints.VISITOR_AUTHENTICATE.name});
       if (visitor.anonymousId == null) {
         visitor.anonymousId = visitor.visitorId;
         visitor.visitorId = pVisitorId;
@@ -221,6 +230,8 @@ class DefaultStrategy implements IVisitor {
   @override
   unAuthenticateVisitor() {
     if (visitor.config.decisionMode == Mode.DECISION_API) {
+      visitor.notifyObservers(
+          {"label": CriticalPoints.VISITOR_UNAUTHENTICATE.name});
       if (visitor.anonymousId != null) {
         visitor.visitorId = visitor.anonymousId as String;
         visitor.anonymousId = null;

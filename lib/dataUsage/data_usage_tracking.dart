@@ -1,4 +1,5 @@
 import 'package:flagship/dataUsage/data_report_queue.dart';
+import 'package:flagship/dataUsage/observer.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/model/account_settings.dart';
 import 'package:flagship/model/bucketing.dart';
@@ -6,14 +7,14 @@ import 'package:flagship/model/variation.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:murmurhash/murmurhash.dart';
 
-class DataUsageTracking {
+class DataUsageTracking with Observer {
   // TroubleShooting
   Troubleshooting? _troubleshooting;
   // VisitorId
   String visitorId;
   // Is data tracking is allowed
   bool troubleShootingReportAllowed = false;
-
+  // if the visitor has consented
   bool _hasConsented = false;
 
   DataReportQueue? dataReport;
@@ -82,7 +83,19 @@ class DataUsageTracking {
   }
 
   // Send Hit for tracking Usage
-  void sendDataUsageTracking() {
+  void sendDataUsageTracking(TroubleShootingHit hitUsage) {
     print("Send Data Usage Tracking ...........");
+    this.dataReport?.sendReportData(hitUsage);
+  }
+
+  @override
+  void update(Observable observable, Object arg) {
+    if (arg is Map) {
+      if (arg["label"] != null) {
+        String outPutLabel = arg["label"];
+        print("Troubleshooting from ---- $outPutLabel");
+        sendDataUsageTracking(TroubleShootingHit());
+      }
+    }
   }
 }

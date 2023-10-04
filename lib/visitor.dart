@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flagship/api/service.dart';
 import 'package:flagship/cache/default_cache.dart';
 import 'package:flagship/dataUsage/data_usage_tracking.dart';
+import 'package:flagship/dataUsage/observer.dart';
 import 'package:flagship/flagshipContext/flagship_context.dart';
 import 'package:flagship/flagshipContext/flagship_context_manager.dart';
 import 'package:flagship/hits/event.dart';
@@ -33,7 +34,7 @@ enum Instance {
   NEW_INSTANCE
 }
 
-class Visitor {
+class Visitor with Observable {
   /// VisitorId
   String visitorId;
 
@@ -138,6 +139,9 @@ class Visitor {
 
     // Init data usage tracking
     dataUsageTracking = DataUsageTracking(null, visitorId, this._hasConsented);
+
+    this.addObserver(
+        dataUsageTracking ?? DataUsageTracking(null, "visitorId", false));
   }
 
   /// Update context directely with map for <String, Object>

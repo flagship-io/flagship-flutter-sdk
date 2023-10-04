@@ -112,6 +112,9 @@ class BaseHit extends Hit {
       case HitCategory.SEGMENT:
         ret = 'SEGMENT';
         break;
+      case HitCategory.TROUBLESHOOTING:
+        ret = "TROUBLESHOOTING";
+        break;
       default:
     }
     return ret;
@@ -178,5 +181,6 @@ enum HitCategory {
   CONSENT,
   BATCH,
   SEGMENT,
+  TROUBLESHOOTING,
   NONE
 }

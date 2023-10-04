@@ -23,4 +23,7 @@ class Endpoints {
       "Content-type": "application/json"
     };
   }
+
+  // Troubleshooting
+  static const String Troubleshooting = "/troubleshooting";
 }
