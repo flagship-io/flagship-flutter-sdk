@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'package:flagship/api/endpoints.dart';
 import 'package:flagship/api/service.dart';
 import 'package:flagship/flagship.dart';
+import 'package:flagship/flagship_version.dart';
 import 'package:flagship/hits/hit.dart';
+import 'package:flagship/utils/flagship_tools.dart';
 import 'package:http/http.dart' as http;
 
 class DataReportQueue {
@@ -34,8 +36,18 @@ class DataReportQueue {
 }
 
 class TroubleShootingHit extends BaseHit {
-  TroubleShootingHit() : super() {
+  // Commun Fields
+  Map<String, dynamic> communFields = {};
+  // Custom Variable
+  Map<String, dynamic> customVariable = {};
+  // Label for the critical point
+  String label = "";
+  TroubleShootingHit(this.label) : super() {
     type = HitCategory.TROUBLESHOOTING;
+    visitorId = "testUser";
+
+    /// TODO remove static later
+    _fillTheCommunFields();
   }
 
   @override
@@ -53,34 +65,38 @@ class TroubleShootingHit extends BaseHit {
       "vid": "userTR",
       "ds": "APP",
       "cid": "bkk9glocmjcg0vtmdlng",
-      "cv": {
-        "version": "1",
-        "label": "VISITOR-FETCH-CAMPAIGNS",
-        "stack.type": "SDK",
-        "stack.name": "Fluter",
-        "stack.version": "3.1.4",
-      }
+      "cv": {communFields, customVariable}
     };
   }
 
   @override
   Map<String, Object> get bodyTrack {
-    /// TODO remove statics
     var customBody = new Map<String, Object>();
     customBody.addAll({
       "t": typeOfEvent,
-      "cv": {
-        "version": "1",
-        "label": "VISITOR-FETCH-CAMPAIGNS",
-        "stack.type": "SDK",
-        "stack.name": "Fluter",
-        "stack.version": "3.0.4",
-      }
+      "cv": communFields,
     });
 
     // Add commun body
     customBody.addAll(super.communBodyTrack);
     return customBody;
+  }
+
+  _fillTheCommunFields() {
+    communFields = {
+      "version": 1,
+      "envId": Flagship.sharedInstance().envId,
+      "logLevel": "ALL",
+      "timestamp": DateTime.now().millisecondsSinceEpoch.toString(),
+      "timeZone":
+          DateTime.now().timeZoneName, // TODO check later if the value is OK ?
+      "label": label,
+      "stack.type": "SDK",
+      "stack.name": "Flutter",
+      "stack.version": FlagshipVersion,
+      "flagshipInstanceId": FlagshipTools.generateUuidv4()
+          .toString() // An unique ID (uuidV4) generated at the SDK initialization.
+    };
   }
 }
 

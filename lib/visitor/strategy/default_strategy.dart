@@ -188,8 +188,10 @@ class DefaultStrategy implements IVisitor {
       visitor.dataUsageTracking
           ?.updateTroubleshooting(camp.accountSettings?.troubleshooting);
       // Notify the data report
-      visitor.notifyObservers(
-          {"label": CriticalPoints.VISITOR_FETCH_AMPAIGNS.name});
+      visitor.notifyObservers({
+        "label": CriticalPoints.VISITOR_FETCH_AMPAIGNS.name,
+        "cv": this.visitor
+      });
       return null;
     } catch (error) {
       Flagship.logger(Level.EXCEPTIONS,

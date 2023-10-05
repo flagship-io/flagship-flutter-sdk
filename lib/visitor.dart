@@ -23,6 +23,7 @@ import 'package:flagship/visitor/visitor_delegate.dart';
 import 'package:flutter/material.dart';
 import 'flagship_delegate.dart';
 import 'package:http/http.dart' as http;
+part "visitor_tr.dart";
 
 enum Instance {
   // The  newly created visitor instance will be returned and saved into the Flagship singleton. Call `Flagship.getVisitor()` to retrieve the instance.

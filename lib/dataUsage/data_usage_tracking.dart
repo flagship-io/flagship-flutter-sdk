@@ -1,10 +1,9 @@
 import 'package:flagship/dataUsage/data_report_queue.dart';
 import 'package:flagship/dataUsage/observer.dart';
-import 'package:flagship/flagship.dart';
+
 import 'package:flagship/model/account_settings.dart';
-import 'package:flagship/model/bucketing.dart';
-import 'package:flagship/model/variation.dart';
-import 'package:flagship/utils/logger/log_manager.dart';
+
+import 'package:flagship/visitor.dart';
 import 'package:murmurhash/murmurhash.dart';
 
 class DataUsageTracking with Observer {
@@ -94,7 +93,11 @@ class DataUsageTracking with Observer {
       if (arg["label"] != null) {
         String outPutLabel = arg["label"];
         print("Troubleshooting from ---- $outPutLabel");
-        sendDataUsageTracking(TroubleShootingHit());
+        sendDataUsageTracking(TroubleShootingHit(outPutLabel));
+      }
+      if (arg["cv"] != null) {
+        // var v = arg["cv"] as Visitor;
+        // get and format all others informations
       }
     }
   }
