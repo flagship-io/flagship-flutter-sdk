@@ -139,10 +139,11 @@ class Visitor with Observable {
     _visitorDelegate.sendHit(Consent(hasConsented: _hasConsented));
 
     // Init data usage tracking
-    dataUsageTracking = DataUsageTracking(null, visitorId, this._hasConsented);
+    dataUsageTracking =
+        DataUsageTracking(null, visitorId, this._hasConsented, config);
 
-    this.addObserver(
-        dataUsageTracking ?? DataUsageTracking(null, "visitorId", false));
+    this.addObserver(dataUsageTracking ??
+        DataUsageTracking(null, "visitorId", false, config));
   }
 
   /// Update context directely with map for <String, Object>
@@ -307,6 +308,10 @@ class Visitor with Observable {
   @visibleForTesting
   FlagSyncStatus getFlagSyncStatus() {
     return _flagSyncStatus;
+  }
+
+  Map<String, dynamic> getTrInfos() {
+    return createTRFormat();
   }
 }
 

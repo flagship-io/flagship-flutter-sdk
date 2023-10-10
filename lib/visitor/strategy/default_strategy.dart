@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flagship/dataUsage/data_report_queue.dart';
+import 'package:flagship/dataUsage/data_usage_tracking.dart';
 import 'package:flagship/hits/activate.dart';
 import 'package:flagship/hits/event.dart';
 import 'package:flagship/hits/hit.dart';
@@ -42,6 +43,11 @@ class DefaultStrategy implements IVisitor {
     Activate activateHit = Activate(pModification, visitor.visitorId,
         visitor.anonymousId, Flagship.sharedInstance().envId ?? "");
 
+    visitor.notifyObservers({
+      "label": CriticalPoints.VISITOR_FETCH_CAMPAIGNS.name,
+      "visitor": this.visitor,
+      "hit": activateHit
+    });
     visitor.trackingManager?.sendActivate(activateHit).then((statusCode) {
       if (statusCode >= 200 && statusCode < 300) {
         this.onExposure(pModification);
@@ -69,8 +75,6 @@ class DefaultStrategy implements IVisitor {
 
   @override
   Future<void> activateFlag(Modification pModification) async {
-    visitor
-        .notifyObservers({"label": CriticalPoints.VISITIR_SEND_ACTIVATE.name});
     return _sendActivate(pModification);
   }
 
@@ -189,8 +193,8 @@ class DefaultStrategy implements IVisitor {
           ?.updateTroubleshooting(camp.accountSettings?.troubleshooting);
       // Notify the data report
       visitor.notifyObservers({
-        "label": CriticalPoints.VISITOR_FETCH_AMPAIGNS.name,
-        "cv": this.visitor
+        "label": CriticalPoints.VISITOR_FETCH_CAMPAIGNS.name,
+        "visitor": this.visitor,
       });
       return null;
     } catch (error) {
@@ -202,7 +206,11 @@ class DefaultStrategy implements IVisitor {
 
   @override
   Future<void> sendHit(BaseHit hit) async {
-    visitor.notifyObservers({"label": CriticalPoints.VISITOR_SEND_HIT.name});
+    visitor.notifyObservers({
+      "label": CriticalPoints.VISITOR_SEND_HIT.name,
+      "visitor": this.visitor,
+      "hit": hit
+    });
     await visitor.trackingManager?.sendHit(hit);
   }
 

@@ -8,7 +8,6 @@ import 'package:flagship/utils/flagship_tools.dart';
 import 'package:http/http.dart' as http;
 
 class DataReportQueue {
-  //TrackingManageContinuousStrategy? troubleReportQueue; // review later
   Service _reportService = Service(http.Client());
 
   DataReportQueue() {
@@ -37,17 +36,16 @@ class DataReportQueue {
 
 class TroubleShootingHit extends BaseHit {
   // Commun Fields
-  Map<String, dynamic> communFields = {};
+  Map<String, dynamic> _communCustomFields =
+      {}; // this is the out put will add into it the custom variable
   // Custom Variable
-  Map<String, dynamic> customVariable = {};
+  Map<String, dynamic> speceficCustomFields = {};
   // Label for the critical point
   String label = "";
-  TroubleShootingHit(this.label) : super() {
+  TroubleShootingHit(this.label, this.speceficCustomFields) : super() {
     type = HitCategory.TROUBLESHOOTING;
     visitorId = "testUser";
-
-    /// TODO remove static later
-    _fillTheCommunFields();
+    _fillTheCommunFieldsAndCompleteWithCustom();
   }
 
   @override
@@ -65,26 +63,24 @@ class TroubleShootingHit extends BaseHit {
       "vid": "userTR",
       "ds": "APP",
       "cid": "bkk9glocmjcg0vtmdlng",
-      "cv": {communFields, customVariable}
+      "cv": {_communCustomFields} // TODO check is ok or not
     };
   }
 
   @override
   Map<String, Object> get bodyTrack {
     var customBody = new Map<String, Object>();
-    customBody.addAll({
-      "t": typeOfEvent,
-      "cv": communFields,
-    });
+
+    customBody.addAll({"t": typeOfEvent, "cv": _communCustomFields});
 
     // Add commun body
     customBody.addAll(super.communBodyTrack);
     return customBody;
   }
 
-  _fillTheCommunFields() {
-    communFields = {
-      "version": 1,
+  _fillTheCommunFieldsAndCompleteWithCustom() {
+    _communCustomFields = {
+      "version": "1",
       "envId": Flagship.sharedInstance().envId,
       "logLevel": "ALL",
       "timestamp": DateTime.now().millisecondsSinceEpoch.toString(),
@@ -94,19 +90,10 @@ class TroubleShootingHit extends BaseHit {
       "stack.type": "SDK",
       "stack.name": "Flutter",
       "stack.version": FlagshipVersion,
-      "flagshipInstanceId": FlagshipTools.generateUuidv4()
-          .toString() // An unique ID (uuidV4) generated at the SDK initialization.
+      "flagshipInstanceId":
+          Flagship.sharedInstance().flagshipInstanceId.toString(),
     };
-  }
-}
 
-enum CriticalPoints {
-  VISITOR_FETCH_AMPAIGNS,
-  VISITOR_AUTHENTICATE,
-  VISITOR_UNAUTHENTICATE,
-  VISITOR_SEND_HIT,
-  VISITIR_SEND_ACTIVATE,
-  HTTP_CALL,
-  WARNING,
-  ERROR,
+    _communCustomFields.addEntries(this.speceficCustomFields.entries);
+  }
 }
