@@ -4,7 +4,6 @@ import 'package:flagship/api/service.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/flagship_version.dart';
 import 'package:flagship/hits/hit.dart';
-import 'package:flagship/utils/flagship_tools.dart';
 import 'package:http/http.dart' as http;
 
 class DataReportQueue {
@@ -42,9 +41,10 @@ class TroubleShootingHit extends BaseHit {
   Map<String, dynamic> speceficCustomFields = {};
   // Label for the critical point
   String label = "";
-  TroubleShootingHit(this.label, this.speceficCustomFields) : super() {
+  TroubleShootingHit(String aVisitorId, this.label, this.speceficCustomFields)
+      : super() {
     type = HitCategory.TROUBLESHOOTING;
-    visitorId = "testUser";
+    visitorId = aVisitorId;
     _fillTheCommunFieldsAndCompleteWithCustom();
   }
 

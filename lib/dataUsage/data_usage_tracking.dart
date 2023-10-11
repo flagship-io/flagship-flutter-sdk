@@ -1,22 +1,26 @@
+import 'dart:io';
+
 import 'package:flagship/api/endpoints.dart';
 import 'package:flagship/cache/default_cache.dart';
 import 'package:flagship/dataUsage/data_report_queue.dart';
 import 'package:flagship/dataUsage/observer.dart';
-import 'package:flagship/decision/api_manager.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/hits/hit.dart';
-
 import 'package:flagship/model/account_settings.dart';
 import 'package:flagship/model/modification.dart';
 import 'package:flagship/utils/flagship_tools.dart';
-import 'package:flagship/utils/logger/log_manager.dart';
-
 import 'package:flagship/visitor.dart';
 import 'package:http/http.dart';
 import 'package:murmurhash/murmurhash.dart';
 
 class DataUsageTracking with Observer {
+  factory DataUsageTracking.sharedInstance() {
+    return _singleton;
+  }
+
+  DataUsageTracking._internal();
+
   // TroubleShooting
   Troubleshooting? _troubleshooting;
   // VisitorId
@@ -26,13 +30,20 @@ class DataUsageTracking with Observer {
   // if the visitor has consented
   bool _hasConsented = false;
 
+  String? visitorSessionId; // relative to session creation
+
   DataReportQueue? dataReport;
 
   FlagshipConfig sdkConfig;
 
+  // Internal Singelton
+  static final DataUsageTracking _singleton = DataUsageTracking._internal();
+
   DataUsageTracking(this._troubleshooting, this.visitorId, this._hasConsented,
       this.sdkConfig) {
     dataReport = DataReportQueue();
+
+    visitorSessionId = FlagshipTools.generateUuidv4().toString();
   }
 
   void updateTroubleshooting(Troubleshooting? trblShooting) {
@@ -105,18 +116,11 @@ class DataUsageTracking with Observer {
   @override
   void update(Observable observable, Object arg) {
     if (arg is Map) {
-      String outPutLabel = "";
       if (arg["label"] != null) {
         String outPutLabel = arg["label"];
         print("Troubleshooting from ---- $outPutLabel");
         if (arg["visitor"] != null && arg["visitor"] is Visitor) {
           var v = arg["visitor"] as Visitor;
-          // get hit refractor later
-          var h = arg["hit"] as Hit;
-          // get request
-          var req = arg["request"] as Request;
-          // get response
-          var resp = arg["response"] as Response;
 
           // get and format all others informations
           Map<String, dynamic> criticalJson = {};
@@ -126,23 +130,41 @@ class DataUsageTracking with Observer {
               criticalJson = _createTSVisitorFormat(v);
               break;
             case "VISITOR_AUTHENTICATE":
-              criticalJson = _createTSAuthenticate(v);
+              criticalJson = _createTSxpc(v);
               break;
             case "VISITOR_UNAUTHENTICATE":
-              criticalJson = _createTSUnAuthenticate(v);
+              criticalJson = _createTSxpc(v);
               break;
             case "VISITOR_SEND_HIT":
-              criticalJson = _createTSendHit(v, h);
-              break;
             case "VISITIR_SEND_ACTIVATE":
-              criticalJson = _createTSendActivate(v, h);
+              {
+                try {
+                  var h = arg["hit"] as Hit;
+                  criticalJson = _createTSendHit(v, h);
+                } on Exception catch (e) {
+                  print(e.toString());
+                  return; // skip the function
+                }
+              }
               break;
             case "SDK_BUCKETING_FILE": // It will be triggered when the bucketing route responds with code 200
             case "SDK_BUCKETING_FILE_ERROR": // It will be triggered when the bucketing route responds with error
             case "GET_CAMPAIGNS_ROUTE_RESPONSE_ERROR": // It will be triggered when the campaigns route responds with an error
             case "SEND_BATCH_HIT_ROUTE_RESPONSE_ERROR": // When a batch request failed
             case "SEND_ACTIVATE_HIT_ROUTE_ERROR":
-              criticalJson = _createTSHttp(v, req, resp);
+              {
+                // get request
+                try {
+                  var req = arg["request"] as Request;
+                  // get response
+                  var resp = arg["response"] as Response;
+                  criticalJson = _createTSHttp(v, req, resp);
+                  print(criticalJson);
+                } on Exception catch (e) {
+                  print(e.toString());
+                  return; // skip the function
+                }
+              }
               break;
             case "WARNING":
               criticalJson = _createTSWarning(v);
@@ -154,24 +176,30 @@ class DataUsageTracking with Observer {
               break;
           }
 
-          sendDataUsageTracking(TroubleShootingHit(outPutLabel, criticalJson));
+          // Add visitor trio of visitorId / anonymousId / instanceId
+          criticalJson.addEntries(_createTrioIds(v).entries);
+          sendDataUsageTracking(
+              TroubleShootingHit(visitorId, outPutLabel, criticalJson));
         }
       }
     }
   }
 
-  Map<String, dynamic> _createTSVisitorFormat(Visitor visitor) {
-    var sdkSettings = {
-      /// Visitor
-      "visitor.visitorId": visitor.visitorId,
-      "visitor.isAuthenticated": "false",
+  // Create a trio of visitorId / anonymousId / instanceId
+  Map<String, dynamic> _createTrioIds(Visitor v) {
+    return {
+      "visitor.visitorId": v.visitorId,
+      "visitor.anonymousId": v.anonymousId,
+      "visitor.instanceId": visitorSessionId
+    };
+  }
 
-      /// See later for the ids
-      "visitor.instanceId":
-          FlagshipTools.generateUuidv4().toString(), // generate id
+  Map<String, dynamic> _createTSVisitorFormat(Visitor visitor) {
+    Map<String, dynamic> sdkSettings = {
       "visitor.consent": visitor.getConsent(),
       "visitor.campaigns": visitor.modifications.toString(),
-      "visitor.anonymousId": visitor.anonymousId,
+
+      "visitor.isAuthenticated": "false",
 
       /// SDK
       "sdk.config.usingOnVisitorExposed": (sdkConfig.onVisitorExposed != null),
@@ -194,7 +222,6 @@ class DataUsageTracking with Observer {
       "sdk.config.initialBucketing": "", // See later
       /// Flags
     };
-
     sdkSettings.addEntries(_createTRFlagsInfo(visitor.modifications).entries);
     sdkSettings.addEntries(_createTRContext(visitor).entries);
 
@@ -236,43 +263,18 @@ class DataUsageTracking with Observer {
     return ret;
   }
 
-  Map<String, dynamic> _createTSAuthenticate(Visitor v) {
-    return {
-      "visitor.visitorId": v.visitorId,
-      "visitor.anonymousId": v.anonymousId,
-      "visitor.context": _createTRContext(v)
-    };
+// For the XPC
+  Map<String, dynamic> _createTSxpc(Visitor v) {
+    return {"visitor.context": _createTRContext(v)};
   }
 
-  Map<String, dynamic> _createTSUnAuthenticate(Visitor v) {
-    /// Review is the same as before
-    return {
-      "visitor.visitorId": v.visitorId,
-      "visitor.anonymousId": v.anonymousId,
-      "visitor.context": _createTRContext(v)
-    };
-  }
-
+// For the hist and activate
   Map<String, dynamic> _createTSendHit(Visitor v, Hit h) {
-    return {
-      "visitor.visitorId": v.visitorId,
-      "visitor.anonymousId": v.anonymousId,
-      "hit.content": h.bodyTrack.toString()
-    };
-  }
-
-  Map<String, dynamic> _createTSendActivate(Visitor v, Hit a) {
-    return {
-      "visitor.visitorId": v.visitorId,
-      "visitor.anonymousId": v.anonymousId,
-      "hit.content": a.bodyTrack.toString()
-    };
+    return {"hit.content": h.bodyTrack.toString()};
   }
 
   Map<String, dynamic> _createTSHttp(Visitor v, Request r, Response resp) {
     return {
-      "visitor.visitorId": v.visitorId,
-      "visitor.anonymousId": v.anonymousId,
       "http.request.headers": r.headers.toString(),
       "http.request.method": r.method,
       "http.request.url": r.url.path,

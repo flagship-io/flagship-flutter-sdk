@@ -17,7 +17,7 @@ class Modifications extends StatefulWidget {
 class _ModificationsState extends State<Modifications> {
   var flagType = "string";
   var defaultValueBool = false;
-  final keyFlagController = TextEditingController(text: "btnColor");
+  final keyFlagController = TextEditingController(text: "btnColore");
 
   final defaultValueFlagController = TextEditingController(text: "");
 

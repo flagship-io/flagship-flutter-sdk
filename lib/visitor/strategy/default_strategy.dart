@@ -44,7 +44,7 @@ class DefaultStrategy implements IVisitor {
         visitor.anonymousId, Flagship.sharedInstance().envId ?? "");
 
     visitor.notifyObservers({
-      "label": CriticalPoints.VISITOR_FETCH_CAMPAIGNS.name,
+      "label": CriticalPoints.VISITIR_SEND_ACTIVATE.name,
       "visitor": this.visitor,
       "hit": activateHit
     });

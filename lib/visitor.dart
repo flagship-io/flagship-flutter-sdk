@@ -12,6 +12,7 @@ import 'package:flagship/decision/decision_manager.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/hits/hit.dart';
+import 'package:flagship/src/fs_internal.dart';
 import 'package:flagship/tracking/tracking_manager_periodic_strategy.dart';
 import 'package:flagship/tracking/tracking_manager_continuous_strategies.dart';
 import 'package:flagship/tracking/tracking_manager.dart';
