@@ -82,7 +82,7 @@ class Visitor with Observable {
   FlagSyncStatus _flagSyncStatus = FlagSyncStatus.CREATED;
 
   /// DataUsageTracking
-  DataUsageTracking? dataUsageTracking;
+  DataUsageTracking dataUsageTracking = DataUsageTracking.sharedInstance();
 
   /// Create new instance for visitor
   ///
@@ -140,11 +140,16 @@ class Visitor with Observable {
     _visitorDelegate.sendHit(Consent(hasConsented: _hasConsented));
 
     // Init data usage tracking
-    dataUsageTracking =
-        DataUsageTracking(null, visitorId, this._hasConsented, config);
+    //DataUsageTracking.sharedInstance()
+    //  .configureDataUsage(null, visitorId, this._hasConsented, config);
 
-    this.addObserver(dataUsageTracking ??
-        DataUsageTracking(null, "visitorId", false, config));
+    // this.addObserver(dataUsageTracking ??
+    //   DataUsageTracking(null, "visitorId", false, config));
+
+    DataUsageTracking.sharedInstance()
+        .configureDataUsage(null, visitorId, this._hasConsented, config);
+
+    this.addObserver(DataUsageTracking.sharedInstance());
   }
 
   /// Update context directely with map for <String, Object>

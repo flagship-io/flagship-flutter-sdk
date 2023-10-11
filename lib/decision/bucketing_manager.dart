@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flagship/api/endpoints.dart';
 import 'package:flagship/api/service.dart';
+import 'package:flagship/dataUsage/data_usage_tracking.dart';
+import 'package:flagship/dataUsage/observer.dart';
 import 'package:flagship/decision/bucketing_process.dart';
 import 'package:flagship/decision/decision_manager.dart';
 import 'package:flagship/decision/polling/polling.dart';
@@ -13,7 +15,7 @@ import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class BucketingManager extends DecisionManager {
+class BucketingManager extends DecisionManager with Observable {
   final int intervalPolling;
   Polling? polling;
   bool fileExists = true;
@@ -26,7 +28,11 @@ class BucketingManager extends DecisionManager {
   String bucketingFolder = "/flagship_bucketing/";
   String fileName = "bucketing.json";
 
-  BucketingManager(Service service, this.intervalPolling) : super(service);
+  DataUsageTracking? bkDataUsage;
+
+  BucketingManager(Service service, this.intervalPolling) : super(service) {
+    this.addObserver(DataUsageTracking.sharedInstance());
+  }
 
   @override
   Future<Campaigns> getCampaigns(
@@ -73,6 +79,15 @@ class BucketingManager extends DecisionManager {
         }
         // Save response body
         _saveFile(response.body);
+
+        // Notify observer
+
+        visitor.notifyObservers({
+          "label": CriticalPoints.VISITIR_SEND_ACTIVATE.name,
+          "visitor": this.visitor,
+          "hit": activateHit
+        });
+
         break;
       case 304:
         Flagship.logger(Level.ALL,

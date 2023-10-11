@@ -19,12 +19,15 @@ class DataUsageTracking with Observer {
     return _singleton;
   }
 
-  DataUsageTracking._internal();
+  DataUsageTracking._internal() {
+    _hasConsented = false;
+    troubleShootingReportAllowed = false;
+  }
 
   // TroubleShooting
   Troubleshooting? _troubleshooting;
   // VisitorId
-  String visitorId;
+  String visitorId = "";
   // Is data tracking is allowed
   bool troubleShootingReportAllowed = false;
   // if the visitor has consented
@@ -34,38 +37,49 @@ class DataUsageTracking with Observer {
 
   DataReportQueue? dataReport;
 
-  FlagshipConfig sdkConfig;
+  FlagshipConfig? sdkConfig;
 
   // Internal Singelton
   static final DataUsageTracking _singleton = DataUsageTracking._internal();
 
-  DataUsageTracking(this._troubleshooting, this.visitorId, this._hasConsented,
-      this.sdkConfig) {
-    dataReport = DataReportQueue();
+  // DataUsageTracking(this._troubleshooting, this.visitorId, this._hasConsented,
+  //     this.sdkConfig) {
+  //   dataReport = DataReportQueue();
 
-    visitorSessionId = FlagshipTools.generateUuidv4().toString();
+  //   visitorSessionId = FlagshipTools.generateUuidv4().toString();
+  // }
+
+  configureDataUsage(Troubleshooting? troubleshooting, String visitorId,
+      bool hasConsented, FlagshipConfig sdkConfig) {
+    _singleton.sdkConfig = sdkConfig;
+    _singleton._troubleshooting = troubleshooting;
+    _singleton.visitorId = visitorId;
+    _singleton.dataReport = DataReportQueue();
+    _singleton.visitorSessionId = FlagshipTools.generateUuidv4().toString();
+    _singleton._hasConsented = hasConsented;
   }
 
   void updateTroubleshooting(Troubleshooting? trblShooting) {
-    _troubleshooting = trblShooting;
+    _singleton._troubleshooting = trblShooting;
     // ReEvaluate the conditions of datausagetracking
-    evaluateDataUsageTrackingConditions();
+    _singleton.evaluateDataUsageTrackingConditions();
   }
 
   void updateConsent(bool newValue) {
-    _hasConsented = newValue;
-    evaluateDataUsageTrackingConditions();
+    _singleton._hasConsented = newValue;
+    _singleton..evaluateDataUsageTrackingConditions();
   }
 
   void evaluateDataUsageTrackingConditions() {
     // To allow the dataUsageTracking we have to check
-    troubleShootingReportAllowed = isTimeSlotValide() && // TimeSlot
+    _singleton
+      ..troubleShootingReportAllowed = isTimeSlotValide() && // TimeSlot
 
-        isBucketTroubleshootingAllocated() && // Bucket Allocation for TR
+          isBucketTroubleshootingAllocated() && // Bucket Allocation for TR
 
-        isVisitorHasConsented(); // Visitor Consent
+          isVisitorHasConsented(); // Visitor Consent
 
-    if (troubleShootingReportAllowed) {
+    if (_singleton.troubleShootingReportAllowed) {
       print("-------------- Data Usage Allowed ✅✅✅✅✅ ---------------");
     } else {
       print("-------------- Data Usage NOT Allowed ❌❌❌❌❌ --------------");
@@ -74,8 +88,10 @@ class DataUsageTracking with Observer {
 
   bool isTimeSlotValide() {
     // Get the date
-    DateTime startDate = DateTime.parse(_troubleshooting?.startDate ?? "");
-    DateTime endDate = DateTime.parse(_troubleshooting?.endDate ?? "");
+    DateTime startDate =
+        DateTime.parse(_singleton._troubleshooting?.startDate ?? "");
+    DateTime endDate =
+        DateTime.parse(_singleton._troubleshooting?.endDate ?? "");
     // Get the actual date
     DateTime actualDate = DateTime.now();
     return actualDate.isAfter(startDate) && actualDate.isBefore(endDate);
@@ -84,7 +100,7 @@ class DataUsageTracking with Observer {
   bool isBucketTroubleshootingAllocated() {
     // Calculate the bucket allocation
 
-    if (_troubleshooting?.endDate != null) {
+    if (_singleton._troubleshooting?.endDate != null) {
       String combinedId = this.visitorId + (_troubleshooting?.endDate ?? "");
       int hashAlloc = (MurmurHash.v3(combinedId, 0) % 100);
 
@@ -102,14 +118,14 @@ class DataUsageTracking with Observer {
   }
 
   bool isVisitorHasConsented() {
-    return _hasConsented;
+    return _singleton._hasConsented;
   }
 
   // Send Hit for tracking Usage
   void sendDataUsageTracking(TroubleShootingHit hitUsage) {
-    if (troubleShootingReportAllowed == true) {
+    if (_singleton.troubleShootingReportAllowed == true) {
       print("Send Data Usage Tracking ...........");
-      this.dataReport?.sendReportData(hitUsage);
+      _singleton.dataReport?.sendReportData(hitUsage);
     }
   }
 
@@ -202,19 +218,19 @@ class DataUsageTracking with Observer {
       "visitor.isAuthenticated": "false",
 
       /// SDK
-      "sdk.config.usingOnVisitorExposed": (sdkConfig.onVisitorExposed != null),
+      "sdk.config.usingOnVisitorExposed": (sdkConfig?.onVisitorExposed != null),
       "sdk.config.usingCustomVisitorCache":
-          (!(sdkConfig.visitorCacheImp is DefaultCacheVisitorImp)).toString(),
+          (!(sdkConfig?.visitorCacheImp is DefaultCacheVisitorImp)).toString(),
       "sdk.config.usingCustomHitCache":
-          (!(sdkConfig.hitCacheImp is DefaultCacheHitImp)).toString(),
+          (!(sdkConfig?.hitCacheImp is DefaultCacheHitImp)).toString(),
       "sdk.config.usingCustomLogManager": "true",
       "sdk.config.trackingManager.config.strategy":
-          sdkConfig.trackingManagerConfig.batchStrategy.name,
+          sdkConfig?.trackingManagerConfig.batchStrategy.name,
       " sdk.config.trackingManager.config.batchIntervals":
-          sdkConfig.trackingManagerConfig.batchIntervals.toString(),
-      "sdk.config.timeout": sdkConfig.timeout.toString(),
-      "sdk.config.pollingTime": sdkConfig.pollingTime.toString(),
-      "sdk.config.mode": sdkConfig.decisionMode.name,
+          sdkConfig?.trackingManagerConfig.batchIntervals.toString(),
+      "sdk.config.timeout": sdkConfig?.timeout.toString(),
+      "sdk.config.pollingTime": sdkConfig?.pollingTime.toString(),
+      "sdk.config.mode": sdkConfig?.decisionMode.name,
 
       "sdk.config.decisionApiUrl": Endpoints.DECISION_API,
       "sdk.status": Flagship.getStatus().name,
