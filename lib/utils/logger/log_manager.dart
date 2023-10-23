@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:flagship/dataUsage/data_usage_tracking.dart';
+
 enum Level {
   NONE,
   /*
@@ -67,6 +69,8 @@ class LogManager {
       final dynamic prettyString = encoder.convert(object);
       prettyString.split('\n').forEach((dynamic element) => print(element));
     } catch (e) {
+      DataUsageTracking.sharedInstance()
+          .processTroubleShootingException(null, e);
       log(e.toString());
     }
   }

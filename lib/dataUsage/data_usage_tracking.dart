@@ -4,17 +4,19 @@ import 'package:flagship/api/endpoints.dart';
 import 'package:flagship/cache/default_cache.dart';
 import 'package:flagship/dataUsage/data_report_queue.dart';
 import 'package:flagship/dataUsage/observer.dart';
+import 'package:flagship/decision/bucketing_manager.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/hits/hit.dart';
 import 'package:flagship/model/account_settings.dart';
+import 'package:flagship/model/flag.dart';
 import 'package:flagship/model/modification.dart';
 import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flagship/visitor.dart';
 import 'package:http/http.dart';
 import 'package:murmurhash/murmurhash.dart';
 
-class DataUsageTracking with Observer {
+class DataUsageTracking {
   factory DataUsageTracking.sharedInstance() {
     return _singleton;
   }
@@ -42,13 +44,6 @@ class DataUsageTracking with Observer {
   // Internal Singelton
   static final DataUsageTracking _singleton = DataUsageTracking._internal();
 
-  // DataUsageTracking(this._troubleshooting, this.visitorId, this._hasConsented,
-  //     this.sdkConfig) {
-  //   dataReport = DataReportQueue();
-
-  //   visitorSessionId = FlagshipTools.generateUuidv4().toString();
-  // }
-
   configureDataUsage(Troubleshooting? troubleshooting, String visitorId,
       bool hasConsented, FlagshipConfig sdkConfig) {
     _singleton.sdkConfig = sdkConfig;
@@ -59,9 +54,18 @@ class DataUsageTracking with Observer {
     _singleton._hasConsented = hasConsented;
   }
 
+  configureDataUsageWithVisitor(Troubleshooting? troubleshooting, Visitor v) {
+    _singleton.sdkConfig = sdkConfig;
+    _singleton._troubleshooting = troubleshooting;
+    _singleton.visitorId = v.visitorId;
+    _singleton.dataReport = DataReportQueue();
+    _singleton.visitorSessionId = FlagshipTools.generateUuidv4().toString();
+    _singleton._hasConsented = v.getConsent();
+  }
+
   void updateTroubleshooting(Troubleshooting? trblShooting) {
     _singleton._troubleshooting = trblShooting;
-    // ReEvaluate the conditions of datausagetracking
+    // Re evaluate the conditions of datausagetracking
     _singleton.evaluateDataUsageTrackingConditions();
   }
 
@@ -123,90 +127,96 @@ class DataUsageTracking with Observer {
 
   // Send Hit for tracking Usage
   void sendDataUsageTracking(TroubleShootingHit hitUsage) {
-    if (_singleton.troubleShootingReportAllowed == true) {
-      print("Send Data Usage Tracking ...........");
-      _singleton.dataReport?.sendReportData(hitUsage);
-    }
+    // if (_singleton.troubleShootingReportAllowed == true) { // TODO remove uncomment
+    print("Send Data Usage Tracking ...........");
+    _singleton.dataReport?.sendReportData(hitUsage);
+    //  }
   }
 
-  @override
-  void update(Observable observable, Object arg) {
-    if (arg is Map) {
-      if (arg["label"] != null) {
-        String outPutLabel = arg["label"];
-        print("Troubleshooting from ---- $outPutLabel");
-        if (arg["visitor"] != null && arg["visitor"] is Visitor) {
-          var v = arg["visitor"] as Visitor;
+  void processTroubleShooting(String label, Visitor visitor) {
+    print("----------------------- $label----------------------------");
+    Map<String, dynamic> criticalJson = {};
 
-          // get and format all others informations
-          Map<String, dynamic> criticalJson = {};
-
-          switch (outPutLabel) {
-            case "VISITOR_FETCH_CAMPAIGNS":
-              criticalJson = _createTSVisitorFormat(v);
-              break;
-            case "VISITOR_AUTHENTICATE":
-              criticalJson = _createTSxpc(v);
-              break;
-            case "VISITOR_UNAUTHENTICATE":
-              criticalJson = _createTSxpc(v);
-              break;
-            case "VISITOR_SEND_HIT":
-            case "VISITIR_SEND_ACTIVATE":
-              {
-                try {
-                  var h = arg["hit"] as Hit;
-                  criticalJson = _createTSendHit(v, h);
-                } on Exception catch (e) {
-                  print(e.toString());
-                  return; // skip the function
-                }
-              }
-              break;
-            case "SDK_BUCKETING_FILE": // It will be triggered when the bucketing route responds with code 200
-            case "SDK_BUCKETING_FILE_ERROR": // It will be triggered when the bucketing route responds with error
-            case "GET_CAMPAIGNS_ROUTE_RESPONSE_ERROR": // It will be triggered when the campaigns route responds with an error
-            case "SEND_BATCH_HIT_ROUTE_RESPONSE_ERROR": // When a batch request failed
-            case "SEND_ACTIVATE_HIT_ROUTE_ERROR":
-              {
-                // get request
-                try {
-                  var req = arg["request"] as Request;
-                  // get response
-                  var resp = arg["response"] as Response;
-                  criticalJson = _createTSHttp(v, req, resp);
-                  print(criticalJson);
-                } on Exception catch (e) {
-                  print(e.toString());
-                  return; // skip the function
-                }
-              }
-              break;
-            case "WARNING":
-              criticalJson = _createTSWarning(v);
-              break;
-            case "ERROR":
-              criticalJson = _createTSError(v);
-              break;
-            default:
-              break;
-          }
-
-          // Add visitor trio of visitorId / anonymousId / instanceId
-          criticalJson.addEntries(_createTrioIds(v).entries);
-          sendDataUsageTracking(
-              TroubleShootingHit(visitorId, outPutLabel, criticalJson));
-        }
-      }
+    if (label == "VISITOR_FETCH_CAMPAIGNS") {
+      criticalJson = _createTSVisitorFormat(visitor);
+    } else if (label == "VISITOR_AUTHENTICATE") {
+      criticalJson = _createTSxpc(visitor);
+    } else if (label == "VISITOR_UNAUTHENTICATE") {
+      criticalJson = _createTSxpc(visitor); // TODO refract later
     }
+    // Add TRIO vid aid,uuid
+    criticalJson.addEntries(_createTrioIds(visitor).entries);
+    sendDataUsageTracking(TroubleShootingHit(visitorId, label, criticalJson));
   }
+
+  /// HITS and ACTIVATE
+  void processTroubleShootingHits(String label, Visitor visitor, BaseHit hit) {
+    Map<String, dynamic> criticalJson = {};
+
+    criticalJson = _createTSendHit(visitor, hit);
+
+    // Add TRIO vid aid,uuid
+    criticalJson.addEntries(_createTrioIds(visitor).entries);
+    sendDataUsageTracking(TroubleShootingHit(visitorId, label, criticalJson));
+  }
+
+  /// HTTP request
+
+  void processTroubleShootingHttp(String label, Response resp) {
+    // get request
+    Map<String, dynamic> criticalJson = {};
+
+    try {
+      criticalJson = _createTSHttp(resp.request, resp);
+      print(criticalJson);
+    } on Exception catch (e) {
+      print(e.toString());
+      print("processTroubleShootingHttp");
+      return; // skip the function
+    }
+
+    // Add TRIO vid aid,uuid
+    criticalJson.addEntries(_createTrioIds(null).entries);
+    sendDataUsageTracking(TroubleShootingHit(visitorId, label, criticalJson));
+  }
+
+// FLags
+  void proceesTroubleShootingFlag(String label, Flag f, Visitor v) {
+    Map<String, dynamic> criticalJson = {};
+    criticalJson = _createTroubleShooitngFlag(f, v);
+    // Add TRIO vid aid,uuid
+    criticalJson.addEntries(_createTrioIds(v).entries);
+    sendDataUsageTracking(TroubleShootingHit(visitorId, label, criticalJson));
+  }
+
+  /// Errors
+  void processTroubleShootingException(Visitor? v, Object error) {
+    Map<String, dynamic> criticalJson = {};
+
+    if (v != null) {
+      // Add context
+      criticalJson.addEntries(_createTRContext(v).entries);
+    }
+
+    /// Add ids
+    criticalJson.addEntries(_createTrioIds(v).entries);
+    // Add error message
+    criticalJson.addEntries({"error.message": error.toString()}.entries);
+    // Send Error
+    sendDataUsageTracking(TroubleShootingHit(
+        visitorId, CriticalPoints.ERROR_CATCHED.name, criticalJson));
+  }
+
+/////////////////////////
+  /// Private functions  //
+/////////////////////////
 
   // Create a trio of visitorId / anonymousId / instanceId
-  Map<String, dynamic> _createTrioIds(Visitor v) {
+  Map<String, dynamic> _createTrioIds(Visitor? v) {
     return {
-      "visitor.visitorId": v.visitorId,
-      "visitor.anonymousId": v.anonymousId,
-      "visitor.instanceId": visitorSessionId
+      "visitor.visitorId": v?.visitorId ?? this.visitorId,
+      "visitor.anonymousId": v?.anonymousId.toString(),
+      "visitor.instanceId": this.visitorSessionId
     };
   }
 
@@ -284,29 +294,29 @@ class DataUsageTracking with Observer {
     return {"visitor.context": _createTRContext(v)};
   }
 
-// For the hist and activate
+// For the hit and activate
   Map<String, dynamic> _createTSendHit(Visitor v, Hit h) {
     return {"hit.content": h.bodyTrack.toString()};
   }
 
-  Map<String, dynamic> _createTSHttp(Visitor v, Request r, Response resp) {
+// For HTTP & Buckeitng
+  Map<String, dynamic> _createTSHttp(BaseRequest? r, Response resp) {
     return {
-      "http.request.headers": r.headers.toString(),
-      "http.request.method": r.method,
-      "http.request.url": r.url.path,
+      "http.request.headers": r?.headers.toString(),
+      "http.request.method": r?.method,
+      "http.request.url": r?.url.path,
       "http.response.body": resp.body.toString(),
       "http.response.headers": resp.headers.toString(),
       "http.response.code": resp.statusCode.toString(),
-      "http.response.time": "time" // TODO set real time
     };
   }
 
-  Map<String, dynamic> _createTSWarning(Visitor v) {
-    return {};
-  }
-
-  Map<String, dynamic> _createTSError(Visitor v) {
-    return {};
+  Map<String, dynamic> _createTroubleShooitngFlag(Flag f, Visitor v) {
+    return {
+      "flag.key": f.key,
+      "flag.defaultValue": f.defaultValue.toString(),
+      "visitor.context": v.getContext().toString()
+    };
   }
 }
 
@@ -318,7 +328,7 @@ enum CriticalPoints {
   VISITIR_SEND_ACTIVATE,
   HTTP_CALL,
 
-  /// HTTP CALL
+  // HTTP CALL
 
   SDK_BUCKETING_FILE, // It will be triggered when the bucketing route responds with code 200
   SDK_BUCKETING_FILE_ERROR, // It will be triggered when the bucketing route responds with error
@@ -326,5 +336,11 @@ enum CriticalPoints {
   SEND_BATCH_HIT_ROUTE_RESPONSE_ERROR, // When a batch request failed
   SEND_ACTIVATE_HIT_ROUTE_ERROR, // When a activate request failed
 
-  WARNING,
+  // Warning flag
+  GET_FLAG_VALUE_FLAG_NOT_FOUND, // It will be triggered when the Flag.getValue method is called and no flag is found
+  GET_FLAG_VALUE_TYPEWARNING, // It will be triggered when the Flag.getValue method is called and the flag value has a different type with default value
+  VISITOR_EXPOSED_FLAG_NO_FOUND, // It will be triggered when the Flag.visitorExposed method is called and no flag is found
+  GET_FLAG_VALUE_TYPE_WARNING, // // It will be triggered when the Flag.visitorExposed method is called and the flag value has a different type with default value
+
+  ERROR_CATCHED // It will be trigger when the SDK catches any other error but those listed here.
 }

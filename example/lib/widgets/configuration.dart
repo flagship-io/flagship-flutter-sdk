@@ -4,6 +4,7 @@ import 'package:flagship/cache/interface_cache.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/hits/screen.dart';
+import 'package:flagship/model/flag.dart';
 import 'package:flagship/tracking/tracking_manager_config.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
@@ -97,6 +98,9 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   }
 
   _createVisitor() {
+//////////////////////////////
+/////// Start Flagship ///////
+//////////////////////////////
     UserData fsUser = Provider.of<UserData>(context, listen: false);
     visitorIdController.text = fsUser.visitorId;
     var newVisitor;

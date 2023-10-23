@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flagship/api/endpoints.dart';
 import 'package:flagship/api/service.dart';
+import 'package:flagship/dataUsage/data_usage_tracking.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/hits/batch.dart';
 import 'package:flagship/hits/hit.dart';
@@ -28,16 +29,18 @@ extension TrackingManagerBatch on TrackingManager {
         case 204:
         case 201:
           Flagship.logger(Level.INFO, HIT_SUCCESS);
-          // Flagship.logger(
-          //     Level.INFO, jsonEncode(Batch(listOfHitToSend).bodyTrack),
-          //     isJsonString: true);
           onSendBatchWithSuccess(listOfHitToSend);
           break;
         default:
           Flagship.logger(Level.ERROR, HIT_FAILED);
           hitDelegate?.onFailedToSendBatch(listOfHitToSend);
+          DataUsageTracking.sharedInstance().processTroubleShootingHttp(
+              CriticalPoints.SEND_BATCH_HIT_ROUTE_RESPONSE_ERROR.name,
+              response);
       }
     } catch (error) {
+      DataUsageTracking.sharedInstance()
+          .processTroubleShootingException(null, error);
       hitDelegate?.onFailedToSendBatch(listOfHitToSend);
       Flagship.logger(
           Level.EXCEPTIONS, EXCEPTION.replaceFirst("%s", "$error") + urlString);
@@ -65,9 +68,14 @@ extension TrackingManagerBatch on TrackingManager {
           return response.statusCode;
         default:
           Flagship.logger(Level.ERROR, HIT_FAILED);
+          DataUsageTracking.sharedInstance().processTroubleShootingHttp(
+              CriticalPoints.SEND_ACTIVATE_HIT_ROUTE_ERROR.name, response);
+
           return response.statusCode;
       }
     } on Exception catch (e) {
+      DataUsageTracking.sharedInstance()
+          .processTroubleShootingException(null, e);
       activateDelegate?.onFailedToSendBatch(listOfActivate);
       Flagship.logger(
           Level.EXCEPTIONS, EXCEPTION.replaceFirst("%s", "$e") + urlString);

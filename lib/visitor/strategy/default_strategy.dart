@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flagship/dataUsage/data_report_queue.dart';
 import 'package:flagship/dataUsage/data_usage_tracking.dart';
 import 'package:flagship/hits/activate.dart';
 import 'package:flagship/hits/event.dart';
@@ -43,11 +42,8 @@ class DefaultStrategy implements IVisitor {
     Activate activateHit = Activate(pModification, visitor.visitorId,
         visitor.anonymousId, Flagship.sharedInstance().envId ?? "");
 
-    visitor.notifyObservers({
-      "label": CriticalPoints.VISITIR_SEND_ACTIVATE.name,
-      "visitor": this.visitor,
-      "hit": activateHit
-    });
+    DataUsageTracking.sharedInstance().processTroubleShootingHits(
+        CriticalPoints.VISITIR_SEND_ACTIVATE.name, visitor, activateHit);
     visitor.trackingManager?.sendActivate(activateHit).then((statusCode) {
       if (statusCode >= 200 && statusCode < 300) {
         this.onExposure(pModification);
@@ -190,27 +186,25 @@ class DefaultStrategy implements IVisitor {
           jsonEncode(VisitorCache.fromVisitor(this.visitor).toJson()));
       // Update the dataUsage tracking
       visitor.dataUsageTracking
-          ?.updateTroubleshooting(camp.accountSettings?.troubleshooting);
+          .updateTroubleshooting(camp.accountSettings?.troubleshooting);
       // Notify the data report
-      visitor.notifyObservers({
-        "label": CriticalPoints.VISITOR_FETCH_CAMPAIGNS.name,
-        "visitor": this.visitor,
-      });
+      DataUsageTracking.sharedInstance().processTroubleShooting(
+          CriticalPoints.VISITOR_FETCH_CAMPAIGNS.name, this.visitor);
       return null;
     } catch (error) {
+      // Report the error
       Flagship.logger(Level.EXCEPTIONS,
           EXCEPTION.replaceFirst("%s", "${error.toString()}"));
+      DataUsageTracking.sharedInstance()
+          .processTroubleShootingException(visitor, error);
       return Error(); // Return Error
     }
   }
 
   @override
   Future<void> sendHit(BaseHit hit) async {
-    visitor.notifyObservers({
-      "label": CriticalPoints.VISITOR_SEND_HIT.name,
-      "visitor": this.visitor,
-      "hit": hit
-    });
+    DataUsageTracking.sharedInstance().processTroubleShootingHits(
+        CriticalPoints.VISITOR_SEND_HIT.name, this.visitor, hit);
     await visitor.trackingManager?.sendHit(hit);
   }
 
@@ -225,12 +219,8 @@ class DefaultStrategy implements IVisitor {
   @override
   authenticateVisitor(String pVisitorId) {
     if (visitor.config.decisionMode == Mode.DECISION_API) {
-      visitor
-          .notifyObservers({"label": CriticalPoints.VISITOR_AUTHENTICATE.name});
-      if (visitor.anonymousId == null) {
-        visitor.anonymousId = visitor.visitorId;
-        visitor.visitorId = pVisitorId;
-      }
+      DataUsageTracking.sharedInstance().processTroubleShooting(
+          CriticalPoints.VISITOR_AUTHENTICATE.name, this.visitor);
     } else {
       Flagship.logger(Level.ALL,
           "AuthenticateVisitor method will be ignored in Bucketing configuration");
@@ -240,8 +230,8 @@ class DefaultStrategy implements IVisitor {
   @override
   unAuthenticateVisitor() {
     if (visitor.config.decisionMode == Mode.DECISION_API) {
-      visitor.notifyObservers(
-          {"label": CriticalPoints.VISITOR_UNAUTHENTICATE.name});
+      DataUsageTracking.sharedInstance().processTroubleShooting(
+          CriticalPoints.VISITOR_UNAUTHENTICATE.name, this.visitor);
       if (visitor.anonymousId != null) {
         visitor.visitorId = visitor.anonymousId as String;
         visitor.anonymousId = null;

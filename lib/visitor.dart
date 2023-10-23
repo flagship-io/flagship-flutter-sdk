@@ -36,7 +36,7 @@ enum Instance {
   NEW_INSTANCE
 }
 
-class Visitor with Observable {
+class Visitor {
   /// VisitorId
   String visitorId;
 
@@ -147,9 +147,7 @@ class Visitor with Observable {
     //   DataUsageTracking(null, "visitorId", false, config));
 
     DataUsageTracking.sharedInstance()
-        .configureDataUsage(null, visitorId, this._hasConsented, config);
-
-    this.addObserver(DataUsageTracking.sharedInstance());
+        .configureDataUsageWithVisitor(null, this);
   }
 
   /// Update context directely with map for <String, Object>

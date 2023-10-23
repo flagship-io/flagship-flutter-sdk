@@ -15,7 +15,7 @@ import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class BucketingManager extends DecisionManager with Observable {
+class BucketingManager extends DecisionManager {
   final int intervalPolling;
   Polling? polling;
   bool fileExists = true;
@@ -30,9 +30,7 @@ class BucketingManager extends DecisionManager with Observable {
 
   DataUsageTracking? bkDataUsage;
 
-  BucketingManager(Service service, this.intervalPolling) : super(service) {
-    this.addObserver(DataUsageTracking.sharedInstance());
-  }
+  BucketingManager(Service service, this.intervalPolling) : super(service);
 
   @override
   Future<Campaigns> getCampaigns(
@@ -80,20 +78,18 @@ class BucketingManager extends DecisionManager with Observable {
         // Save response body
         _saveFile(response.body);
 
-        // Notify observer
-
-        visitor.notifyObservers({
-          "label": CriticalPoints.VISITIR_SEND_ACTIVATE.name,
-          "visitor": this.visitor,
-          "hit": activateHit
-        });
-
+        // Report TR
+        DataUsageTracking.sharedInstance().processTroubleShootingHttp(
+            CriticalPoints.SDK_BUCKETING_FILE.name, response);
         break;
       case 304:
         Flagship.logger(Level.ALL,
             "The bucketing script is not modified since last download");
         break;
       default:
+        // Report TR observer
+        DataUsageTracking.sharedInstance().processTroubleShootingHttp(
+            CriticalPoints.SDK_BUCKETING_FILE_ERROR.name, response);
         Flagship.logger(Level.ALL, "Failed to download script for bucketing");
         throw Exception('Flagship, Failed on getting bucketing script');
     }
