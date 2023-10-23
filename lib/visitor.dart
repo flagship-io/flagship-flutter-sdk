@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flagship/api/service.dart';
 import 'package:flagship/cache/default_cache.dart';
 import 'package:flagship/dataUsage/data_usage_tracking.dart';
-import 'package:flagship/dataUsage/observer.dart';
 import 'package:flagship/flagshipContext/flagship_context.dart';
 import 'package:flagship/flagshipContext/flagship_context_manager.dart';
 import 'package:flagship/hits/event.dart';
@@ -12,7 +11,6 @@ import 'package:flagship/decision/decision_manager.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/hits/hit.dart';
-import 'package:flagship/src/fs_internal.dart';
 import 'package:flagship/tracking/tracking_manager_periodic_strategy.dart';
 import 'package:flagship/tracking/tracking_manager_continuous_strategies.dart';
 import 'package:flagship/tracking/tracking_manager.dart';
@@ -281,7 +279,7 @@ class Visitor {
     _visitorDelegate.setConsent(_hasConsented);
 
     // Update the value for the data usage tracking
-    dataUsageTracking?.updateConsent(newValue);
+    dataUsageTracking.updateConsent(newValue);
   }
 
   // Get consent

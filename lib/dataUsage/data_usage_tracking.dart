@@ -1,10 +1,6 @@
-import 'dart:io';
-
 import 'package:flagship/api/endpoints.dart';
 import 'package:flagship/cache/default_cache.dart';
 import 'package:flagship/dataUsage/data_report_queue.dart';
-import 'package:flagship/dataUsage/observer.dart';
-import 'package:flagship/decision/bucketing_manager.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/hits/hit.dart';
@@ -15,6 +11,14 @@ import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flagship/visitor.dart';
 import 'package:http/http.dart';
 import 'package:murmurhash/murmurhash.dart';
+
+part 'trouble_shooting.g.dart';
+
+// Data usage label
+String dataUsageLabel = "DK_CONFIG";
+
+// Allocation threshold for data usage tracking
+int dataUsageAllocationThreshold = 10;
 
 class DataUsageTracking {
   factory DataUsageTracking.sharedInstance() {
@@ -32,6 +36,8 @@ class DataUsageTracking {
   String visitorId = "";
   // Is data tracking is allowed
   bool troubleShootingReportAllowed = false;
+
+  bool dataUsageTrackingReportAllowed = true;
   // if the visitor has consented
   bool _hasConsented = false;
 
@@ -52,6 +58,7 @@ class DataUsageTracking {
     _singleton.dataReport = DataReportQueue();
     _singleton.visitorSessionId = FlagshipTools.generateUuidv4().toString();
     _singleton._hasConsented = hasConsented;
+    _singleton.evaluateDataUsageTrackingAllocated();
   }
 
   configureDataUsageWithVisitor(Troubleshooting? troubleshooting, Visitor v) {
@@ -61,20 +68,21 @@ class DataUsageTracking {
     _singleton.dataReport = DataReportQueue();
     _singleton.visitorSessionId = FlagshipTools.generateUuidv4().toString();
     _singleton._hasConsented = v.getConsent();
+    _singleton.evaluateDataUsageTrackingAllocated();
   }
 
   void updateTroubleshooting(Troubleshooting? trblShooting) {
     _singleton._troubleshooting = trblShooting;
     // Re evaluate the conditions of datausagetracking
-    _singleton.evaluateDataUsageTrackingConditions();
+    _singleton.evaluateTroubleShootingConditions();
   }
 
   void updateConsent(bool newValue) {
     _singleton._hasConsented = newValue;
-    _singleton..evaluateDataUsageTrackingConditions();
+    _singleton..evaluateTroubleShootingConditions();
   }
 
-  void evaluateDataUsageTrackingConditions() {
+  void evaluateTroubleShootingConditions() {
     // To allow the dataUsageTracking we have to check
     _singleton
       ..troubleShootingReportAllowed = isTimeSlotValide() && // TimeSlot
@@ -121,18 +129,37 @@ class DataUsageTracking {
     }
   }
 
+  void evaluateDataUsageTrackingAllocated() {
+    // Calculate the bucket allocation
+    String combinedId = this.visitorId + DateTime.now().toString();
+    int hashAlloc = (MurmurHash.v3(combinedId, 0) % 100);
+
+    print(
+        "-------- DEV --- The hash allocation for Datausage tracking  bucket is $hashAlloc ------------");
+    bool ret = sdkConfig?.disableDeveloperUsageTracking ?? false;
+
+    _singleton.dataUsageTrackingReportAllowed =
+        (hashAlloc <= dataUsageAllocationThreshold) && !ret;
+  }
+
   bool isVisitorHasConsented() {
     return _singleton._hasConsented;
   }
 
-  // Send Hit for tracking Usage
-  void sendDataUsageTracking(TroubleShootingHit hitUsage) {
-    // if (_singleton.troubleShootingReportAllowed == true) { // TODO remove uncomment
-    print("Send Data Usage Tracking ...........");
-    _singleton.dataReport?.sendReportData(hitUsage);
-    //  }
+  // Send Hit for tracking TR
+  void _sendTroubleShootingReport(TroubleShootingHit trHit) {
+    if (_singleton.troubleShootingReportAllowed == true) {
+      _singleton.dataReport?.sendReportData(trHit);
+    }
   }
 
+  void _sendDataUsageTracking(DataUsageHit duHit) {
+    if (_singleton.dataUsageTrackingReportAllowed) {
+      _singleton.dataReport?.sendReportData(duHit);
+    }
+  }
+
+  // Fetch /Authenticate / unAuthenticate
   void processTroubleShooting(String label, Visitor visitor) {
     print("----------------------- $label----------------------------");
     Map<String, dynamic> criticalJson = {};
@@ -146,7 +173,8 @@ class DataUsageTracking {
     }
     // Add TRIO vid aid,uuid
     criticalJson.addEntries(_createTrioIds(visitor).entries);
-    sendDataUsageTracking(TroubleShootingHit(visitorId, label, criticalJson));
+    _sendTroubleShootingReport(
+        TroubleShootingHit(visitorId, label, criticalJson));
   }
 
   /// HITS and ACTIVATE
@@ -157,11 +185,11 @@ class DataUsageTracking {
 
     // Add TRIO vid aid,uuid
     criticalJson.addEntries(_createTrioIds(visitor).entries);
-    sendDataUsageTracking(TroubleShootingHit(visitorId, label, criticalJson));
+    _sendTroubleShootingReport(
+        TroubleShootingHit(visitorId, label, criticalJson));
   }
 
   /// HTTP request
-
   void processTroubleShootingHttp(String label, Response resp) {
     // get request
     Map<String, dynamic> criticalJson = {};
@@ -177,16 +205,18 @@ class DataUsageTracking {
 
     // Add TRIO vid aid,uuid
     criticalJson.addEntries(_createTrioIds(null).entries);
-    sendDataUsageTracking(TroubleShootingHit(visitorId, label, criticalJson));
+    _sendTroubleShootingReport(
+        TroubleShootingHit(visitorId, label, criticalJson));
   }
 
-// FLags
+// Flags
   void proceesTroubleShootingFlag(String label, Flag f, Visitor v) {
     Map<String, dynamic> criticalJson = {};
-    criticalJson = _createTroubleShooitngFlag(f, v);
+    criticalJson = createTroubleShooitngFlag(f, v);
     // Add TRIO vid aid,uuid
     criticalJson.addEntries(_createTrioIds(v).entries);
-    sendDataUsageTracking(TroubleShootingHit(visitorId, label, criticalJson));
+    _sendTroubleShootingReport(
+        TroubleShootingHit(visitorId, label, criticalJson));
   }
 
   /// Errors
@@ -203,8 +233,19 @@ class DataUsageTracking {
     // Add error message
     criticalJson.addEntries({"error.message": error.toString()}.entries);
     // Send Error
-    sendDataUsageTracking(TroubleShootingHit(
+    _sendTroubleShootingReport(TroubleShootingHit(
         visitorId, CriticalPoints.ERROR_CATCHED.name, criticalJson));
+  }
+
+  void processDataUsageTracking(Visitor v) {
+    Map<String, dynamic> dataUsageJson = {};
+
+    // Add SDK Config infos
+    dataUsageJson.addEntries(_createSdkConfig(sdkConfig).entries);
+    dataUsageJson.addEntries(_createTrioIds(v).entries);
+    // Send Error
+    _sendDataUsageTracking(
+        DataUsageHit(visitorId, dataUsageLabel, dataUsageJson));
   }
 
 /////////////////////////
@@ -224,99 +265,16 @@ class DataUsageTracking {
     Map<String, dynamic> sdkSettings = {
       "visitor.consent": visitor.getConsent(),
       "visitor.campaigns": visitor.modifications.toString(),
-
-      "visitor.isAuthenticated": "false",
-
-      /// SDK
-      "sdk.config.usingOnVisitorExposed": (sdkConfig?.onVisitorExposed != null),
-      "sdk.config.usingCustomVisitorCache":
-          (!(sdkConfig?.visitorCacheImp is DefaultCacheVisitorImp)).toString(),
-      "sdk.config.usingCustomHitCache":
-          (!(sdkConfig?.hitCacheImp is DefaultCacheHitImp)).toString(),
-      "sdk.config.usingCustomLogManager": "true",
-      "sdk.config.trackingManager.config.strategy":
-          sdkConfig?.trackingManagerConfig.batchStrategy.name,
-      " sdk.config.trackingManager.config.batchIntervals":
-          sdkConfig?.trackingManagerConfig.batchIntervals.toString(),
-      "sdk.config.timeout": sdkConfig?.timeout.toString(),
-      "sdk.config.pollingTime": sdkConfig?.pollingTime.toString(),
-      "sdk.config.mode": sdkConfig?.decisionMode.name,
-
-      "sdk.config.decisionApiUrl": Endpoints.DECISION_API,
-      "sdk.status": Flagship.getStatus().name,
-      //  "sdk.lastInitializationTimestamp":
-      "sdk.config.initialBucketing": "", // See later
-      /// Flags
+      "visitor.isAuthenticated": "false"
     };
+    // Add the sdk config entries
+    sdkSettings.addEntries(_createSdkConfig(sdkConfig).entries);
+    // Add the Flag entries
     sdkSettings.addEntries(_createTRFlagsInfo(visitor.modifications).entries);
+    // Add the context entries
     sdkSettings.addEntries(_createTRContext(visitor).entries);
-
+    // Return the settings
     return sdkSettings;
-  }
-
-  Map<String, dynamic> _createTRFlagsInfo(
-      Map<String, Modification> modifications) {
-    Map<String, dynamic> ret = {};
-
-    modifications.forEach((flagKey, flagModification) {
-      ret.addEntries({
-        "visitor.flags.$flagKey.key": flagKey,
-        "visitor.flags.$flagKey.value": flagModification.value.toString(),
-        "visitor.flags.$flagKey.metadata.campaignId":
-            flagModification.campaignId,
-        "visitor.flags.$flagKey.metadata.variationGroupId":
-            flagModification.variationGroupId,
-        "visitor.flags.$flagKey.metadata.variationId":
-            flagModification.variationId,
-        "visitor.flags.$flagKey.metadata.isReference":
-            flagModification.isReference.toString(),
-        "visitor.flags.$flagKey.metadata.campaignType":
-            flagModification.campaignType,
-        "visitor.flags.$flagKey.metadata.slug": flagModification.slug
-      }.entries);
-    });
-
-    return ret;
-  }
-
-  Map<String, dynamic> _createTRContext(Visitor v) {
-    Map<String, Object> ctx = v.getContext();
-
-    Map<String, dynamic> ret = {};
-    ctx.forEach((ctxKey, ctxValue) {
-      ret.addEntries({"visitor.context.$ctxKey": ctxValue.toString()}.entries);
-    });
-    return ret;
-  }
-
-// For the XPC
-  Map<String, dynamic> _createTSxpc(Visitor v) {
-    return {"visitor.context": _createTRContext(v)};
-  }
-
-// For the hit and activate
-  Map<String, dynamic> _createTSendHit(Visitor v, Hit h) {
-    return {"hit.content": h.bodyTrack.toString()};
-  }
-
-// For HTTP & Buckeitng
-  Map<String, dynamic> _createTSHttp(BaseRequest? r, Response resp) {
-    return {
-      "http.request.headers": r?.headers.toString(),
-      "http.request.method": r?.method,
-      "http.request.url": r?.url.path,
-      "http.response.body": resp.body.toString(),
-      "http.response.headers": resp.headers.toString(),
-      "http.response.code": resp.statusCode.toString(),
-    };
-  }
-
-  Map<String, dynamic> _createTroubleShooitngFlag(Flag f, Visitor v) {
-    return {
-      "flag.key": f.key,
-      "flag.defaultValue": f.defaultValue.toString(),
-      "visitor.context": v.getContext().toString()
-    };
   }
 }
 

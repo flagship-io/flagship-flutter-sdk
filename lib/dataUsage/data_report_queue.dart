@@ -97,3 +97,11 @@ class TroubleShootingHit extends BaseHit {
     _communCustomFields.addEntries(this.speceficCustomFields.entries);
   }
 }
+
+class DataUsageHit extends TroubleShootingHit {
+  DataUsageHit(String aVisitorId, String label,
+      Map<String, dynamic> speceficCustomFields)
+      : super(aVisitorId, label, speceficCustomFields) {
+    type = HitCategory.USAGE;
+  }
+}
