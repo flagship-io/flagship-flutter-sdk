@@ -1,9 +1,6 @@
 import 'dart:async';
 import 'dart:io';
-
-import 'package:flagship/dataUsage/data_report_queue.dart';
 import 'package:flagship/dataUsage/data_usage_tracking.dart';
-import 'package:flagship/dataUsage/observer.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';

@@ -6,6 +6,10 @@ import 'package:flagship/flagship_version.dart';
 import 'package:flagship/hits/hit.dart';
 import 'package:http/http.dart' as http;
 
+String troubleShootingVersion = "1";
+String stackType = "SDK";
+String stackName = "Flutter";
+
 class DataReportQueue {
   Service _reportService = Service(http.Client());
 
@@ -15,8 +19,15 @@ class DataReportQueue {
 
   void sendReportData(TroubleShootingHit dataReport) async {
     // Create url string endpoint
-    String urlString = Endpoints.EVENT + Endpoints.Troubleshooting;
-
+    String urlString = Endpoints.EVENT;
+    if (dataReport.type == HitCategory.TROUBLESHOOTING) {
+      urlString = urlString + Endpoints.Troubleshooting;
+    } else if (dataReport.type == HitCategory.USAGE) {
+      urlString = urlString + Endpoints.Analytics;
+    } else {
+      return;
+    }
+    print("---------------$urlString------------------");
     var response = await this._reportService.sendHttpRequest(
         RequestType.Post,
         urlString,
@@ -25,10 +36,10 @@ class DataReportQueue {
 
     switch (response.statusCode) {
       case 200:
-        print("Success to send data to trouble shooting endpoint");
+        print("Success to send report DUT ");
         break;
       default:
-        print("Unknown error when sending data to trouble shooting endpoint");
+        print("Unknown error when sending data usage ");
     }
   }
 }
@@ -71,24 +82,30 @@ class TroubleShootingHit extends BaseHit {
   Map<String, Object> get bodyTrack {
     var customBody = new Map<String, Object>();
 
-    customBody.addAll({"t": typeOfEvent, "cv": _communCustomFields});
+    customBody.addAll(
+        {"t": typeOfEvent, "cv": _communCustomFields}); // TODO redo later
+    // customBody.addAll({
+    //   "t": typeOfEvent,
+    //   "cv": {"label": "SDK-CONFIG-TEST"}
+    // });
 
     // Add commun body
     customBody.addAll(super.communBodyTrack);
+
+    customBody.remove("qt");
+
     return customBody;
   }
 
   _fillTheCommunFieldsAndCompleteWithCustom() {
     _communCustomFields = {
-      "version": "1",
+      "version": troubleShootingVersion,
       "envId": Flagship.sharedInstance().envId,
-      "logLevel": "ALL",
       "timestamp": DateTime.now().millisecondsSinceEpoch.toString(),
-      "timeZone":
-          DateTime.now().timeZoneName, // TODO check later if the value is OK ?
+      "timeZone": DateTime.now().timeZoneName,
       "label": label,
-      "stack.type": "SDK",
-      "stack.name": "Flutter",
+      "stack.type": stackType,
+      "stack.name": stackName,
       "stack.version": FlagshipVersion,
       "flagshipInstanceId":
           Flagship.sharedInstance().flagshipInstanceId.toString(),

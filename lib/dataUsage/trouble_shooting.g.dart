@@ -36,12 +36,16 @@ Map<String, dynamic> _createTRContext(Visitor v) {
 
 // For the XPC
 Map<String, dynamic> _createTSxpc(Visitor v) {
-  return {"visitor.context": _createTRContext(v)};
+  return _createTRContext(v);
 }
 
 // For the hit and activate
 Map<String, dynamic> _createTSendHit(Visitor v, Hit h) {
-  return {"hit.content": h.bodyTrack.toString()};
+  Map<String, dynamic> contentHit = {};
+  h.bodyTrack.forEach((key, value) {
+    contentHit.addEntries({"hit.$key": value.toString()}.entries);
+  });
+  return contentHit;
 }
 
 // For HTTP & Buckeitng
@@ -60,14 +64,14 @@ Map<String, dynamic> createTroubleShooitngFlag(Flag f, Visitor v) {
   return {
     "flag.key": f.key,
     "flag.defaultValue": f.defaultValue.toString(),
-    "visitor.context": v.getContext().toString()
   };
 }
 
 Map<String, dynamic> _createSdkConfig(FlagshipConfig? sdkConfig) {
   return {
     /// SDK
-    "sdk.config.usingOnVisitorExposed": (sdkConfig?.onVisitorExposed != null),
+    "sdk.config.usingOnVisitorExposed":
+        (sdkConfig?.onVisitorExposed != null).toString(),
     "sdk.config.usingCustomVisitorCache":
         (!(sdkConfig?.visitorCacheImp is DefaultCacheVisitorImp)).toString(),
     "sdk.config.usingCustomHitCache":
@@ -75,7 +79,7 @@ Map<String, dynamic> _createSdkConfig(FlagshipConfig? sdkConfig) {
     "sdk.config.usingCustomLogManager": "true",
     "sdk.config.trackingManager.config.strategy":
         sdkConfig?.trackingManagerConfig.batchStrategy.name,
-    " sdk.config.trackingManager.config.batchIntervals":
+    "sdk.config.trackingManager.config.batchIntervals":
         sdkConfig?.trackingManagerConfig.batchIntervals.toString(),
     "sdk.config.timeout": sdkConfig?.timeout.toString(),
     "sdk.config.pollingTime": sdkConfig?.pollingTime.toString(),
@@ -83,7 +87,8 @@ Map<String, dynamic> _createSdkConfig(FlagshipConfig? sdkConfig) {
 
     "sdk.config.decisionApiUrl": Endpoints.DECISION_API,
     "sdk.status": Flagship.getStatus().name,
-    //  "sdk.lastInitializationTimestamp":
-    "sdk.config.initialBucketing": "", // See later};
+    "sdk.lastInitializationTimestamp":
+        Flagship.sharedInstance().lastInitializationTimestamp,
+    "logLevel": sdkConfig?.getLevel().name,
   };
 }

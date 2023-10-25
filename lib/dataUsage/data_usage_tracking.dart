@@ -8,6 +8,7 @@ import 'package:flagship/model/account_settings.dart';
 import 'package:flagship/model/flag.dart';
 import 'package:flagship/model/modification.dart';
 import 'package:flagship/utils/flagship_tools.dart';
+import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor.dart';
 import 'package:http/http.dart';
 import 'package:murmurhash/murmurhash.dart';
@@ -15,7 +16,7 @@ import 'package:murmurhash/murmurhash.dart';
 part 'trouble_shooting.g.dart';
 
 // Data usage label
-String dataUsageLabel = "DK_CONFIG";
+String dataUsageLabel = "SDK_CONFIG";
 
 // Allocation threshold for data usage tracking
 int dataUsageAllocationThreshold = 10;
@@ -62,7 +63,7 @@ class DataUsageTracking {
   }
 
   configureDataUsageWithVisitor(Troubleshooting? troubleshooting, Visitor v) {
-    _singleton.sdkConfig = sdkConfig;
+    _singleton.sdkConfig = v.config;
     _singleton._troubleshooting = troubleshooting;
     _singleton.visitorId = v.visitorId;
     _singleton.dataReport = DataReportQueue();
@@ -92,9 +93,11 @@ class DataUsageTracking {
           isVisitorHasConsented(); // Visitor Consent
 
     if (_singleton.troubleShootingReportAllowed) {
-      print("-------------- Data Usage Allowed ✅✅✅✅✅ ---------------");
+      Flagship.logger(Level.ALL,
+          "-------------- Trouble shooting Allowed ✅✅✅✅✅ ---------------");
     } else {
-      print("-------------- Data Usage NOT Allowed ❌❌❌❌❌ --------------");
+      Flagship.logger(Level.ALL,
+          "-------------- Trouble shooting NOT Allowed ❌❌❌❌❌ --------------");
     }
   }
 
@@ -111,17 +114,16 @@ class DataUsageTracking {
 
   bool isBucketTroubleshootingAllocated() {
     // Calculate the bucket allocation
-
     if (_singleton._troubleshooting?.endDate != null) {
       String combinedId = this.visitorId + (_troubleshooting?.endDate ?? "");
       int hashAlloc = (MurmurHash.v3(combinedId, 0) % 100);
 
-      print(
-          "-------- DEV --- The hash allocation for TR bucket is $hashAlloc ------------");
+      Flagship.logger(Level.INFO,
+          "The hash allocation for TR bucket is $hashAlloc ------------");
 
       int traf = (_troubleshooting?.traffic ?? 0);
-      print(
-          "-------- DEV --- The range allocation for TR bucket is $traf  ------------");
+      Flagship.logger(Level.INFO,
+          "The range allocation for TR bucket is $traf  ------------");
 
       return (hashAlloc <= (_troubleshooting?.traffic ?? 0));
     } else {
@@ -131,12 +133,15 @@ class DataUsageTracking {
 
   void evaluateDataUsageTrackingAllocated() {
     // Calculate the bucket allocation
-    String combinedId = this.visitorId + DateTime.now().toString();
+    String combinedId = this.visitorId +
+        DateTime.now().year.toString() +
+        DateTime.now().month.toString() +
+        DateTime.now().day.toString();
     int hashAlloc = (MurmurHash.v3(combinedId, 0) % 100);
 
-    print(
-        "-------- DEV --- The hash allocation for Datausage tracking  bucket is $hashAlloc ------------");
-    bool ret = sdkConfig?.disableDeveloperUsageTracking ?? false;
+    Flagship.logger(Level.INFO,
+        "The hash allocation for Datausage tracking  bucket is $hashAlloc ");
+    bool ret = _singleton.sdkConfig?.disableDeveloperUsageTracking ?? false;
 
     _singleton.dataUsageTrackingReportAllowed =
         (hashAlloc <= dataUsageAllocationThreshold) && !ret;
@@ -156,6 +161,8 @@ class DataUsageTracking {
   void _sendDataUsageTracking(DataUsageHit duHit) {
     if (_singleton.dataUsageTrackingReportAllowed) {
       _singleton.dataReport?.sendReportData(duHit);
+    } else {
+      Flagship.logger(Level.INFO, "Le Send Datausage n'est pas authorisé ");
     }
   }
 
@@ -203,8 +210,9 @@ class DataUsageTracking {
       return; // skip the function
     }
 
-    // Add TRIO vid aid,uuid
+    // Add Trio vid aid,uuid
     criticalJson.addEntries(_createTrioIds(null).entries);
+    // Send trouble shooting report
     _sendTroubleShootingReport(
         TroubleShootingHit(visitorId, label, criticalJson));
   }
@@ -215,6 +223,8 @@ class DataUsageTracking {
     criticalJson = createTroubleShooitngFlag(f, v);
     // Add TRIO vid aid,uuid
     criticalJson.addEntries(_createTrioIds(v).entries);
+    // Add Context
+    criticalJson.addEntries(_createTRContext(v).entries);
     _sendTroubleShootingReport(
         TroubleShootingHit(visitorId, label, criticalJson));
   }
@@ -241,11 +251,10 @@ class DataUsageTracking {
     Map<String, dynamic> dataUsageJson = {};
 
     // Add SDK Config infos
-    dataUsageJson.addEntries(_createSdkConfig(sdkConfig).entries);
-    dataUsageJson.addEntries(_createTrioIds(v).entries);
+    dataUsageJson.addEntries(_createSdkConfig(_singleton.sdkConfig).entries);
     // Send Error
-    _sendDataUsageTracking(
-        DataUsageHit(visitorId, dataUsageLabel, dataUsageJson));
+    _sendDataUsageTracking(DataUsageHit(
+        this.visitorSessionId.toString(), dataUsageLabel, dataUsageJson));
   }
 
 /////////////////////////
@@ -264,11 +273,15 @@ class DataUsageTracking {
   Map<String, dynamic> _createTSVisitorFormat(Visitor visitor) {
     Map<String, dynamic> sdkSettings = {
       "visitor.consent": visitor.getConsent(),
-      "visitor.campaigns": visitor.modifications.toString(),
       "visitor.isAuthenticated": "false"
     };
+
+    visitor.modifications.forEach((key, value) {
+      sdkSettings.addEntries(
+          {"visitor.campaigns.$key": value.toJson().toString()}.entries);
+    });
     // Add the sdk config entries
-    sdkSettings.addEntries(_createSdkConfig(sdkConfig).entries);
+    sdkSettings.addEntries(_createSdkConfig(_singleton.sdkConfig).entries);
     // Add the Flag entries
     sdkSettings.addEntries(_createTRFlagsInfo(visitor.modifications).entries);
     // Add the context entries
@@ -296,7 +309,6 @@ enum CriticalPoints {
 
   // Warning flag
   GET_FLAG_VALUE_FLAG_NOT_FOUND, // It will be triggered when the Flag.getValue method is called and no flag is found
-  GET_FLAG_VALUE_TYPEWARNING, // It will be triggered when the Flag.getValue method is called and the flag value has a different type with default value
   VISITOR_EXPOSED_FLAG_NO_FOUND, // It will be triggered when the Flag.visitorExposed method is called and no flag is found
   GET_FLAG_VALUE_TYPE_WARNING, // // It will be triggered when the Flag.visitorExposed method is called and the flag value has a different type with default value
 

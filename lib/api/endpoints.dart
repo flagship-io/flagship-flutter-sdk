@@ -26,4 +26,7 @@ class Endpoints {
 
   // Troubleshooting
   static const String Troubleshooting = "/troubleshooting";
+
+  // Data usage
+  static const String Analytics = "/analytics";
 }

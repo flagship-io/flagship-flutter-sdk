@@ -38,6 +38,9 @@ class Flagship with FlagshipDelegate {
   // An unique ID (uuidV4) generated at the SDK initialization.
   String flagshipInstanceId = FlagshipTools.generateUuidv4();
 
+  // LastInitialization Timestamp
+  String lastInitializationTimestamp = DateTime.now().toString();
+
   factory Flagship.sharedInstance() {
     return _singleton;
   }

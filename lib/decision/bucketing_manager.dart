@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flagship/api/endpoints.dart';
 import 'package:flagship/api/service.dart';
 import 'package:flagship/dataUsage/data_usage_tracking.dart';
-import 'package:flagship/dataUsage/observer.dart';
 import 'package:flagship/decision/bucketing_process.dart';
 import 'package:flagship/decision/decision_manager.dart';
 import 'package:flagship/decision/polling/polling.dart';

@@ -1,3 +1,4 @@
+import 'package:flagship/dataUsage/data_usage_tracking.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/model/modification.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
@@ -25,7 +26,17 @@ class Flag<T> implements IFlag {
           this.visitorExposed();
         }
         return modif.value as T;
+      } else {
+        DataUsageTracking.sharedInstance().proceesTroubleShootingFlag(
+            CriticalPoints.GET_FLAG_VALUE_TYPE_WARNING.name,
+            this,
+            this._visitorDelegate.visitor);
       }
+    } else {
+      DataUsageTracking.sharedInstance().proceesTroubleShootingFlag(
+          CriticalPoints.GET_FLAG_VALUE_FLAG_NOT_FOUND.name,
+          this,
+          this._visitorDelegate.visitor);
     }
     return _defaultValue;
   }

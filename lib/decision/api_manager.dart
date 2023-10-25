@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:flagship/dataUsage/data_usage_tracking.dart';
-import 'package:flagship/dataUsage/observer.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/model/campaigns.dart';
 import 'package:flagship/api/endpoints.dart';

@@ -75,6 +75,10 @@ class FlagshipConfig {
       this.visitorCacheImp = DefaultCacheVisitorImp();
     }
   }
+
+  Level getLevel() {
+    return _logLevel;
+  }
 }
 
 class ConfigBuilder {

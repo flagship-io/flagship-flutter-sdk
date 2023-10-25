@@ -152,6 +152,7 @@ class DefaultStrategy implements IVisitor {
   Future<Error?> synchronizeModifications() async {
     Flagship.logger(Level.ALL, SYNCHRONIZE_MODIFICATIONS);
     Status state = Flagship.getStatus();
+    DataUsageTracking.sharedInstance().processDataUsageTracking(visitor);
     try {
       var camp = await visitor.decisionManager.getCampaigns(
           Flagship.sharedInstance().envId ?? "",
