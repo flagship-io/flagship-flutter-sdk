@@ -34,7 +34,7 @@ void main() {
         await ToolsTest.readFile('test_resources/decisionApi.json') ?? "";
     when(fakeService.sendHttpRequest(
             RequestType.Post,
-            'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true',
+            'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true&extras[]=accountSettings',
             fsHeaders,
             any,
             timeoutMs: TIMEOUT))

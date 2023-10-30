@@ -102,15 +102,21 @@ class DataUsageTracking {
   }
 
   bool isTimeSlotValide() {
-    // Get the date
-    DateTime startDate =
-        DateTime.parse(_singleton._troubleshooting?.startDate ?? "");
+    try {
+      // Get the dates
+      DateTime startDate =
+          DateTime.parse(_singleton._troubleshooting?.startDate ?? "");
 
-    DateTime endDate =
-        DateTime.parse(_singleton._troubleshooting?.endDate ?? "");
-    // Get the actual date
-    DateTime actualDate = DateTime.now();
-    return actualDate.isAfter(startDate) && actualDate.isBefore(endDate);
+      DateTime endDate =
+          DateTime.parse(_singleton._troubleshooting?.endDate ?? "");
+
+      // Get the actual date
+      DateTime actualDate = DateTime.now();
+      return actualDate.isAfter(startDate) && actualDate.isBefore(endDate);
+    } catch (e) {
+      Flagship.logger(Level.DEBUG, e.toString());
+      return false;
+    }
   }
 
   bool isBucketTroubleshootingAllocated() {
