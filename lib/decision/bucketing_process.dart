@@ -14,7 +14,7 @@ extension BucketingProcess on BucketingManager {
       Map<String, dynamic> context, Map<String, dynamic> assignHistory) {
     // Check the panic mode
     if (scriptBucket.panic == true) {
-      return Campaigns(visitorId, true, []);
+      return Campaigns(visitorId, true, [], scriptBucket.accountSettings);
     }
     // Check the targeting and filter the variation he can run
     Campaigns result =
@@ -24,7 +24,8 @@ extension BucketingProcess on BucketingManager {
 
   Campaigns processBucketing(String visitorId, Bucketing scriptBucket,
       Map<String, dynamic> context, Map<String, dynamic> assignHistory) {
-    Campaigns result = Campaigns(visitorId, false, []);
+    Campaigns result =
+        Campaigns(visitorId, false, [], scriptBucket.accountSettings);
     TargetingManager targetManager = TargetingManager(visitorId, context);
     // Campaign
     for (BucketCampaign itemCamp in scriptBucket.campaigns) {

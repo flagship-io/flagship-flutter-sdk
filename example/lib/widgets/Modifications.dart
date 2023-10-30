@@ -55,7 +55,7 @@ class _ModificationsState extends State<Modifications> {
       defaultValue = jsonDecode(defaultValueFlagController.text);
     }
 
-    myFlag = currentVisitor?.getFlag(keyFlagController.text, false);
+    myFlag = currentVisitor?.getFlag(keyFlagController.text, defaultValue);
 
     var ret = myFlag?.value(visitorExposed: false);
 

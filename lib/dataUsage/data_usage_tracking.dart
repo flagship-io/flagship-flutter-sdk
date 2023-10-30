@@ -105,6 +105,7 @@ class DataUsageTracking {
     // Get the date
     DateTime startDate =
         DateTime.parse(_singleton._troubleshooting?.startDate ?? "");
+
     DateTime endDate =
         DateTime.parse(_singleton._troubleshooting?.endDate ?? "");
     // Get the actual date
@@ -167,17 +168,19 @@ class DataUsageTracking {
   }
 
   // Fetch /Authenticate / unAuthenticate
-  void processTroubleShooting(String label, Visitor visitor) {
-    print("----------------------- $label----------------------------");
-    Map<String, dynamic> criticalJson = {};
 
-    if (label == "VISITOR_FETCH_CAMPAIGNS") {
-      criticalJson = _createTSVisitorFormat(visitor);
-    } else if (label == "VISITOR_AUTHENTICATE") {
-      criticalJson = _createTSxpc(visitor);
-    } else if (label == "VISITOR_UNAUTHENTICATE") {
-      criticalJson = _createTSxpc(visitor); // TODO refract later
-    }
+  void processTSFetching(Visitor visitor) {
+    Map<String, dynamic> criticalJson = {};
+    criticalJson = _createTSVisitorFormat(visitor);
+    // Add vid aid,uuid
+    criticalJson.addEntries(_createTrioIds(visitor).entries);
+    _sendTroubleShootingReport(TroubleShootingHit(
+        visitorId, CriticalPoints.VISITOR_FETCH_CAMPAIGNS.name, criticalJson));
+  }
+
+  void processTSXpc(String label, Visitor visitor) {
+    Map<String, dynamic> criticalJson = {};
+    criticalJson = _createTSxpc(visitor);
     // Add TRIO vid aid,uuid
     criticalJson.addEntries(_createTrioIds(visitor).entries);
     _sendTroubleShootingReport(
@@ -190,7 +193,7 @@ class DataUsageTracking {
 
     criticalJson = _createTSendHit(visitor, hit);
 
-    // Add TRIO vid aid,uuid
+    // Add vid aid,uuid
     criticalJson.addEntries(_createTrioIds(visitor).entries);
     _sendTroubleShootingReport(
         TroubleShootingHit(visitorId, label, criticalJson));
@@ -221,7 +224,7 @@ class DataUsageTracking {
   void proceesTroubleShootingFlag(String label, Flag f, Visitor v) {
     Map<String, dynamic> criticalJson = {};
     criticalJson = createTroubleShooitngFlag(f, v);
-    // Add TRIO vid aid,uuid
+    // Add vid aid,uuid
     criticalJson.addEntries(_createTrioIds(v).entries);
     // Add Context
     criticalJson.addEntries(_createTRContext(v).entries);
@@ -257,9 +260,9 @@ class DataUsageTracking {
         this.visitorSessionId.toString(), dataUsageLabel, dataUsageJson));
   }
 
-/////////////////////////
-  /// Private functions  //
-/////////////////////////
+  ///////////////////////
+  // Private functions //
+  ///////////////////////
 
   // Create a trio of visitorId / anonymousId / instanceId
   Map<String, dynamic> _createTrioIds(Visitor? v) {
@@ -298,19 +301,16 @@ enum CriticalPoints {
   VISITOR_SEND_HIT,
   VISITIR_SEND_ACTIVATE,
   HTTP_CALL,
-
-  // HTTP CALL
-
+  // Http call
   SDK_BUCKETING_FILE, // It will be triggered when the bucketing route responds with code 200
   SDK_BUCKETING_FILE_ERROR, // It will be triggered when the bucketing route responds with error
   GET_CAMPAIGNS_ROUTE_RESPONSE_ERROR, // It will be triggered when the campaigns route responds with an error
   SEND_BATCH_HIT_ROUTE_RESPONSE_ERROR, // When a batch request failed
   SEND_ACTIVATE_HIT_ROUTE_ERROR, // When a activate request failed
-
   // Warning flag
   GET_FLAG_VALUE_FLAG_NOT_FOUND, // It will be triggered when the Flag.getValue method is called and no flag is found
   VISITOR_EXPOSED_FLAG_NO_FOUND, // It will be triggered when the Flag.visitorExposed method is called and no flag is found
   GET_FLAG_VALUE_TYPE_WARNING, // // It will be triggered when the Flag.visitorExposed method is called and the flag value has a different type with default value
-
+  // Error
   ERROR_CATCHED // It will be trigger when the SDK catches any other error but those listed here.
 }

@@ -189,8 +189,7 @@ class DefaultStrategy implements IVisitor {
       visitor.dataUsageTracking
           .updateTroubleshooting(camp.accountSettings?.troubleshooting);
       // Notify the data report
-      DataUsageTracking.sharedInstance().processTroubleShooting(
-          CriticalPoints.VISITOR_FETCH_CAMPAIGNS.name, this.visitor);
+      DataUsageTracking.sharedInstance().processTSFetching(this.visitor);
       return null;
     } catch (error) {
       // Report the error
@@ -220,8 +219,8 @@ class DefaultStrategy implements IVisitor {
   @override
   authenticateVisitor(String pVisitorId) {
     if (visitor.config.decisionMode == Mode.DECISION_API) {
-      DataUsageTracking.sharedInstance().processTroubleShooting(
-          CriticalPoints.VISITOR_AUTHENTICATE.name, this.visitor);
+      DataUsageTracking.sharedInstance()
+          .processTSXpc(CriticalPoints.VISITOR_AUTHENTICATE.name, this.visitor);
     } else {
       Flagship.logger(Level.ALL,
           "AuthenticateVisitor method will be ignored in Bucketing configuration");
@@ -231,7 +230,7 @@ class DefaultStrategy implements IVisitor {
   @override
   unAuthenticateVisitor() {
     if (visitor.config.decisionMode == Mode.DECISION_API) {
-      DataUsageTracking.sharedInstance().processTroubleShooting(
+      DataUsageTracking.sharedInstance().processTSXpc(
           CriticalPoints.VISITOR_UNAUTHENTICATE.name, this.visitor);
       if (visitor.anonymousId != null) {
         visitor.visitorId = visitor.anonymousId as String;

@@ -50,7 +50,7 @@ class BucketingManager extends DecisionManager {
           visitorId, bucketingObject, context, assignationHistory ?? {});
     } else {
       Flagship.logger(Level.ALL, "Flagship, Failed to synchronize");
-      return Campaigns(visitorId, false, []);
+      return Campaigns(visitorId, false, [], null);
     }
   }
 
@@ -86,7 +86,7 @@ class BucketingManager extends DecisionManager {
             "The bucketing script is not modified since last download");
         break;
       default:
-        // Report TR observer
+        // Report Troubleshooting
         DataUsageTracking.sharedInstance().processTroubleShootingHttp(
             CriticalPoints.SDK_BUCKETING_FILE_ERROR.name, response);
         Flagship.logger(Level.ALL, "Failed to download script for bucketing");

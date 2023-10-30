@@ -8,10 +8,10 @@ class AccountSettings {
 
   AccountSettings.fromJson(Map<String, dynamic> json) {
     // Set enabledXPC
-    enabledXPC = (json['enabledXPC'] ?? "") as bool;
+    enabledXPC = (json['enabledXPC'] ?? false) as bool;
 
     // Set enabled1V1T
-    enabledXPC = (json['enabled1V1T'] ?? "") as bool;
+    enabledXPC = (json['enabled1V1T'] ?? false) as bool;
 
     // Set Troubleshooting
     troubleshooting = Troubleshooting.fromJson(

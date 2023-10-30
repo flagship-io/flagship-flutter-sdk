@@ -9,7 +9,7 @@ class Campaigns {
   // Account settings
   AccountSettings? accountSettings;
 
-  Campaigns(this.visitorId, this.panic, this.campaigns);
+  Campaigns(this.visitorId, this.panic, this.campaigns, this.accountSettings);
 
   Campaigns.fromJson(Map<String, dynamic> json) {
     // Set visitorId
@@ -25,9 +25,13 @@ class Campaigns {
     }).toList();
 
     // Init AccountSettings
-    if (json['extras']['accountSettings'] != null) {
-      accountSettings =
-          AccountSettings.fromJson(json['extras']['accountSettings'] ?? []);
+    try {
+      if (json['extras']['accountSettings'] != null) {
+        accountSettings =
+            AccountSettings.fromJson(json['extras']['accountSettings'] ?? {});
+      }
+    } catch (e) {
+      // In panic mode the extras field in not present
     }
   }
 
