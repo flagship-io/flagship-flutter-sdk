@@ -137,13 +137,6 @@ class Visitor {
     /// Send the consent hit
     _visitorDelegate.sendHit(Consent(hasConsented: _hasConsented));
 
-    // Init data usage tracking
-    //DataUsageTracking.sharedInstance()
-    //  .configureDataUsage(null, visitorId, this._hasConsented, config);
-
-    // this.addObserver(dataUsageTracking ??
-    //   DataUsageTracking(null, "visitorId", false, config));
-
     DataUsageTracking.sharedInstance()
         .configureDataUsageWithVisitor(null, this);
   }
@@ -297,6 +290,7 @@ class Visitor {
   authenticate(String visitorId) {
     // Update flagSyncStatus
     this._flagSyncStatus = FlagSyncStatus.AUTHENTICATED;
+    _isAuthenticated = true;
     _visitorDelegate.getStrategy().authenticateVisitor(visitorId);
   }
 
@@ -304,16 +298,18 @@ class Visitor {
   unauthenticate() {
     // Update flagSyncStatus
     this._flagSyncStatus = FlagSyncStatus.UNAUTHENTICATED;
+    _isAuthenticated = false;
     _visitorDelegate.getStrategy().unAuthenticateVisitor();
+  }
+
+// Is the visitor is autenticated
+  bool isAuthenticated() {
+    return _isAuthenticated;
   }
 
   @visibleForTesting
   FlagSyncStatus getFlagSyncStatus() {
     return _flagSyncStatus;
-  }
-
-  Map<String, dynamic> getTrInfos() {
-    return createTRFormat();
   }
 }
 

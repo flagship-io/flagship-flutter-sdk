@@ -2,6 +2,7 @@ import 'package:flagship/dataUsage/data_usage_tracking.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/model/account_settings.dart';
+import 'package:flagship/utils/constants.dart';
 import 'package:flagship/visitor.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -69,7 +70,6 @@ void main() {
 
   test("Trouble Data Usage", () {
     // Create trouble shooting
-
     dataUsageTest.evaluateDataUsageTrackingAllocated();
     // disable data usage
     sdkConfig.disableDeveloperUsageTracking = false;
@@ -78,7 +78,22 @@ void main() {
   });
 
   test("TS Fetching", () {
-    Visitor testVisitor = Flagship.newVisitor("dataUsageVisitor").build();
+    Visitor testVisitor = Flagship.newVisitor("TSVisitor").build();
     dataUsageTest.processTSFetching(testVisitor);
+  });
+
+  test("Data Usage Fetching", () {
+    Visitor testVisitor = Flagship.newVisitor("dataUsageVisitor").build();
+    dataUsageTest.dataUsageTrackingReportAllowed = true;
+    dataUsageTest.processDataUsageTracking(testVisitor);
+  });
+
+  test("Data Usage Fetching on Buckeitng", () {
+    Visitor testVisitor = Flagship.newVisitor("dataUsageVisitor").build();
+
+    dataUsageTest.configureDataUsage(null, "visitorId", true,
+        ConfigBuilder().withMode(Mode.BUCKETING).build());
+    dataUsageTest.dataUsageTrackingReportAllowed = true;
+    dataUsageTest.processDataUsageTracking(testVisitor);
   });
 }

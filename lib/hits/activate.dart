@@ -1,5 +1,7 @@
+import 'package:flagship/flagship.dart';
 import 'package:flagship/hits/hit.dart';
 import 'package:flagship/model/modification.dart';
+import 'package:flagship/utils/logger/log_manager.dart';
 
 class Activate extends BaseHit {
   Modification? modification;
@@ -27,8 +29,13 @@ class Activate extends BaseHit {
     // Set the client Id
     this.envId = body["cid"] ?? "";
 
-    // Set the createdAt
-    this.createdAt = DateTime.parse(body['createdAt']);
+    try {
+      // Set the createdAt
+      this.createdAt = DateTime.parse(body['createdAt']);
+    } catch (e) {
+      Flagship.logger(Level.EXCEPTIONS, e.toString());
+      this.createdAt = DateTime.now();
+    }
 
     // Create the modification object to set the "caid" & "vaid"
     if ((body["caid"] != null) && (body["vaid"] != null)) {

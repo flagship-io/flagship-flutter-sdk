@@ -83,6 +83,7 @@ class DataUsageTracking {
     _singleton..evaluateTroubleShootingConditions();
   }
 
+// Evaluate conditions to allow TS (trouble shooting) reporting
   void evaluateTroubleShootingConditions() {
     // To allow the dataUsageTracking we have to check
     _singleton
@@ -138,6 +139,7 @@ class DataUsageTracking {
     }
   }
 
+// Evaluate data usage to allow reporting
   void evaluateDataUsageTrackingAllocated() {
     // Calculate the bucket allocation
     String combinedId = this.visitorId +
@@ -169,54 +171,56 @@ class DataUsageTracking {
     if (_singleton.dataUsageTrackingReportAllowed) {
       _singleton.dataReport?.sendReportData(duHit);
     } else {
-      Flagship.logger(Level.INFO, "Le Send Datausage n'est pas authorisé ");
+      Flagship.logger(Level.INFO, "Sending data usage not allowed");
     }
   }
 
-  // Fetch /Authenticate / unAuthenticate
-
+// Create Trouble shooting information for Fetch flags
   void processTSFetching(Visitor visitor) {
-    Map<String, dynamic> criticalJson = {};
+    Map<String, String> criticalJson = {};
     criticalJson = _createTSVisitorFormat(visitor);
     // Add vid aid,uuid
     criticalJson.addEntries(_createTrioIds(visitor).entries);
+    // Send TS report
     _sendTroubleShootingReport(TroubleShootingHit(
         visitorId, CriticalPoints.VISITOR_FETCH_CAMPAIGNS.name, criticalJson));
   }
 
+// Create trouble shooting information for xpc
   void processTSXpc(String label, Visitor visitor) {
-    Map<String, dynamic> criticalJson = {};
+    Map<String, String> criticalJson = {};
     criticalJson = _createTSxpc(visitor);
     // Add TRIO vid aid,uuid
     criticalJson.addEntries(_createTrioIds(visitor).entries);
+    // Send TS report
     _sendTroubleShootingReport(
         TroubleShootingHit(visitorId, label, criticalJson));
   }
 
-  /// HITS and ACTIVATE
+  // Create Trouble shooting information for hits
   void processTroubleShootingHits(String label, Visitor visitor, BaseHit hit) {
-    Map<String, dynamic> criticalJson = {};
+    Map<String, String> criticalJson = {};
 
     criticalJson = _createTSendHit(visitor, hit);
 
     // Add vid aid,uuid
     criticalJson.addEntries(_createTrioIds(visitor).entries);
+    // Send TS report
     _sendTroubleShootingReport(
         TroubleShootingHit(visitorId, label, criticalJson));
   }
 
-  /// HTTP request
+  // Create trouble shooting information for the request
   void processTroubleShootingHttp(String label, Response resp) {
     // get request
-    Map<String, dynamic> criticalJson = {};
+    Map<String, String> criticalJson = {};
 
     try {
       criticalJson = _createTSHttp(resp.request, resp);
       print(criticalJson);
     } on Exception catch (e) {
-      print(e.toString());
-      print("processTroubleShootingHttp");
-      return; // skip the function
+      Flagship.logger(Level.EXCEPTIONS, e.toString());
+      return;
     }
 
     // Add Trio vid aid,uuid
@@ -226,21 +230,22 @@ class DataUsageTracking {
         TroubleShootingHit(visitorId, label, criticalJson));
   }
 
-// Flags
+// Create trouble shooting flag infromation
   void proceesTroubleShootingFlag(String label, Flag f, Visitor v) {
-    Map<String, dynamic> criticalJson = {};
+    Map<String, String> criticalJson = {};
     criticalJson = createTroubleShooitngFlag(f, v);
     // Add vid aid,uuid
     criticalJson.addEntries(_createTrioIds(v).entries);
     // Add Context
     criticalJson.addEntries(_createTRContext(v).entries);
+    // Send TS report
     _sendTroubleShootingReport(
         TroubleShootingHit(visitorId, label, criticalJson));
   }
 
-  /// Errors
+  // Errors
   void processTroubleShootingException(Visitor? v, Object error) {
-    Map<String, dynamic> criticalJson = {};
+    Map<String, String> criticalJson = {};
 
     if (v != null) {
       // Add context
@@ -251,17 +256,18 @@ class DataUsageTracking {
     criticalJson.addEntries(_createTrioIds(v).entries);
     // Add error message
     criticalJson.addEntries({"error.message": error.toString()}.entries);
-    // Send Error
+    // Send TS reporting
     _sendTroubleShootingReport(TroubleShootingHit(
         visitorId, CriticalPoints.ERROR_CATCHED.name, criticalJson));
   }
 
+  // Create data usage information
   void processDataUsageTracking(Visitor v) {
-    Map<String, dynamic> dataUsageJson = {};
+    Map<String, String> dataUsageJson = {};
 
     // Add SDK Config infos
     dataUsageJson.addEntries(_createSdkConfig(_singleton.sdkConfig).entries);
-    // Send Error
+    // Send Data usage report
     _sendDataUsageTracking(DataUsageHit(
         this.visitorSessionId.toString(), dataUsageLabel, dataUsageJson));
   }
@@ -270,19 +276,20 @@ class DataUsageTracking {
   // Private functions //
   ///////////////////////
 
-  // Create a trio of visitorId / anonymousId / instanceId
-  Map<String, dynamic> _createTrioIds(Visitor? v) {
+  // Create trio ids visitorId / anonymousId / instanceId
+  Map<String, String> _createTrioIds(Visitor? v) {
     return {
       "visitor.visitorId": v?.visitorId ?? this.visitorId,
-      "visitor.anonymousId": v?.anonymousId.toString(),
-      "visitor.instanceId": this.visitorSessionId
+      "visitor.anonymousId": v?.anonymousId.toString() ?? "",
+      "visitor.instanceId": this.visitorSessionId ?? ""
     };
   }
 
-  Map<String, dynamic> _createTSVisitorFormat(Visitor visitor) {
-    Map<String, dynamic> sdkSettings = {
-      "visitor.consent": visitor.getConsent(),
-      "visitor.isAuthenticated": "false"
+  // Create the trouble shooting visitor information
+  Map<String, String> _createTSVisitorFormat(Visitor visitor) {
+    Map<String, String> sdkSettings = {
+      "visitor.consent": visitor.getConsent().toString(),
+      "visitor.isAuthenticated": visitor.isAuthenticated().toString(),
     };
 
     visitor.modifications.forEach((key, value) {
@@ -301,22 +308,34 @@ class DataUsageTracking {
 }
 
 enum CriticalPoints {
+  // Trigger on fetch flags
   VISITOR_FETCH_CAMPAIGNS,
+  // Trigger on authenticate
   VISITOR_AUTHENTICATE,
+  // Trigger on unAuthenticate
   VISITOR_UNAUTHENTICATE,
+  // Trigger on sendig Hit
   VISITOR_SEND_HIT,
-  VISITIR_SEND_ACTIVATE,
-  HTTP_CALL,
+  // Trigger on sendig activate
+  VISITOR_SEND_ACTIVATE,
   // Http call
-  SDK_BUCKETING_FILE, // It will be triggered when the bucketing route responds with code 200
-  SDK_BUCKETING_FILE_ERROR, // It will be triggered when the bucketing route responds with error
-  GET_CAMPAIGNS_ROUTE_RESPONSE_ERROR, // It will be triggered when the campaigns route responds with an error
-  SEND_BATCH_HIT_ROUTE_RESPONSE_ERROR, // When a batch request failed
-  SEND_ACTIVATE_HIT_ROUTE_ERROR, // When a activate request failed
-  // Warning flag
-  GET_FLAG_VALUE_FLAG_NOT_FOUND, // It will be triggered when the Flag.getValue method is called and no flag is found
-  VISITOR_EXPOSED_FLAG_NO_FOUND, // It will be triggered when the Flag.visitorExposed method is called and no flag is found
-  GET_FLAG_VALUE_TYPE_WARNING, // // It will be triggered when the Flag.visitorExposed method is called and the flag value has a different type with default value
-  // Error
-  ERROR_CATCHED // It will be trigger when the SDK catches any other error but those listed here.
+  HTTP_CALL,
+  // Trigger when the bucketing route responds with code 200
+  SDK_BUCKETING_FILE,
+  // Trigger when the bucketing route responds with error
+  SDK_BUCKETING_FILE_ERROR,
+  // Trigger when the campaigns route responds with an error
+  GET_CAMPAIGNS_ROUTE_RESPONSE_ERROR,
+  // Trigger when a batch request failed
+  SEND_BATCH_HIT_ROUTE_RESPONSE_ERROR,
+  // Trigger when a activate request failed
+  SEND_ACTIVATE_HIT_ROUTE_ERROR,
+  // Trigger when the Flag.getValue method is called and no flag is found
+  GET_FLAG_VALUE_FLAG_NOT_FOUND,
+  // Trigger when the Flag.visitorExposed method is called and no flag is found
+  VISITOR_EXPOSED_FLAG_NO_FOUND,
+  // Trigger when the Flag.visitorExposed method is called and the flag value has a different type with default value
+  GET_FLAG_VALUE_TYPE_WARNING,
+  // Trigger when the SDK catches any other error but those listed here.
+  ERROR_CATCHED
 }

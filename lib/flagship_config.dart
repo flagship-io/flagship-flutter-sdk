@@ -181,6 +181,7 @@ class ConfigBuilder {
         _onVisitorExposed, _trackingManagerConfig ?? TrackingManagerConfig(),
         statusListener: _statusListener,
         hitCacheImp: _hitCacheImp,
-        visitorCacheImp: _visitorCacheImp);
+        visitorCacheImp: _visitorCacheImp,
+        disableDeveloperUsageTracking: _disableDeveloperUsageTracking);
   }
 }

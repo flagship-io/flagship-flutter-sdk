@@ -43,7 +43,7 @@ class DefaultStrategy implements IVisitor {
         visitor.anonymousId, Flagship.sharedInstance().envId ?? "");
 
     DataUsageTracking.sharedInstance().processTroubleShootingHits(
-        CriticalPoints.VISITIR_SEND_ACTIVATE.name, visitor, activateHit);
+        CriticalPoints.VISITOR_SEND_ACTIVATE.name, visitor, activateHit);
     visitor.trackingManager?.sendActivate(activateHit).then((statusCode) {
       if (statusCode >= 200 && statusCode < 300) {
         this.onExposure(pModification);

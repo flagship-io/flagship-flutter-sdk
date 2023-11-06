@@ -4,6 +4,7 @@ import 'package:flagship/api/service.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/flagship_version.dart';
 import 'package:flagship/hits/hit.dart';
+import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:http/http.dart' as http;
 
 String troubleShootingVersion = "1";
@@ -27,7 +28,6 @@ class DataReportQueue {
     } else {
       return;
     }
-    print("---------------$urlString------------------");
     var response = await this._reportService.sendHttpRequest(
         RequestType.Post,
         urlString,
@@ -36,20 +36,20 @@ class DataReportQueue {
 
     switch (response.statusCode) {
       case 200:
-        print("Success to send report DUT ");
+        Flagship.logger(Level.INFO, "Success to send DUT or TR report");
         break;
       default:
-        print("Unknown error when sending data usage ");
+        Flagship.logger(Level.INFO, "Error on sending DUT or TR report");
     }
   }
 }
 
 class TroubleShootingHit extends BaseHit {
   // Commun Fields
-  Map<String, dynamic> _communCustomFields =
+  Map<String, String> _communCustomFields =
       {}; // this is the out put will add into it the custom variable
   // Custom Variable
-  Map<String, dynamic> speceficCustomFields = {};
+  Map<String, String> speceficCustomFields = {};
   // Label for the critical point
   String label = "";
   TroubleShootingHit(String aVisitorId, this.label, this.speceficCustomFields)
@@ -69,30 +69,14 @@ class TroubleShootingHit extends BaseHit {
     return true;
   }
 
-  Map<String, Object> toJson() {
-    return {
-      "vid": "userTR",
-      "ds": "APP",
-      "cid": "bkk9glocmjcg0vtmdlng",
-      "cv": {_communCustomFields} // TODO check is ok or not
-    };
-  }
-
   @override
   Map<String, Object> get bodyTrack {
     var customBody = new Map<String, Object>();
 
-    customBody.addAll(
-        {"t": typeOfEvent, "cv": _communCustomFields}); // TODO redo later
-    // customBody.addAll({
-    //   "t": typeOfEvent,
-    //   "cv": {"label": "SDK-CONFIG-TEST"}
-    // });
+    customBody.addAll({"t": typeOfEvent, "cv": _communCustomFields});
 
     // Add commun body
     customBody.addAll(super.communBodyTrack);
-
-    customBody.remove("qt");
 
     return customBody;
   }
@@ -100,7 +84,7 @@ class TroubleShootingHit extends BaseHit {
   _fillTheCommunFieldsAndCompleteWithCustom() {
     _communCustomFields = {
       "version": troubleShootingVersion,
-      "envId": Flagship.sharedInstance().envId,
+      "envId": Flagship.sharedInstance().envId ?? "",
       "timestamp": DateTime.now().millisecondsSinceEpoch.toString(),
       "timeZone": DateTime.now().timeZoneName,
       "label": label,
@@ -116,8 +100,8 @@ class TroubleShootingHit extends BaseHit {
 }
 
 class DataUsageHit extends TroubleShootingHit {
-  DataUsageHit(String aVisitorId, String label,
-      Map<String, dynamic> speceficCustomFields)
+  DataUsageHit(
+      String aVisitorId, String label, Map<String, String> speceficCustomFields)
       : super(aVisitorId, label, speceficCustomFields) {
     type = HitCategory.USAGE;
   }
