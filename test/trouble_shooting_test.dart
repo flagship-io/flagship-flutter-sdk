@@ -17,13 +17,13 @@ void main() {
   SharedPreferences.setMockInitialValues({});
   databaseFactory = databaseFactoryFfi;
 
-  // Start
-  Flagship.start("bkk9glocmjcg0vtmdldd", "apiKey");
   DataUsageTracking dataUsageTest = DataUsageTracking.sharedInstance();
   // Create a config
   FlagshipConfig sdkConfig = ConfigBuilder().build();
 
   test("Trouble shooting test time slot ", () {
+    // Start
+    Flagship.start("bkk9glocmjcg0vtmdldd", "apiKey");
     // Create trouble shooting
     Troubleshooting troubleshooting = Troubleshooting.fromJson({
       "startDate": DateTime.now().subtract(Duration(minutes: 5)).toString(),
@@ -48,6 +48,8 @@ void main() {
   });
 
   test("Trouble shooting with consent ", () {
+    // Start
+    Flagship.start("bkk9glocmjcg0vtmdldd", "apiKey");
     // Create trouble shooting
     Troubleshooting troubleshooting = Troubleshooting.fromJson({
       "startDate": DateTime.now().subtract(Duration(minutes: 5)).toString(),
@@ -69,6 +71,8 @@ void main() {
   });
 
   test("Trouble Data Usage", () {
+    // Start
+    Flagship.start("bkk9glocmjcg0vtmdldd", "apiKey");
     // Create trouble shooting
     dataUsageTest.evaluateDataUsageTrackingAllocated();
     // disable data usage
@@ -78,17 +82,23 @@ void main() {
   });
 
   test("TS Fetching", () {
+    // Start
+    Flagship.start("bkk9glocmjcg0vtmdldd", "apiKey");
     Visitor testVisitor = Flagship.newVisitor("TSVisitor").build();
     dataUsageTest.processTSFetching(testVisitor);
   });
 
   test("Data Usage Fetching", () {
+    // Start
+    Flagship.start("bkk9glocmjcg0vtmdldd", "apiKey");
     Visitor testVisitor = Flagship.newVisitor("dataUsageVisitor").build();
     dataUsageTest.dataUsageTrackingReportAllowed = true;
     dataUsageTest.processDataUsageTracking(testVisitor);
   });
 
   test("Data Usage Fetching on Buckeitng", () {
+    // Start
+    Flagship.start("bkk9glocmjcg0vtmdldd", "apiKey");
     Visitor testVisitor = Flagship.newVisitor("dataUsageVisitor").build();
 
     dataUsageTest.configureDataUsage(null, "visitorId", true,
