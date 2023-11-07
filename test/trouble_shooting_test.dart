@@ -7,7 +7,7 @@ import 'package:flagship/visitor.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'fake_path_provider_platform.dart';
 
 import 'test_tools.dart';
 
@@ -15,7 +15,6 @@ void main() {
   ToolsTest.sqfliteTestInit();
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences.setMockInitialValues({});
-  databaseFactory = databaseFactoryFfi;
 
   DataUsageTracking dataUsageTest = DataUsageTracking.sharedInstance();
   // Create a config
