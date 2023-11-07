@@ -170,9 +170,9 @@ class ConfigBuilder {
   }
 
   // Data usage developer tracking
-  ConfigBuilder withDeveloperUsageTracking(
-      bool pDisableDeveloperUsageTracking) {
-    _disableDeveloperUsageTracking = pDisableDeveloperUsageTracking;
+  ConfigBuilder withDisableDeveloperUsageTracking(
+      bool disableDeveloperUsageTracking) {
+    _disableDeveloperUsageTracking = disableDeveloperUsageTracking;
     return this;
   }
 

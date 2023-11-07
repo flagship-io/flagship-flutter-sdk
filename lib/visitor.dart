@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:collection/equality.dart';
 import 'package:flagship/api/service.dart';
 import 'package:flagship/cache/default_cache.dart';
 import 'package:flagship/dataUsage/data_usage_tracking.dart';
@@ -19,6 +20,7 @@ import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor/visitor_delegate.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'flagship_delegate.dart';
 import 'package:http/http.dart' as http;
@@ -148,11 +150,16 @@ class Visitor {
 
   /// Update context directely with map for <String, Object>
   void updateContextWithMap(Map<String, Object> context) {
+    var oldContext = Map.fromEntries(_context.entries);
     _context.addAll(context);
+    if (mapEquals(oldContext, _context) == false) {
+      // if the context still the same then no need to raise the warning
+      // Update flagSyncStatus to raise a warning when access to flag
+      this._flagSyncStatus = FlagSyncStatus.CONTEXT_UPDATED;
+    }
+
     Flagship.logger(
         Level.DEBUG, CONTEXT_UPDATE.replaceFirst("%s", "$_context"));
-    // Update flagSyncStatus
-    this._flagSyncStatus = FlagSyncStatus.CONTEXT_UPDATED;
   }
 
   /// Get the current context for the visitor

@@ -63,7 +63,7 @@ class _ContextScreenState extends State<ContextScreen> with ShowDialog {
         throw new Exception("Visitor not initialized");
       }
       Map<String, dynamic> ret = jsonDecode(ctxInput.text);
-      currentClient.clearContext();
+      //currentClient.clearContext();
       currentClient.updateContextWithMap(Map<String, Object>.from(ret));
       subMsg = "Context updated";
 

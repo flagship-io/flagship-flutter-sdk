@@ -92,6 +92,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
           print(fromFlag.toJson());
           print(visitorExposed.toJson());
         })
+        .withDisableDeveloperUsageTracking(false)
         .build();
     Flagship.start(envIdController.text, apiKeyController.text, config: config);
   }
