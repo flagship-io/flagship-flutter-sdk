@@ -97,8 +97,8 @@ class DataUsageTracking {
       Flagship.logger(Level.ALL,
           "-------------- Trouble shooting Allowed ✅✅✅✅✅ ---------------");
     } else {
-      Flagship.logger(Level.ALL,
-          "-------------- Trouble shooting NOT Allowed ❌❌❌❌❌ --------------");
+      //  Flagship.logger(Level.ALL,
+      //     "-------------- Trouble shooting NOT Allowed ❌❌❌❌❌ --------------");
     }
   }
 
@@ -171,7 +171,7 @@ class DataUsageTracking {
     if (_singleton.dataUsageTrackingReportAllowed) {
       _singleton.dataReport?.sendReportData(duHit);
     } else {
-      Flagship.logger(Level.INFO, "Sending data usage not allowed");
+      Flagship.logger(Level.INFO, "Sending developer data usage not allowed");
     }
   }
 
