@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:collection/equality.dart';
 import 'package:flagship/api/service.dart';
 import 'package:flagship/cache/default_cache.dart';
 import 'package:flagship/dataUsage/data_usage_tracking.dart';
@@ -21,7 +20,6 @@ import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor/visitor_delegate.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'flagship_delegate.dart';
 import 'package:http/http.dart' as http;
 part "visitor_tr.dart";
@@ -176,20 +174,22 @@ class Visitor {
   /// otherwise the update context skip with warnning log
 
   void updateContext<T>(String key, T value) {
-    // Update flagSyncStatus
-    this._flagSyncStatus = FlagSyncStatus.CONTEXT_UPDATED;
+    var oldContext = Map.fromEntries(_context.entries);
 
-    /// Delegate the action to strategy
+    /// Delegate the action to strategy to update
     _visitorDelegate.updateContext(key, value);
+    // Check the eqaulity before raise the warning
+    if (mapEquals(oldContext, _context) == false) {
+      // if the context still the same then no need to raise the warning
+      // Update flagSyncStatus to raise a warning when access to flag
+      this._flagSyncStatus = FlagSyncStatus.CONTEXT_UPDATED;
+    }
   }
 
   /// Update with predefined context
   void updateFlagshipContext<T>(FlagshipContext flagshipContext, T value) {
-    // Update flagSyncStatus
-    this._flagSyncStatus = FlagSyncStatus.CONTEXT_UPDATED;
-
     if (FlagshipContextManager.chekcValidity(flagshipContext, value)) {
-      _visitorDelegate.updateContext(rawValue(flagshipContext), value);
+      updateContext(rawValue(flagshipContext), value);
     } else {
       Flagship.logger(Level.ERROR,
           "Skip updating the context with predefined context ${flagshipContext.name} ..... the value is not valid");

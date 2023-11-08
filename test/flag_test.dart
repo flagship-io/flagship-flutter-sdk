@@ -183,6 +183,27 @@ void main() async {
     Flagship.getCurrentVisitor()?.unauthenticate();
     expect(Flagship.getCurrentVisitor()?.getFlagSyncStatus(),
         FlagSyncStatus.UNAUTHENTICATED);
+
+    // Update context with the same keys
+    Flagship.getCurrentVisitor()?.updateContext("keyFalg", "valueFlag");
+    expect(Flagship.getCurrentVisitor()?.getFlagSyncStatus(),
+        FlagSyncStatus.UNAUTHENTICATED);
+
+    // Update context with the same keys
+    Flagship.getCurrentVisitor()?.updateContextWithMap(
+        Flagship.getCurrentVisitor()?.getContext() ?? {});
+    expect(Flagship.getCurrentVisitor()?.getFlagSyncStatus(),
+        FlagSyncStatus.UNAUTHENTICATED);
+
+    Flagship.getCurrentVisitor()
+        ?.updateFlagshipContext(FlagshipContext.CARRIER_NAME, "SFR");
+    expect(Flagship.getCurrentVisitor()?.getFlagSyncStatus(),
+        FlagSyncStatus.UNAUTHENTICATED);
+
+    Flagship.getCurrentVisitor()
+        ?.updateFlagshipContext(FlagshipContext.CARRIER_NAME, "ORANGE");
+    expect(Flagship.getCurrentVisitor()?.getFlagSyncStatus(),
+        FlagSyncStatus.CONTEXT_UPDATED);
   });
 
   test("Flag with bad type", () {
