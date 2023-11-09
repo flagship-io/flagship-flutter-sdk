@@ -71,11 +71,15 @@ class DatabaseManagement {
 
   // Define a function that inserts dogs into the database
   Future<void> insertHitMap(Map<String, Object> hitMap) async {
-    await _hitDatabase?.insert(
-      'table_hits',
-      hitMap,
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    try {
+      await _hitDatabase?.insert(
+        'table_hits',
+        hitMap,
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    } on Exception catch (e) {
+      Flagship.logger(Level.EXCEPTIONS, e.toString());
+    }
   }
 
   // Delete item with id
@@ -111,11 +115,16 @@ class DatabaseManagement {
 
   // Insert visitor Map data Visitor
   Future<void> insertVisitorData(Map<String, Object> visitoMap) async {
-    await _visitorDatabase?.insert(
-      'table_visitors',
-      visitoMap,
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    try {
+      await _visitorDatabase?.insert(
+        'table_visitors',
+        visitoMap,
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    } on Exception catch (e) {
+      print(e.toString());
+      Flagship.logger(Level.EXCEPTIONS, e.toString());
+    }
   }
 
   // Delete all reocrd

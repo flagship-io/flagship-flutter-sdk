@@ -115,7 +115,7 @@ class DataUsageTracking {
       DateTime actualDate = DateTime.now();
       return actualDate.isAfter(startDate) && actualDate.isBefore(endDate);
     } catch (e) {
-      Flagship.logger(Level.DEBUG, e.toString());
+      // No dates for Troubleshooting
       return false;
     }
   }
