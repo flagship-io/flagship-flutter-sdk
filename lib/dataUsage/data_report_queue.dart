@@ -18,7 +18,7 @@ class DataReportQueue {
     _reportService = Service(http.Client());
   }
 
-  void sendReportData(TroubleShootingHit dataReport) async {
+  void sendReportData(TroubleshootingHit dataReport) async {
     // Create url string endpoint
     String urlString = Endpoints.EVENT;
     if (dataReport.type == HitCategory.TROUBLESHOOTING) {
@@ -44,7 +44,7 @@ class DataReportQueue {
   }
 }
 
-class TroubleShootingHit extends BaseHit {
+class TroubleshootingHit extends BaseHit {
   // Commun Fields
   Map<String, String> _communCustomFields =
       {}; // this is the out put will add into it the custom variable
@@ -52,7 +52,7 @@ class TroubleShootingHit extends BaseHit {
   Map<String, String> speceficCustomFields = {};
   // Label for the critical point
   String label = "";
-  TroubleShootingHit(String aVisitorId, this.label, this.speceficCustomFields)
+  TroubleshootingHit(String aVisitorId, this.label, this.speceficCustomFields)
       : super() {
     type = HitCategory.TROUBLESHOOTING;
     visitorId = aVisitorId;
@@ -99,7 +99,7 @@ class TroubleShootingHit extends BaseHit {
   }
 }
 
-class DataUsageHit extends TroubleShootingHit {
+class DataUsageHit extends TroubleshootingHit {
   DataUsageHit(
       String aVisitorId, String label, Map<String, String> speceficCustomFields)
       : super(aVisitorId, label, speceficCustomFields) {

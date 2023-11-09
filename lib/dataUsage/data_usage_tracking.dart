@@ -95,7 +95,7 @@ class DataUsageTracking {
 
     if (_singleton.troubleShootingReportAllowed) {
       Flagship.logger(Level.ALL,
-          "-------------- Trouble shooting Allowed ✅✅✅✅✅ ---------------");
+          "-------------- Troubleshooting Allowed ✅✅✅✅✅ ---------------");
     } else {
       //  Flagship.logger(Level.ALL,
       //     "-------------- Trouble shooting NOT Allowed ❌❌❌❌❌ --------------");
@@ -161,7 +161,7 @@ class DataUsageTracking {
   }
 
   // Send Hit for tracking TR
-  void _sendTroubleShootingReport(TroubleShootingHit trHit) {
+  void _sendTroubleShootingReport(TroubleshootingHit trHit) {
     if (_singleton.troubleShootingReportAllowed == true) {
       _singleton.dataReport?.sendReportData(trHit);
     }
@@ -182,7 +182,7 @@ class DataUsageTracking {
     // Add vid aid,uuid
     criticalJson.addEntries(_createTrioIds(visitor).entries);
     // Send TS report
-    _sendTroubleShootingReport(TroubleShootingHit(
+    _sendTroubleShootingReport(TroubleshootingHit(
         visitorId, CriticalPoints.VISITOR_FETCH_CAMPAIGNS.name, criticalJson));
   }
 
@@ -194,7 +194,7 @@ class DataUsageTracking {
     criticalJson.addEntries(_createTrioIds(visitor).entries);
     // Send TS report
     _sendTroubleShootingReport(
-        TroubleShootingHit(visitorId, label, criticalJson));
+        TroubleshootingHit(visitorId, label, criticalJson));
   }
 
   // Create Trouble shooting information for hits
@@ -207,7 +207,7 @@ class DataUsageTracking {
     criticalJson.addEntries(_createTrioIds(visitor).entries);
     // Send TS report
     _sendTroubleShootingReport(
-        TroubleShootingHit(visitorId, label, criticalJson));
+        TroubleshootingHit(visitorId, label, criticalJson));
   }
 
   // Create trouble shooting information for the request
@@ -227,7 +227,7 @@ class DataUsageTracking {
     criticalJson.addEntries(_createTrioIds(null).entries);
     // Send trouble shooting report
     _sendTroubleShootingReport(
-        TroubleShootingHit(visitorId, label, criticalJson));
+        TroubleshootingHit(visitorId, label, criticalJson));
   }
 
 // Create trouble shooting flag infromation
@@ -240,7 +240,7 @@ class DataUsageTracking {
     criticalJson.addEntries(_createTRContext(v).entries);
     // Send TS report
     _sendTroubleShootingReport(
-        TroubleShootingHit(visitorId, label, criticalJson));
+        TroubleshootingHit(visitorId, label, criticalJson));
   }
 
   // Errors
@@ -257,7 +257,7 @@ class DataUsageTracking {
     // Add error message
     criticalJson.addEntries({"error.message": error.toString()}.entries);
     // Send TS reporting
-    _sendTroubleShootingReport(TroubleShootingHit(
+    _sendTroubleShootingReport(TroubleshootingHit(
         visitorId, CriticalPoints.ERROR_CATCHED.name, criticalJson));
   }
 
@@ -314,9 +314,9 @@ enum CriticalPoints {
   VISITOR_AUTHENTICATE,
   // Trigger on unAuthenticate
   VISITOR_UNAUTHENTICATE,
-  // Trigger on sendig Hit
+  // Trigger on sending Hit
   VISITOR_SEND_HIT,
-  // Trigger on sendig activate
+  // Trigger on sending activate
   VISITOR_SEND_ACTIVATE,
   // Http call
   HTTP_CALL,

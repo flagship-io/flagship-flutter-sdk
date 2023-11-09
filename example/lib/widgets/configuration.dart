@@ -3,7 +3,11 @@ import 'dart:io';
 import 'package:flagship/cache/interface_cache.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/flagship_config.dart';
+import 'package:flagship/hits/event.dart';
+import 'package:flagship/hits/hit.dart';
+import 'package:flagship/hits/item.dart';
 import 'package:flagship/hits/screen.dart';
+import 'package:flagship/hits/transaction.dart';
 import 'package:flagship/tracking/tracking_manager_config.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
@@ -11,6 +15,7 @@ import 'package:flagship/visitor.dart';
 import 'package:flagship_qa/Providers/fs_data.dart';
 import 'package:flagship_qa/mixins/dialog.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import './FSinputField.dart';
@@ -376,34 +381,28 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   }
 
   _customTest() async {
-    Visitor vA = Flagship.newVisitor("visitor_A")
-        .withContext({"testing_tracking_manager": true})
-        .isAuthenticated(true)
-        .build();
+    for (int i = 0; i < 50; i++) {
+      Visitor vA = Flagship.newVisitor("visitor_A$i")
+          .withContext({"condition1": "test"})
+          .isAuthenticated(false)
+          .build();
 
-    vA.fetchFlags().whenComplete(() {
-      print("stop");
-      //Activate
-      var value = vA.getFlag("btnTitle", "defaultValue").value();
-      print("the vlaue of flag is " + value);
-      vA.sendHit(Screen(location: "screenQA"));
-      print("stop"); // to go online mode
-      Flagship.sharedInstance().close();
-    });
-    // to go offline mode
+      vA.fetchFlags().whenComplete(() {
+        //Activate
+        var value = vA.getFlag("btnColor", "defaultValue").value();
+        print("the vlaue of flag is " + value);
+        vA.sendHit(Screen(location: "screenQA"));
 
-    // Flagship.sharedInstance().close();
+        vA.sendHit(Event(
+            action: "testEvent", category: EventCategory.Action_Tracking));
 
-    /// mode online
+        vA.sendHit(Transaction(affiliation: "test", transactionId: "123"));
 
-    // var vB = Flagship.newVisitor("visitorB")
-    //     .withContext({"testing_tracking_manager": true}).build();
-
-    // await vB.fetchFlags();
-    // //Activate
-    // var valueBis = vB.getFlag("my_flag", "defaultValue").value();
-    // print(valueBis);
-    // vB.sendHit(Screen(location: "screenQA"));
+        vA.sendHit(
+            Item(transactionId: "123", name: "nameItem", code: "codeItem"));
+        Flagship.sharedInstance().close();
+      });
+    }
   }
 }
 

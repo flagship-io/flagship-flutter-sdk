@@ -14,8 +14,9 @@ class AccountSettings {
     enabledXPC = (json['enabled1V1T'] ?? false) as bool;
 
     // Set Troubleshooting
-    troubleshooting = Troubleshooting.fromJson(
-        json['troubleshooting'] as Map<String, dynamic>);
+    if (json.keys.contains('troubleshooting')) {
+      troubleshooting = Troubleshooting.fromJson(json['troubleshooting'] ?? {});
+    }
   }
 }
 

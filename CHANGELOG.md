@@ -1,3 +1,8 @@
+# 3.1.0 - 08/11/2023
+
+- Troubleshooting mode : If you are experiencing issues while using the SDK, we are now able to gather logs and information to help you.
+- Developer Usage Tracking :The SDK collects data to help us improve the product.
+
 # 3.0.4 - 28/09/2023
 
 #### Added

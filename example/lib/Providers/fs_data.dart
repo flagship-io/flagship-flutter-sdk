@@ -66,7 +66,7 @@ class UserData extends ChangeNotifier {
   String _visitorId = "QA6/11";
   Map<String, Object> context = {
     "testing_tracking_manager": true,
-    "QA": "flutter"
+    "condition1": "test"
   };
   bool _hasConsented = true;
   bool _isAuthenticated = false;
