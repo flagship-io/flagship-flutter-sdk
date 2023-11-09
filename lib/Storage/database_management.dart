@@ -122,7 +122,6 @@ class DatabaseManagement {
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
     } on Exception catch (e) {
-      print(e.toString());
       Flagship.logger(Level.EXCEPTIONS, e.toString());
     }
   }
