@@ -3,7 +3,8 @@ import 'package:flagship/flagship_version.dart';
 class Endpoints {
   static const String SEP = "/";
   static const String DECISION_API = "https://decision.flagship.io/v2/";
-  static const String CAMPAIGNS = "/campaigns/?exposeAllKeys=true";
+  static const String CAMPAIGNS =
+      "/campaigns/?exposeAllKeys=true&extras[]=accountSettings";
   static const String ACTIVATION = "activate";
 
 // Bucketing
@@ -22,4 +23,10 @@ class Endpoints {
       "Content-type": "application/json"
     };
   }
+
+  // Troubleshooting
+  static const String Troubleshooting = "/troubleshooting";
+
+  // Data usage
+  static const String Analytics = "/analytics";
 }

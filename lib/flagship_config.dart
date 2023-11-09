@@ -49,9 +49,15 @@ class FlagshipConfig {
 
   IVisitorCacheImplementation? visitorCacheImp;
 
+  // Data Usage
+  bool disableDeveloperUsageTracking;
+
   FlagshipConfig(this.decisionMode, this.timeout, this.pollingTime,
       this._logLevel, this.onVisitorExposed, this.trackingManagerConfig,
-      {this.statusListener, this.visitorCacheImp, this.hitCacheImp}) {
+      {this.statusListener,
+      this.visitorCacheImp,
+      this.hitCacheImp,
+      this.disableDeveloperUsageTracking = false}) {
     // Set the log Manager
     this.logManager = LogManager(level: _logLevel);
     // Log the timeout value in ms
@@ -68,6 +74,10 @@ class FlagshipConfig {
     if (this.visitorCacheImp == null) {
       this.visitorCacheImp = DefaultCacheVisitorImp();
     }
+  }
+
+  Level getLevel() {
+    return _logLevel;
   }
 }
 
@@ -97,6 +107,9 @@ class ConfigBuilder {
   IVisitorCacheImplementation? _visitorCacheImp;
 
   OnVisitorExposed? _onVisitorExposed;
+
+  // Data usage developer tracking
+  bool _disableDeveloperUsageTracking = false;
 
   ConfigBuilder();
 
@@ -156,11 +169,19 @@ class ConfigBuilder {
     return this;
   }
 
+  // Data usage developer tracking
+  ConfigBuilder withDisableDeveloperUsageTracking(
+      bool disableDeveloperUsageTracking) {
+    _disableDeveloperUsageTracking = disableDeveloperUsageTracking;
+    return this;
+  }
+
   FlagshipConfig build() {
     return FlagshipConfig(_mode, _timeout, _pollingTime, _logLevel,
         _onVisitorExposed, _trackingManagerConfig ?? TrackingManagerConfig(),
         statusListener: _statusListener,
         hitCacheImp: _hitCacheImp,
-        visitorCacheImp: _visitorCacheImp);
+        visitorCacheImp: _visitorCacheImp,
+        disableDeveloperUsageTracking: _disableDeveloperUsageTracking);
   }
 }

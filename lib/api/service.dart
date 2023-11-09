@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:io';
-
+import 'package:flagship/dataUsage/data_usage_tracking.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
@@ -49,6 +49,8 @@ class Service {
           var response = await this.httpClient.get(url, headers: headers);
           return response;
         } on Error catch (e) {
+          DataUsageTracking.sharedInstance()
+              .processTroubleShootingException(null, e);
           return Response(e.toString(), 400);
         }
       default:
@@ -56,5 +58,3 @@ class Service {
     }
   }
 }
-
-/// Refractor later with rich code errors

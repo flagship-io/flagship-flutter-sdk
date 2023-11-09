@@ -1,0 +1,59 @@
+{
+  "campaigns": [
+     {
+      "id": "br8dca47pe0g1648p34g",
+      "name":"nameCamp",
+      "type": "ab",
+      "variationGroups": [
+        {
+          "id": "br8dca47pe0g1648p35g",
+          "name":"varGName",
+          "targeting": {
+            "targetingGroups": [
+              {
+                "targetings": []
+              }
+            ]
+          },
+          "variations": [
+            {
+              "id": "br8dca47pe0g1648p360",
+              "name":"varName",
+              "allocation": 20,
+              "reference": true
+            },
+            {
+              "id": "br8dca47pe0g1648p36g",
+              "name":"varName",
+              "allocation": 20
+            },
+            {
+              "id": "br8dihf811lg254ebo2g",
+              "name":"varName",
+              "allocation": 20
+            },
+            {
+              "id": "br8dihk7pe0g16ag5img",
+              "name":"varName",
+              "allocation": 20
+            },
+            {
+              "id": "br8dihk7pe0g1atbce10",
+              "name":"varName",
+              "allocation": 20
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "accountSettings": {
+    "enabledXPC": true,
+    "troubleshooting": {
+      "startDate": "2023-11-08T22:39:17.765Z",
+      "endDate": "2023-11-09T02:39:17.765Z",
+      "timezone": "UTC",
+      "traffic": 50
+    }
+  }
+}

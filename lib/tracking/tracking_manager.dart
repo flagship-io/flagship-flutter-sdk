@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flagship/api/endpoints.dart';
 import 'package:flagship/cache/interface_cache.dart';
+import 'package:flagship/dataUsage/data_usage_tracking.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/hits/activate.dart';
 import 'package:flagship/hits/hit.dart';
@@ -63,6 +64,8 @@ class TrackingManager {
             this.onCacheHit(pHit);
         }
       } catch (error) {
+        DataUsageTracking.sharedInstance()
+            .processTroubleShootingException(null, error);
         Flagship.logger(Level.EXCEPTIONS,
             EXCEPTION.replaceFirst("%s", "$error") + urlString);
         Flagship.logger(Level.ERROR, HIT_FAILED);

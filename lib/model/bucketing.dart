@@ -1,9 +1,11 @@
+import 'package:flagship/model/account_settings.dart';
 import 'package:flagship/model/trageting.dart';
 import 'package:flagship/model/variation.dart';
 
 class Bucketing {
   bool panic = false;
   List<BucketCampaign> campaigns = [];
+  AccountSettings? accountSettings;
   Bucketing.fromJson(Map<String, dynamic> json) {
     // Set panic
     if (json.keys.contains("panic")) {
@@ -14,6 +16,11 @@ class Bucketing {
     campaigns = list.map((e) {
       return BucketCampaign.fromJson(e);
     }).toList();
+
+    // Construct Account settings
+    if (json.keys.contains("accountSettings")) {
+      accountSettings = AccountSettings.fromJson(json['accountSettings'] ?? {});
+    }
   }
 }
 

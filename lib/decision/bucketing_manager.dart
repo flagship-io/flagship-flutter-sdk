@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flagship/api/endpoints.dart';
 import 'package:flagship/api/service.dart';
+import 'package:flagship/dataUsage/data_usage_tracking.dart';
 import 'package:flagship/decision/bucketing_process.dart';
 import 'package:flagship/decision/decision_manager.dart';
 import 'package:flagship/decision/polling/polling.dart';
@@ -26,6 +27,8 @@ class BucketingManager extends DecisionManager {
   String bucketingFolder = "/flagship_bucketing/";
   String fileName = "bucketing.json";
 
+  DataUsageTracking? bkDataUsage;
+
   BucketingManager(Service service, this.intervalPolling) : super(service);
 
   @override
@@ -47,7 +50,7 @@ class BucketingManager extends DecisionManager {
           visitorId, bucketingObject, context, assignationHistory ?? {});
     } else {
       Flagship.logger(Level.ALL, "Flagship, Failed to synchronize");
-      return Campaigns(visitorId, false, []);
+      return Campaigns(visitorId, false, [], null);
     }
   }
 
@@ -73,12 +76,19 @@ class BucketingManager extends DecisionManager {
         }
         // Save response body
         _saveFile(response.body);
+
+        // Report TR
+        DataUsageTracking.sharedInstance().processTroubleShootingHttp(
+            CriticalPoints.SDK_BUCKETING_FILE.name, response);
         break;
       case 304:
         Flagship.logger(Level.ALL,
             "The bucketing script is not modified since last download");
         break;
       default:
+        // Report Troubleshooting
+        DataUsageTracking.sharedInstance().processTroubleShootingHttp(
+            CriticalPoints.SDK_BUCKETING_FILE_ERROR.name, response);
         Flagship.logger(Level.ALL, "Failed to download script for bucketing");
         throw Exception('Flagship, Failed on getting bucketing script');
     }

@@ -202,5 +202,8 @@
         }
       ]
     }
-  ]
+  ],
+  "accountSettings": {
+    "enabledXPC": true
+  }
 }

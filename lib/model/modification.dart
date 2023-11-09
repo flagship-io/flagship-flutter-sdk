@@ -12,7 +12,7 @@ class Modifications {
     type = (json['type'] ?? "") as String;
     // Set the key value map
     try {
-      vals = json['value'] as Map<String, dynamic>;
+      vals = json['value'] ?? {};
     } catch (e) {
       Flagship.logger(Level.EXCEPTIONS, EXCEPTION.replaceFirst("%s", "$e"));
       vals = {};

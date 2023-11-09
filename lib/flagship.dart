@@ -35,6 +35,12 @@ class Flagship with FlagshipDelegate {
   // Internal Singelton
   static final Flagship _singleton = Flagship._internal();
 
+  // An unique ID (uuidV4) generated at the SDK initialization.
+  String flagshipInstanceId = FlagshipTools.generateUuidv4();
+
+  // LastInitialization Timestamp
+  String lastInitializationTimestamp = DateTime.now().toString();
+
   factory Flagship.sharedInstance() {
     return _singleton;
   }

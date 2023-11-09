@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flagship/dataUsage/data_usage_tracking.dart';
 import 'package:flagship/hits/activate.dart';
 import 'package:flagship/hits/event.dart';
 import 'package:flagship/hits/hit.dart';
@@ -41,6 +42,8 @@ class DefaultStrategy implements IVisitor {
     Activate activateHit = Activate(pModification, visitor.visitorId,
         visitor.anonymousId, Flagship.sharedInstance().envId ?? "");
 
+    DataUsageTracking.sharedInstance().processTroubleShootingHits(
+        CriticalPoints.VISITOR_SEND_ACTIVATE.name, visitor, activateHit);
     visitor.trackingManager?.sendActivate(activateHit).then((statusCode) {
       if (statusCode >= 200 && statusCode < 300) {
         this.onExposure(pModification);
@@ -149,6 +152,7 @@ class DefaultStrategy implements IVisitor {
   Future<Error?> synchronizeModifications() async {
     Flagship.logger(Level.ALL, SYNCHRONIZE_MODIFICATIONS);
     Status state = Flagship.getStatus();
+    DataUsageTracking.sharedInstance().processDataUsageTracking(visitor);
     try {
       var camp = await visitor.decisionManager.getCampaigns(
           Flagship.sharedInstance().envId ?? "",
@@ -181,16 +185,26 @@ class DefaultStrategy implements IVisitor {
       // Save the response for the visitor database
       cacheVisitor(visitor.visitorId,
           jsonEncode(VisitorCache.fromVisitor(this.visitor).toJson()));
+      // Update the dataUsage tracking
+      visitor.dataUsageTracking
+          .updateTroubleshooting(camp.accountSettings?.troubleshooting);
+      // Notify the data report
+      DataUsageTracking.sharedInstance().processTSFetching(this.visitor);
       return null;
     } catch (error) {
+      // Report the error
       Flagship.logger(Level.EXCEPTIONS,
           EXCEPTION.replaceFirst("%s", "${error.toString()}"));
+      DataUsageTracking.sharedInstance()
+          .processTroubleShootingException(visitor, error);
       return Error(); // Return Error
     }
   }
 
   @override
   Future<void> sendHit(BaseHit hit) async {
+    DataUsageTracking.sharedInstance().processTroubleShootingHits(
+        CriticalPoints.VISITOR_SEND_HIT.name, this.visitor, hit);
     await visitor.trackingManager?.sendHit(hit);
   }
 
@@ -205,10 +219,8 @@ class DefaultStrategy implements IVisitor {
   @override
   authenticateVisitor(String pVisitorId) {
     if (visitor.config.decisionMode == Mode.DECISION_API) {
-      if (visitor.anonymousId == null) {
-        visitor.anonymousId = visitor.visitorId;
-        visitor.visitorId = pVisitorId;
-      }
+      DataUsageTracking.sharedInstance()
+          .processTSXpc(CriticalPoints.VISITOR_AUTHENTICATE.name, this.visitor);
     } else {
       Flagship.logger(Level.ALL,
           "AuthenticateVisitor method will be ignored in Bucketing configuration");
@@ -218,6 +230,8 @@ class DefaultStrategy implements IVisitor {
   @override
   unAuthenticateVisitor() {
     if (visitor.config.decisionMode == Mode.DECISION_API) {
+      DataUsageTracking.sharedInstance().processTSXpc(
+          CriticalPoints.VISITOR_UNAUTHENTICATE.name, this.visitor);
       if (visitor.anonymousId != null) {
         visitor.visitorId = visitor.anonymousId as String;
         visitor.anonymousId = null;

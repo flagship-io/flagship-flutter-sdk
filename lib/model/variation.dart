@@ -26,8 +26,6 @@ class Variation {
     if (json.containsKey("name")) {
       name = (json['name'] ?? "") as String;
     }
-
-    modifications =
-        Modifications.fromJson(json['modifications'] as Map<String, dynamic>);
+    modifications = Modifications.fromJson(json['modifications'] ?? {});
   }
 }

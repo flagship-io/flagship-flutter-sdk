@@ -69,5 +69,11 @@
         "reference": false
       }
     }
-  ]
+  ],
+  "extras": {
+         "accountSettings": {
+          "enabledXPC": true,
+          "enabled1V1T": false
+        }
+      }
 }
