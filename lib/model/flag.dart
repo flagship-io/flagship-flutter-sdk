@@ -18,19 +18,22 @@ class Flag<T> implements IFlag {
 //
 // visitorExposed is true by default
   dynamic value({bool visitorExposed = true}) {
+    dynamic retValue = _defaultValue;
     Modification? modif = this._visitorDelegate.getFlagModification(this._key);
     if (modif != null) {
       {
-        if (_isSameTypeOrDefaultValueNull(modif.value)) {
+        if (modif.value == null) {
           // Activate if necessary
           if (visitorExposed) {
             this.visitorExposed();
           }
-          if (modif.value != null) {
-            return modif.value;
+        } else if (_isSameTypeOrDefaultValueNull(modif.value)) {
+          /// Get the flag value
+          retValue = modif.value;
+          // Activate if necessary
+          if (visitorExposed) {
+            this.visitorExposed();
           }
-
-          /// Go to default value
         } else {
           DataUsageTracking.sharedInstance().proceesTroubleShootingFlag(
               CriticalPoints.GET_FLAG_VALUE_TYPE_WARNING.name,
@@ -44,7 +47,7 @@ class Flag<T> implements IFlag {
           this,
           this._visitorDelegate.visitor);
     }
-    return _defaultValue;
+    return retValue;
   }
 
 // Expose Flag
@@ -104,7 +107,7 @@ class Flag<T> implements IFlag {
     if (this._defaultValue.runtimeType == Null) {
       return true;
     }
-    return (value is T);
+    return (value.runtimeType == this._defaultValue.runtimeType);
   }
 
   @override
