@@ -17,20 +17,26 @@ class Flag<T> implements IFlag {
 // Get value for flag
 //
 // visitorExposed is true by default
-  T value({bool visitorExposed = true}) {
+  dynamic value({bool visitorExposed = true}) {
     Modification? modif = this._visitorDelegate.getFlagModification(this._key);
     if (modif != null) {
-      if (_isSameType(modif.value)) {
-        // Activate if necessary
-        if (visitorExposed) {
-          this.visitorExposed();
+      {
+        if (_isSameTypeOrDefaultValueNull(modif.value)) {
+          // Activate if necessary
+          if (visitorExposed) {
+            this.visitorExposed();
+          }
+          if (modif.value != null) {
+            return modif.value;
+          }
+
+          /// Go to default value
+        } else {
+          DataUsageTracking.sharedInstance().proceesTroubleShootingFlag(
+              CriticalPoints.GET_FLAG_VALUE_TYPE_WARNING.name,
+              this,
+              this._visitorDelegate.visitor);
         }
-        return modif.value as T;
-      } else {
-        DataUsageTracking.sharedInstance().proceesTroubleShootingFlag(
-            CriticalPoints.GET_FLAG_VALUE_TYPE_WARNING.name,
-            this,
-            this._visitorDelegate.visitor);
       }
     } else {
       DataUsageTracking.sharedInstance().proceesTroubleShootingFlag(
@@ -53,7 +59,8 @@ class Flag<T> implements IFlag {
     Modification? modification =
         this._visitorDelegate.getFlagModification(this._key);
     if (modification != null) {
-      if (modification.value == null || _isSameType(modification.value)) {
+      if (modification.value == null ||
+          _isSameTypeOrDefaultValueNull(modification.value)) {
         Flagship.logger(
             Level.DEBUG, "Send exposure flag (activate) for : " + _key);
 
@@ -81,7 +88,8 @@ class Flag<T> implements IFlag {
   FlagMetadata metadata() {
     // Before expose whe should check the Type
     Modification? modif = this._visitorDelegate.getFlagModification(this._key);
-    if (modif != null && (modif.value == null || _isSameType(modif.value))) {
+    if (modif != null &&
+        (modif.value == null || _isSameTypeOrDefaultValueNull(modif.value))) {
       // when the flag value is null we provide the metadata
       return FlagMetadata.withMap(
           this._visitorDelegate.getModificationInfo(this._key));
@@ -90,8 +98,12 @@ class Flag<T> implements IFlag {
     }
   }
 
-  // Check the type of flag's value with the default value
-  bool _isSameType(dynamic value) {
+  // Check the type of flag's value with the default value and return true if the same
+  // If the default value is null will return true
+  bool _isSameTypeOrDefaultValueNull(dynamic value) {
+    if (this._defaultValue.runtimeType == Null) {
+      return true;
+    }
     return (value is T);
   }
 
