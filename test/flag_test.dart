@@ -224,12 +224,23 @@ void main() async {
   });
 
   test("Flag with null as value", () {
-    //  PathProviderPlatform.instance = FakePathProviderPlatform();
     var v3 = Flagship.newVisitor("flagVisitor").build();
     v3.fetchFlags().whenComplete(() {
+      // String as default value
       Flag myFlag = v3.getFlag("keyNull", "nullValue");
       expect(myFlag.value(), "nullValue");
+      // bool as default value
+      Flag myFlagBool = v3.getFlag("keyNull", false);
+      expect(myFlagBool.value(), false);
+      // Double as default value
+      Flag myFlagDouble = v3.getFlag("keyNull", 12.0);
+      expect(myFlagDouble.value(), 12.0);
+      // Int as default value
+      Flag myFlagInt = v3.getFlag("keyNull", 2);
+      expect(myFlagInt.value(), 2);
+      // is existing
       expect(myFlag.exists(), true);
+      // Get metadata
       FlagMetadata metadata = myFlag.metadata();
       expect(metadata.campaignId, "bsffhle242b2l3igq4dg");
       expect(metadata.variationGroupId, "bsffhle242b2l3igq4egaa");
@@ -246,6 +257,23 @@ void main() async {
     v4.fetchFlags().whenComplete(() {
       Flag myFlag = v4.getFlag("keyNull", null);
       expect(myFlag.value(), null);
+      expect(myFlag.exists(), true);
+      FlagMetadata metadata = myFlag.metadata();
+      expect(metadata.campaignId, "bsffhle242b2l3igq4dg");
+      expect(metadata.variationGroupId, "bsffhle242b2l3igq4egaa");
+      expect(metadata.variationId, "bsffhle242b2l3igq4f0");
+      expect(metadata.isReference, true);
+      expect(metadata.slug, "flutter");
+      expect(metadata.campaignType, "ab");
+    });
+  });
+
+  test("Flag with default value = null", () {
+    //PathProviderPlatform.instance = FakePathProviderPlatform();
+    var v4 = Flagship.newVisitor("flagVisitor").build();
+    v4.fetchFlags().whenComplete(() {
+      Flag myFlag = v4.getFlag("key_A", null);
+      expect(myFlag.value(), "val_A");
       expect(myFlag.exists(), true);
       FlagMetadata metadata = myFlag.metadata();
       expect(metadata.campaignId, "bsffhle242b2l3igq4dg");
