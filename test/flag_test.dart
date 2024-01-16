@@ -212,6 +212,10 @@ void main() async {
     v2.fetchFlags().whenComplete(() {
       Flag myFlag = v2.getFlag("key_A", 3.14);
       expect(myFlag.value(), 3.14);
+
+      Flag myFlagBis = v2.getFlag("key_A", false);
+      expect(myFlagBis.value(), false);
+
       expect(myFlag.exists(), true);
       FlagMetadata metadata = myFlag.metadata();
       expect(metadata.campaignId, "");
