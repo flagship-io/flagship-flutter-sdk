@@ -107,7 +107,7 @@ class Flag<T> implements IFlag {
     if (this._defaultValue.runtimeType == Null) {
       return true;
     }
-    return (value.runtimeType == this._defaultValue.runtimeType);
+    return (value is T);
   }
 
   @override
