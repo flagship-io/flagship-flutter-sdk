@@ -21,25 +21,30 @@ class Flag<T> implements IFlag {
     dynamic retValue = _defaultValue;
     Modification? modif = this._visitorDelegate.getFlagModification(this._key);
     if (modif != null) {
-      {
-        if (modif.value == null) {
-          // Activate if necessary
-          if (visitorExposed) {
-            this.visitorExposed();
+      try {
+        {
+          if (modif.value == null) {
+            // Activate if necessary
+            if (visitorExposed) {
+              this.visitorExposed();
+            }
+          } else if (_isSameTypeOrDefaultValueNull(modif.value)) {
+            /// Get the flag value
+            retValue = modif.value;
+            // Activate if necessary
+            if (visitorExposed) {
+              this.visitorExposed();
+            }
+          } else {
+            DataUsageTracking.sharedInstance().proceesTroubleShootingFlag(
+                CriticalPoints.GET_FLAG_VALUE_TYPE_WARNING.name,
+                this,
+                this._visitorDelegate.visitor);
           }
-        } else if (_isSameTypeOrDefaultValueNull(modif.value)) {
-          /// Get the flag value
-          retValue = modif.value;
-          // Activate if necessary
-          if (visitorExposed) {
-            this.visitorExposed();
-          }
-        } else {
-          DataUsageTracking.sharedInstance().proceesTroubleShootingFlag(
-              CriticalPoints.GET_FLAG_VALUE_TYPE_WARNING.name,
-              this,
-              this._visitorDelegate.visitor);
         }
+      } catch (exp) {
+        Flagship.logger(Level.INFO,
+            "an exception raised  $exp , will return a default value ");
       }
     } else {
       DataUsageTracking.sharedInstance().proceesTroubleShootingFlag(

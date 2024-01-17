@@ -1,2 +1,2 @@
 /// This file is automatically updated
-const FlagshipVersion = "3.1.0";
+const FlagshipVersion = "3.1.1";
