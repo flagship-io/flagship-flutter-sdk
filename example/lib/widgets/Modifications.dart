@@ -57,10 +57,7 @@ class _ModificationsState extends State<Modifications> {
 
     myFlag = currentVisitor?.getFlag(keyFlagController.text, defaultValue);
 
-    var ret = myFlag?.value(visitorExposed: false);
-
-    //  var ret =
-    //   currentVisitor?.getModification(keyFlagController.text, defaultValue);
+    var ret = myFlag?.value();
 
     setState(() {
       valueForFlag = ret.toString();
