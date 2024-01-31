@@ -65,12 +65,14 @@ void main() async {
 
   await Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
   PathProviderPlatform.instance = FakePathProviderPlatform();
-  var v1 = Flagship.newVisitor("flagVisitor").build();
+  var v1 =
+      Flagship.newVisitor(visitorId: "flagVisitor", hasConsented: true).build();
   v1.config.decisionManager = fakeApi;
 
   test("Test Flag class", (() async {
     // PathProviderPlatform.instance = FakePathProviderPlatform();
-    var v1 = Flagship.newVisitor("flagVisitor").build();
+    var v1 = Flagship.newVisitor(visitorId: "flagVisitor", hasConsented: true)
+        .build();
 
     v1.trackingManager = fakeTracking;
     v1.fetchFlags().whenComplete(() async {
@@ -208,7 +210,8 @@ void main() async {
 
   test("Flag with bad type", () {
     //  PathProviderPlatform.instance = FakePathProviderPlatform();
-    var v2 = Flagship.newVisitor("flagVisitor").build();
+    var v2 = Flagship.newVisitor(visitorId: "flagVisitor", hasConsented: true)
+        .build();
     v2.fetchFlags().whenComplete(() {
       Flag myFlag = v2.getFlag("key_A", 3.14);
       expect(myFlag.value(), 3.14);
@@ -228,7 +231,8 @@ void main() async {
   });
 
   test("Flag with null as value", () {
-    var v3 = Flagship.newVisitor("flagVisitor").build();
+    var v3 = Flagship.newVisitor(visitorId: "flagVisitor", hasConsented: true)
+        .build();
     v3.fetchFlags().whenComplete(() {
       // String as default value
       Flag myFlag = v3.getFlag("keyNull", "nullValue");
@@ -257,7 +261,8 @@ void main() async {
 
   test("Flag value & default value = null", () {
     //PathProviderPlatform.instance = FakePathProviderPlatform();
-    var v4 = Flagship.newVisitor("flagVisitor").build();
+    var v4 = Flagship.newVisitor(visitorId: "flagVisitor", hasConsented: true)
+        .build();
     v4.fetchFlags().whenComplete(() {
       Flag myFlag = v4.getFlag("keyNull", null);
       expect(myFlag.value(), null);
@@ -274,7 +279,8 @@ void main() async {
 
   test("Flag with default value = null", () {
     //PathProviderPlatform.instance = FakePathProviderPlatform();
-    var v4 = Flagship.newVisitor("flagVisitor").build();
+    var v4 = Flagship.newVisitor(visitorId: "flagVisitor", hasConsented: true)
+        .build();
     v4.fetchFlags().whenComplete(() {
       Flag myFlag = v4.getFlag("key_A", null);
       expect(myFlag.value(), "val_A");
@@ -296,7 +302,8 @@ void main() async {
         .thenAnswer((_) async {
       return http.Response("fakeResponse", 400);
     });
-    var v5 = Flagship.newVisitor("flagVisitor").build();
+    var v5 = Flagship.newVisitor(visitorId: "flagVisitor", hasConsented: true)
+        .build();
     v5.fetchFlags().whenComplete(() async {
       Flag myFlag = v5.getFlag("key_A", "12");
       myFlag.visitorExposed();

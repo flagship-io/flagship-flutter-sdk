@@ -60,7 +60,7 @@ Future<void> main() async {
   });
   test("Test activate ", () async {
     await Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey");
-    Visitor vMock = VisitorBuilder("visitorId").build();
+    Visitor vMock = VisitorBuilder("visitorId", true).build();
     vMock.trackingManager = fakeTrackingMgr;
     vMock.config.decisionManager = fakeApi;
 

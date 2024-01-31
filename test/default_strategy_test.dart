@@ -51,7 +51,8 @@ void main() {
     Flagship.setLoggerLevel(Level.WARNING);
     PathProviderPlatform.instance = FakePathProviderPlatform();
 
-    var v1 = Flagship.newVisitor("visitorId").withContext({}).build();
+    var v1 = Flagship.newVisitor(visitorId: "visitorId", hasConsented: true)
+        .withContext({}).build();
 
     v1.config.decisionManager = fakeApi;
 
@@ -136,7 +137,8 @@ void main() {
 
     await Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
     PathProviderPlatform.instance = FakePathProviderPlatform();
-    var v1 = Flagship.newVisitor("visitorId").build();
+    var v1 =
+        Flagship.newVisitor(visitorId: "visitorId", hasConsented: true).build();
     Flagship.setCurrentVisitor(v1);
     expect(v1.getConsent(), true);
 
@@ -178,7 +180,8 @@ void main() {
 
     Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
     PathProviderPlatform.instance = FakePathProviderPlatform();
-    var v1 = Flagship.newVisitor("visitorId").build();
+    var v1 =
+        Flagship.newVisitor(visitorId: "visitorId", hasConsented: true).build();
     Flagship.setCurrentVisitor(v1);
     expect(v1.getConsent(), true);
   });

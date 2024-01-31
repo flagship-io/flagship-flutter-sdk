@@ -103,11 +103,11 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
     UserData fsUser = Provider.of<UserData>(context, listen: false);
     visitorIdController.text = fsUser.visitorId;
     var newVisitor;
-    newVisitor = Flagship.newVisitor(fsUser.visitorId)
-        .withContext(fsUser.context)
-        .hasConsented(fsUser.hasConsented)
-        .isAuthenticated(fsUser.isAuthenticated)
-        .build();
+    newVisitor =
+        Flagship.newVisitor(visitorId: "", hasConsented: fsUser.hasConsented)
+            .withContext(fsUser.context)
+            .isAuthenticated(fsUser.isAuthenticated)
+            .build();
     // Set current visitor singleton instance for future use
     Flagship.setCurrentVisitor(newVisitor);
   }
@@ -380,7 +380,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
 
   _customTest() async {
     for (int i = 0; i < 50; i++) {
-      Visitor vA = Flagship.newVisitor("visitor_A$i")
+      Visitor vA = Flagship.newVisitor(visitorId: "user", hasConsented: true)
           .withContext({"condition1": "test"})
           .isAuthenticated(false)
           .build();

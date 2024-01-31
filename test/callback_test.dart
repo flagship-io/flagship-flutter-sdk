@@ -59,7 +59,8 @@ void main() {
     Flagship.sharedInstance().onUpdateState(Status.NOT_INITIALIZED);
     Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
 
-    var v1 = Flagship.newVisitor("visitorId").withContext({}).build();
+    var v1 = Flagship.newVisitor(visitorId: "visitorId", hasConsented: true)
+        .withContext({}).build();
     Flagship.setCurrentVisitor(v1);
 
     // ignore: deprecated_member_use_from_same_package

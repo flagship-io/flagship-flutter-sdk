@@ -82,18 +82,23 @@ void main() {
   });
 
   test("TS Fetching", () {
-    Visitor testVisitor = Flagship.newVisitor("TSVisitor").build();
+    Visitor testVisitor =
+        Flagship.newVisitor(visitorId: "TSVisitor", hasConsented: true).build();
     dataUsageTest.processTSFetching(testVisitor);
   });
 
   test("Data Usage Fetching", () {
-    Visitor testVisitor = Flagship.newVisitor("dataUsageVisitor").build();
+    Visitor testVisitor =
+        Flagship.newVisitor(visitorId: "dataUsageVisitor", hasConsented: true)
+            .build();
     dataUsageTest.dataUsageTrackingReportAllowed = true;
     dataUsageTest.processDataUsageTracking(testVisitor);
   });
 
   test("Data Usage Fetching on Buckeitng", () {
-    Visitor testVisitor = Flagship.newVisitor("dataUsageVisitor").build();
+    Visitor testVisitor =
+        Flagship.newVisitor(visitorId: "dataUsageVisitor", hasConsented: true)
+            .build();
 
     dataUsageTest.configureDataUsage(null, "visitorId", true,
         ConfigBuilder().withMode(Mode.BUCKETING).build());
