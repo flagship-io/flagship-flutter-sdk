@@ -19,7 +19,7 @@ part 'trouble_shooting.g.dart';
 String dataUsageLabel = "SDK_CONFIG";
 
 // Allocation threshold for data usage tracking
-int dataUsageAllocationThreshold = 10;
+int dataUsageAllocationThreshold = 1;
 
 class DataUsageTracking {
   factory DataUsageTracking.sharedInstance() {
@@ -146,7 +146,7 @@ class DataUsageTracking {
         DateTime.now().year.toString() +
         DateTime.now().month.toString() +
         DateTime.now().day.toString();
-    int hashAlloc = (MurmurHash.v3(combinedId, 0) % 100);
+    int hashAlloc = (MurmurHash.v3(combinedId, 0) % 1000);
 
     Flagship.logger(Level.INFO,
         "The hash allocation for Datausage tracking  bucket is $hashAlloc ");
