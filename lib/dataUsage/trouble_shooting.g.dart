@@ -79,14 +79,17 @@ Map<String, String> _createSdkConfig(FlagshipConfig? sdkConfig) {
     "sdk.config.trackingManager.strategy":
         sdkConfig?.trackingManagerConfig.batchStrategy.name ?? "",
     "sdk.config.trackingManager.batchIntervals":
-        sdkConfig?.trackingManagerConfig.batchIntervals.toString() ?? "",
+        ((sdkConfig?.trackingManagerConfig.batchIntervals ?? 0) * 1000)
+            .toString(),
     "sdk.config.timeout": sdkConfig?.timeout.toString() ?? "",
-    "sdk.config.pollingTime": sdkConfig?.pollingTime.toString() ?? "",
+    "sdk.config.pollingTime": ((sdkConfig?.pollingTime ?? 0) * 1000).toString(),
     "sdk.config.mode": sdkConfig?.decisionMode.name ?? "",
 
     "sdk.config.decisionApiUrl": Endpoints.DECISION_API,
     "sdk.status": Flagship.getStatus().name,
     "sdk.lastInitializationTimestamp":
-        Flagship.sharedInstance().lastInitializationTimestamp
+        Flagship.sharedInstance().lastInitializationTimestamp,
+    "sdk.config.logLevel":
+        Flagship.sharedInstance().getConfiguration()?.getLevel().name ?? ""
   };
 }

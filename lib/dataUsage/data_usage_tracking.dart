@@ -333,7 +333,7 @@ enum CriticalPoints {
   // Trigger when the Flag.getValue method is called and no flag is found
   GET_FLAG_VALUE_FLAG_NOT_FOUND,
   // Trigger when the Flag.visitorExposed method is called and no flag is found
-  VISITOR_EXPOSED_FLAG_NO_FOUND,
+  VISITOR_EXPOSED_FLAG_NOT_FOUND,
   // Trigger when the Flag.visitorExposed method is called and the flag value has a different type with default value
   GET_FLAG_VALUE_TYPE_WARNING,
   // Trigger when the SDK catches any other error but those listed here.
