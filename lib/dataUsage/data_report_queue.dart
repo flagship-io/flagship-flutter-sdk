@@ -93,6 +93,8 @@ class TroubleshootingHit extends BaseHit {
       "stack.version": FlagshipVersion,
       "flagshipInstanceId":
           Flagship.sharedInstance().flagshipInstanceId.toString(),
+      "logLevel":
+          Flagship.sharedInstance().getConfiguration()?.getLevel().name ?? "",
     };
 
     _communCustomFields.addEntries(this.speceficCustomFields.entries);

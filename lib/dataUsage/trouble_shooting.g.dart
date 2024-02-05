@@ -87,7 +87,6 @@ Map<String, String> _createSdkConfig(FlagshipConfig? sdkConfig) {
     "sdk.config.decisionApiUrl": Endpoints.DECISION_API,
     "sdk.status": Flagship.getStatus().name,
     "sdk.lastInitializationTimestamp":
-        Flagship.sharedInstance().lastInitializationTimestamp,
-    "logLevel": sdkConfig?.getLevel().name ?? "",
+        Flagship.sharedInstance().lastInitializationTimestamp
   };
 }
