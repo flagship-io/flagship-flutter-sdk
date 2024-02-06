@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 
 class FSData extends ChangeNotifier {
   // Apikey
-  String _apiKey = "DxAcxlnRB9yFBZYtLDue1q01dcXZCw6aM49CQB23"; //
+  String _apiKey = ""; //
   // EnvId
-  String _envId = "bkk9glocmjcg0vtmdlng"; //
+  String _envId = ""; //
   // Mode
   Mode _mode = Mode.DECISION_API;
   // Timeout
@@ -63,7 +63,7 @@ class FSData extends ChangeNotifier {
 }
 
 class UserData extends ChangeNotifier {
-  String _visitorId = "alias0502";
+  String _visitorId = "userFevBis";
   Map<String, Object> context = {
     "testing_tracking_manager": true,
     "condition1": "test"

@@ -17,7 +17,7 @@ class Modifications extends StatefulWidget {
 class _ModificationsState extends State<Modifications> {
   var flagType = "string";
   var defaultValueBool = false;
-  final keyFlagController = TextEditingController(text: "btnTitle");
+  final keyFlagController = TextEditingController(text: "btnColor");
 
   final defaultValueFlagController = TextEditingController(text: "");
 
@@ -55,7 +55,7 @@ class _ModificationsState extends State<Modifications> {
       defaultValue = jsonDecode(defaultValueFlagController.text);
     }
 
-    myFlag = currentVisitor?.getFlag(keyFlagController.text, 12);
+    myFlag = currentVisitor?.getFlag(keyFlagController.text, defaultValue);
 
     var ret = myFlag?.value();
 

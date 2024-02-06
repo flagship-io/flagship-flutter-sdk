@@ -11,7 +11,7 @@ String troubleShootingVersion = "1";
 String stackType = "SDK";
 String stackName = "Flutter";
 
-// This enum describe the level gievn to hits Troubleshooting or DeveloperUsage
+// This enum describe the level given to hits of Troubleshooting or DeveloperUsage
 enum HitUsageLevel { INFO, WARNING, ERROR }
 
 class DataReportQueue {
