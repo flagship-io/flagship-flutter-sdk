@@ -1,3 +1,7 @@
+# 3.1.2 - 06/02/2024
+
+- Bug fixes on Troubleshooting and Developer Usage hits
+
 # 3.1.1 - 16/01/2024
 
 - Return the correct flag value from value() method when null is given as default value or when the value for flag is null
