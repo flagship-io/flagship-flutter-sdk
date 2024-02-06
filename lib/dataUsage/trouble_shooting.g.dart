@@ -76,18 +76,20 @@ Map<String, String> _createSdkConfig(FlagshipConfig? sdkConfig) {
         (!(sdkConfig?.visitorCacheImp is DefaultCacheVisitorImp)).toString(),
     "sdk.config.usingCustomHitCache":
         (!(sdkConfig?.hitCacheImp is DefaultCacheHitImp)).toString(),
-    "sdk.config.trackingManager.config.strategy":
+    "sdk.config.trackingManager.strategy":
         sdkConfig?.trackingManagerConfig.batchStrategy.name ?? "",
-    "sdk.config.trackingManager.config.batchIntervals":
-        sdkConfig?.trackingManagerConfig.batchIntervals.toString() ?? "",
+    "sdk.config.trackingManager.batchIntervals":
+        ((sdkConfig?.trackingManagerConfig.batchIntervals ?? 0) * 1000)
+            .toString(),
     "sdk.config.timeout": sdkConfig?.timeout.toString() ?? "",
-    "sdk.config.pollingTime": sdkConfig?.pollingTime.toString() ?? "",
+    "sdk.config.pollingTime": ((sdkConfig?.pollingTime ?? 0) * 1000).toString(),
     "sdk.config.mode": sdkConfig?.decisionMode.name ?? "",
 
     "sdk.config.decisionApiUrl": Endpoints.DECISION_API,
     "sdk.status": Flagship.getStatus().name,
     "sdk.lastInitializationTimestamp":
         Flagship.sharedInstance().lastInitializationTimestamp,
-    "logLevel": sdkConfig?.getLevel().name ?? "",
+    "sdk.config.logLevel":
+        Flagship.sharedInstance().getConfiguration()?.getLevel().name ?? ""
   };
 }

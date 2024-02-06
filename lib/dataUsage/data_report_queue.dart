@@ -11,6 +11,9 @@ String troubleShootingVersion = "1";
 String stackType = "SDK";
 String stackName = "Flutter";
 
+// This enum describe the level given to hits of Troubleshooting or DeveloperUsage
+enum HitUsageLevel { INFO, WARNING, ERROR }
+
 class DataReportQueue {
   Service _reportService = Service(http.Client());
 
@@ -52,10 +55,19 @@ class TroubleshootingHit extends BaseHit {
   Map<String, String> speceficCustomFields = {};
   // Label for the critical point
   String label = "";
+
+  // Level by default is INFO
+  HitUsageLevel hitLevelUsage = HitUsageLevel.INFO;
+
   TroubleshootingHit(String aVisitorId, this.label, this.speceficCustomFields)
       : super() {
+    // Set the type of hit
     type = HitCategory.TROUBLESHOOTING;
+    // Set the visitorId
     visitorId = aVisitorId;
+    // Update level log according to label
+    _updateLogLevel();
+    // Set the commun infos
     _fillTheCommunFieldsAndCompleteWithCustom();
   }
 
@@ -93,9 +105,21 @@ class TroubleshootingHit extends BaseHit {
       "stack.version": FlagshipVersion,
       "flagshipInstanceId":
           Flagship.sharedInstance().flagshipInstanceId.toString(),
+      "logLevel": hitLevelUsage.name,
     };
 
     _communCustomFields.addEntries(this.speceficCustomFields.entries);
+  }
+
+  // Update level log according to label
+  _updateLogLevel() {
+    if (label.contains("WARNING") || label.contains("FLAG_NOT_FOUND")) {
+      hitLevelUsage = HitUsageLevel.WARNING;
+    } else if (label.contains("ERROR")) {
+      hitLevelUsage = HitUsageLevel.ERROR;
+    } else {
+      hitLevelUsage = HitUsageLevel.INFO;
+    }
   }
 }
 

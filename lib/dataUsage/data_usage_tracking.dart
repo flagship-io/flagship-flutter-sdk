@@ -19,7 +19,7 @@ part 'trouble_shooting.g.dart';
 String dataUsageLabel = "SDK_CONFIG";
 
 // Allocation threshold for data usage tracking
-int dataUsageAllocationThreshold = 10;
+int dataUsageAllocationThreshold = 1;
 
 class DataUsageTracking {
   factory DataUsageTracking.sharedInstance() {
@@ -146,7 +146,7 @@ class DataUsageTracking {
         DateTime.now().year.toString() +
         DateTime.now().month.toString() +
         DateTime.now().day.toString();
-    int hashAlloc = (MurmurHash.v3(combinedId, 0) % 100);
+    int hashAlloc = (MurmurHash.v3(combinedId, 0) % 1000);
 
     Flagship.logger(Level.INFO,
         "The hash allocation for Datausage tracking  bucket is $hashAlloc ");
@@ -333,7 +333,7 @@ enum CriticalPoints {
   // Trigger when the Flag.getValue method is called and no flag is found
   GET_FLAG_VALUE_FLAG_NOT_FOUND,
   // Trigger when the Flag.visitorExposed method is called and no flag is found
-  VISITOR_EXPOSED_FLAG_NO_FOUND,
+  VISITOR_EXPOSED_FLAG_NOT_FOUND,
   // Trigger when the Flag.visitorExposed method is called and the flag value has a different type with default value
   GET_FLAG_VALUE_TYPE_WARNING,
   // Trigger when the SDK catches any other error but those listed here.
