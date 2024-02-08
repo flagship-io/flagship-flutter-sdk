@@ -39,7 +39,7 @@ class Flagship with FlagshipDelegate {
   String flagshipInstanceId = FlagshipTools.generateUuidv4();
 
   // LastInitialization Timestamp
-  String lastInitializationTimestamp = DateTime.now().toString();
+  String lastInitializationTimestamp = DateTime.now().toUtc().toString();
 
   factory Flagship.sharedInstance() {
     return _singleton;
