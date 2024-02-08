@@ -97,7 +97,7 @@ class TroubleshootingHit extends BaseHit {
     _communCustomFields = {
       "version": troubleShootingVersion,
       "envId": Flagship.sharedInstance().envId ?? "",
-      "timestamp": DateTime.now().millisecondsSinceEpoch.toString(),
+      "timestamp": DateTime.now().toUtc().toString(),
       "timeZone": DateTime.now().timeZoneName,
       "label": label,
       "stack.type": stackType,

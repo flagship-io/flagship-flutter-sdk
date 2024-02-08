@@ -19,7 +19,7 @@ part 'trouble_shooting.g.dart';
 String dataUsageLabel = "SDK_CONFIG";
 
 // Allocation threshold for data usage tracking
-int dataUsageAllocationThreshold = 1;
+int dataUsageAllocationThreshold = 1000;
 
 class DataUsageTracking {
   factory DataUsageTracking.sharedInstance() {

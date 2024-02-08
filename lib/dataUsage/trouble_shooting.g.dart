@@ -84,6 +84,8 @@ Map<String, String> _createSdkConfig(FlagshipConfig? sdkConfig) {
     "sdk.config.timeout": sdkConfig?.timeout.toString() ?? "",
     "sdk.config.pollingTime": ((sdkConfig?.pollingTime ?? 0) * 1000).toString(),
     "sdk.config.mode": sdkConfig?.decisionMode.name ?? "",
+    "sdk.config.trackingManager.poolMaxSize":
+        sdkConfig?.trackingManagerConfig.poolMaxSize.toString() ?? "",
 
     "sdk.config.decisionApiUrl": Endpoints.DECISION_API,
     "sdk.status": Flagship.getStatus().name,
