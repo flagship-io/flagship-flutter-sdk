@@ -83,7 +83,7 @@ void main() {
 
   test("TS Fetching", () {
     Visitor testVisitor = Flagship.newVisitor("TSVisitor").build();
-    dataUsageTest.processTSFetching(testVisitor);
+    dataUsageTest.processTSFetching(testVisitor, DateTime.now());
   });
 
   test("Data Usage Fetching", () {

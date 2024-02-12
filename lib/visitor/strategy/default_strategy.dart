@@ -150,6 +150,7 @@ class DefaultStrategy implements IVisitor {
   // Synchronize modification for the visitor
   @override
   Future<Error?> synchronizeModifications() async {
+    DateTime startDateFetching = DateTime.now();
     Flagship.logger(Level.ALL, SYNCHRONIZE_MODIFICATIONS);
     Status state = Flagship.getStatus();
     DataUsageTracking.sharedInstance().processDataUsageTracking(visitor);
@@ -189,7 +190,8 @@ class DefaultStrategy implements IVisitor {
       visitor.dataUsageTracking
           .updateTroubleshooting(camp.accountSettings?.troubleshooting);
       // Notify the data report
-      DataUsageTracking.sharedInstance().processTSFetching(this.visitor);
+      DataUsageTracking.sharedInstance()
+          .processTSFetching(this.visitor, startDateFetching);
       return null;
     } catch (error) {
       // Report the error

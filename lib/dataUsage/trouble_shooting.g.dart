@@ -6,18 +6,25 @@ Map<String, String> _createTRFlagsInfo(
 
   modifications.forEach((flagKey, flagModification) {
     ret.addEntries({
-      "visitor.flags.$flagKey.key": flagKey,
-      "visitor.flags.$flagKey.value": flagModification.value.toString(),
-      "visitor.flags.$flagKey.metadata.campaignId": flagModification.campaignId,
-      "visitor.flags.$flagKey.metadata.variationGroupId":
+      "visitor.flags.[$flagKey].key": flagKey,
+      "visitor.flags.[$flagKey].value": flagModification.value.toString(),
+      "visitor.flags.[$flagKey].metadata.campaignId":
+          flagModification.campaignId,
+      "visitor.flags.[$flagKey].metadata.variationGroupId":
           flagModification.variationGroupId,
-      "visitor.flags.$flagKey.metadata.variationId":
+      "visitor.flags.[$flagKey].metadata.variationGroupName":
+          flagModification.variationGroupName,
+      "visitor.flags.[$flagKey].metadata.variationId":
           flagModification.variationId,
-      "visitor.flags.$flagKey.metadata.isReference":
+      "visitor.flags.[$flagKey].metadata.variationName":
+          flagModification.variationName,
+      "visitor.flags.[$flagKey].metadata.isReference":
           flagModification.isReference.toString(),
-      "visitor.flags.$flagKey.metadata.campaignType":
+      "visitor.flags.[$flagKey].metadata.campaignType":
           flagModification.campaignType,
-      "visitor.flags.$flagKey.metadata.slug": flagModification.slug ?? ""
+      "visitor.flags.[$flagKey].metadata.campaignName":
+          flagModification.campaignName,
+      "visitor.flags.[$flagKey].metadata.slug": flagModification.slug ?? ""
     }.entries);
   });
 
@@ -29,7 +36,7 @@ Map<String, String> _createTRContext(Visitor v) {
 
   Map<String, String> ret = {};
   ctx.forEach((ctxKey, ctxValue) {
-    ret.addEntries({"visitor.context.$ctxKey": ctxValue.toString()}.entries);
+    ret.addEntries({"visitor.context.[$ctxKey]": ctxValue.toString()}.entries);
   });
   return ret;
 }

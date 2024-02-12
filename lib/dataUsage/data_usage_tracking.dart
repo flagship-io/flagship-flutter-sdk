@@ -176,11 +176,16 @@ class DataUsageTracking {
   }
 
 // Create Trouble shooting information for Fetch flags
-  void processTSFetching(Visitor visitor) {
+  void processTSFetching(Visitor visitor, DateTime startFetchingDate) {
     Map<String, String> criticalJson = {};
     criticalJson = _createTSVisitorFormat(visitor);
     // Add vid aid,uuid
     criticalJson.addEntries(_createTrioIds(visitor).entries);
+    // Add time response
+    criticalJson.addEntries({
+      "http.response.time":
+          DateTime.now().difference(startFetchingDate).inMilliseconds.toString()
+    }.entries);
     // Send TS report
     _sendTroubleShootingReport(TroubleshootingHit(
         visitorId, CriticalPoints.VISITOR_FETCH_CAMPAIGNS.name, criticalJson));
@@ -303,6 +308,13 @@ class DataUsageTracking {
     // Add the context entries
     sdkSettings.addEntries(_createTRContext(visitor).entries);
     // Return the settings
+
+    // TODO ADD Assignement
+    visitor.assignmentsHistory.forEach((key, value) {
+      sdkSettings
+          .addEntries({"visitor.assignments.[$key]": value.toString()}.entries);
+    });
+
     return sdkSettings;
   }
 }
