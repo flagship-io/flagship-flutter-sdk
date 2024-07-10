@@ -344,11 +344,6 @@ class VisitorBuilder {
     return this;
   }
 
-  // VisitorBuilder hasConsented(bool hasConsented) {
-  //   _hasConsented = hasConsented;
-  //   return this;
-  // }
-
   isAuthenticated(bool authenticated) {
     _isAuthenticated = authenticated;
     return this;
