@@ -251,16 +251,21 @@ void main() {
     });
 
     test("Shred visitor", () {
-      Flagship.newVisitor("shared").build();
+      Flagship.newVisitor(visitorId: "shared", hasConsented: true).build();
       expect(Flagship.getCurrentVisitor()?.visitorId, "shared");
 
-      Flagship.newVisitor("sharedBis", instanceType: Instance.SINGLE_INSTANCE)
+      Flagship.newVisitor(
+              visitorId: "sharedBis",
+              hasConsented: true,
+              instanceType: Instance.SINGLE_INSTANCE)
           .build();
       expect(Flagship.getCurrentVisitor()?.visitorId, "sharedBis");
 
-      Visitor notShared =
-          Flagship.newVisitor("notShared", instanceType: Instance.NEW_INSTANCE)
-              .build();
+      Visitor notShared = Flagship.newVisitor(
+              visitorId: "notShared",
+              hasConsented: true,
+              instanceType: Instance.NEW_INSTANCE)
+          .build();
       expect(Flagship.getCurrentVisitor()?.visitorId, "sharedBis");
       expect(notShared.visitorId, "notShared");
     });

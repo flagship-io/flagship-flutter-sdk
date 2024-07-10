@@ -75,9 +75,11 @@ class Flagship with FlagshipDelegate {
   }
 
   /// Create new visitor
-  static VisitorBuilder newVisitor(String visitorId,
-      {Instance instanceType = Instance.SINGLE_INSTANCE}) {
-    return VisitorBuilder(visitorId, instanceType: instanceType);
+  static VisitorBuilder newVisitor(
+      {required String visitorId,
+      required bool hasConsented,
+      Instance instanceType = Instance.SINGLE_INSTANCE}) {
+    return VisitorBuilder(visitorId, hasConsented, instanceType: instanceType);
   }
 
   // Set the current visitor singleton

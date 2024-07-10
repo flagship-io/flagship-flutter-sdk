@@ -46,7 +46,8 @@ void main() {
     //config.decisionManager = fakeApi;
     await Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
 
-    var v1 = Flagship.newVisitor("visitorId").hasConsented(false).build();
+    var v1 = Flagship.newVisitor(visitorId: "visitorId", hasConsented: false)
+        .build();
     v1.config.decisionManager = fakeApi;
     expect(v1.getConsent(), false);
     // ignore: deprecated_member_use_from_same_package

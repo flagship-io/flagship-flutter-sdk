@@ -335,7 +335,7 @@ class VisitorBuilder {
 // Xpc by default false
   bool _isAuthenticated = false;
 
-  VisitorBuilder(this.visitorId,
+  VisitorBuilder(this.visitorId, this._hasConsented,
       {this.instanceType = Instance.SINGLE_INSTANCE});
 
 // Context
@@ -344,10 +344,10 @@ class VisitorBuilder {
     return this;
   }
 
-  VisitorBuilder hasConsented(bool hasConsented) {
-    _hasConsented = hasConsented;
-    return this;
-  }
+  // VisitorBuilder hasConsented(bool hasConsented) {
+  //   _hasConsented = hasConsented;
+  //   return this;
+  // }
 
   isAuthenticated(bool authenticated) {
     _isAuthenticated = authenticated;

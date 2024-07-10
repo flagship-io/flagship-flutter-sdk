@@ -70,7 +70,9 @@ Future<void> main() async {
             .build());
 // create new visitor
     PathProviderPlatform.instance = FakePathProviderPlatform();
-    var user = Flagship.newVisitor("userWithHidden").build();
+    var user =
+        Flagship.newVisitor(visitorId: "userWithHidden", hasConsented: true)
+            .build();
     // Set the mocks
     user.trackingManager = fakeTrackingMgr;
     user.config.decisionManager = fakeApi;
@@ -133,7 +135,9 @@ Future<void> main() async {
 
     PathProviderPlatform.instance = FakePathProviderPlatform();
     // create new visitor
-    var user = Flagship.newVisitor("userWithHidden").build();
+    var user =
+        Flagship.newVisitor(visitorId: "userWithHidden", hasConsented: true)
+            .build();
     // Set the mocks
     user.trackingManager = fakeTrackingMgr;
     user.config.decisionManager = fakeApi;

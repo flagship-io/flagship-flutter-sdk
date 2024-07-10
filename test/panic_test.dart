@@ -46,7 +46,8 @@ void main() {
     Flagship.sharedInstance().onUpdateState(Status.NOT_INITIALIZED);
     await Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
 
-    var v1 = Flagship.newVisitor("panicUser").build();
+    var v1 =
+        Flagship.newVisitor(visitorId: "panicUser", hasConsented: true).build();
     v1.config.decisionManager = fakePanicApi;
 
     Flagship.setCurrentVisitor(v1);
