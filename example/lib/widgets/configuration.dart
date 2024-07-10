@@ -7,6 +7,7 @@ import 'package:flagship/hits/event.dart';
 import 'package:flagship/hits/item.dart';
 import 'package:flagship/hits/screen.dart';
 import 'package:flagship/hits/transaction.dart';
+import 'package:flagship/status.dart';
 import 'package:flagship/tracking/tracking_manager_config.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
@@ -53,7 +54,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
       //timeoutController.text = widget.defaultTimeout.toString();
       pollingTimeController.text = defaultPollingTime.toString();
       visitorIdController.text = _createRandomUser();
-      Flagship.sharedInstance().onUpdateState(Status.NOT_INITIALIZED);
+      Flagship.sharedInstance().onUpdateState(FSSdkStatus.SDK_NOT_INITIALIZED);
     });
   }
 
@@ -65,7 +66,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
     Directory tempDir = await getTemporaryDirectory();
     print(tempDir.path);
 
-    Flagship.sharedInstance().onUpdateState(Status.NOT_INITIALIZED);
+    Flagship.sharedInstance().onUpdateState(FSSdkStatus.SDK_NOT_INITIALIZED);
     FSData fsData = Provider.of<FSData>(context, listen: false);
 
     /// we did this to allow start(S)
@@ -78,10 +79,10 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
         .withStatusListener((newStatus) {
           print('--------- Callback with $newStatus ---------');
           //var newVisitor;
-          if (newStatus == Status.READY) {
+          if (newStatus == FSSdkStatus.SDK_INITIALIZED) {
             setState(() {
-              widget.isSdkReady = ((newStatus == Status.PANIC_ON) ||
-                      (newStatus == Status.READY))
+              widget.isSdkReady = ((newStatus == FSSdkStatus.SDK_PANIC) ||
+                      (newStatus == FSSdkStatus.SDK_INITIALIZED))
                   ? true
                   : false;
             });
@@ -117,10 +118,10 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
     var titleMsg = '';
     Flagship.getCurrentVisitor()?.fetchFlags().whenComplete(() {
       switch (Flagship.getStatus()) {
-        case Status.PANIC_ON:
+        case FSSdkStatus.SDK_PANIC:
           titleMsg = "SDK is on panic mode, will use default value";
           break;
-        case Status.READY:
+        case FSSdkStatus.SDK_INITIALIZED:
           titleMsg = "SDK is ready to use";
           break;
         default:

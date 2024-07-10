@@ -7,6 +7,7 @@ import 'package:flagship/model/exposed_flag.dart';
 import 'package:flagship/model/flag.dart';
 import 'package:flagship/model/modification.dart';
 import 'package:flagship/model/visitor_cache/visitor_cache.dart';
+import 'package:flagship/status.dart';
 import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flagship/model/visitor_exposed.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
@@ -151,7 +152,7 @@ class DefaultStrategy implements IVisitor {
   @override
   Future<Error?> synchronizeModifications() async {
     Flagship.logger(Level.ALL, SYNCHRONIZE_MODIFICATIONS);
-    Status state = Flagship.getStatus();
+    FSSdkStatus state = Flagship.getStatus();
     DataUsageTracking.sharedInstance().processDataUsageTracking(visitor);
     try {
       var camp = await visitor.decisionManager.getCampaigns(
@@ -165,11 +166,11 @@ class DefaultStrategy implements IVisitor {
       // Update panic value
       visitor.decisionManager.updatePanicMode(camp.panic);
       if (camp.panic) {
-        state = Status.PANIC_ON;
+        state = FSSdkStatus.SDK_PANIC;
         // Stop batching loop when the panic mode is ON
         visitor.trackingManager?.stopBatchingLoop();
       } else {
-        state = Status.READY;
+        state = FSSdkStatus.SDK_INITIALIZED;
         var modif = visitor.decisionManager.getModifications(camp.campaigns);
         visitor.modifications.addAll(modif);
         // Start Batching loop

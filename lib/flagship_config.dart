@@ -3,6 +3,7 @@ import 'package:flagship/cache/interface_cache.dart';
 import 'package:flagship/decision/api_manager.dart';
 import 'package:flagship/decision/bucketing_manager.dart';
 import 'package:flagship/decision/decision_manager.dart';
+import 'package:flagship/status.dart';
 import 'package:flagship/tracking/tracking_manager_config.dart';
 import 'package:flagship/model/exposed_flag.dart';
 import 'package:flagship/model/visitor_exposed.dart';
@@ -21,7 +22,7 @@ const TIMEOUT = 2000;
 typedef OnVisitorExposed = void Function(
     VisitorExposed visitorExposed, ExposedFlag fromFlag)?;
 
-typedef StatusListener = void Function(Status newStatus)?;
+typedef StatusListener = void Function(FSSdkStatus newStatus)?;
 
 @protected
 class FlagshipConfig {

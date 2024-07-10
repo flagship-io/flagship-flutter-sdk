@@ -1,6 +1,7 @@
 import 'package:flagship/hits/hit.dart';
 import 'package:flagship/hits/segment.dart';
 import 'package:flagship/model/modification.dart';
+import 'package:flagship/status.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/visitor/Ivisitor.dart';
 import 'package:flagship/visitor/strategy/default_strategy.dart';
@@ -16,17 +17,19 @@ class VisitorDelegate implements IVisitor {
   // Get the strategy
   DefaultStrategy getStrategy() {
     switch (Flagship.getStatus()) {
-      case Status.NOT_INITIALIZED:
+      case FSSdkStatus.SDK_NOT_INITIALIZED:
         return NotReadyStrategy(visitor);
-      case Status.PANIC_ON:
+      case FSSdkStatus.SDK_PANIC:
         return PanicStrategy(visitor);
-      case Status.READY:
+      case FSSdkStatus.SDK_INITIALIZED:
         if (visitor.getConsent() == false) {
           // Return non consented
           return NoConsentStrategy(visitor);
         } else {
           return DefaultStrategy(visitor);
         }
+      case FSSdkStatus.SDK_INITIALIZING: // TODO check this part
+        return NotReadyStrategy(visitor);
     }
   }
 
@@ -63,7 +66,7 @@ class VisitorDelegate implements IVisitor {
   Future<Error?> synchronizeModifications() async {
     return getStrategy().synchronizeModifications().whenComplete(() {
       if (visitor.config.decisionMode == Mode.BUCKETING &&
-          Flagship.getStatus() != Status.PANIC_ON) {
+          Flagship.getStatus() != FSSdkStatus.SDK_PANIC) {
         visitor.sendHit(Segment(persona: visitor.getCurrentContext()));
       }
     });
