@@ -76,7 +76,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
     FlagshipConfig config = ConfigBuilder()
         .withLogLevel(Level.ALL)
         .withMode(fsData.sdkMode)
-        .withStatusListener((newStatus) {
+        .onSdkStatusChanged((newStatus) {
           print('--------- Callback with $newStatus ---------');
           //var newVisitor;
           if (newStatus == FSSdkStatus.SDK_INITIALIZED) {
@@ -115,6 +115,8 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
 
 // Fetch flags
   _fetchFalgs() {
+    var st = Flagship.getStatus();
+    print(" @@@@@@@@@@ Status before fetching is $st @@@@@@@@@@@@@@@@ ");
     var titleMsg = '';
     Flagship.getCurrentVisitor()?.fetchFlags().whenComplete(() {
       switch (Flagship.getStatus()) {

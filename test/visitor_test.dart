@@ -2,6 +2,7 @@ import 'package:flagship/flagship.dart';
 import 'package:flagship/flagshipContext/flagship_context.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/model/modification.dart';
+import 'package:flagship/status.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/visitor.dart';
 import 'package:flutter/widgets.dart';
@@ -21,7 +22,7 @@ void main() {
   var v1 = Visitor(
       ConfigBuilder().build(), "user1", true, {"key1": "val1", "key2": "val2"});
 
-  v1.flagshipDelegate.onUpdateState(Status.READY);
+  v1.flagshipDelegate.onUpdateState(FSSdkStatus.SDK_INITIALIZED);
   group('Visitor Ready ', () {
     test(
         'Visitor instance should match with inputs constructor and default values',

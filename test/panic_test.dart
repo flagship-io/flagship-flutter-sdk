@@ -1,6 +1,7 @@
 import 'package:flagship/decision/api_manager.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/flagship_version.dart';
+import 'package:flagship/status.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -43,7 +44,7 @@ void main() {
 
     FlagshipConfig config = ConfigBuilder().withTimeout(TIMEOUT).build();
 
-    Flagship.sharedInstance().onUpdateState(Status.NOT_INITIALIZED);
+    Flagship.sharedInstance().onUpdateState(FSSdkStatus.SDK_NOT_INITIALIZED);
     await Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
 
     var v1 =
@@ -54,7 +55,7 @@ void main() {
 
     // ignore: deprecated_member_use_from_same_package
     await v1.synchronizeModifications().then((value) {
-      expect(Flagship.getStatus(), Status.PANIC_ON);
+      expect(Flagship.getStatus(), FSSdkStatus.SDK_PANIC);
 
       /// Activate
       // ignore: deprecated_member_use_from_same_package

@@ -1,4 +1,5 @@
 import 'package:flagship/flagship.dart';
+import 'package:flagship/status.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flagship/hits/event.dart';
@@ -15,7 +16,7 @@ void main() {
     var v1 =
         Flagship.newVisitor(visitorId: "visitorId", hasConsented: true).build();
 
-    expect(Flagship.getStatus(), Status.NOT_INITIALIZED);
+    expect(Flagship.getStatus(), FSSdkStatus.SDK_NOT_INITIALIZED);
 
     // v1.synchronizeModifications().then((value) {
 

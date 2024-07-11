@@ -64,9 +64,12 @@ class Flagship with FlagshipDelegate {
         Flagship._configuration = config;
       }
       if (_configuration.decisionMode == Mode.BUCKETING) {
+        _singleton.onUpdateState(FSSdkStatus.SDK_INITIALIZING);
+
         Flagship._configuration.decisionManager.startPolling();
+      } else {
+        _singleton.onUpdateState(FSSdkStatus.SDK_INITIALIZED);
       }
-      _singleton.onUpdateState(FSSdkStatus.SDK_INITIALIZED);
       Flagship.logger(Level.INFO, STARTED);
     } else {
       _singleton.onUpdateState(FSSdkStatus.SDK_NOT_INITIALIZED);
@@ -133,8 +136,8 @@ class Flagship with FlagshipDelegate {
 
     // Trigger the callback
     // Check if the callback if not null before trigger it
-    if (Flagship._configuration.statusListener != null) {
-      Flagship._configuration.statusListener!(newStatus);
+    if (Flagship._configuration.onSdkStatusChanged != null) {
+      Flagship._configuration.onSdkStatusChanged!(newStatus);
     }
   }
 

@@ -22,7 +22,7 @@ const TIMEOUT = 2000;
 typedef OnVisitorExposed = void Function(
     VisitorExposed visitorExposed, ExposedFlag fromFlag)?;
 
-typedef StatusListener = void Function(FSSdkStatus newStatus)?;
+typedef SdkStatusChanged = void Function(FSSdkStatus newStatus)?;
 
 @protected
 class FlagshipConfig {
@@ -35,7 +35,7 @@ class FlagshipConfig {
   // LogManager
   LogManager? logManager;
   // Status listner
-  StatusListener statusListener;
+  SdkStatusChanged onSdkStatusChanged;
   // Callback trigger on flag visitor exposed
   OnVisitorExposed onVisitorExposed;
 
@@ -55,7 +55,7 @@ class FlagshipConfig {
 
   FlagshipConfig(this.decisionMode, this.timeout, this.pollingTime,
       this._logLevel, this.onVisitorExposed, this.trackingManagerConfig,
-      {this.statusListener,
+      {this.onSdkStatusChanged,
       this.visitorCacheImp,
       this.hitCacheImp,
       this.disableDeveloperUsageTracking = false}) {
@@ -96,7 +96,7 @@ class ConfigBuilder {
   int _pollingTime = 60;
 
   // StatusListener
-  StatusListener? _statusListener;
+  SdkStatusChanged? _onSdkStatusChanged;
 
   // Tracking Config
   TrackingManagerConfig? _trackingManagerConfig;
@@ -138,8 +138,8 @@ class ConfigBuilder {
   }
 
   // StatusListener
-  ConfigBuilder withStatusListener(StatusListener listener) {
-    _statusListener = listener;
+  ConfigBuilder onSdkStatusChanged(SdkStatusChanged pSdkStatusChanged) {
+    _onSdkStatusChanged = pSdkStatusChanged;
     return this;
   }
 
@@ -180,7 +180,7 @@ class ConfigBuilder {
   FlagshipConfig build() {
     return FlagshipConfig(_mode, _timeout, _pollingTime, _logLevel,
         _onVisitorExposed, _trackingManagerConfig ?? TrackingManagerConfig(),
-        statusListener: _statusListener,
+        onSdkStatusChanged: _onSdkStatusChanged,
         hitCacheImp: _hitCacheImp,
         visitorCacheImp: _visitorCacheImp,
         disableDeveloperUsageTracking: _disableDeveloperUsageTracking);

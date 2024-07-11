@@ -1,6 +1,7 @@
 import 'package:flagship/decision/api_manager.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/flagship_version.dart';
+import 'package:flagship/status.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -61,7 +62,7 @@ void main() {
     // ignore: deprecated_member_use_from_same_package
 
     await v1.fetchFlags().whenComplete(() {
-      expect(Flagship.getStatus(), Status.READY);
+      expect(Flagship.getStatus(), FSSdkStatus.SDK_INITIALIZED);
 
       /// Activate
       // ignore: deprecated_member_use_from_same_package
@@ -127,7 +128,7 @@ void main() {
     /// count the callback trigger
 
     FlagshipConfig config =
-        ConfigBuilder().withTimeout(TIMEOUT).withStatusListener((newStatus) {
+        ConfigBuilder().withTimeout(TIMEOUT).onSdkStatusChanged((newStatus) {
       print(" ---- statusListner is trigger ---- ");
       expect(Flagship.getStatus() == newStatus, true);
       expect(newStatus, Flagship.getStatus());
@@ -144,7 +145,7 @@ void main() {
 
     // ignore: deprecated_member_use_from_same_package
     await v1.synchronizeModifications().then((value) {
-      expect(Flagship.getStatus(), Status.READY);
+      expect(Flagship.getStatus(), FSSdkStatus.SDK_INITIALIZED);
       // ignore: deprecated_member_use_from_same_package
       //   expect(v1.getModification('aliasTer', 'default'), "testValue");
       // Test the case when the modificattion is empty
@@ -170,7 +171,7 @@ void main() {
     });
 
     FlagshipConfig config =
-        ConfigBuilder().withTimeout(TIMEOUT).withStatusListener((newStatus) {
+        ConfigBuilder().withTimeout(TIMEOUT).onSdkStatusChanged((newStatus) {
       print(" ---- statusListner is trigger ---- ");
       expect(Flagship.getStatus() == newStatus, true);
       expect(newStatus, Flagship.getStatus());

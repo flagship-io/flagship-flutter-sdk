@@ -1,6 +1,7 @@
 import 'package:flagship/decision/api_manager.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/flagship_version.dart';
+import 'package:flagship/status.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -52,7 +53,7 @@ void main() {
     expect(v1.getConsent(), false);
     // ignore: deprecated_member_use_from_same_package
     await v1.synchronizeModifications().then((value) {
-      expect(Flagship.getStatus(), Status.READY);
+      expect(Flagship.getStatus(), FSSdkStatus.SDK_INITIALIZED);
 
       /// Activate
       // ignore: deprecated_member_use_from_same_package
