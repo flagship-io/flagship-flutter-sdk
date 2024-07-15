@@ -66,35 +66,35 @@ void main() {
 
       /// Activate
       // ignore: deprecated_member_use_from_same_package
-      v1.activateModification("aliasTer");
+      // v1.activateModification("aliasTer");
 
-      /// Get Modification
-      // ignore: deprecated_member_use_from_same_package
-      expect(v1.getModification('aliasTer', 'default', activate: true),
-          "testValue");
+      // /// Get Modification
+      // // ignore: deprecated_member_use_from_same_package
+      // expect(v1.getModification('aliasTer', 'default', activate: true),
+      //     "testValue");
 
-      // ignore: deprecated_member_use_from_same_package
-      expect(v1.getModification('aliasDouble', 100.0, activate: true), 12.0);
+      // // ignore: deprecated_member_use_from_same_package
+      // expect(v1.getModification('aliasDouble', 100.0, activate: true), 12.0);
 
-      /// Get infos
-      // ignore: deprecated_member_use_from_same_package
-      var infos = v1.getModificationInfo('alias');
-      expect(infos?.length, 9);
-      expect(infos!['campaignId'], "bsffhle242b2l3igq4dg");
-      expect(infos['variationGroupId'], "bsffhle242b2l3igq4egaa");
-      expect(infos['variationId'], "bsffhle242b2l3igq4f0");
-      expect(infos['isReference'], true);
+      // /// Get infos
+      // // ignore: deprecated_member_use_from_same_package
+      // var infos = v1.getModificationInfo('alias');
+      // expect(infos?.length, 9);
+      // expect(infos!['campaignId'], "bsffhle242b2l3igq4dg");
+      // expect(infos['variationGroupId'], "bsffhle242b2l3igq4egaa");
+      // expect(infos['variationId'], "bsffhle242b2l3igq4f0");
+      // expect(infos['isReference'], true);
 
-      /// Get info for none exting key
-      // ignore: deprecated_member_use_from_same_package
-      var infosBis = v1.getModificationInfo('noKey');
-      expect(infosBis, null);
+      // /// Get info for none exting key
+      // // ignore: deprecated_member_use_from_same_package
+      // var infosBis = v1.getModificationInfo('noKey');
+      // expect(infosBis, null);
 
-      /// Wrong type
-      // ignore: deprecated_member_use_from_same_package
-      expect(v1.getModification('aliasTer', 12), 12);
-      // ignore: deprecated_member_use_from_same_package
-      expect(v1.getModification('aliasDouble', "default"), "default");
+      // /// Wrong type
+      // // ignore: deprecated_member_use_from_same_package
+      // expect(v1.getModification('aliasTer', 12), 12);
+      // // ignore: deprecated_member_use_from_same_package
+      // expect(v1.getModification('aliasDouble', "default"), "default");
 
       /// Send hit
       v1.sendHit(
@@ -144,14 +144,14 @@ void main() {
     expect(v1.getConsent(), true);
 
     // ignore: deprecated_member_use_from_same_package
-    await v1.synchronizeModifications().then((value) {
+    await v1.fetchFlags().then((value) {
       expect(Flagship.getStatus(), FSSdkStatus.SDK_INITIALIZED);
       // ignore: deprecated_member_use_from_same_package
       //   expect(v1.getModification('aliasTer', 'default'), "testValue");
       // Test the case when the modificattion is empty
       v1.modifications.clear();
       // ignore: deprecated_member_use_from_same_package
-      expect(v1.getModification('aliasTer', 'default'), "default");
+      // expect(v1.getModification('aliasTer', 'default'), "default");
     });
   });
 

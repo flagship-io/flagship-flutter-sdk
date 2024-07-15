@@ -15,6 +15,7 @@ import 'package:flagship/utils/constants.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/visitor.dart';
 import 'package:flagship/visitor/Ivisitor.dart';
+import 'package:flutter/material.dart';
 
 // This class represent the default behaviour
 class DefaultStrategy implements IVisitor {
@@ -150,8 +151,9 @@ class DefaultStrategy implements IVisitor {
 
   // Synchronize modification for the visitor
   @override
-  Future<Error?> synchronizeModifications() async {
+  Future<FetchResponse?> fetchFlags() async {
     Flagship.logger(Level.ALL, SYNCHRONIZE_MODIFICATIONS);
+    // get actual state flagship sdk
     FSSdkStatus state = Flagship.getStatus();
     DataUsageTracking.sharedInstance().processDataUsageTracking(visitor);
     try {
@@ -191,14 +193,19 @@ class DefaultStrategy implements IVisitor {
           .updateTroubleshooting(camp.accountSettings?.troubleshooting);
       // Notify the data report
       DataUsageTracking.sharedInstance().processTSFetching(this.visitor);
-      return null;
+
+      return FetchResponse(
+          camp.panic ? FSFetchStatus.PANIC : FSFetchStatus.FETCHED, null);
+      // return null;
     } catch (error) {
       // Report the error
       Flagship.logger(Level.EXCEPTIONS,
           EXCEPTION.replaceFirst("%s", "${error.toString()}"));
       DataUsageTracking.sharedInstance()
           .processTroubleShootingException(visitor, error);
-      return Error(); // Return Error
+      return FetchResponse(FSFetchStatus.FETCH_REQUIRED, Error());
+      // TODO create better object error
+      // return Error(); // Return Error
     }
   }
 

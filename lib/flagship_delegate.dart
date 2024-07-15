@@ -1,4 +1,3 @@
-import 'package:flagship/flagship.dart';
 import 'package:flagship/status.dart';
 
 mixin FlagshipDelegate {

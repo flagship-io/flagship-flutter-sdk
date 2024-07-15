@@ -22,6 +22,8 @@ import 'package:flagship/visitor/visitor_delegate.dart';
 import 'package:flutter/foundation.dart';
 import 'flagship_delegate.dart';
 import 'package:http/http.dart' as http;
+import 'package:flagship/status.dart';
+
 part "visitor_tr.dart";
 
 enum Instance {
@@ -81,6 +83,16 @@ class Visitor {
 
   /// DataUsageTracking
   DataUsageTracking dataUsageTracking = DataUsageTracking.sharedInstance();
+
+  // Fetch status
+  FSFetchStatus _fetchStatus = FSFetchStatus.FETCH_REQUIRED;
+
+  // FSFetchReasons
+  FSFetchReasons _fetchReasons = FSFetchReasons.VISITOR_CREATE;
+
+  FSFetchStatus get fetchStatus {
+    return _fetchStatus;
+  }
 
   /// Create new instance for visitor
   ///
@@ -154,6 +166,9 @@ class Visitor {
       // if the context still the same then no need to raise the warning
       // Update flagSyncStatus to raise a warning when access to flag
       this._flagSyncStatus = FlagSyncStatus.CONTEXT_UPDATED;
+      // TODO factorise with syncStaus
+      this._fetchStatus = FSFetchStatus.FETCH_REQUIRED;
+      this._fetchReasons = FSFetchReasons.UNAUTHENTICATE;
     }
 
     Flagship.logger(
@@ -183,6 +198,10 @@ class Visitor {
       // if the context still the same then no need to raise the warning
       // Update flagSyncStatus to raise a warning when access to flag
       this._flagSyncStatus = FlagSyncStatus.CONTEXT_UPDATED;
+
+      // TODO factorise with syncStaus
+      this._fetchStatus = FSFetchStatus.FETCH_REQUIRED;
+      this._fetchReasons = FSFetchReasons.UNAUTHENTICATE;
     }
   }
 
@@ -209,53 +228,20 @@ class Visitor {
     return Flag<T>(key, defaultValue, this._visitorDelegate);
   }
 
-  /// Get Modification
-  ///
-  /// key : the name of the key relative to modification
-  /// defaultValue: the returned value if the key is not found
-  ///
-  @Deprecated('Use value() in Flag class instead')
-  T getModification<T>(String key, T defaultValue, {bool activate = false}) {
-    // Delegate the action to strategy
-    return _visitorDelegate.getModification(key, defaultValue,
-        activate: activate);
-  }
-
-  /// Get the modification infos relative to flag (modification)
-  ///
-  /// key : the name of the key relative to modification
-  /// Return map {"campaignId":"xxx", "variationId" : "xxxx", "variationGroupId":"xxxxx", "isReference": true/false}
-  @Deprecated('Use metadata() in Flag class instead')
-  Map<String, dynamic>? getModificationInfo(String key) {
-    // Delegate the action to strategy
-    return _visitorDelegate.getModificationInfo(key);
-  }
-
-  /// Synchronize modification for the visitor
-  @Deprecated('Use fetchFlags instead')
-  Future<void> synchronizeModifications() async {
-    // Delegate the action to strategy
-    _visitorDelegate.synchronizeModifications().then((error) {
-      if (error == null) {
-        _flagSyncStatus = FlagSyncStatus.FLAGS_FETCHED;
-      }
-    });
-  }
-
   Future<void> fetchFlags() async {
     /// Delegate the action to strategy
-    return _visitorDelegate.synchronizeModifications().then((error) {
-      if (error == null) {
+    _fetchStatus = FSFetchStatus.FETCHING;
+    return _visitorDelegate.fetchFlags().then((fetchResponse) {
+      if (fetchResponse?.error == null) {
         _flagSyncStatus = FlagSyncStatus.FLAGS_FETCHED;
+        this._fetchStatus =
+            fetchResponse?.fetchStatus ?? FSFetchStatus.FETCH_REQUIRED;
+        this._fetchReasons = FSFetchReasons.NONE;
+      } else {
+        fetchResponse?.fetchStatus ?? FSFetchStatus.FETCH_REQUIRED;
+        this._fetchReasons = FSFetchReasons.FETCH_ERROR;
       }
     });
-  }
-
-  /// Activate modification
-  @Deprecated('Use userExposed() in Flag class instead')
-  Future<void> activateModification(String key) async {
-    // Delegate the action to strategy
-    _visitorDelegate.activateModification(key);
   }
 
   /// Send hit
@@ -297,6 +283,9 @@ class Visitor {
   authenticate(String visitorId) {
     // Update flagSyncStatus
     this._flagSyncStatus = FlagSyncStatus.AUTHENTICATED;
+    // TODO factorise with syncStaus
+    this._fetchStatus = FSFetchStatus.FETCH_REQUIRED;
+    this._fetchReasons = FSFetchReasons.AUTHENTICATE;
     _isAuthenticated = true;
     _visitorDelegate.getStrategy().authenticateVisitor(visitorId);
   }
@@ -305,6 +294,10 @@ class Visitor {
   unauthenticate() {
     // Update flagSyncStatus
     this._flagSyncStatus = FlagSyncStatus.UNAUTHENTICATED;
+    // TODO factorise with syncStaus
+    this._fetchStatus = FSFetchStatus.FETCH_REQUIRED;
+    this._fetchReasons = FSFetchReasons.UNAUTHENTICATE;
+
     _isAuthenticated = false;
     _visitorDelegate.getStrategy().unAuthenticateVisitor();
   }

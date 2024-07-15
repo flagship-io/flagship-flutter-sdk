@@ -1,5 +1,6 @@
 import 'package:flagship/hits/hit.dart';
 import 'package:flagship/model/modification.dart';
+import 'package:flagship/status.dart';
 
 abstract class IVisitor {
 // Update Context
@@ -9,7 +10,9 @@ abstract class IVisitor {
 // Get Modificatoin info
   Map<String, dynamic>? getModificationInfo(String key);
 // Synchronize modifications
-  Future<void> synchronizeModifications();
+  // Future<void> synchronizeModifications();
+// Fetch Flags
+  Future<void> fetchFlags();
 // Activate modification
   Future<void> activateModification(String key);
 // Activate flag
@@ -38,4 +41,11 @@ abstract class IVisitor {
 
   // onExposure
   void onExposure(Modification pModification);
+}
+
+// Future to represent the error and the status
+class FetchResponse {
+  Error? error;
+  FSFetchStatus fetchStatus = FSFetchStatus.FETCH_REQUIRED;
+  FetchResponse(this.fetchStatus, this.error);
 }

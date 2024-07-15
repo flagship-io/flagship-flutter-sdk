@@ -69,7 +69,7 @@ class _ContextScreenState extends State<ContextScreen> with ShowDialog {
 
       /// Synchronize
       //ignore: deprecated_member_use
-      currentClient.synchronizeModifications().then((_) {
+      currentClient.fetchFlags().then((_) {
         subMsg = "Context updated and synchronized"; //(state == Status.READY)?
 
         // : "Context updated but the synchronized failed";

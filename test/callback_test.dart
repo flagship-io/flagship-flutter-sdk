@@ -51,7 +51,7 @@ void main() {
     config.onSdkStatusChanged = (newStatus) {
       if (newStatus == FSSdkStatus.SDK_PANIC) {
         // ignore: deprecated_member_use_from_same_package
-        expect(Flagship.getCurrentVisitor()?.getModification('key1', 12), 12);
+        //   expect(Flagship.getCurrentVisitor()?.getModification('key1', 12), 12);
         expect(newStatus, Flagship.getStatus());
       }
     };
@@ -65,6 +65,6 @@ void main() {
     Flagship.setCurrentVisitor(v1);
 
     // ignore: deprecated_member_use_from_same_package
-    v1.synchronizeModifications().whenComplete(() {});
+    v1.fetchFlags().whenComplete(() {});
   });
 }

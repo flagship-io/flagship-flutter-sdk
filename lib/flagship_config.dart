@@ -13,8 +13,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import "package:flagship/api/service.dart";
 
-import 'flagship.dart';
-
 // Time out 2 seconds
 const TIMEOUT = 2000;
 

@@ -54,18 +54,18 @@ void main() {
     Flagship.setCurrentVisitor(v1);
 
     // ignore: deprecated_member_use_from_same_package
-    await v1.synchronizeModifications().then((value) {
+    await v1.fetchFlags().then((value) {
       expect(Flagship.getStatus(), FSSdkStatus.SDK_PANIC);
 
       /// Activate
       // ignore: deprecated_member_use_from_same_package
-      v1.activateModification("key");
+      // v1.activateModification("key");
 
       // ignore: deprecated_member_use_from_same_package
-      expect(v1.getModification('key1', 12), 12);
+      // expect(v1.getModification('key1', 12), 12);
 
       // ignore: deprecated_member_use_from_same_package
-      expect(v1.getModificationInfo('key1'), null);
+      // expect(v1.getModificationInfo('key1'), null);
 
       v1.setConsent(false);
       expect(v1.getConsent(), false);

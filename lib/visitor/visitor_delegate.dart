@@ -63,8 +63,8 @@ class VisitorDelegate implements IVisitor {
 
 // Fetch modification
   @override
-  Future<Error?> synchronizeModifications() async {
-    return getStrategy().synchronizeModifications().whenComplete(() {
+  Future<FetchResponse?> fetchFlags() async {
+    return getStrategy().fetchFlags().whenComplete(() {
       if (visitor.config.decisionMode == Mode.BUCKETING &&
           Flagship.getStatus() != FSSdkStatus.SDK_PANIC) {
         visitor.sendHit(Segment(persona: visitor.getCurrentContext()));

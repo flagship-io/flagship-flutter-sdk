@@ -4,6 +4,7 @@ import 'package:flagship/model/modification.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor.dart';
+import 'package:flagship/visitor/Ivisitor.dart';
 import 'package:flagship/visitor/strategy/default_strategy.dart';
 
 // This class repressent the NOT READY behaviour
@@ -11,7 +12,7 @@ class NotReadyStrategy extends DefaultStrategy {
   NotReadyStrategy(Visitor visitor) : super(visitor);
 
   @override
-  Future<Error?> synchronizeModifications() async {
+  Future<FetchResponse?> fetchFlags() async {
     Flagship.logger(Level.ERROR, FETCH_NOT_READY);
     return null;
   }
