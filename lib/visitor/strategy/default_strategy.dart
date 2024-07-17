@@ -257,36 +257,41 @@ class DefaultStrategy implements IVisitor {
 
   @override
   // Called right at visitor creation, return a jsonString corresponding to visitor. Return a jsonString
-  void lookupVisitor(String visitoId) async {
-    visitor.config.visitorCacheImp
+  Future<bool> lookupVisitor(String visitoId) async {
+    var resultFromCacheBis = await visitor.config.visitorCacheImp
         ?.lookupVisitor(visitor.visitorId)
-        .then((resultFromCache) {
-      if (resultFromCache.length != 0) {
-        // convert to Map
-        Map<String, dynamic> result = jsonDecode(resultFromCache);
-        // Retreive the json string stored in the visitor filed of this map.
-        if (result['visitor'] != null) {
-          VisitorCache cachedVisitor =
-              VisitorCache.fromJson(jsonDecode(result['visitor']));
-          Flagship.logger(Level.DEBUG,
-              'The cached visitor get through the lookup is ${cachedVisitor.toString()}');
-          // update the current visitor with his own cached data
-          // 1 - update modification Map<String, Modification> modifications
-          visitor.modifications
-              .addEntries(cachedVisitor.getModifications().entries);
-          // 2- Update the assignation history
-          visitor.decisionManager.updateAssignationHistory(
-              cachedVisitor.getAssignationHistory() ?? {});
-        }
-      }
-    }).timeout(
+        .timeout(
             Duration(
                 milliseconds:
                     visitor.config.visitorCacheImp?.visitorCacheLookupTimeout ??
                         200), onTimeout: () {
       Flagship.logger(
           Level.ERROR, "Timeout on trying to read the cache visitor");
+      return "";
     });
+    if (resultFromCacheBis != null && resultFromCacheBis.length != 0) {
+      // convert to Map
+      Map<String, dynamic> result = jsonDecode(resultFromCacheBis);
+      // Retreive the json string stored in the visitor filed of this map.
+      if (result['visitor'] != null) {
+        VisitorCache cachedVisitor =
+            VisitorCache.fromJson(jsonDecode(result['visitor']));
+        Flagship.logger(Level.DEBUG,
+            'The cached visitor get through the lookup is ${cachedVisitor.toString()}');
+        // update the current visitor with his own cached data
+        // 1 - update modification Map<String, Modification> modifications
+        visitor.modifications
+            .addEntries(cachedVisitor.getModifications().entries);
+        // 2- Update the assignation history
+        visitor.decisionManager.updateAssignationHistory(
+            cachedVisitor.getAssignationHistory() ?? {});
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
   }
 
   @override
@@ -335,5 +340,22 @@ class DefaultStrategy implements IVisitor {
             pModification.value,
             pModification.defaultValue,
             FlagMetadata.withMap(pModification.toJsonInformation())));
+  }
+
+  @override
+  FlagStatus getFlagStatus(String key) {
+    switch (this.visitor.fetchStatus) {
+      case FSFetchStatus.FETCHED:
+        if (this.visitor.modifications.containsKey(key)) {
+          return FlagStatus.FETCHED;
+        } else {
+          return FlagStatus.NOT_FOUND;
+        }
+      case FSFetchStatus.FETCH_REQUIRED:
+      case FSFetchStatus.FETCHING:
+        return FlagStatus.FETCH_REQUIRED;
+      case FSFetchStatus.PANIC:
+        return FlagStatus.PANIC;
+    }
   }
 }

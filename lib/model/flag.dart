@@ -1,6 +1,7 @@
 import 'package:flagship/dataUsage/data_usage_tracking.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/model/modification.dart';
+import 'package:flagship/status.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor/visitor_delegate.dart';
 
@@ -11,6 +12,8 @@ class Flag<T> implements IFlag {
   final T _defaultValue;
   // Delegate
   final VisitorDelegate _visitorDelegate;
+
+  FlagStatus _status = FlagStatus.FETCH_REQUIRED;
 
   Flag(this._key, this._defaultValue, this._visitorDelegate);
 
@@ -120,6 +123,10 @@ class Flag<T> implements IFlag {
 
   @override
   String get key => _key;
+
+  FlagStatus getFlagStatus() {
+    return this._visitorDelegate.getFlagStatus(this._key);
+  }
 }
 
 class FlagMetadata {

@@ -37,3 +37,6 @@ enum FSFetchReasons {
   // No Reason, the state should be  FETCHED,  FETCHING, PANIC
   NONE
 }
+
+// Flag Status
+enum FlagStatus { FETCHED, FETCH_REQUIRED, NOT_FOUND, PANIC }

@@ -19,8 +19,8 @@ void main() {
   SharedPreferences.setMockInitialValues({});
   PathProviderPlatform.instance = FakePathProviderPlatform();
 
-  var v1 = Visitor(
-      ConfigBuilder().build(), "user1", true, {"key1": "val1", "key2": "val2"});
+  var v1 = Visitor(ConfigBuilder().build(), "user1", true,
+      {"key1": "val1", "key2": "val2"}, true, null);
 
   v1.flagshipDelegate.onUpdateState(FSSdkStatus.SDK_INITIALIZED);
   group('Visitor Ready ', () {

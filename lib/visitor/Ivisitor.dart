@@ -34,13 +34,16 @@ abstract class IVisitor {
   void cacheVisitor(String visitorId, String jsonString);
 
   // Called right at visitor creation, return a jsonString corresponding to visitor. Return a jsonString
-  void lookupVisitor(String visitoId);
+  Future<bool> lookupVisitor(String visitoId);
 
 // Lookup Hits
   void lookupHits();
 
   // onExposure
   void onExposure(Modification pModification);
+
+  // Get Status
+  FlagStatus getFlagStatus(String key);
 }
 
 // Future to represent the error and the status

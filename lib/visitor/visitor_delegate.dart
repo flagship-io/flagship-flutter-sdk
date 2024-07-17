@@ -109,8 +109,8 @@ class VisitorDelegate implements IVisitor {
   }
 
   @override
-  void lookupVisitor(String visitoId) async {
-    getStrategy().lookupVisitor(visitoId);
+  Future<bool> lookupVisitor(String visitoId) async {
+    return getStrategy().lookupVisitor(visitoId);
   }
 
   @override
@@ -121,5 +121,10 @@ class VisitorDelegate implements IVisitor {
   @override
   void onExposure(Modification pModification) {
     getStrategy().onExposure(pModification);
+  }
+
+  @override
+  FlagStatus getFlagStatus(String key) {
+    return getStrategy().getFlagStatus(key);
   }
 }

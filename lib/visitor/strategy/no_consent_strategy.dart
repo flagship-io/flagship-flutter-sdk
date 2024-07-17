@@ -35,6 +35,8 @@ class NoConsentStrategy extends DefaultStrategy {
     }
   }
 
+  // TODO, not consent have not lookup visitor
+
   @override
   void lookupHits() async {
     Flagship.logger(Level.INFO, "No lookup Hits when not ready");
