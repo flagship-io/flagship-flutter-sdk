@@ -13,8 +13,6 @@ class Flag<T> implements IFlag {
   // Delegate
   final VisitorDelegate _visitorDelegate;
 
-  FlagStatus _status = FlagStatus.FETCH_REQUIRED;
-
   Flag(this._key, this._defaultValue, this._visitorDelegate);
 
 // Get value for flag
@@ -124,6 +122,7 @@ class Flag<T> implements IFlag {
   @override
   String get key => _key;
 
+  // Get Status
   FlagStatus getFlagStatus() {
     return this._visitorDelegate.getFlagStatus(this._key);
   }

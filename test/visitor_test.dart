@@ -20,7 +20,7 @@ void main() {
   PathProviderPlatform.instance = FakePathProviderPlatform();
 
   var v1 = Visitor(ConfigBuilder().build(), "user1", true,
-      {"key1": "val1", "key2": "val2"}, true, null);
+      {"key1": "val1", "key2": "val2"}, true, null, null, null);
 
   v1.flagshipDelegate.onUpdateState(FSSdkStatus.SDK_INITIALIZED);
   group('Visitor Ready ', () {

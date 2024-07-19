@@ -36,10 +36,6 @@ enum Instance {
   NEW_INSTANCE
 }
 
-// Callback signature for fetchStatus
-typedef OnFetchFlagsStatusChanged = void Function(
-    FSFetchStatus fetchSattus, FSFetchReasons fetchReason)?;
-
 class Visitor {
   /// VisitorId
   String visitorId;
@@ -89,23 +85,35 @@ class Visitor {
   DataUsageTracking dataUsageTracking = DataUsageTracking.sharedInstance();
 
   // Fetch status
-  FSFetchStatus _fetchStatus = FSFetchStatus.FETCH_REQUIRED;
+  FlagStatus _flagStatus = FlagStatus.FETCH_REQUIRED;
 
   // FSFetchReasons
-  FSFetchReasons _fetchReasons = FSFetchReasons.VISITOR_CREATE;
+  FetchFlagsRequiredStatusReason _fetchReasons =
+      FetchFlagsRequiredStatusReason.FLAGS_NEVER_FETCHED;
 
   // CallBack for status
-  OnFetchFlagsStatusChanged? _onFetchFlagsStatusChanged;
+  OnFlagStatusChanged _onFlagStatusChanged;
+
+  OnFlagStatusFetchRequired _onFlagStatusFetchRequired;
+
+  OnFlagStatusFetched _onFlagStatusFetched;
 
 // Getter
-  FSFetchStatus get fetchStatus {
-    return _fetchStatus;
+  FlagStatus get flagStatus {
+    return _flagStatus;
   }
 
-  set fetchStatus(FSFetchStatus newValue) {
-    if (newValue != this.fetchStatus) {
-      this.fetchStatus = newValue;
-      _onFetchFlagsStatusChanged?.call(this.fetchStatus, this._fetchReasons);
+  set flagStatus(FlagStatus newValue) {
+    if (newValue != this.flagStatus) {
+      this._flagStatus = newValue;
+      _onFlagStatusChanged?.call(this.flagStatus);
+      // Og the state is required then trigger also the required callback
+      if (newValue == FlagStatus.FETCH_REQUIRED) {
+        _onFlagStatusFetchRequired?.call(this._fetchReasons);
+      } else if (newValue == FlagStatus.FETCHED) {
+        // If the state is fetched then trigger the callback fetched
+        _onFlagStatusFetched?.call();
+      }
     }
   }
 
@@ -120,7 +128,9 @@ class Visitor {
       this._isAuthenticated,
       Map<String, Object> context,
       this._hasConsented,
-      this._onFetchFlagsStatusChanged) {
+      this._onFlagStatusChanged,
+      this._onFlagStatusFetchRequired,
+      this._onFlagStatusFetched) {
     if (_isAuthenticated == true) {
       this.anonymousId = FlagshipTools.generateFlagshipId();
     } else {
@@ -166,8 +176,8 @@ class Visitor {
     // TODO check this part with tests concurrency
     _visitorDelegate.lookupVisitor(this.visitorId).then((isLoadedFromCache) => {
           this._fetchReasons = isLoadedFromCache
-              ? FSFetchReasons.FETCHED_FROM_CACHE
-              : FSFetchReasons.VISITOR_CREATE
+              ? FetchFlagsRequiredStatusReason.FLAGS_FETCHED_FROM_CACHE
+              : FetchFlagsRequiredStatusReason.FLAGS_NEVER_FETCHED
         });
     _visitorDelegate.lookupVisitor(this.visitorId).whenComplete(() {});
 
@@ -193,8 +203,8 @@ class Visitor {
       this._flagSyncStatus = FlagSyncStatus.CONTEXT_UPDATED;
       // TODO factorise with syncStaus
 
-      fetchStatus = FSFetchStatus.FETCH_REQUIRED;
-      _fetchReasons = FSFetchReasons.UNAUTHENTICATE;
+      flagStatus = FlagStatus.FETCH_REQUIRED;
+      _fetchReasons = FetchFlagsRequiredStatusReason.VISITOR_CONTEXT_UPDATED;
     }
 
     Flagship.logger(
@@ -226,8 +236,9 @@ class Visitor {
       this._flagSyncStatus = FlagSyncStatus.CONTEXT_UPDATED;
 
       // TODO factorise with syncStaus
-      this.fetchStatus = FSFetchStatus.FETCH_REQUIRED;
-      this._fetchReasons = FSFetchReasons.UNAUTHENTICATE;
+      this.flagStatus = FlagStatus.FETCH_REQUIRED;
+      this._fetchReasons =
+          FetchFlagsRequiredStatusReason.VISITOR_CONTEXT_UPDATED;
     }
   }
 
@@ -256,16 +267,17 @@ class Visitor {
 
   Future<void> fetchFlags() async {
     /// Delegate the action to strategy
-    fetchStatus = FSFetchStatus.FETCHING;
+    flagStatus = FlagStatus.FETCHING;
     return _visitorDelegate.fetchFlags().then((fetchResponse) {
       if (fetchResponse?.error == null) {
         _flagSyncStatus = FlagSyncStatus.FLAGS_FETCHED;
-        this.fetchStatus =
-            fetchResponse?.fetchStatus ?? FSFetchStatus.FETCH_REQUIRED;
-        this._fetchReasons = FSFetchReasons.NONE;
+        this.flagStatus =
+            fetchResponse?.fetchStatus ?? FlagStatus.FETCH_REQUIRED;
+        this._fetchReasons = FetchFlagsRequiredStatusReason.NONE;
       } else {
-        fetchResponse?.fetchStatus ?? FSFetchStatus.FETCH_REQUIRED;
-        this._fetchReasons = FSFetchReasons.FETCH_ERROR;
+        fetchResponse?.fetchStatus ?? FlagStatus.FETCH_REQUIRED;
+        this._fetchReasons =
+            FetchFlagsRequiredStatusReason.FLAGS_FETCHING_ERROR;
       }
     });
   }
@@ -310,8 +322,8 @@ class Visitor {
     // Update flagSyncStatus
     this._flagSyncStatus = FlagSyncStatus.AUTHENTICATED;
     // TODO factorise with syncStaus
-    this.fetchStatus = FSFetchStatus.FETCH_REQUIRED;
-    this._fetchReasons = FSFetchReasons.AUTHENTICATE;
+    this.flagStatus = FlagStatus.FETCH_REQUIRED;
+    this._fetchReasons = FetchFlagsRequiredStatusReason.VISITOR_AUTHENTICATED;
     _isAuthenticated = true;
     _visitorDelegate.getStrategy().authenticateVisitor(visitorId);
   }
@@ -321,8 +333,8 @@ class Visitor {
     // Update flagSyncStatus
     this._flagSyncStatus = FlagSyncStatus.UNAUTHENTICATED;
     // TODO factorise with syncStaus
-    this.fetchStatus = FSFetchStatus.FETCH_REQUIRED;
-    this._fetchReasons = FSFetchReasons.UNAUTHENTICATE;
+    this.flagStatus = FlagStatus.FETCH_REQUIRED;
+    this._fetchReasons = FetchFlagsRequiredStatusReason.VISITOR_UNAUTHENTICATED;
 
     _isAuthenticated = false;
     _visitorDelegate.getStrategy().unAuthenticateVisitor();
@@ -356,7 +368,11 @@ class VisitorBuilder {
 
 // Callback status fetch
 
-  OnFetchFlagsStatusChanged _onFetchFlagsStatusChanged;
+  OnFlagStatusChanged _onFlagStatusChanged;
+
+  OnFlagStatusFetchRequired _onFlagStatusFetchRequired;
+
+  OnFlagStatusFetched _onFlagStatusFetched;
 
   VisitorBuilder(this.visitorId, this._hasConsented,
       {this.instanceType = Instance.SINGLE_INSTANCE});
@@ -377,9 +393,17 @@ class VisitorBuilder {
     return this;
   }
 
-  withFetchFlagsStatus(OnFetchFlagsStatusChanged pCallback) {
-    _onFetchFlagsStatusChanged = pCallback;
+  withOnFlagStatusChanged(OnFlagStatusChanged pCallback) {
+    _onFlagStatusChanged = pCallback;
     return this;
+  }
+
+  withOnFlagStatusFetchRequired(OnFlagStatusFetchRequired pCallback) {
+    _onFlagStatusFetchRequired = pCallback;
+  }
+
+  withOnFlagStatusFetched(OnFlagStatusFetched pCallBack) {
+    _onFlagStatusFetched = pCallBack;
   }
 
   Visitor build() {
@@ -389,7 +413,9 @@ class VisitorBuilder {
         _isAuthenticated,
         _context,
         _hasConsented,
-        _onFetchFlagsStatusChanged);
+        _onFlagStatusChanged,
+        _onFlagStatusFetchRequired,
+        _onFlagStatusFetched);
     if (this.instanceType == Instance.SINGLE_INSTANCE) {
       //Set this visitor as shared instance
       Flagship.setCurrentVisitor(newVisitor);

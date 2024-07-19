@@ -49,6 +49,6 @@ abstract class IVisitor {
 // Future to represent the error and the status
 class FetchResponse {
   Error? error;
-  FSFetchStatus fetchStatus = FSFetchStatus.FETCH_REQUIRED;
+  FlagStatus fetchStatus = FlagStatus.FETCH_REQUIRED;
   FetchResponse(this.fetchStatus, this.error);
 }

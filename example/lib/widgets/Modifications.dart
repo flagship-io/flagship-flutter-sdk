@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flagship/model/flag.dart';
+import 'package:flagship/status.dart';
 import 'package:flagship_qa/widgets/FSinputField.dart';
 import 'package:flagship_qa/widgets/modifications_json_screen.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +36,7 @@ class _ModificationsState extends State<Modifications> {
   String valueForFlag = "None";
   String slug = "None";
   String campaignType = "None";
+  String status = FlagStatus.NOT_FOUND.name;
 
   double _spaceBetweenElements = 10;
 
@@ -248,6 +250,9 @@ class _ModificationsState extends State<Modifications> {
             SizedBox(height: _spaceBetweenElements),
             FSOutputField("campaignType", campaignType),
             SizedBox(height: _spaceBetweenElements * 5),
+            FSOutputField("Staus", status),
+            SizedBox(height: _spaceBetweenElements * 5),
+
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(

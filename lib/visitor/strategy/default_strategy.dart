@@ -15,7 +15,6 @@ import 'package:flagship/utils/constants.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/visitor.dart';
 import 'package:flagship/visitor/Ivisitor.dart';
-import 'package:flutter/material.dart';
 
 // This class represent the default behaviour
 class DefaultStrategy implements IVisitor {
@@ -195,7 +194,7 @@ class DefaultStrategy implements IVisitor {
       DataUsageTracking.sharedInstance().processTSFetching(this.visitor);
 
       return FetchResponse(
-          camp.panic ? FSFetchStatus.PANIC : FSFetchStatus.FETCHED, null);
+          camp.panic ? FlagStatus.PANIC : FlagStatus.FETCHED, null);
       // return null;
     } catch (error) {
       // Report the error
@@ -203,7 +202,7 @@ class DefaultStrategy implements IVisitor {
           EXCEPTION.replaceFirst("%s", "${error.toString()}"));
       DataUsageTracking.sharedInstance()
           .processTroubleShootingException(visitor, error);
-      return FetchResponse(FSFetchStatus.FETCH_REQUIRED, Error());
+      return FetchResponse(FlagStatus.FETCH_REQUIRED, Error());
       // TODO create better object error
       // return Error(); // Return Error
     }
@@ -344,18 +343,10 @@ class DefaultStrategy implements IVisitor {
 
   @override
   FlagStatus getFlagStatus(String key) {
-    switch (this.visitor.fetchStatus) {
-      case FSFetchStatus.FETCHED:
-        if (this.visitor.modifications.containsKey(key)) {
-          return FlagStatus.FETCHED;
-        } else {
-          return FlagStatus.NOT_FOUND;
-        }
-      case FSFetchStatus.FETCH_REQUIRED:
-      case FSFetchStatus.FETCHING:
-        return FlagStatus.FETCH_REQUIRED;
-      case FSFetchStatus.PANIC:
-        return FlagStatus.PANIC;
+    if (this.visitor.modifications.containsKey(key)) {
+      return this.visitor.flagStatus;
+    } else {
+      return FlagStatus.NOT_FOUND;
     }
   }
 }
