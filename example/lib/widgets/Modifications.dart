@@ -36,7 +36,8 @@ class _ModificationsState extends State<Modifications> {
   String valueForFlag = "None";
   String slug = "None";
   String campaignType = "None";
-  String status = FlagStatus.NOT_FOUND.name;
+  FlagStatus status = FlagStatus.NOT_FOUND;
+  FetchFlagsRequiredStatusReason reason = FetchFlagsRequiredStatusReason.NONE;
 
   double _spaceBetweenElements = 10;
 
@@ -63,6 +64,9 @@ class _ModificationsState extends State<Modifications> {
 
     setState(() {
       valueForFlag = ret.toString();
+      status = myFlag?.getFlagStatus() ?? FlagStatus.NOT_FOUND;
+      reason =
+          currentVisitor?.fetchReasons ?? FetchFlagsRequiredStatusReason.NONE;
     });
 
     var mapResult = myFlag?.metadata().toJson();
@@ -249,9 +253,11 @@ class _ModificationsState extends State<Modifications> {
             FSOutputField("Slug", slug),
             SizedBox(height: _spaceBetweenElements),
             FSOutputField("campaignType", campaignType),
-            SizedBox(height: _spaceBetweenElements * 5),
-            FSOutputField("Staus", status),
-            SizedBox(height: _spaceBetweenElements * 5),
+            SizedBox(height: _spaceBetweenElements),
+            FSOutputField("Status for Flag", status.name),
+            SizedBox(height: _spaceBetweenElements),
+            FSOutputField("Fetch Reason", reason.name),
+            SizedBox(height: _spaceBetweenElements),
 
             SizedBox(
               width: double.infinity,

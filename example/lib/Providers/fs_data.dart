@@ -63,7 +63,7 @@ class FSData extends ChangeNotifier {
 }
 
 class UserData extends ChangeNotifier {
-  String _visitorId = "userFevBis";
+  String _visitorId = "aaaa";
   Map<String, Object> context = {
     "testing_tracking_manager": true,
     "isQA": true

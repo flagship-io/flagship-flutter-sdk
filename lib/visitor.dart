@@ -103,17 +103,22 @@ class Visitor {
     return _flagStatus;
   }
 
+  FetchFlagsRequiredStatusReason get fetchReasons {
+    return _fetchReasons;
+  }
+
   set flagStatus(FlagStatus newValue) {
-    if (newValue != this.flagStatus) {
+    if (newValue != this._flagStatus) {
       this._flagStatus = newValue;
       _onFlagStatusChanged?.call(this.flagStatus);
-      // Og the state is required then trigger also the required callback
-      if (newValue == FlagStatus.FETCH_REQUIRED) {
-        _onFlagStatusFetchRequired?.call(this._fetchReasons);
-      } else if (newValue == FlagStatus.FETCHED) {
-        // If the state is fetched then trigger the callback fetched
-        _onFlagStatusFetched?.call();
-      }
+    }
+
+    // Og the state is required then trigger also the required callback
+    if (newValue == FlagStatus.FETCH_REQUIRED) {
+      _onFlagStatusFetchRequired?.call(this._fetchReasons);
+    } else if (newValue == FlagStatus.FETCHED) {
+      // If the state is fetched then trigger the callback fetched
+      _onFlagStatusFetched?.call();
     }
   }
 
@@ -267,7 +272,7 @@ class Visitor {
 
   Future<void> fetchFlags() async {
     /// Delegate the action to strategy
-    flagStatus = FlagStatus.FETCHING;
+    this.flagStatus = FlagStatus.FETCHING;
     return _visitorDelegate.fetchFlags().then((fetchResponse) {
       if (fetchResponse?.error == null) {
         _flagSyncStatus = FlagSyncStatus.FLAGS_FETCHED;
@@ -400,10 +405,12 @@ class VisitorBuilder {
 
   withOnFlagStatusFetchRequired(OnFlagStatusFetchRequired pCallback) {
     _onFlagStatusFetchRequired = pCallback;
+    return this;
   }
 
   withOnFlagStatusFetched(OnFlagStatusFetched pCallBack) {
     _onFlagStatusFetched = pCallBack;
+    return this;
   }
 
   Visitor build() {

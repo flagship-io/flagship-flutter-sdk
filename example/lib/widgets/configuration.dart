@@ -74,7 +74,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
         Level.ALL, '--------- Start with $visitorIdController.text ---------');
 
     FlagshipConfig config = ConfigBuilder()
-        .withLogLevel(Level.ALL)
+        .withLogLevel(Level.NONE)
         .withMode(fsData.sdkMode)
         .onSdkStatusChanged((newStatus) {
           print('--------- Callback with $newStatus ---------');
@@ -104,19 +104,32 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
     UserData fsUser = Provider.of<UserData>(context, listen: false);
     visitorIdController.text = fsUser.visitorId;
     var newVisitor;
-    newVisitor =
-        Flagship.newVisitor(visitorId: "", hasConsented: fsUser.hasConsented)
-            .withContext(fsUser.context)
-            .isAuthenticated(fsUser.isAuthenticated)
-            .build();
+    newVisitor = Flagship.newVisitor(
+            visitorId: fsUser.visitorId, hasConsented: fsUser.hasConsented)
+        .withContext(fsUser.context)
+        .withOnFlagStatusFetched(() {
+          print(" @@@@@@@@@@ withOnFlagStatusFetched is called @@@@@@@@@@");
+        })
+        .withOnFlagStatusFetchRequired((newReason) {
+          // withOnFlagStatusFetchRequired
+          print("#############@ withOnFlagStatusFetchRequired is called with " +
+              (newReason.toString()) +
+              " ##############");
+        })
+        .withOnFlagStatusChanged((newState) {
+          // withOnFlagStatusChanged
+          print(" &&&&&&&&&&&&&& withOnFlagStatusChanged is called with " +
+              newState.toString() +
+              " &&&&&&&&&&&&&&&&&");
+        })
+        .isAuthenticated(fsUser.isAuthenticated)
+        .build();
     // Set current visitor singleton instance for future use
     Flagship.setCurrentVisitor(newVisitor);
   }
 
 // Fetch flags
   _fetchFalgs() {
-    var st = Flagship.getStatus();
-    print(" @@@@@@@@@@ Status before fetching is $st @@@@@@@@@@@@@@@@ ");
     var titleMsg = '';
     Flagship.getCurrentVisitor()?.fetchFlags().whenComplete(() {
       switch (Flagship.getStatus()) {
