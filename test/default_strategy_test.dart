@@ -63,38 +63,8 @@ void main() {
 
     await v1.fetchFlags().whenComplete(() {
       expect(Flagship.getStatus(), FSSdkStatus.SDK_INITIALIZED);
-
-      /// Activate
-      // ignore: deprecated_member_use_from_same_package
-      // v1.activateModification("aliasTer");
-
-      // /// Get Modification
-      // // ignore: deprecated_member_use_from_same_package
-      // expect(v1.getModification('aliasTer', 'default', activate: true),
-      //     "testValue");
-
-      // // ignore: deprecated_member_use_from_same_package
-      // expect(v1.getModification('aliasDouble', 100.0, activate: true), 12.0);
-
-      // /// Get infos
-      // // ignore: deprecated_member_use_from_same_package
-      // var infos = v1.getModificationInfo('alias');
-      // expect(infos?.length, 9);
-      // expect(infos!['campaignId'], "bsffhle242b2l3igq4dg");
-      // expect(infos['variationGroupId'], "bsffhle242b2l3igq4egaa");
-      // expect(infos['variationId'], "bsffhle242b2l3igq4f0");
-      // expect(infos['isReference'], true);
-
-      // /// Get info for none exting key
-      // // ignore: deprecated_member_use_from_same_package
-      // var infosBis = v1.getModificationInfo('noKey');
-      // expect(infosBis, null);
-
-      // /// Wrong type
-      // // ignore: deprecated_member_use_from_same_package
-      // expect(v1.getModification('aliasTer', 12), 12);
-      // // ignore: deprecated_member_use_from_same_package
-      // expect(v1.getModification('aliasDouble', "default"), "default");
+      expect(v1.flagStatus, FlagStatus.FETCHED);
+      expect(v1.fetchReasons, FetchFlagsRequiredStatusReason.NONE);
 
       /// Send hit
       v1.sendHit(
@@ -103,10 +73,6 @@ void main() {
       /// Send consent hit
       v1.sendHit(Consent(hasConsented: false));
     });
-
-    // await v1.synchronizeModifications().then((value) {
-
-    // });
   });
 
   test('Test API with default startegy and callback', () async {
@@ -146,24 +112,18 @@ void main() {
     // ignore: deprecated_member_use_from_same_package
     await v1.fetchFlags().then((value) {
       expect(Flagship.getStatus(), FSSdkStatus.SDK_INITIALIZED);
-      // ignore: deprecated_member_use_from_same_package
-      //   expect(v1.getModification('aliasTer', 'default'), "testValue");
-      // Test the case when the modificattion is empty
+
       v1.modifications.clear();
-      // ignore: deprecated_member_use_from_same_package
-      // expect(v1.getModification('aliasTer', 'default'), "default");
     });
   });
 
   test('Test API with timeout', () async {
-    // MockService fakeService = MockService();
-    // ApiManager fakeApi = ApiManager(fakeService);
     String fakeResponse =
         await ToolsTest.readFile('test_resources/decisionApi.json') ?? "";
     when(fakeService.sendHttpRequest(
             RequestType.Post,
             'https://decision.flagship.io/v2/bkk9glocmjcg0vtmdlrr/campaigns/?exposeAllKeys=true',
-            fsHeaders,
+            any,
             any,
             timeoutMs: TIMEOUT))
         .thenAnswer((_) async {
@@ -185,5 +145,11 @@ void main() {
         Flagship.newVisitor(visitorId: "visitorId", hasConsented: true).build();
     Flagship.setCurrentVisitor(v1);
     expect(v1.getConsent(), true);
+
+    v1.fetchFlags().whenComplete(() {
+      expect(v1.flagStatus, FlagStatus.FETCH_REQUIRED);
+      expect(
+          v1.fetchReasons, FetchFlagsRequiredStatusReason.FLAGS_FETCHING_ERROR);
+    });
   });
 }

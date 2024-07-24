@@ -280,7 +280,8 @@ class Visitor {
             fetchResponse?.fetchStatus ?? FlagStatus.FETCH_REQUIRED;
         this._fetchReasons = FetchFlagsRequiredStatusReason.NONE;
       } else {
-        fetchResponse?.fetchStatus ?? FlagStatus.FETCH_REQUIRED;
+        this.flagStatus =
+            fetchResponse?.fetchStatus ?? FlagStatus.FETCH_REQUIRED;
         this._fetchReasons =
             FetchFlagsRequiredStatusReason.FLAGS_FETCHING_ERROR;
       }

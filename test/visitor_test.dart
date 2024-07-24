@@ -36,6 +36,9 @@ void main() {
     test('update context with String ', () {
       v1.updateContext("valueString", "ola");
       expect(v1.getCurrentContext()["valueString"], "ola");
+      expect(v1.flagStatus, FlagStatus.FETCH_REQUIRED);
+      expect(v1.fetchReasons,
+          FetchFlagsRequiredStatusReason.VISITOR_CONTEXT_UPDATED);
     });
 
     test('update context with String (already exist ) ', () {
@@ -88,6 +91,18 @@ void main() {
           "QA_TypelBis"); //The value should be updated
     });
 
+    test('test xpc ', () {
+      v1.authenticate("xpcVisitor");
+      expect(v1.flagStatus, FlagStatus.FETCH_REQUIRED);
+      expect(v1.fetchReasons,
+          FetchFlagsRequiredStatusReason.VISITOR_AUTHENTICATED);
+      v1.unauthenticate();
+      expect(v1.flagStatus, FlagStatus.FETCH_REQUIRED);
+      expect(v1.fetchReasons,
+          FetchFlagsRequiredStatusReason.VISITOR_UNAUTHENTICATED);
+    });
+
+// Update this part when the getFlags feature is implemented
     test('test get modification ', () {
       v1.modifications = new Map<String, Modification>();
       // ignore: deprecated_member_use_from_same_package
