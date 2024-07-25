@@ -63,10 +63,11 @@ class FSData extends ChangeNotifier {
 }
 
 class UserData extends ChangeNotifier {
-  String _visitorId = "aaaa";
+  String _visitorId = "onBoarding";
   Map<String, Object> context = {
     "testing_tracking_manager": true,
-    "isQA": true
+    "isQA": true,
+    "fs_is_vip": true
   };
   bool _hasConsented = true;
   bool _isAuthenticated = false;

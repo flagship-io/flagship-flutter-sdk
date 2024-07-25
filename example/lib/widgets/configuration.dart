@@ -74,7 +74,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
         Level.ALL, '--------- Start with $visitorIdController.text ---------');
 
     FlagshipConfig config = ConfigBuilder()
-        .withLogLevel(Level.NONE)
+        .withLogLevel(Level.ALL)
         .withMode(fsData.sdkMode)
         .onSdkStatusChanged((newStatus) {
           print('--------- Callback with $newStatus ---------');
