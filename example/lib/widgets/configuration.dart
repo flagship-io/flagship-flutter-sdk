@@ -108,19 +108,19 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
             visitorId: fsUser.visitorId, hasConsented: fsUser.hasConsented)
         .withContext(fsUser.context)
         .withOnFlagStatusFetched(() {
-          print(" @@@@@@@@@@ withOnFlagStatusFetched is called @@@@@@@@@@");
+          //  print(" @@@@@@@@@@ withOnFlagStatusFetched is called @@@@@@@@@@");
         })
         .withOnFlagStatusFetchRequired((newReason) {
           // withOnFlagStatusFetchRequired
-          print("#############@ withOnFlagStatusFetchRequired is called with " +
-              (newReason.toString()) +
-              " ##############");
+          //  print("#############@ withOnFlagStatusFetchRequired is called with " +
+          //  (newReason.toString()) +
+          //    " ##############");
         })
         .withOnFlagStatusChanged((newState) {
           // withOnFlagStatusChanged
-          print(" &&&&&&&&&&&&&& withOnFlagStatusChanged is called with " +
-              newState.toString() +
-              " &&&&&&&&&&&&&&&&&");
+          // print(" &&&&&&&&&&&&&& withOnFlagStatusChanged is called with " +
+          //     newState.toString() +
+          //     " &&&&&&&&&&&&&&&&&");
         })
         .isAuthenticated(fsUser.isAuthenticated)
         .build();

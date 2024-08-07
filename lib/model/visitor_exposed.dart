@@ -1,14 +1,22 @@
 // This class represent the Object returned when the activate is done with success.
 
+import 'package:flagship/model/exposed_flag.dart';
+
 class VisitorExposed {
   // visitorId
-  final String id;
+  String id = "";
   // AnonymousId
-  final String? anonymousId;
+  String? anonymousId;
   // Visitor context
-  final Map<String, Object>? context;
+  Map<String, dynamic>? context;
 
   VisitorExposed(this.id, this.anonymousId, this.context);
+
+  VisitorExposed.fromJson(Map<String, dynamic> json) {
+    this.id = (json["id"] as String?) ?? "";
+    this.anonymousId = (json["anonymousId"] as String?) ?? "";
+    this.context = (json["context"] as Map<String, dynamic>?) ?? {};
+  }
 
 // Json representation
   Map<String, dynamic> toJson() {
@@ -18,4 +26,12 @@ class VisitorExposed {
       "context": this.context
     };
   }
+}
+
+/// Used by TRManager to forward infos through closure
+
+class FSExposedInfo {
+  final VisitorExposed visitorExposed;
+  final ExposedFlag exposedFlag;
+  FSExposedInfo({required this.exposedFlag, required this.visitorExposed});
 }

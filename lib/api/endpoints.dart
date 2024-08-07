@@ -5,7 +5,7 @@ class Endpoints {
   static const String DECISION_API = "https://decision.flagship.io/v2/";
   static const String CAMPAIGNS =
       "/campaigns/?exposeAllKeys=true&extras[]=accountSettings";
-  static const String ACTIVATION = "activate";
+  static const String ACTIVATION = "activate"; // TODO remove extra
 
 // Bucketing
   static const String BUCKETING_SCRIPT =

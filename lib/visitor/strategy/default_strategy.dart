@@ -15,6 +15,7 @@ import 'package:flagship/utils/constants.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/visitor.dart';
 import 'package:flagship/visitor/Ivisitor.dart';
+import 'package:flutter/widgets.dart';
 
 // This class represent the default behaviour
 class DefaultStrategy implements IVisitor {
@@ -40,17 +41,37 @@ class DefaultStrategy implements IVisitor {
   Future<void> _sendActivate(Modification pModification) async {
     // Construct the activate hit
 
-    Activate activateHit = Activate(pModification, visitor.visitorId,
-        visitor.anonymousId, Flagship.sharedInstance().envId ?? "");
+    String? exposedFlag = jsonEncode(ExposedFlag(
+            pModification.key,
+            pModification.value,
+            pModification.defaultValue,
+            FlagMetadata.withMap(pModification.toJsonInformation()))
+        .toJson());
+
+    String? exposedVisitor = jsonEncode(VisitorExposed(
+            visitor.visitorId, visitor.anonymousId, visitor.getContext())
+        .toJson());
+
+    Activate activateHit = Activate(
+        pModification,
+        visitor.visitorId,
+        visitor.anonymousId,
+        Flagship.sharedInstance().envId ?? "",
+        exposedFlag,
+        exposedVisitor);
 
     DataUsageTracking.sharedInstance().processTroubleShootingHits(
         CriticalPoints.VISITOR_SEND_ACTIVATE.name, visitor, activateHit);
-    visitor.trackingManager?.sendActivate(activateHit).then((statusCode) {
-      if (statusCode >= 200 && statusCode < 300) {
-        this.onExposure(pModification);
+    visitor.trackingManager?.sendActivate(activateHit).then((activateResponse) {
+      if (activateResponse.statusCode >= 200 &&
+          activateResponse.statusCode < 300) {
+        // this.onExposure(pModification);
+        this.onExposureBis(activateResponse.exposeInfos);
       } else {
-        Flagship.logger(Level.ERROR,
-            ACTIVATE_FAILED + " status code = ${statusCode.toString()}");
+        Flagship.logger(
+            Level.ERROR,
+            ACTIVATE_FAILED +
+                " status code = ${activateResponse.statusCode.toString()}");
       }
     });
   }
@@ -339,6 +360,20 @@ class DefaultStrategy implements IVisitor {
             pModification.value,
             pModification.defaultValue,
             FlagMetadata.withMap(pModification.toJsonInformation())));
+  }
+
+  void onExposureBis(List<FSExposedInfo> exposureInfos) {
+    print(" @@@@@@@@@ callback exposure is called with " +
+        exposureInfos.length.toString() +
+        " Activate @@@@@@@@@@@@@@@@@");
+    exposureInfos.forEach((item) {
+      print(" onExposure item " + item.visitorExposed.id);
+
+      Flagship.sharedInstance()
+          .getConfiguration()
+          ?.onVisitorExposed
+          ?.call(item.visitorExposed, item.exposedFlag);
+    });
   }
 
   @override

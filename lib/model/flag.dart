@@ -142,18 +142,18 @@ class FlagMetadata {
 // Create metadata from map entry
   FlagMetadata.withMap(Map<String, dynamic>? infos) {
     if (infos != null) {
-      this.campaignId = (infos['campaignId'] as String);
-      this.campaignName = (infos['campaignName'] as String);
+      this.campaignId = (infos['campaignId'] as String?) ?? "";
+      this.campaignName = (infos['campaignName'] as String?) ?? "";
 
-      this.variationGroupId = infos['variationGroupId'] as String;
-      this.variationGroupName = infos['variationGroupName'] as String;
+      this.variationGroupId = (infos['variationGroupId'] as String?) ?? "";
+      this.variationGroupName = (infos['variationGroupName'] as String?) ?? "";
 
-      this.variationId = infos['variationId'] as String;
-      this.variationName = infos['variationName'] as String;
+      this.variationId = (infos['variationId'] as String?) ?? "";
+      this.variationName = (infos['variationName'] as String?) ?? "";
 
-      this.isReference = infos['isReference'] as bool;
-      this.campaignType = infos['campaignType'] as String;
-      this.slug = infos['slug'];
+      this.isReference = (infos['isReference'] as bool?) ?? false;
+      this.campaignType = (infos['campaignType'] as String?) ?? "";
+      this.slug = (infos['slug'] as String?) ?? "";
     }
   }
 

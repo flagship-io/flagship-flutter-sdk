@@ -3,13 +3,16 @@ import 'package:flagship/api/service.dart';
 import 'package:flagship/cache/interface_cache.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/hits/activate.dart';
+import 'package:flagship/hits/batch.dart';
 import 'package:flagship/hits/hit.dart';
+import 'package:flagship/model/visitor_exposed.dart';
 import 'package:flagship/tracking/Batching/batch_manager.dart';
 import 'package:flagship/tracking/Batching/pool_queue.dart';
 import 'package:flagship/tracking/tracking_manager.dart';
 import 'package:flagship/tracking/tracking_manager_batch.dart';
 import 'package:flagship/tracking/tracking_manager_config.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
+import 'package:flagship/visitor/Ivisitor.dart';
 
 class TrackingManageContinuousStrategy extends TrackingManager {
   // Hit pool
@@ -70,7 +73,7 @@ class TrackingManageContinuousStrategy extends TrackingManager {
   }
 
   // later add code error in the future
-  Future<int> sendActivate(Activate activateHit) async {
+  Future<ActivateResopnse> sendActivate(Activate activateHit) async {
     // Add the current activate by default
     List<Hit> listOfActivate = [activateHit];
     bool needToClean = false;
@@ -87,9 +90,19 @@ class TrackingManageContinuousStrategy extends TrackingManager {
       // We dont have any failed activate in the pool
     }
     var statusCode = await sendActivateBatch(listOfActivate);
+    List<FSExposedInfo> listExposure = [];
+
     switch (statusCode) {
       case 200:
       case 204:
+        // Send the exposure information here before remove all staff
+
+        /// Fill this listExposure
+        // Create an activate batch object
+        // TODO check refractor
+        ActivateBatch activateBatch = ActivateBatch(listOfActivate);
+        listExposure = activateBatch.getExposureInfos();
+
         // Clear all the activate in the pool and clear them from cache
         if (needToClean) {
           _activatePool.flushAllTrackFromQueue();
@@ -97,12 +110,13 @@ class TrackingManageContinuousStrategy extends TrackingManager {
               activateHit); // Remove the current hit before because is not already present in the cache.
           onSendActivateBatchWithSuccess(listOfActivate);
         }
+
         break;
       default:
         _activatePool.addNewTrackElement(activateHit);
         this.onCacheHit(activateHit);
     }
-    return statusCode;
+    return ActivateResopnse(listExposure, statusCode);
   }
 
   @override

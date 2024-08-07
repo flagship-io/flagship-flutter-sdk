@@ -1,5 +1,9 @@
+import 'dart:collection';
+import 'dart:ffi';
+
 import 'package:flagship/hits/hit.dart';
 import 'package:flagship/model/modification.dart';
+import 'package:flagship/model/visitor_exposed.dart';
 import 'package:flagship/status.dart';
 
 abstract class IVisitor {
@@ -51,4 +55,12 @@ class FetchResponse {
   Error? error;
   FlagStatus fetchStatus = FlagStatus.FETCH_REQUIRED;
   FetchResponse(this.fetchStatus, this.error);
+}
+
+// Future to represent the error and the exposure info
+
+class ActivateResopnse {
+  int statusCode;
+  List<FSExposedInfo> exposeInfos;
+  ActivateResopnse(this.exposeInfos, this.statusCode);
 }
