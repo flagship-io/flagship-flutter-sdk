@@ -18,7 +18,7 @@ void main() {
         12);
 
     Activate activateTest =
-        Activate(fakeModif, "visitorId", "anonym1", "envId");
+        Activate(fakeModif, "visitorId", "anonym1", "envId", null, null);
     var fakeJson = activateTest.toJson();
     expect(fakeJson["vaid"], "variationId");
     expect(fakeJson["caid"], "variationGroupId");
@@ -27,8 +27,3 @@ void main() {
     expect(fakeJson["aid"], "anonym1");
   });
 }
-
-//  (POST https://decision.flagship.io/v2/activate)
-
-// "{"vaid":"cd7rn3egmgl02tuj7r1g","caid":"cd7rn3egmgl02tuj7r10","vid":"userPoolManager_342","cid":"bkk9glocmjcg0vtmdlng"}"
-

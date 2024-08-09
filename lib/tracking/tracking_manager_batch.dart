@@ -6,9 +6,11 @@ import 'package:flagship/dataUsage/data_usage_tracking.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/hits/batch.dart';
 import 'package:flagship/hits/hit.dart';
+import 'package:flagship/model/visitor_exposed.dart';
 import 'package:flagship/tracking/tracking_manager.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
+import 'package:flagship/visitor/Ivisitor.dart';
 
 extension TrackingManagerBatch on TrackingManager {
   // send hit batch
@@ -49,11 +51,15 @@ extension TrackingManagerBatch on TrackingManager {
   }
 
   // Send activate batch
-  Future<int> sendActivateBatch(List<Hit> listOfActivate) async {
+  Future<ActivateResopnse> sendActivateBatch(List<Hit> listOfActivate) async {
     // Create url
     String urlString = Endpoints.DECISION_API + Endpoints.ACTIVATION;
     // Create an activate batch object
     ActivateBatch activateBatch = ActivateBatch(listOfActivate);
+
+    // List exposure to send when succeed
+    List<FSExposedInfo> listExposure = [];
+
     // Encode batch before send it
     try {
       Object? objectToSend = jsonEncode(activateBatch.toJson());
@@ -65,13 +71,15 @@ extension TrackingManagerBatch on TrackingManager {
         case 204:
           Flagship.logger(Level.INFO, ACTIVATE_SUCCESS + ": $objectToSend");
           onSendActivateBatchWithSuccess(listOfActivate);
-          return response.statusCode;
+          // Fill the list exposure
+          this.onExposure(activateBatch.getExposureInfos());
+          // Return the response
+          return ActivateResopnse(listExposure, response.statusCode);
         default:
           Flagship.logger(Level.ERROR, HIT_FAILED);
           DataUsageTracking.sharedInstance().processTroubleShootingHttp(
               CriticalPoints.SEND_ACTIVATE_HIT_ROUTE_ERROR.name, response);
-
-          return response.statusCode;
+          return ActivateResopnse(listExposure, response.statusCode);
       }
     } on Exception catch (e) {
       DataUsageTracking.sharedInstance()
@@ -80,7 +88,16 @@ extension TrackingManagerBatch on TrackingManager {
       Flagship.logger(
           Level.EXCEPTIONS, EXCEPTION.replaceFirst("%s", "$e") + urlString);
       Flagship.logger(Level.ERROR, HIT_FAILED);
-      return 500;
+      return ActivateResopnse([], 500);
     }
+  }
+
+  void onExposure(List<FSExposedInfo> exposureInfos) {
+    exposureInfos.forEach((item) {
+      Flagship.sharedInstance()
+          .getConfiguration()
+          ?.onVisitorExposed
+          ?.call(item.visitorExposed, item.exposedFlag);
+    });
   }
 }

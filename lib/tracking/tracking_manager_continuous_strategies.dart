@@ -72,7 +72,6 @@ class TrackingManageContinuousStrategy extends TrackingManager {
     }
   }
 
-  // later add code error in the future
   Future<ActivateResopnse> sendActivate(Activate activateHit) async {
     // Add the current activate by default
     List<Hit> listOfActivate = [activateHit];
@@ -89,20 +88,10 @@ class TrackingManageContinuousStrategy extends TrackingManager {
     } else {
       // We dont have any failed activate in the pool
     }
-    var statusCode = await sendActivateBatch(listOfActivate);
-    List<FSExposedInfo> listExposure = [];
-
-    switch (statusCode) {
+    var response = await sendActivateBatch(listOfActivate);
+    switch (response.statusCode) {
       case 200:
       case 204:
-        // Send the exposure information here before remove all staff
-
-        /// Fill this listExposure
-        // Create an activate batch object
-        // TODO check refractor
-        ActivateBatch activateBatch = ActivateBatch(listOfActivate);
-        listExposure = activateBatch.getExposureInfos();
-
         // Clear all the activate in the pool and clear them from cache
         if (needToClean) {
           _activatePool.flushAllTrackFromQueue();
@@ -110,13 +99,12 @@ class TrackingManageContinuousStrategy extends TrackingManager {
               activateHit); // Remove the current hit before because is not already present in the cache.
           onSendActivateBatchWithSuccess(listOfActivate);
         }
-
         break;
       default:
         _activatePool.addNewTrackElement(activateHit);
         this.onCacheHit(activateHit);
     }
-    return ActivateResopnse(listExposure, statusCode);
+    return response;
   }
 
   @override

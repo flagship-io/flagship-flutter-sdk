@@ -15,7 +15,6 @@ import 'package:flagship/utils/constants.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/visitor.dart';
 import 'package:flagship/visitor/Ivisitor.dart';
-import 'package:flutter/widgets.dart';
 
 // This class represent the default behaviour
 class DefaultStrategy implements IVisitor {
@@ -39,19 +38,23 @@ class DefaultStrategy implements IVisitor {
 
   // Activate
   Future<void> _sendActivate(Modification pModification) async {
-    // Construct the activate hit
+    // Check if the callback is defined
+    String? exposedFlag;
+    String? exposedVisitor;
+    if (Flagship.sharedInstance().getConfiguration()?.onVisitorExposed !=
+        null) {
+      exposedFlag = jsonEncode(ExposedFlag(
+              pModification.key,
+              pModification.value,
+              pModification.defaultValue,
+              FlagMetadata.withMap(pModification.toJsonInformation()))
+          .toJson());
 
-    String? exposedFlag = jsonEncode(ExposedFlag(
-            pModification.key,
-            pModification.value,
-            pModification.defaultValue,
-            FlagMetadata.withMap(pModification.toJsonInformation()))
-        .toJson());
-
-    String? exposedVisitor = jsonEncode(VisitorExposed(
-            visitor.visitorId, visitor.anonymousId, visitor.getContext())
-        .toJson());
-
+      exposedVisitor = jsonEncode(VisitorExposed(
+              visitor.visitorId, visitor.anonymousId, visitor.getContext())
+          .toJson());
+    }
+    // Build the activate hit
     Activate activateHit = Activate(
         pModification,
         visitor.visitorId,
@@ -59,14 +62,12 @@ class DefaultStrategy implements IVisitor {
         Flagship.sharedInstance().envId ?? "",
         exposedFlag,
         exposedVisitor);
-
+    // Process the troubleShooting
     DataUsageTracking.sharedInstance().processTroubleShootingHits(
         CriticalPoints.VISITOR_SEND_ACTIVATE.name, visitor, activateHit);
     visitor.trackingManager?.sendActivate(activateHit).then((activateResponse) {
       if (activateResponse.statusCode >= 200 &&
           activateResponse.statusCode < 300) {
-        // this.onExposure(pModification);
-        this.onExposureBis(activateResponse.exposeInfos);
       } else {
         Flagship.logger(
             Level.ERROR,

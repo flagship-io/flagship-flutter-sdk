@@ -90,7 +90,9 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
         })
         .withTimeout(int.tryParse(timeoutController.text) ?? fsData.timeout)
         .withTrackingConfig(TrackingManagerConfig(
-            batchIntervals: 5, poolMaxSize: 10, batchStrategy: fsData.strategy))
+            batchIntervals: 5000,
+            poolMaxSize: 10,
+            batchStrategy: fsData.strategy))
         .withOnVisitorExposed((visitorExposed, fromFlag) {
           print("-------- On user Exposed callback ----------- ");
           print(fromFlag.toJson());
