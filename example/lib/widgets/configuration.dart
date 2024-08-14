@@ -405,7 +405,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
 
       vA.fetchFlags().whenComplete(() {
         //Activate
-        var value = vA.getFlag("btnColor", "defaultValue").value();
+        var value = vA.getFlag("btnColor").value("defaultValue");
         print("the vlaue of flag is " + value);
         vA.sendHit(Screen(location: "screenQA"));
 

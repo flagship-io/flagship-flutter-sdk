@@ -6,6 +6,7 @@ import 'package:flagship/flagshipContext/flagship_context.dart';
 import 'package:flagship/flagshipContext/flagship_context_manager.dart';
 import 'package:flagship/hits/event.dart';
 import 'package:flagship/model/flag.dart';
+import 'package:flagship/model/flag.dart';
 import 'package:flagship/model/modification.dart';
 import 'package:flagship/decision/decision_manager.dart';
 import 'package:flagship/flagship_config.dart';
@@ -19,12 +20,11 @@ import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor/visitor_delegate.dart';
+import 'package:flagship/visitor_flag.dart';
 import 'package:flutter/foundation.dart';
 import 'flagship_delegate.dart';
 import 'package:http/http.dart' as http;
 import 'package:flagship/status.dart';
-
-part "visitor_tr.dart";
 
 enum Instance {
   // The  newly created visitor instance will be returned and saved into the Flagship singleton. Call `Flagship.getVisitor()` to retrieve the instance.
@@ -262,12 +262,32 @@ class Visitor {
   /// key : the name of the key relative to modification
   /// defaultValue: the returned value if the key is not found
   /// return Flag object. See Flag class
-  Flag getFlag<T>(String key, T defaultValue) {
+  // Flag getFlag<T>(String key, T defaultValue) {
+  //   if (_flagSyncStatus != FlagSyncStatus.FLAGS_FETCHED) {
+  //     Flagship.logger(
+  //         Level.ALL, _flagSyncStatus.warningMessage(visitorId, key));
+  //   }
+  //   return Flag<T>(key, defaultValue, this._visitorDelegate);
+  // }
+
+  // Get Flag a new version to rename when donne the IMP
+  Flag getFlag<T>(String key) {
     if (_flagSyncStatus != FlagSyncStatus.FLAGS_FETCHED) {
       Flagship.logger(
           Level.ALL, _flagSyncStatus.warningMessage(visitorId, key));
     }
-    return Flag<T>(key, defaultValue, this._visitorDelegate);
+    return Flag(key, this._visitorDelegate);
+  }
+
+  // Get the colllection flags
+  /// - Returns: an instance of FSFlagCollection with flags
+  FSFlagCollection getFlags() {
+    Map<String, Flag> ret = {};
+
+    this.modifications.forEach((keyItem, modifItem) {
+      ret.addAll({keyItem: Flag(keyItem, this._visitorDelegate)});
+    });
+    return FSFlagCollection(flags: ret);
   }
 
   Future<void> fetchFlags() async {

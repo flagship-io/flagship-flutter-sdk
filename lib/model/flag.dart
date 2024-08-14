@@ -1,26 +1,30 @@
 import 'package:flagship/dataUsage/data_usage_tracking.dart';
 import 'package:flagship/flagship.dart';
+import 'package:flagship/model/flag.dart';
 import 'package:flagship/model/modification.dart';
 import 'package:flagship/status.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor/visitor_delegate.dart';
 
-class Flag<T> implements IFlag {
+class Flag implements IFlag {
   // Key associated to the Flag
   final String _key;
   // Value for the Flag
-  final T _defaultValue;
+  dynamic _defaultValue;
   // Delegate
-  final VisitorDelegate _visitorDelegate;
+  final VisitorDelegate? _visitorDelegate;
 
-  Flag(this._key, this._defaultValue, this._visitorDelegate);
+  //Flag2(this._key, this._defaultValue, this._visitorDelegate);
+  Flag(this._key, this._visitorDelegate);
 
 // Get value for flag
 //
 // visitorExposed is true by default
-  dynamic value({bool visitorExposed = true}) {
-    dynamic retValue = _defaultValue;
-    Modification? modif = this._visitorDelegate.getFlagModification(this._key);
+  T value<T>(T? defaultValue, {bool visitorExposed = true}) {
+    dynamic retValue = defaultValue;
+    this._defaultValue = defaultValue;
+
+    Modification? modif = this._visitorDelegate?.getFlagModification(this._key);
     if (modif != null) {
       try {
         {
@@ -37,10 +41,12 @@ class Flag<T> implements IFlag {
               this.visitorExposed();
             }
           } else {
-            DataUsageTracking.sharedInstance().proceesTroubleShootingFlag(
-                CriticalPoints.GET_FLAG_VALUE_TYPE_WARNING.name,
-                this,
-                this._visitorDelegate.visitor);
+            Flagship.logger(Level.DEBUG, "Types mismatch default Value");
+            // Fix later this line
+            //  DataUsageTracking.sharedInstance().proceesTroubleShootingFlag(
+            //    CriticalPoints.GET_FLAG_VALUE_TYPE_WARNING.name,
+            //  this,
+            //   this._visitorDelegate.visitor);
           }
         }
       } catch (exp) {
@@ -48,60 +54,62 @@ class Flag<T> implements IFlag {
             "an exception raised  $exp , will return a default value ");
       }
     } else {
-      DataUsageTracking.sharedInstance().proceesTroubleShootingFlag(
-          CriticalPoints.GET_FLAG_VALUE_FLAG_NOT_FOUND.name,
-          this,
-          this._visitorDelegate.visitor);
+      // DataUsageTracking.sharedInstance().proceesTroubleShootingFlag(
+      //   CriticalPoints.GET_FLAG_VALUE_FLAG_NOT_FOUND.name,
+      // this,
+      //this._visitorDelegate.visitor);
+
+      Flagship.logger(Level.DEBUG,
+          "Flag: " + _key + "Flag not found, the activate won't be sent");
     }
     return retValue;
-  }
-
-// Expose Flag
-  @Deprecated('Use visitorExposed() instead')
-  Future<void> userExposed() async {
-    visitorExposed();
   }
 
   // Expose Flag
   Future<void> visitorExposed() async {
     // Before expose whe should check the Type
     Modification? modification =
-        this._visitorDelegate.getFlagModification(this._key);
+        this._visitorDelegate?.getFlagModification(this._key);
     if (modification != null) {
-      if (modification.value == null ||
-          _isSameTypeOrDefaultValueNull(modification.value)) {
-        Flagship.logger(
-            Level.DEBUG, "Send exposure flag (activate) for : " + _key);
+      // Check if the default value is set
+      if (this._defaultValue != null) {
+        if (modification.value == null ||
+            _isSameTypeOrDefaultValueNull(modification.value)) {
+          Flagship.logger(
+              Level.DEBUG, "Send exposure flag (activate) for : " + _key);
 
-        // Update modification with default value
-        modification.defaultValue = this._defaultValue;
-        // Activate flag
-        this._visitorDelegate.activateFlag(modification);
+          // Update modification with default value
+          modification.defaultValue = this.defaultValue;
+          // Activate flag
+          this._visitorDelegate?.activateFlag(modification);
+        } else {
+          Flagship.logger(Level.DEBUG,
+              "Exposed aborted, because the flagValue type is not the same as default value");
+        }
       } else {
-        Flagship.logger(Level.DEBUG,
-            "Exposed aborted, because the flagValue type is not the same as default value");
+        // Default valeue not set before
+        Flagship.logger(Level.ALL, "value() haven't been called beforehand");
       }
     } else {
       Flagship.logger(Level.DEBUG,
-          "Flag: " + _key + "not found, the activate won't be sent");
+          "Flag: " + _key + "Flag not found, the activate won't be sent");
     }
   }
 
 // Check if Flag exist
   bool exists() {
-    return (this._visitorDelegate.getFlagModification(this._key) != null);
+    return (this._visitorDelegate?.getFlagModification(this._key) != null);
   }
 
   // Get metadata
   @override
   FlagMetadata metadata() {
     // Before expose whe should check the Type
-    Modification? modif = this._visitorDelegate.getFlagModification(this._key);
-    if (modif != null &&
-        (modif.value == null || _isSameTypeOrDefaultValueNull(modif.value))) {
+    Modification? modif = this._visitorDelegate?.getFlagModification(this._key);
+    if (modif != null) {
       // when the flag value is null we provide the metadata
       return FlagMetadata.withMap(
-          this._visitorDelegate.getModificationInfo(this._key));
+          this._visitorDelegate?.getModificationInfo(this._key));
     } else {
       return FlagMetadata.withMap(null);
     }
@@ -110,22 +118,36 @@ class Flag<T> implements IFlag {
   // Check the type of flag's value with the default value and return true if the same
   // If the default value is null will return true
   bool _isSameTypeOrDefaultValueNull(dynamic value) {
-    if (this._defaultValue.runtimeType == Null) {
+    if (this._defaultValue == Null) {
       return true;
     }
-    return (value is T);
-  }
 
-  @override
-  T get defaultValue => _defaultValue;
+    /// Check with unit test and functionnal tests
+    return (value.runtimeType == this.defaultValue.runtimeType);
+  }
 
   @override
   String get key => _key;
 
   // Get Status
   FlagStatus getFlagStatus() {
-    return this._visitorDelegate.getFlagStatus(this._key);
+    return this._visitorDelegate?.getFlagStatus(this._key) ??
+        FlagStatus.NOT_FOUND;
   }
+
+  @override
+  get defaultValue => this._defaultValue;
+}
+
+abstract class IFlag {
+  // Key for flag
+  String get key;
+
+  // Default value
+  dynamic get defaultValue;
+
+  // Get metadata
+  FlagMetadata metadata();
 }
 
 class FlagMetadata {
@@ -171,17 +193,6 @@ class FlagMetadata {
       "slug": this.slug,
     };
   }
-}
-
-abstract class IFlag<T> {
-  // Key for flag
-  String get key;
-
-  // Default value
-  T get defaultValue;
-
-  // Get metadata
-  FlagMetadata metadata();
 }
 
 // Flag Sync Status
