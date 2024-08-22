@@ -75,8 +75,8 @@ Future<void> main() async {
         .fsQueue
         .clear();
     await vMock.fetchFlags();
-    var mockFlag = vMock.getFlag("key_A", "defaultValue");
-    var mockVal = mockFlag.value(visitorExposed: false);
+    var mockFlag = vMock.getFlag("key_A");
+    var mockVal = mockFlag.value("defaultValue", visitorExposed: false);
     expect(mockVal, "val_A");
     await mockFlag.visitorExposed();
     await mockFlag.visitorExposed();

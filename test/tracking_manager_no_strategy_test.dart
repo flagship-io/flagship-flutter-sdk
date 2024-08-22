@@ -144,7 +144,7 @@ Future<void> main() async {
     // Fetch
     user.fetchFlags().whenComplete(() async {
       // Get Flag             "":"val_A",
-      var flagTest = user.getFlag("key_A", "dfl");
+      var flagTest = user.getFlag("key_A");
       // Activate
       // Failed the activate
       when(fakeTrackingService.sendHttpRequest(RequestType.Post,
@@ -153,7 +153,7 @@ Future<void> main() async {
           .thenAnswer((_) async {
         return http.Response("mock", 400);
       });
-      flagTest.value();
+      flagTest.value("dfl");
       // Set the consent to false
       user.setConsent(false);
     });

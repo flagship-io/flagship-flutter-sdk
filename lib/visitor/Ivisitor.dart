@@ -1,6 +1,3 @@
-import 'dart:collection';
-import 'dart:ffi';
-
 import 'package:flagship/hits/hit.dart';
 import 'package:flagship/model/modification.dart';
 import 'package:flagship/model/visitor_exposed.dart';

@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flagship/model/flag.dart';
 import 'package:flagship/status.dart';
 import 'package:flagship/visitor.dart';
-import 'package:flagship/visitor_flag.dart';
+import 'package:flagship/model/visitor_flag.dart';
 import 'package:flagship_qa/widgets/FSinputField.dart';
 import 'package:flagship_qa/widgets/modifications_json_screen.dart';
 import 'package:flutter/material.dart';
@@ -145,6 +145,9 @@ class _ModificationsState extends State<Modifications> {
 
     if (v1 != null) {
       FSFlagCollection flagCollection = v1.getFlags();
+      var stirngCollection = flagCollection.toJson();
+
+      print(stirngCollection);
 
       FSFlagCollection filtredCollection =
           flagCollection.filter((keyItem, flagItem) {
@@ -154,9 +157,10 @@ class _ModificationsState extends State<Modifications> {
       print("The count of the filtred ${filtredCollection.count}");
       flagCollection.forEach((a, b) {
         print(a);
-        b.visitorExposed();
-        b.value("aaa");
-        b.visitorExposed();
+
+        var val = b.value(null);
+
+        print(val);
       });
     }
 

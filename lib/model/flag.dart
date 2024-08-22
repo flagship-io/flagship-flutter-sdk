@@ -1,10 +1,14 @@
+import 'dart:convert';
+import 'dart:ffi';
 import 'package:flagship/dataUsage/data_usage_tracking.dart';
 import 'package:flagship/flagship.dart';
-import 'package:flagship/model/flag.dart';
 import 'package:flagship/model/modification.dart';
 import 'package:flagship/status.dart';
+import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor/visitor_delegate.dart';
+import 'package:flagship/model/visitor_flag.dart';
+import 'package:flutter/material.dart';
 
 class Flag implements IFlag {
   // Key associated to the Flag
@@ -14,13 +18,12 @@ class Flag implements IFlag {
   // Delegate
   final VisitorDelegate? _visitorDelegate;
 
-  //Flag2(this._key, this._defaultValue, this._visitorDelegate);
   Flag(this._key, this._visitorDelegate);
 
 // Get value for flag
 //
 // visitorExposed is true by default
-  T value<T>(T? defaultValue, {bool visitorExposed = true}) {
+  dynamic value<T>(T? defaultValue, {bool visitorExposed = true}) {
     dynamic retValue = defaultValue;
     this._defaultValue = defaultValue;
 
@@ -35,11 +38,11 @@ class Flag implements IFlag {
             }
           } else if (_isSameTypeOrDefaultValueNull(modif.value)) {
             /// Get the flag value
-            retValue = modif.value;
             // Activate if necessary
             if (visitorExposed) {
               this.visitorExposed();
             }
+            return modif.value;
           } else {
             Flagship.logger(Level.DEBUG, "Types mismatch default Value");
             // Fix later this line
@@ -118,12 +121,18 @@ class Flag implements IFlag {
   // Check the type of flag's value with the default value and return true if the same
   // If the default value is null will return true
   bool _isSameTypeOrDefaultValueNull(dynamic value) {
-    if (this._defaultValue == Null) {
+    if (this._defaultValue == null) {
       return true;
     }
-
-    /// Check with unit test and functionnal tests
-    return (value.runtimeType == this.defaultValue.runtimeType);
+    if (this._defaultValue is Map) {
+      // Check if Map
+      return (value is Map);
+    } else if (this._defaultValue is Array) {
+      // Check if Array
+      return (value is Array);
+    } else {
+      return (value.runtimeType == this.defaultValue.runtimeType);
+    }
   }
 
   @override

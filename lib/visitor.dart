@@ -6,7 +6,6 @@ import 'package:flagship/flagshipContext/flagship_context.dart';
 import 'package:flagship/flagshipContext/flagship_context_manager.dart';
 import 'package:flagship/hits/event.dart';
 import 'package:flagship/model/flag.dart';
-import 'package:flagship/model/flag.dart';
 import 'package:flagship/model/modification.dart';
 import 'package:flagship/decision/decision_manager.dart';
 import 'package:flagship/flagship_config.dart';
@@ -20,7 +19,7 @@ import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor/visitor_delegate.dart';
-import 'package:flagship/visitor_flag.dart';
+import 'package:flagship/model/visitor_flag.dart';
 import 'package:flutter/foundation.dart';
 import 'flagship_delegate.dart';
 import 'package:http/http.dart' as http;
@@ -287,7 +286,7 @@ class Visitor {
     this.modifications.forEach((keyItem, modifItem) {
       ret.addAll({keyItem: Flag(keyItem, this._visitorDelegate)});
     });
-    return FSFlagCollection(flags: ret);
+    return FSFlagCollection(this._visitorDelegate, flags: ret);
   }
 
   Future<void> fetchFlags() async {
