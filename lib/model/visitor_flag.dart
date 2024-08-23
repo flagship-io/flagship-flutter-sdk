@@ -7,51 +7,51 @@ import 'package:flagship/visitor/visitor_delegate.dart';
 class FSFlagCollection {
   final VisitorDelegate _visitorDelegate;
 
-  Map<String, Flag> flags = {};
+  Map<String, Flag> _flags = {};
 
   // Constructor
-  FSFlagCollection(this._visitorDelegate, {required this.flags});
+  FSFlagCollection(this._visitorDelegate, this._flags);
 
   // Iterator
   Iterator<MapEntry<String, Flag>> makeIterator() {
-    return flags.entries.iterator;
+    return _flags.entries.iterator;
   }
 
   // Subscript (using operator overloading)
   Flag operator [](String key) {
-    return flags[key] ?? Flag(key, null);
+    return _flags[key] ?? Flag(key, null);
   }
 
   void operator []=(String key, Flag newValue) {
-    flags[key] = newValue;
+    _flags[key] = newValue;
   }
 
   // Filtering
   FSFlagCollection filter(bool Function(String, Flag) isIncluded) {
     var filteredFlags =
-        flags.entries.where((entry) => isIncluded(entry.key, entry.value));
+        _flags.entries.where((entry) => isIncluded(entry.key, entry.value));
     var newFlags = {for (var entry in filteredFlags) entry.key: entry.value};
-    return FSFlagCollection(this._visitorDelegate, flags: newFlags);
+    return FSFlagCollection(this._visitorDelegate, newFlags);
   }
 
   void forEach(void action(String key, Flag value)) {
-    this.flags.forEach(action);
+    this._flags.forEach(action);
   }
 
   // Keys
   Iterable<String> keys() {
-    return flags.keys;
+    return _flags.keys;
   }
 
   // Metadatas
   List<FlagMetadata> metadatas() {
-    return flags.values.map((value) => value.metadata()).toList();
+    return _flags.values.map((value) => value.metadata()).toList();
   }
 
   // Convert to JSON
   String toJson() {
     List<Map<String, dynamic>> arrayOfJson = [];
-    flags.forEach((key, value) {
+    _flags.forEach((key, value) {
       ExtraMetadata? item = _getExtraMetadata(value);
       if (item != null) {
         arrayOfJson.add(item.tojson());
@@ -65,16 +65,16 @@ class FSFlagCollection {
 
   // Expose all
   void exposeAll() {
-    flags.forEach((key, value) {
+    _flags.forEach((key, value) {
       value.visitorExposed();
     });
   }
 
   // Count
-  int get count => flags.length;
+  int get count => _flags.length;
 
   // Is empty
-  bool get isEmpty => flags.isEmpty;
+  bool get isEmpty => _flags.isEmpty;
 
   ExtraMetadata? _getExtraMetadata(Flag flag) {
     Modification? modif = this._visitorDelegate.getFlagModification(flag.key);

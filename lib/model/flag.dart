@@ -44,7 +44,8 @@ class Flag implements IFlag {
             }
             return modif.value;
           } else {
-            Flagship.logger(Level.DEBUG, "Types mismatch default Value");
+            Flagship.logger(Level.DEBUG,
+                "For the visitor ${this._visitorDelegate?.visitor.visitorId} , the flag with key ${this.key} has a different type compared to the default value. Therefore, the default value ${defaultValue} has been returned.");
             // Fix later this line
             //  DataUsageTracking.sharedInstance().proceesTroubleShootingFlag(
             //    CriticalPoints.GET_FLAG_VALUE_TYPE_WARNING.name,
@@ -61,9 +62,9 @@ class Flag implements IFlag {
       //   CriticalPoints.GET_FLAG_VALUE_FLAG_NOT_FOUND.name,
       // this,
       //this._visitorDelegate.visitor);
-
+      //
       Flagship.logger(Level.DEBUG,
-          "Flag: " + _key + "Flag not found, the activate won't be sent");
+          "For the visitor ${this._visitorDelegate?.visitor.visitorId} , no flags were found with the key ${this.key}.Therefore, the default value ${defaultValue} has been returned ");
     }
     return retValue;
   }
@@ -87,15 +88,15 @@ class Flag implements IFlag {
           this._visitorDelegate?.activateFlag(modification);
         } else {
           Flagship.logger(Level.DEBUG,
-              "Exposed aborted, because the flagValue type is not the same as default value");
+              "For the visitor ${this._visitorDelegate?.visitor.visitorId}, the flag with key ${this.key} has a different type compared to the default value. Therefore, the exposure is interrupted.");
         }
       } else {
-        // Default valeue not set before
-        Flagship.logger(Level.ALL, "value() haven't been called beforehand");
+        Flagship.logger(Level.ALL,
+            "Assuming the value() method has not previously invoked the flag ${this.key} for the Visitor ${this._visitorDelegate?.visitor.visitorId}, the exposure is canceled");
       }
     } else {
       Flagship.logger(Level.DEBUG,
-          "Flag: " + _key + "Flag not found, the activate won't be sent");
+          "For the visitor ${this._visitorDelegate?.visitor.visitorId}, no flags were found with the key ${this.key}. As a result, user exposure will not be sent.");
     }
   }
 

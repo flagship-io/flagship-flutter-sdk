@@ -206,7 +206,6 @@ class Visitor {
       // Update flagSyncStatus to raise a warning when access to flag
       this._flagSyncStatus = FlagSyncStatus.CONTEXT_UPDATED;
       // TODO factorise with syncStaus
-
       flagStatus = FlagStatus.FETCH_REQUIRED;
       _fetchReasons = FetchFlagsRequiredStatusReason.VISITOR_CONTEXT_UPDATED;
     }
@@ -286,7 +285,7 @@ class Visitor {
     this.modifications.forEach((keyItem, modifItem) {
       ret.addAll({keyItem: Flag(keyItem, this._visitorDelegate)});
     });
-    return FSFlagCollection(this._visitorDelegate, flags: ret);
+    return FSFlagCollection(this._visitorDelegate, ret);
   }
 
   Future<void> fetchFlags() async {

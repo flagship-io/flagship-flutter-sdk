@@ -145,41 +145,13 @@ class _ModificationsState extends State<Modifications> {
 
     if (v1 != null) {
       FSFlagCollection flagCollection = v1.getFlags();
-      var stirngCollection = flagCollection.toJson();
 
-      print(stirngCollection);
+      var flag = flagCollection['btnColor'];
 
-      FSFlagCollection filtredCollection =
-          flagCollection.filter((keyItem, flagItem) {
-        return (keyItem == "btnColor");
-      });
+      flag.value(12121);
 
-      print("The count of the filtred ${filtredCollection.count}");
-      flagCollection.forEach((a, b) {
-        print(a);
-
-        var val = b.value(null);
-
-        print(val);
-      });
+      flag.visitorExposed();
     }
-
-    // if (flagCollection != null) {
-    //   print(" The length of the flag collection is " +
-    //       flagCollection.count.toString());
-    //   flagCollection.flags.forEach((itemkey, itemValue) {
-    //     print(itemkey);
-
-    //     var valueFlag = itemValue.value("defaultValue");
-
-    //     print("The value for the $itemkey is $valueFlag");
-    //     itemValue.visitorExposed();
-
-    //     print("The name of cmapaign is " + itemValue.metadata().campaignName);
-
-    //     print("The id of variation is " + itemValue.metadata().variationId);
-    //   });
-    // }
   }
 
   void _resetField() {
