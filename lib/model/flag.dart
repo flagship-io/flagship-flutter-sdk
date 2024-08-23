@@ -1,14 +1,11 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'package:flagship/dataUsage/data_usage_tracking.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/model/modification.dart';
 import 'package:flagship/status.dart';
-import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
+import 'package:flagship/visitor.dart';
 import 'package:flagship/visitor/visitor_delegate.dart';
-import 'package:flagship/model/visitor_flag.dart';
-import 'package:flutter/material.dart';
 
 class Flag implements IFlag {
   // Key associated to the Flag
@@ -47,10 +44,11 @@ class Flag implements IFlag {
             Flagship.logger(Level.DEBUG,
                 "For the visitor ${this._visitorDelegate?.visitor.visitorId} , the flag with key ${this.key} has a different type compared to the default value. Therefore, the default value ${defaultValue} has been returned.");
             // Fix later this line
-            //  DataUsageTracking.sharedInstance().proceesTroubleShootingFlag(
-            //    CriticalPoints.GET_FLAG_VALUE_TYPE_WARNING.name,
-            //  this,
-            //   this._visitorDelegate.visitor);
+            DataUsageTracking.sharedInstance().proceesTroubleShootingFlag(
+                CriticalPoints.GET_FLAG_VALUE_TYPE_WARNING.name,
+                this,
+                this._visitorDelegate?.visitor ??
+                    VisitorBuilder("", false).build());
           }
         }
       } catch (exp) {
@@ -58,10 +56,10 @@ class Flag implements IFlag {
             "an exception raised  $exp , will return a default value ");
       }
     } else {
-      // DataUsageTracking.sharedInstance().proceesTroubleShootingFlag(
-      //   CriticalPoints.GET_FLAG_VALUE_FLAG_NOT_FOUND.name,
-      // this,
-      //this._visitorDelegate.visitor);
+      DataUsageTracking.sharedInstance().proceesTroubleShootingFlag(
+          CriticalPoints.GET_FLAG_VALUE_FLAG_NOT_FOUND.name,
+          this,
+          this._visitorDelegate?.visitor ?? VisitorBuilder("", false).build());
       //
       Flagship.logger(Level.DEBUG,
           "For the visitor ${this._visitorDelegate?.visitor.visitorId} , no flags were found with the key ${this.key}.Therefore, the default value ${defaultValue} has been returned ");
@@ -128,9 +126,9 @@ class Flag implements IFlag {
     if (this._defaultValue is Map) {
       // Check if Map
       return (value is Map);
-    } else if (this._defaultValue is Array) {
+    } else if (this._defaultValue is List) {
       // Check if Array
-      return (value is Array);
+      return (value is List);
     } else {
       return (value.runtimeType == this.defaultValue.runtimeType);
     }
