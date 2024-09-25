@@ -63,7 +63,7 @@ class FSData extends ChangeNotifier {
 }
 
 class UserData extends ChangeNotifier {
-  String _visitorId = "onBoarding";
+  String _visitorId = "flutter_user252";
   Map<String, Object> context = {
     "testing_tracking_manager": true,
     "isQA": true,
