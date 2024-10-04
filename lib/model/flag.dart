@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flagship/dataUsage/data_usage_tracking.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/model/modification.dart';
