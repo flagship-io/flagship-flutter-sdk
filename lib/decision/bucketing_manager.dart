@@ -153,7 +153,7 @@ class BucketingManager extends DecisionManager {
     }
   }
 
-// Use tbk_file to refresh the state
+// Refresh state
   void _updateStatus(Bucketing? bk_file) {
     if (bk_file != null) {
       Flagship.sharedInstance().onUpdateState(

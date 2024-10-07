@@ -9,15 +9,6 @@ import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor.dart';
 import 'flagship_delegate.dart';
 
-// enum Status {
-//   // Flagship SDK has not been started or initialized successfully.
-//   NOT_INITIALIZED,
-//   // Flagship SDK is ready but is running in Panic mode: All features are disabled except the one which refresh this status.
-//   PANIC_ON,
-//   // Flagship SDK is ready to use.
-//   READY
-// }
-
 class Flagship with FlagshipDelegate {
   // Environement id (provided by flagship)
   String? envId;
@@ -33,7 +24,7 @@ class Flagship with FlagshipDelegate {
 
   //Status _status = Status.NOT_INITIALIZED;
   // new sdk status
-  FSSdkStatus _statusBis = FSSdkStatus.SDK_NOT_INITIALIZED;
+  FSSdkStatus _status = FSSdkStatus.SDK_NOT_INITIALIZED;
 
   // Internal Singelton
   static final Flagship _singleton = Flagship._internal();
@@ -55,7 +46,7 @@ class Flagship with FlagshipDelegate {
   // envId : environement id (provided by flagship)
   // apiKey: Api key (provided by flagship)
   static start(String envId, String apiKey, {FlagshipConfig? config}) async {
-    _singleton._statusBis = FSSdkStatus.SDK_NOT_INITIALIZED;
+    _singleton._status = FSSdkStatus.SDK_NOT_INITIALIZED;
     FSDevice.loadDeviceInfo();
     if (FlagshipTools.chekcXidEnvironment(envId)) {
       _singleton.apiKey = apiKey;
@@ -123,16 +114,16 @@ class Flagship with FlagshipDelegate {
 
   // Get Status
   static FSSdkStatus getStatus() {
-    return Flagship._singleton._statusBis;
+    return Flagship._singleton._status;
   }
 
   @override
   void onUpdateState(FSSdkStatus newStatus) {
     // If the status hasn't changed, no need to update and trigger the callback
-    if (newStatus == _singleton._statusBis) {
+    if (newStatus == _singleton._status) {
       return;
     }
-    _singleton._statusBis = newStatus;
+    _singleton._status = newStatus;
 
     // Trigger the callback
     // Check if the callback if not null before trigger it

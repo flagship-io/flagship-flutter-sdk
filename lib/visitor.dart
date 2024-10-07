@@ -90,18 +90,21 @@ class Visitor {
   FetchFlagsRequiredStatusReason _fetchReasons =
       FetchFlagsRequiredStatusReason.FLAGS_NEVER_FETCHED;
 
-  // CallBack for status
+  // Callback for status
   OnFlagStatusChanged _onFlagStatusChanged;
 
+  // _onFlagStatusFetchRequired
   OnFlagStatusFetchRequired _onFlagStatusFetchRequired;
 
+  // _onFlagStatusFetched
   OnFlagStatusFetched _onFlagStatusFetched;
 
-// Getter
+// Get flagStatus
   FlagStatus get flagStatus {
     return _flagStatus;
   }
 
+// Get fetchReasons
   FetchFlagsRequiredStatusReason get fetchReasons {
     return _fetchReasons;
   }
@@ -121,11 +124,7 @@ class Visitor {
     }
   }
 
-  /// Create new instance for visitor
-  ///
-  /// config: this object manage the mode of the sdk and other params
-  /// visitorId : the user ID for the visitor
-  /// context : Map that represent the conext for the visitor
+  // Create new instance for visitor
   Visitor(
       this.config,
       this.visitorId,
@@ -141,7 +140,7 @@ class Visitor {
       anonymousId = null;
     }
 
-    /// Init Tracking manager
+    // Init Tracking manager
     switch (config.trackingManagerConfig.batchStrategy) {
       case BatchCachingStrategy.BATCH_CONTINUOUS_CACHING:
         trackingManager = TrackingManageContinuousStrategy(
@@ -161,23 +160,22 @@ class Visitor {
         break;
     }
 
-    /// Load preset_Context
+    // Load preset_Context
     this.updateContextWithMap(FlagshipContextManager.getPresetContextForApp());
 
-    /// Update context
+    // Update context
     this.updateContextWithMap(context);
 
-    /// Set delegate
+    // Set delegate
     _visitorDelegate = VisitorDelegate(this);
 
-    /// Set the consent
+    // Set the consent
     _hasConsented; //= hasConsented;
 
-    /// Load the hits in cache if exist
+    // Load the hits in cache if exist
     _visitorDelegate.lookupHits();
 
-    /// Lookup for the cached visitor data
-    // TODO check this part with tests concurrency
+    // Lookup for the cached visitor data
     _visitorDelegate.lookupVisitor(this.visitorId).then((isLoadedFromCache) => {
           this._fetchReasons = isLoadedFromCache
               ? FetchFlagsRequiredStatusReason.FLAGS_FETCHED_FROM_CACHE
@@ -192,12 +190,12 @@ class Visitor {
         .configureDataUsageWithVisitor(null, this);
   }
 
-  /// Update context directely with map for <String, Object>
+  // Update context directely with map for <String, Object>
   void clearContext() {
     _context.clear();
   }
 
-  /// Update context directely with map for <String, Object>
+  // Update context directely with map for <String, Object>
   void updateContextWithMap(Map<String, Object> context) {
     var oldContext = Map.fromEntries(_context.entries);
     _context.addAll(context);
@@ -238,7 +236,6 @@ class Visitor {
       // Update flagSyncStatus to raise a warning when access to flag
       this._flagSyncStatus = FlagSyncStatus.CONTEXT_UPDATED;
 
-      // TODO factorise with syncStaus
       this.flagStatus = FlagStatus.FETCH_REQUIRED;
       this._fetchReasons =
           FetchFlagsRequiredStatusReason.VISITOR_CONTEXT_UPDATED;
@@ -255,20 +252,8 @@ class Visitor {
     }
   }
 
-  /// Get Flag object
-  ///
-  /// key : the name of the key relative to modification
-  /// defaultValue: the returned value if the key is not found
-  /// return Flag object. See Flag class
-  // Flag getFlag<T>(String key, T defaultValue) {
-  //   if (_flagSyncStatus != FlagSyncStatus.FLAGS_FETCHED) {
-  //     Flagship.logger(
-  //         Level.ALL, _flagSyncStatus.warningMessage(visitorId, key));
-  //   }
-  //   return Flag<T>(key, defaultValue, this._visitorDelegate);
-  // }
-
-  // Get Flag a new version to rename when donne the IMP
+  // Get Flag
+  // - Return Flag instance
   Flag getFlag<T>(String key) {
     if (_flagSyncStatus != FlagSyncStatus.FLAGS_FETCHED) {
       Flagship.logger(
@@ -345,7 +330,6 @@ class Visitor {
   authenticate(String visitorId) {
     // Update flagSyncStatus
     this._flagSyncStatus = FlagSyncStatus.AUTHENTICATED;
-    // TODO factorise with syncStaus
     this.flagStatus = FlagStatus.FETCH_REQUIRED;
     this._fetchReasons = FetchFlagsRequiredStatusReason.VISITOR_AUTHENTICATED;
     _isAuthenticated = true;
@@ -356,7 +340,6 @@ class Visitor {
   unauthenticate() {
     // Update flagSyncStatus
     this._flagSyncStatus = FlagSyncStatus.UNAUTHENTICATED;
-    // TODO factorise with syncStaus
     this.flagStatus = FlagStatus.FETCH_REQUIRED;
     this._fetchReasons = FetchFlagsRequiredStatusReason.VISITOR_UNAUTHENTICATED;
 
@@ -406,11 +389,6 @@ class VisitorBuilder {
     _context = context;
     return this;
   }
-
-  // VisitorBuilder hasConsented(bool hasConsented) {
-  //   _hasConsented = hasConsented;
-  //   return this;
-  // }
 
   isAuthenticated(bool authenticated) {
     _isAuthenticated = authenticated;
