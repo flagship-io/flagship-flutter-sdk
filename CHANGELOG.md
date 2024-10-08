@@ -1,3 +1,31 @@
+# 4.0.0 - 10/08/2024
+  ### Changed 
+-   The `Flag getFlag<T>(String key)` is the new signature for the getFlag method .
+-   The `func value<T>(defaultValue:T?,visitorExposed: Bool = true)->T?` is the new signature for flag.value() method .
+-   Signature `newVisitor` method builder changed to `VisitorBuilder newVisitor({required String visitorId, required bool hasConsented, Instance instanceType = Instance.SINGLE_INSTANCE})`.
+-   `hasConsented` parameter is mandatory on visitor creation instance.
+-   Enum SDK status `FSSdkStatus` has replaced `FStatus`.
+- `withStatusListener` renamed to `onSdkStatusChanged`.
+ 
+**For further information, see [migration](https://docs.developers.flagship.io/docs/flutter-migration-to-4x) code.**
+
+### Added
+-  Flag status
+-  Visitor status
+- `getFlags()` new method to get all flags in one collection as `FSFlagCollection`
+- `FlagCollection` is a collection of flag `Map<String, Flag>`
+**For further information, see [4.0.0](https://docs.developers.flagship.io/docs/flutter-reference) reference.**
+
+### Removed 
+ Deprecated methods: 
+```
+- synchronizeModifications
+- getModification
+- getModificationInfo 
+- activateModification
+- userExposed
+```
+
 # 3.1.2 - 06/02/2024
 
 - Bug fixes on Troubleshooting and Developer Usage hits
