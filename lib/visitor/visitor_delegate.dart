@@ -28,7 +28,7 @@ class VisitorDelegate implements IVisitor {
         } else {
           return DefaultStrategy(visitor);
         }
-      case FSSdkStatus.SDK_INITIALIZING: // TODO check this part
+      case FSSdkStatus.SDK_INITIALIZING:
         return NotReadyStrategy(visitor);
     }
   }

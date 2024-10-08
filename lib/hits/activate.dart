@@ -1,6 +1,4 @@
 import 'dart:convert';
-
-import 'package:collection/collection.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/hits/hit.dart';
 import 'package:flagship/model/exposed_flag.dart';
@@ -114,7 +112,6 @@ class Activate extends BaseHit {
         this.modification != null);
   }
 
-  /// TODO create a real one later
   FSExposedInfo? getExposedInfo() {
     if (this.exposure_flag != null) {
       // Create map for exposeFlag

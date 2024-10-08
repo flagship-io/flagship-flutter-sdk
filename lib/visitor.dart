@@ -203,7 +203,6 @@ class Visitor {
       // if the context still the same then no need to raise the warning
       // Update flagSyncStatus to raise a warning when access to flag
       this._flagSyncStatus = FlagSyncStatus.CONTEXT_UPDATED;
-      // TODO factorise with syncStaus
       flagStatus = FlagStatus.FETCH_REQUIRED;
       _fetchReasons = FetchFlagsRequiredStatusReason.VISITOR_CONTEXT_UPDATED;
     }

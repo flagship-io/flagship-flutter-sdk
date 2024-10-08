@@ -2,8 +2,6 @@ import 'dart:convert';
 
 import 'package:flagship/model/flag.dart';
 import 'package:flagship/status.dart';
-import 'package:flagship/visitor.dart';
-import 'package:flagship/model/visitor_flag.dart';
 import 'package:flagship_qa/widgets/FSinputField.dart';
 import 'package:flagship_qa/widgets/modifications_json_screen.dart';
 import 'package:flutter/material.dart';
@@ -128,31 +126,23 @@ class _ModificationsState extends State<Modifications> {
 
   // Get json view
   _getJsonView(BuildContext ctx) {
-    // var flagCollection = Flagship.getCurrentVisitor()?.getFlags();
-
-    // if (flagCollection != null) {
-    //   flagCollection.flags.forEach((itemkey, itemValue) {
-    //     print(itemValue.metadata().toJson().toString());
-    //   });
-    // }
-
     Navigator.of(ctx)
         .pushNamed(ModificationsJSONScreen.routeName, arguments: {});
   }
 
-  _getCollection() {
-    Visitor? v1 = Flagship.getCurrentVisitor();
+  // _getCollection() {
+  //   Visitor? v1 = Flagship.getCurrentVisitor();
 
-    if (v1 != null) {
-      FSFlagCollection flagCollection = v1.getFlags();
+  //   if (v1 != null) {
+  //     FSFlagCollection flagCollection = v1.getFlags();
 
-      var flag = flagCollection['btnColor'];
+  //     var flag = flagCollection['btnColor'];
 
-      flag.value(12121);
+  //     flag.value(12121);
 
-      flag.visitorExposed();
-    }
-  }
+  //     flag.visitorExposed();
+  //   }
+  // }
 
   void _resetField() {
     variationId = "None";
@@ -308,8 +298,7 @@ class _ModificationsState extends State<Modifications> {
               child: ElevatedButton(
                 child: Text("JSON VIEW"),
                 onPressed: () {
-                  _getCollection();
-                  // _getJsonView(context);
+                  _getJsonView(context);
                 },
               ),
             ),

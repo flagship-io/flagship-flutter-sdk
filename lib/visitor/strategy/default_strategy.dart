@@ -225,8 +225,6 @@ class DefaultStrategy implements IVisitor {
       DataUsageTracking.sharedInstance()
           .processTroubleShootingException(visitor, error);
       return FetchResponse(FlagStatus.FETCH_REQUIRED, Error());
-      // TODO create better object error
-      // return Error(); // Return Error
     }
   }
 
@@ -248,6 +246,11 @@ class DefaultStrategy implements IVisitor {
   @override
   authenticateVisitor(String pVisitorId) {
     if (visitor.config.decisionMode == Mode.DECISION_API) {
+      if (visitor.anonymousId == null) {
+        visitor.anonymousId = visitor.visitorId;
+        visitor.visitorId = pVisitorId;
+      }
+
       DataUsageTracking.sharedInstance()
           .processTSXpc(CriticalPoints.VISITOR_AUTHENTICATE.name, this.visitor);
     } else {
@@ -259,12 +262,12 @@ class DefaultStrategy implements IVisitor {
   @override
   unAuthenticateVisitor() {
     if (visitor.config.decisionMode == Mode.DECISION_API) {
-      DataUsageTracking.sharedInstance().processTSXpc(
-          CriticalPoints.VISITOR_UNAUTHENTICATE.name, this.visitor);
       if (visitor.anonymousId != null) {
         visitor.visitorId = visitor.anonymousId as String;
         visitor.anonymousId = null;
       }
+      DataUsageTracking.sharedInstance().processTSXpc(
+          CriticalPoints.VISITOR_UNAUTHENTICATE.name, this.visitor);
     } else {
       Flagship.logger(Level.ALL,
           "unAuthenticateVisitor method will be ignored in Bucketing configuration");
@@ -363,19 +366,19 @@ class DefaultStrategy implements IVisitor {
             FlagMetadata.withMap(pModification.toJsonInformation())));
   }
 
-  void onExposureBis(List<FSExposedInfo> exposureInfos) {
-    print(" @@@@@@@@@ callback exposure is called with " +
-        exposureInfos.length.toString() +
-        " Activate @@@@@@@@@@@@@@@@@");
-    exposureInfos.forEach((item) {
-      print(" onExposure item " + item.visitorExposed.id);
+  // void onExposureBis(List<FSExposedInfo> exposureInfos) {
+  //   print(" @@@@@@@@@ callback exposure is called with " +
+  //       exposureInfos.length.toString() +
+  //       " Activate @@@@@@@@@@@@@@@@@");
+  //   exposureInfos.forEach((item) {
+  //     print(" onExposure item " + item.visitorExposed.id);
 
-      Flagship.sharedInstance()
-          .getConfiguration()
-          ?.onVisitorExposed
-          ?.call(item.visitorExposed, item.exposedFlag);
-    });
-  }
+  //     Flagship.sharedInstance()
+  //         .getConfiguration()
+  //         ?.onVisitorExposed
+  //         ?.call(item.visitorExposed, item.exposedFlag);
+  //   });
+  // }
 
   @override
   FlagStatus getFlagStatus(String key) {

@@ -93,7 +93,7 @@ class ConfigBuilder {
   // _pollingTime
   int _pollingTime = 60;
 
-  // StatusListener
+  // _onSdkStatusChanged
   SdkStatusChanged? _onSdkStatusChanged;
 
   // Tracking Config
@@ -135,7 +135,7 @@ class ConfigBuilder {
     return this;
   }
 
-  // StatusListener
+  // onSdkStatusChanged
   ConfigBuilder onSdkStatusChanged(SdkStatusChanged pSdkStatusChanged) {
     _onSdkStatusChanged = pSdkStatusChanged;
     return this;
