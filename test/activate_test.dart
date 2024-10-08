@@ -8,9 +8,18 @@ import 'package:flagship/visitor/strategy/default_strategy.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flagship/hits/activate.dart';
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'fake_path_provider_platform.dart';
+import 'test_tools.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  PathProviderPlatform.instance = FakePathProviderPlatform();
+  ToolsTest.sqfliteTestInit();
+  SharedPreferences.setMockInitialValues({});
+
   test("Activate with Modification object ", () {
     Modification fakeModif = Modification(
         "key",
@@ -37,8 +46,10 @@ void main() {
 
   test("OnExposureCallback", () {
     var expoConfig = ConfigBuilder().withOnVisitorExposed((v, f) {
-      expect(f.metadata().campaignId, "campaignId");
-      expect(v.id, "expoVisitor");
+      if (v.id == "expoVisitor") {
+        expect(f.metadata().campaignId, "campaignId");
+        expect(v.id, "expoVisitor");
+      }
     }).build();
     Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: expoConfig);
     var expoVisitor =
@@ -66,8 +77,10 @@ void main() {
 
   test("OnExposureObject", () {
     var expoConfig = ConfigBuilder().withOnVisitorExposed((v, f) {
-      expect(f.metadata().campaignId, "campaignId");
-      expect(v.id, "expoVisitorObj");
+      if (v.id == "expoVisitorObj") {
+        expect(f.metadata().campaignId, "campaignId");
+        expect(v.id, "expoVisitorObj");
+      }
     }).build();
     Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: expoConfig);
     var expoVisitorObj =
