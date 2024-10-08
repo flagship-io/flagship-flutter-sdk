@@ -70,7 +70,9 @@ Future<void> main() async {
             .build());
 // create new visitor
     PathProviderPlatform.instance = FakePathProviderPlatform();
-    var user = Flagship.newVisitor("userWithHidden").build();
+    var user =
+        Flagship.newVisitor(visitorId: "userWithHidden", hasConsented: true)
+            .build();
     // Set the mocks
     user.trackingManager = fakeTrackingMgr;
     user.config.decisionManager = fakeApi;
@@ -133,14 +135,16 @@ Future<void> main() async {
 
     PathProviderPlatform.instance = FakePathProviderPlatform();
     // create new visitor
-    var user = Flagship.newVisitor("userWithHidden").build();
+    var user =
+        Flagship.newVisitor(visitorId: "userWithHidden", hasConsented: true)
+            .build();
     // Set the mocks
     user.trackingManager = fakeTrackingMgr;
     user.config.decisionManager = fakeApi;
     // Fetch
     user.fetchFlags().whenComplete(() async {
       // Get Flag             "":"val_A",
-      var flagTest = user.getFlag("key_A", "dfl");
+      var flagTest = user.getFlag("key_A");
       // Activate
       // Failed the activate
       when(fakeTrackingService.sendHttpRequest(RequestType.Post,
@@ -149,7 +153,7 @@ Future<void> main() async {
           .thenAnswer((_) async {
         return http.Response("mock", 400);
       });
-      flagTest.value();
+      flagTest.value("dfl");
       // Set the consent to false
       user.setConsent(false);
     });

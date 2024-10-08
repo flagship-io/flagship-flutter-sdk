@@ -11,10 +11,15 @@ import 'package:flagship/tracking/tracking_manager_config.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
+import 'package:flagship/visitor/Ivisitor.dart';
 import 'package:http/http.dart' as http;
 import 'package:flagship/api/service.dart';
 
 const TIMEOUT_REQUEST = 60000; // 60 seconds
+
+// Internal exposure callback
+
+typedef InternalExposureCallBack = void Function()?;
 
 class TrackingManager {
   /// api key
@@ -37,6 +42,8 @@ class TrackingManager {
 
   // List failed ids to be cached except the consent ones
   List<String> failedIds = [];
+
+  InternalExposureCallBack internalExposure;
 
   TrackingManager(this.service, this.configTracking, this.fsCacheHit) {
     this.apiKey = Flagship.sharedInstance().apiKey ?? "";
@@ -76,7 +83,7 @@ class TrackingManager {
   }
 
   // Send Activate
-  Future<int> sendActivate(Activate activateHit) async {
+  Future<ActivateResopnse> sendActivate(Activate activateHit) async {
     // Create url
     String urlString = Endpoints.DECISION_API + Endpoints.ACTIVATION;
     var response = await service.sendHttpRequest(RequestType.Post, urlString,
@@ -91,7 +98,7 @@ class TrackingManager {
         this.onCacheHit(activateHit);
         Flagship.logger(Level.ERROR, ACTIVATE_FAILED);
     }
-    return response.statusCode;
+    return ActivateResopnse([], response.statusCode);
   }
 
   void onCacheHit(Hit hitToBeCached) {

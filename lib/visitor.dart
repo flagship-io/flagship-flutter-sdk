@@ -19,10 +19,11 @@ import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor/visitor_delegate.dart';
+import 'package:flagship/model/visitor_flag.dart';
 import 'package:flutter/foundation.dart';
 import 'flagship_delegate.dart';
 import 'package:http/http.dart' as http;
-part "visitor_tr.dart";
+import 'package:flagship/status.dart';
 
 enum Instance {
   // The  newly created visitor instance will be returned and saved into the Flagship singleton. Call `Flagship.getVisitor()` to retrieve the instance.
@@ -82,21 +83,64 @@ class Visitor {
   /// DataUsageTracking
   DataUsageTracking dataUsageTracking = DataUsageTracking.sharedInstance();
 
-  /// Create new instance for visitor
-  ///
-  /// config: this object manage the mode of the sdk and other params
-  /// visitorId : the user ID for the visitor
-  /// context : Map that represent the conext for the visitor
-  Visitor(this.config, this.visitorId, this._isAuthenticated,
+  // Fetch status
+  FlagStatus _flagStatus = FlagStatus.FETCH_REQUIRED;
+
+  // FSFetchReasons
+  FetchFlagsRequiredStatusReason _fetchReasons =
+      FetchFlagsRequiredStatusReason.FLAGS_NEVER_FETCHED;
+
+  // Callback for status
+  OnFlagStatusChanged _onFlagStatusChanged;
+
+  // _onFlagStatusFetchRequired
+  OnFlagStatusFetchRequired _onFlagStatusFetchRequired;
+
+  // _onFlagStatusFetched
+  OnFlagStatusFetched _onFlagStatusFetched;
+
+// Get flagStatus
+  FlagStatus get flagStatus {
+    return _flagStatus;
+  }
+
+// Get fetchReasons
+  FetchFlagsRequiredStatusReason get fetchReasons {
+    return _fetchReasons;
+  }
+
+  set flagStatus(FlagStatus newValue) {
+    if (newValue != this._flagStatus) {
+      this._flagStatus = newValue;
+      _onFlagStatusChanged?.call(this.flagStatus);
+    }
+
+    // Og the state is required then trigger also the required callback
+    if (newValue == FlagStatus.FETCH_REQUIRED) {
+      _onFlagStatusFetchRequired?.call(this._fetchReasons);
+    } else if (newValue == FlagStatus.FETCHED) {
+      // If the state is fetched then trigger the callback fetched
+      _onFlagStatusFetched?.call();
+    }
+  }
+
+  // Create new instance for visitor
+  Visitor(
+      this.config,
+      this.visitorId,
+      this._isAuthenticated,
       Map<String, Object> context,
-      {bool hasConsented = true}) {
+      this._hasConsented,
+      this._onFlagStatusChanged,
+      this._onFlagStatusFetchRequired,
+      this._onFlagStatusFetched) {
     if (_isAuthenticated == true) {
       this.anonymousId = FlagshipTools.generateFlagshipId();
     } else {
       anonymousId = null;
     }
 
-    /// Init Tracking manager
+    // Init Tracking manager
     switch (config.trackingManagerConfig.batchStrategy) {
       case BatchCachingStrategy.BATCH_CONTINUOUS_CACHING:
         trackingManager = TrackingManageContinuousStrategy(
@@ -116,23 +160,28 @@ class Visitor {
         break;
     }
 
-    /// Load preset_Context
+    // Load preset_Context
     this.updateContextWithMap(FlagshipContextManager.getPresetContextForApp());
 
-    /// Update context
+    // Update context
     this.updateContextWithMap(context);
 
-    /// Set delegate
+    // Set delegate
     _visitorDelegate = VisitorDelegate(this);
 
-    /// Set the consent
-    _hasConsented = hasConsented;
+    // Set the consent
+    _hasConsented; //= hasConsented;
 
-    /// Load the hits in cache if exist
+    // Load the hits in cache if exist
     _visitorDelegate.lookupHits();
 
-    /// Lookup for the cached visitor data
-    _visitorDelegate.lookupVisitor(this.visitorId);
+    // Lookup for the cached visitor data
+    _visitorDelegate.lookupVisitor(this.visitorId).then((isLoadedFromCache) => {
+          this._fetchReasons = isLoadedFromCache
+              ? FetchFlagsRequiredStatusReason.FLAGS_FETCHED_FROM_CACHE
+              : FetchFlagsRequiredStatusReason.FLAGS_NEVER_FETCHED
+        });
+    _visitorDelegate.lookupVisitor(this.visitorId).whenComplete(() {});
 
     /// Send the consent hit
     _visitorDelegate.sendHit(Consent(hasConsented: _hasConsented));
@@ -141,12 +190,12 @@ class Visitor {
         .configureDataUsageWithVisitor(null, this);
   }
 
-  /// Update context directely with map for <String, Object>
+  // Update context directely with map for <String, Object>
   void clearContext() {
     _context.clear();
   }
 
-  /// Update context directely with map for <String, Object>
+  // Update context directely with map for <String, Object>
   void updateContextWithMap(Map<String, Object> context) {
     var oldContext = Map.fromEntries(_context.entries);
     _context.addAll(context);
@@ -154,6 +203,8 @@ class Visitor {
       // if the context still the same then no need to raise the warning
       // Update flagSyncStatus to raise a warning when access to flag
       this._flagSyncStatus = FlagSyncStatus.CONTEXT_UPDATED;
+      flagStatus = FlagStatus.FETCH_REQUIRED;
+      _fetchReasons = FetchFlagsRequiredStatusReason.VISITOR_CONTEXT_UPDATED;
     }
 
     Flagship.logger(
@@ -183,6 +234,10 @@ class Visitor {
       // if the context still the same then no need to raise the warning
       // Update flagSyncStatus to raise a warning when access to flag
       this._flagSyncStatus = FlagSyncStatus.CONTEXT_UPDATED;
+
+      this.flagStatus = FlagStatus.FETCH_REQUIRED;
+      this._fetchReasons =
+          FetchFlagsRequiredStatusReason.VISITOR_CONTEXT_UPDATED;
     }
   }
 
@@ -196,66 +251,43 @@ class Visitor {
     }
   }
 
-  /// Get Flag object
-  ///
-  /// key : the name of the key relative to modification
-  /// defaultValue: the returned value if the key is not found
-  /// return Flag object. See Flag class
-  Flag getFlag<T>(String key, T defaultValue) {
+  // Get Flag
+  // - Return Flag instance
+  Flag getFlag<T>(String key) {
     if (_flagSyncStatus != FlagSyncStatus.FLAGS_FETCHED) {
       Flagship.logger(
           Level.ALL, _flagSyncStatus.warningMessage(visitorId, key));
     }
-    return Flag<T>(key, defaultValue, this._visitorDelegate);
+    return Flag(key, this._visitorDelegate);
   }
 
-  /// Get Modification
-  ///
-  /// key : the name of the key relative to modification
-  /// defaultValue: the returned value if the key is not found
-  ///
-  @Deprecated('Use value() in Flag class instead')
-  T getModification<T>(String key, T defaultValue, {bool activate = false}) {
-    // Delegate the action to strategy
-    return _visitorDelegate.getModification(key, defaultValue,
-        activate: activate);
-  }
+  // Get the colllection flags
+  /// - Returns: an instance of FSFlagCollection with flags
+  FlagCollection getFlags() {
+    Map<String, Flag> ret = {};
 
-  /// Get the modification infos relative to flag (modification)
-  ///
-  /// key : the name of the key relative to modification
-  /// Return map {"campaignId":"xxx", "variationId" : "xxxx", "variationGroupId":"xxxxx", "isReference": true/false}
-  @Deprecated('Use metadata() in Flag class instead')
-  Map<String, dynamic>? getModificationInfo(String key) {
-    // Delegate the action to strategy
-    return _visitorDelegate.getModificationInfo(key);
-  }
-
-  /// Synchronize modification for the visitor
-  @Deprecated('Use fetchFlags instead')
-  Future<void> synchronizeModifications() async {
-    // Delegate the action to strategy
-    _visitorDelegate.synchronizeModifications().then((error) {
-      if (error == null) {
-        _flagSyncStatus = FlagSyncStatus.FLAGS_FETCHED;
-      }
+    this.modifications.forEach((keyItem, modifItem) {
+      ret.addAll({keyItem: Flag(keyItem, this._visitorDelegate)});
     });
+    return FlagCollection(this._visitorDelegate, ret);
   }
 
   Future<void> fetchFlags() async {
     /// Delegate the action to strategy
-    return _visitorDelegate.synchronizeModifications().then((error) {
-      if (error == null) {
+    this.flagStatus = FlagStatus.FETCHING;
+    return _visitorDelegate.fetchFlags().then((fetchResponse) {
+      if (fetchResponse?.error == null) {
         _flagSyncStatus = FlagSyncStatus.FLAGS_FETCHED;
+        this.flagStatus =
+            fetchResponse?.fetchStatus ?? FlagStatus.FETCH_REQUIRED;
+        this._fetchReasons = FetchFlagsRequiredStatusReason.NONE;
+      } else {
+        this.flagStatus =
+            fetchResponse?.fetchStatus ?? FlagStatus.FETCH_REQUIRED;
+        this._fetchReasons =
+            FetchFlagsRequiredStatusReason.FLAGS_FETCHING_ERROR;
       }
     });
-  }
-
-  /// Activate modification
-  @Deprecated('Use userExposed() in Flag class instead')
-  Future<void> activateModification(String key) async {
-    // Delegate the action to strategy
-    _visitorDelegate.activateModification(key);
   }
 
   /// Send hit
@@ -297,6 +329,8 @@ class Visitor {
   authenticate(String visitorId) {
     // Update flagSyncStatus
     this._flagSyncStatus = FlagSyncStatus.AUTHENTICATED;
+    this.flagStatus = FlagStatus.FETCH_REQUIRED;
+    this._fetchReasons = FetchFlagsRequiredStatusReason.VISITOR_AUTHENTICATED;
     _isAuthenticated = true;
     _visitorDelegate.getStrategy().authenticateVisitor(visitorId);
   }
@@ -305,6 +339,9 @@ class Visitor {
   unauthenticate() {
     // Update flagSyncStatus
     this._flagSyncStatus = FlagSyncStatus.UNAUTHENTICATED;
+    this.flagStatus = FlagStatus.FETCH_REQUIRED;
+    this._fetchReasons = FetchFlagsRequiredStatusReason.VISITOR_UNAUTHENTICATED;
+
     _isAuthenticated = false;
     _visitorDelegate.getStrategy().unAuthenticateVisitor();
   }
@@ -330,12 +367,20 @@ class VisitorBuilder {
   Map<String, Object> _context = {};
 
 // Has consented
-  bool _hasConsented = true;
+  bool _hasConsented; //= true;
 
 // Xpc by default false
   bool _isAuthenticated = false;
 
-  VisitorBuilder(this.visitorId,
+// Callback status fetch
+
+  OnFlagStatusChanged _onFlagStatusChanged;
+
+  OnFlagStatusFetchRequired _onFlagStatusFetchRequired;
+
+  OnFlagStatusFetched _onFlagStatusFetched;
+
+  VisitorBuilder(this.visitorId, this._hasConsented,
       {this.instanceType = Instance.SINGLE_INSTANCE});
 
 // Context
@@ -344,13 +389,23 @@ class VisitorBuilder {
     return this;
   }
 
-  VisitorBuilder hasConsented(bool hasConsented) {
-    _hasConsented = hasConsented;
+  isAuthenticated(bool authenticated) {
+    _isAuthenticated = authenticated;
     return this;
   }
 
-  isAuthenticated(bool authenticated) {
-    _isAuthenticated = authenticated;
+  withOnFlagStatusChanged(OnFlagStatusChanged pCallback) {
+    _onFlagStatusChanged = pCallback;
+    return this;
+  }
+
+  withOnFlagStatusFetchRequired(OnFlagStatusFetchRequired pCallback) {
+    _onFlagStatusFetchRequired = pCallback;
+    return this;
+  }
+
+  withOnFlagStatusFetched(OnFlagStatusFetched pCallBack) {
+    _onFlagStatusFetched = pCallBack;
     return this;
   }
 
@@ -360,7 +415,10 @@ class VisitorBuilder {
         visitorId,
         _isAuthenticated,
         _context,
-        hasConsented: _hasConsented);
+        _hasConsented,
+        _onFlagStatusChanged,
+        _onFlagStatusFetchRequired,
+        _onFlagStatusFetched);
     if (this.instanceType == Instance.SINGLE_INSTANCE) {
       //Set this visitor as shared instance
       Flagship.setCurrentVisitor(newVisitor);

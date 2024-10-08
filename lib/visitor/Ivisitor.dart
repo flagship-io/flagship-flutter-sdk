@@ -1,5 +1,7 @@
 import 'package:flagship/hits/hit.dart';
 import 'package:flagship/model/modification.dart';
+import 'package:flagship/model/visitor_exposed.dart';
+import 'package:flagship/status.dart';
 
 abstract class IVisitor {
 // Update Context
@@ -9,7 +11,9 @@ abstract class IVisitor {
 // Get Modificatoin info
   Map<String, dynamic>? getModificationInfo(String key);
 // Synchronize modifications
-  Future<void> synchronizeModifications();
+  // Future<void> synchronizeModifications();
+// Fetch Flags
+  Future<void> fetchFlags();
 // Activate modification
   Future<void> activateModification(String key);
 // Activate flag
@@ -31,11 +35,29 @@ abstract class IVisitor {
   void cacheVisitor(String visitorId, String jsonString);
 
   // Called right at visitor creation, return a jsonString corresponding to visitor. Return a jsonString
-  void lookupVisitor(String visitoId);
+  Future<bool> lookupVisitor(String visitoId);
 
 // Lookup Hits
   void lookupHits();
 
   // onExposure
   void onExposure(Modification pModification);
+
+  // Get Status
+  FlagStatus getFlagStatus(String key);
+}
+
+// Future to represent the error and the status
+class FetchResponse {
+  Error? error;
+  FlagStatus fetchStatus = FlagStatus.FETCH_REQUIRED;
+  FetchResponse(this.fetchStatus, this.error);
+}
+
+// Future to represent the error and the exposure info
+
+class ActivateResopnse {
+  int statusCode;
+  List<FSExposedInfo> exposeInfos;
+  ActivateResopnse(this.exposeInfos, this.statusCode);
 }

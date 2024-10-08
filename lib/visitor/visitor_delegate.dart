@@ -1,6 +1,7 @@
 import 'package:flagship/hits/hit.dart';
 import 'package:flagship/hits/segment.dart';
 import 'package:flagship/model/modification.dart';
+import 'package:flagship/status.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/visitor/Ivisitor.dart';
 import 'package:flagship/visitor/strategy/default_strategy.dart';
@@ -16,17 +17,19 @@ class VisitorDelegate implements IVisitor {
   // Get the strategy
   DefaultStrategy getStrategy() {
     switch (Flagship.getStatus()) {
-      case Status.NOT_INITIALIZED:
+      case FSSdkStatus.SDK_NOT_INITIALIZED:
         return NotReadyStrategy(visitor);
-      case Status.PANIC_ON:
+      case FSSdkStatus.SDK_PANIC:
         return PanicStrategy(visitor);
-      case Status.READY:
+      case FSSdkStatus.SDK_INITIALIZED:
         if (visitor.getConsent() == false) {
           // Return non consented
           return NoConsentStrategy(visitor);
         } else {
           return DefaultStrategy(visitor);
         }
+      case FSSdkStatus.SDK_INITIALIZING:
+        return NotReadyStrategy(visitor);
     }
   }
 
@@ -60,10 +63,10 @@ class VisitorDelegate implements IVisitor {
 
 // Fetch modification
   @override
-  Future<Error?> synchronizeModifications() async {
-    return getStrategy().synchronizeModifications().whenComplete(() {
+  Future<FetchResponse?> fetchFlags() async {
+    return getStrategy().fetchFlags().whenComplete(() {
       if (visitor.config.decisionMode == Mode.BUCKETING &&
-          Flagship.getStatus() != Status.PANIC_ON) {
+          Flagship.getStatus() != FSSdkStatus.SDK_PANIC) {
         visitor.sendHit(Segment(persona: visitor.getCurrentContext()));
       }
     });
@@ -106,8 +109,8 @@ class VisitorDelegate implements IVisitor {
   }
 
   @override
-  void lookupVisitor(String visitoId) async {
-    getStrategy().lookupVisitor(visitoId);
+  Future<bool> lookupVisitor(String visitoId) async {
+    return getStrategy().lookupVisitor(visitoId);
   }
 
   @override
@@ -118,5 +121,10 @@ class VisitorDelegate implements IVisitor {
   @override
   void onExposure(Modification pModification) {
     getStrategy().onExposure(pModification);
+  }
+
+  @override
+  FlagStatus getFlagStatus(String key) {
+    return getStrategy().getFlagStatus(key);
   }
 }

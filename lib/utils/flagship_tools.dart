@@ -86,4 +86,16 @@ class FlagshipTools {
     });
     return result;
   }
+
+  static String stringToHex(String input) {
+    // Convert the string to UTF-8 bytes
+    List<int> bytes = utf8.encode(input);
+
+    // Convert each byte to its hexadecimal representation
+    String hexString = bytes.map((byte) {
+      return byte.toRadixString(16).padLeft(2, '0');
+    }).join();
+
+    return hexString;
+  }
 }

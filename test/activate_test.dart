@@ -1,8 +1,25 @@
+import 'package:flagship/flagship.dart';
+import 'package:flagship/flagship_config.dart';
+import 'package:flagship/model/exposed_flag.dart';
+import 'package:flagship/model/flag.dart';
 import 'package:flagship/model/modification.dart';
+import 'package:flagship/model/visitor_exposed.dart';
+import 'package:flagship/visitor/strategy/default_strategy.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flagship/hits/activate.dart';
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'fake_path_provider_platform.dart';
+import 'test_tools.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  PathProviderPlatform.instance = FakePathProviderPlatform();
+  ToolsTest.sqfliteTestInit();
+  SharedPreferences.setMockInitialValues({});
+
   test("Activate with Modification object ", () {
     Modification fakeModif = Modification(
         "key",
@@ -18,7 +35,7 @@ void main() {
         12);
 
     Activate activateTest =
-        Activate(fakeModif, "visitorId", "anonym1", "envId");
+        Activate(fakeModif, "visitorId", "anonym1", "envId", null, null);
     var fakeJson = activateTest.toJson();
     expect(fakeJson["vaid"], "variationId");
     expect(fakeJson["caid"], "variationGroupId");
@@ -26,9 +43,72 @@ void main() {
     expect(fakeJson["cid"], "envId");
     expect(fakeJson["aid"], "anonym1");
   });
+
+  test("OnExposureCallback", () {
+    var expoConfig = ConfigBuilder().withOnVisitorExposed((v, f) {
+      if (v.id == "expoVisitor") {
+        expect(f.metadata().campaignId, "campaignId");
+        expect(v.id, "expoVisitor");
+      }
+    }).build();
+    Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: expoConfig);
+    var expoVisitor =
+        Flagship.newVisitor(visitorId: "expoVisitor", hasConsented: true)
+            .withContext({"expoKey": "expoVal"}).build();
+    // Create a default strategy
+    var dfltStrategy = DefaultStrategy(expoVisitor);
+
+    // Create Modification
+    var expoModif = Modification(
+        "key",
+        "campaignId",
+        "campaignName",
+        "variationGroupId",
+        "variationGroupName",
+        "variationId",
+        "variationName",
+        true,
+        "AB",
+        "slug",
+        "value");
+    // Trigger the callback
+    dfltStrategy.onExposure(expoModif);
+  });
+
+  test("OnExposureObject", () {
+    var expoConfig = ConfigBuilder().withOnVisitorExposed((v, f) {
+      if (v.id == "expoVisitorObj") {
+        expect(f.metadata().campaignId, "campaignId");
+        expect(v.id, "expoVisitorObj");
+      }
+    }).build();
+    Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: expoConfig);
+    var expoVisitorObj =
+        Flagship.newVisitor(visitorId: "expoVisitorObj", hasConsented: true)
+            .withContext({"expoKey": "expoVal"}).build();
+    // Create a default strategy
+    var dfltStrategy = DefaultStrategy(expoVisitorObj);
+
+    // Create Modification
+    var expoModif = Modification(
+        "key",
+        "campaignId",
+        "campaignName",
+        "variationGroupId",
+        "variationGroupName",
+        "variationId",
+        "variationName",
+        true,
+        "AB",
+        null,
+        "value");
+    // Trigger the callback
+    dfltStrategy.onExposure(expoModif);
+
+    // Check brut objs
+    var vE = VisitorExposed("is", null, {});
+    expect(vE.anonymousId, null);
+    var eF = ExposedFlag("key", 12, 12, FlagMetadata.withMap({}));
+    expect(eF.metadata().campaignId, "");
+  });
 }
-
-//  (POST https://decision.flagship.io/v2/activate)
-
-// "{"vaid":"cd7rn3egmgl02tuj7r1g","caid":"cd7rn3egmgl02tuj7r10","vid":"userPoolManager_342","cid":"bkk9glocmjcg0vtmdlng"}"
-

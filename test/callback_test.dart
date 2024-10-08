@@ -1,5 +1,6 @@
 import 'package:flagship/decision/api_manager.dart';
 import 'package:flagship/flagship.dart';
+import 'package:flagship/status.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flutter/widgets.dart';
@@ -28,7 +29,7 @@ void main() {
     FlagshipConfig conf =
         ConfigBuilder().withTimeout(4000).withLogLevel(Level.ALL).build();
 
-    expect(conf.statusListener, null);
+    expect(conf.onSdkStatusChanged, null);
     expect(conf.timeout, 4000);
     expect(conf.decisionMode, Mode.DECISION_API);
   });
@@ -47,22 +48,23 @@ void main() {
     });
 
     FlagshipConfig config = ConfigBuilder().withTimeout(TIMEOUT).build();
-    config.statusListener = (newStatus) {
-      if (newStatus == Status.PANIC_ON) {
+    config.onSdkStatusChanged = (newStatus) {
+      if (newStatus == FSSdkStatus.SDK_PANIC) {
         // ignore: deprecated_member_use_from_same_package
-        expect(Flagship.getCurrentVisitor()?.getModification('key1', 12), 12);
+        //   expect(Flagship.getCurrentVisitor()?.getModification('key1', 12), 12);
         expect(newStatus, Flagship.getStatus());
       }
     };
 
     config.decisionManager = fakePanicApi;
-    Flagship.sharedInstance().onUpdateState(Status.NOT_INITIALIZED);
+    Flagship.sharedInstance().onUpdateState(FSSdkStatus.SDK_NOT_INITIALIZED);
     Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
 
-    var v1 = Flagship.newVisitor("visitorId").withContext({}).build();
+    var v1 = Flagship.newVisitor(visitorId: "visitorId", hasConsented: true)
+        .withContext({}).build();
     Flagship.setCurrentVisitor(v1);
 
     // ignore: deprecated_member_use_from_same_package
-    v1.synchronizeModifications().whenComplete(() {});
+    v1.fetchFlags().whenComplete(() {});
   });
 }

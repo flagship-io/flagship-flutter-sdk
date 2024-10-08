@@ -13,8 +13,9 @@ void main() {
   test('Start Client ', () {
     Flagship.start("envId", "apiKey");
 
-    Flagship.setCurrentVisitor(Flagship.newVisitor("user1").withContext(
-        {"key1": "val1", "key2": 2, "key3": true, "key4": 12.01}).build());
+    Flagship.setCurrentVisitor(
+        Flagship.newVisitor(visitorId: "user1", hasConsented: true).withContext(
+            {"key1": "val1", "key2": 2, "key3": true, "key4": 12.01}).build());
     var v1 = Flagship.getCurrentVisitor();
 
     // Check the user id
@@ -24,10 +25,9 @@ void main() {
     expect(v1?.getConsent(), true);
 
     // Create visitor v2
-    var v2 = Flagship.newVisitor("user2")
-        .withContext({"key1": "val1", "key2": 2, "key3": true, "key4": 12.01})
-        .hasConsented(false)
-        .build();
+    var v2 = Flagship.newVisitor(visitorId: "user2", hasConsented: false)
+        .withContext(
+            {"key1": "val1", "key2": 2, "key3": true, "key4": 12.01}).build();
     expect(v2.visitorId, "user2");
     expect(v2.getConsent(), false);
     v2.setConsent(true);

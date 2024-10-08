@@ -1,21 +1,13 @@
 library flagship;
 
 import 'package:flagship/flagship_config.dart';
+import 'package:flagship/status.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/device_tools.dart';
 import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor.dart';
 import 'flagship_delegate.dart';
-
-enum Status {
-  // Flagship SDK has not been started or initialized successfully.
-  NOT_INITIALIZED,
-  // Flagship SDK is ready but is running in Panic mode: All features are disabled except the one which refresh this status.
-  PANIC_ON,
-  // Flagship SDK is ready to use.
-  READY
-}
 
 class Flagship with FlagshipDelegate {
   // Environement id (provided by flagship)
@@ -30,7 +22,9 @@ class Flagship with FlagshipDelegate {
   // Local visitor
   Visitor? currentVisitor;
 
-  Status _status = Status.NOT_INITIALIZED;
+  //Status _status = Status.NOT_INITIALIZED;
+  // new sdk status
+  FSSdkStatus _status = FSSdkStatus.SDK_NOT_INITIALIZED;
 
   // Internal Singelton
   static final Flagship _singleton = Flagship._internal();
@@ -52,7 +46,7 @@ class Flagship with FlagshipDelegate {
   // envId : environement id (provided by flagship)
   // apiKey: Api key (provided by flagship)
   static start(String envId, String apiKey, {FlagshipConfig? config}) async {
-    _singleton._status = Status.NOT_INITIALIZED;
+    _singleton._status = FSSdkStatus.SDK_NOT_INITIALIZED;
     FSDevice.loadDeviceInfo();
     if (FlagshipTools.chekcXidEnvironment(envId)) {
       _singleton.apiKey = apiKey;
@@ -61,20 +55,25 @@ class Flagship with FlagshipDelegate {
         Flagship._configuration = config;
       }
       if (_configuration.decisionMode == Mode.BUCKETING) {
+        _singleton.onUpdateState(FSSdkStatus.SDK_INITIALIZING);
+
         Flagship._configuration.decisionManager.startPolling();
+      } else {
+        _singleton.onUpdateState(FSSdkStatus.SDK_INITIALIZED);
       }
-      _singleton.onUpdateState(Status.READY);
       Flagship.logger(Level.INFO, STARTED);
     } else {
-      _singleton.onUpdateState(Status.NOT_INITIALIZED);
+      _singleton.onUpdateState(FSSdkStatus.SDK_NOT_INITIALIZED);
       Flagship.logger(Level.ERROR, (INITIALIZATION_PARAM_ERROR));
     }
   }
 
   /// Create new visitor
-  static VisitorBuilder newVisitor(String visitorId,
-      {Instance instanceType = Instance.SINGLE_INSTANCE}) {
-    return VisitorBuilder(visitorId, instanceType: instanceType);
+  static VisitorBuilder newVisitor(
+      {required String visitorId,
+      required bool hasConsented,
+      Instance instanceType = Instance.SINGLE_INSTANCE}) {
+    return VisitorBuilder(visitorId, hasConsented, instanceType: instanceType);
   }
 
   // Set the current visitor singleton
@@ -114,12 +113,12 @@ class Flagship with FlagshipDelegate {
   }
 
   // Get Status
-  static Status getStatus() {
+  static FSSdkStatus getStatus() {
     return Flagship._singleton._status;
   }
 
   @override
-  void onUpdateState(Status newStatus) {
+  void onUpdateState(FSSdkStatus newStatus) {
     // If the status hasn't changed, no need to update and trigger the callback
     if (newStatus == _singleton._status) {
       return;
@@ -128,8 +127,8 @@ class Flagship with FlagshipDelegate {
 
     // Trigger the callback
     // Check if the callback if not null before trigger it
-    if (Flagship._configuration.statusListener != null) {
-      Flagship._configuration.statusListener!(newStatus);
+    if (Flagship._configuration.onSdkStatusChanged != null) {
+      Flagship._configuration.onSdkStatusChanged!(newStatus);
     }
   }
 

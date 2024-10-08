@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flagship/api/service.dart';
 import 'package:flagship/decision/api_manager.dart';
 import 'package:flagship/flagship.dart';
@@ -5,6 +7,7 @@ import 'package:flagship/flagshipContext/flagship_context.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/flagship_version.dart';
 import 'package:flagship/model/flag.dart';
+import 'package:flagship/model/visitor_flag.dart';
 import 'package:flagship/tracking/tracking_manager.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -65,12 +68,14 @@ void main() async {
 
   await Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
   PathProviderPlatform.instance = FakePathProviderPlatform();
-  var v1 = Flagship.newVisitor("flagVisitor").build();
+  var v1 =
+      Flagship.newVisitor(visitorId: "flagVisitor", hasConsented: true).build();
   v1.config.decisionManager = fakeApi;
 
   test("Test Flag class", (() async {
     // PathProviderPlatform.instance = FakePathProviderPlatform();
-    var v1 = Flagship.newVisitor("flagVisitor").build();
+    var v1 = Flagship.newVisitor(visitorId: "flagVisitor", hasConsented: true)
+        .build();
 
     v1.trackingManager = fakeTracking;
     v1.fetchFlags().whenComplete(() async {
@@ -133,9 +138,9 @@ void main() async {
       ];
 
       for (var item in listEntry) {
-        Flag myFlag = v1.getFlag(item['key'], item['dfltValue']);
+        Flag myFlag = v1.getFlag(item['key']);
 
-        expect(myFlag.value(), item['expectedValue']);
+        expect(myFlag.value(item['dfltValue']), item['expectedValue']);
         expect(myFlag.exists(), item['existingFlag']);
 
         FlagMetadata metadata = myFlag.metadata();
@@ -208,40 +213,44 @@ void main() async {
 
   test("Flag with bad type", () {
     //  PathProviderPlatform.instance = FakePathProviderPlatform();
-    var v2 = Flagship.newVisitor("flagVisitor").build();
+    var v2 = Flagship.newVisitor(visitorId: "flagVisitor", hasConsented: true)
+        .build();
     v2.fetchFlags().whenComplete(() {
-      Flag myFlag = v2.getFlag("key_A", 3.14);
-      expect(myFlag.value(), 3.14);
+      Flag myFlag = v2.getFlag(
+        "key_A",
+      );
+      expect(myFlag.value(3.14), 3.14);
 
-      Flag myFlagBis = v2.getFlag("key_A", false);
-      expect(myFlagBis.value(), false);
+      Flag myFlagBis = v2.getFlag("key_A");
+      expect(myFlagBis.value(false), false);
 
       expect(myFlag.exists(), true);
       FlagMetadata metadata = myFlag.metadata();
-      expect(metadata.campaignId, "");
-      expect(metadata.variationGroupId, "");
-      expect(metadata.variationId, "");
-      expect(metadata.isReference, false);
-      expect(metadata.slug, null);
-      expect(metadata.campaignType, "");
+      expect(metadata.campaignId, "bsffhle242b2l3igq4dg");
+      expect(metadata.variationGroupId, "bsffhle242b2l3igq4egaa");
+      expect(metadata.variationId, "bsffhle242b2l3igq4f0");
+      expect(metadata.isReference, true);
+      expect(metadata.slug, "flutter");
+      expect(metadata.campaignType, "ab");
     });
   });
 
   test("Flag with null as value", () {
-    var v3 = Flagship.newVisitor("flagVisitor").build();
+    var v3 = Flagship.newVisitor(visitorId: "flagVisitor", hasConsented: true)
+        .build();
     v3.fetchFlags().whenComplete(() {
       // String as default value
-      Flag myFlag = v3.getFlag("keyNull", "nullValue");
-      expect(myFlag.value(), "nullValue");
+      Flag myFlag = v3.getFlag("keyNull");
+      expect(myFlag.value("nullValue"), "nullValue");
       // bool as default value
-      Flag myFlagBool = v3.getFlag("keyNull", false);
-      expect(myFlagBool.value(), false);
+      Flag myFlagBool = v3.getFlag("keyNull");
+      expect(myFlagBool.value(false), false);
       // Double as default value
-      Flag myFlagDouble = v3.getFlag("keyNull", 12.0);
-      expect(myFlagDouble.value(), 12.0);
+      Flag myFlagDouble = v3.getFlag("keyNull");
+      expect(myFlagDouble.value(12.0), 12.0);
       // Int as default value
-      Flag myFlagInt = v3.getFlag("keyNull", 2);
-      expect(myFlagInt.value(), 2);
+      Flag myFlagInt = v3.getFlag("keyNull");
+      expect(myFlagInt.value(2), 2);
       // is existing
       expect(myFlag.exists(), true);
       // Get metadata
@@ -257,10 +266,11 @@ void main() async {
 
   test("Flag value & default value = null", () {
     //PathProviderPlatform.instance = FakePathProviderPlatform();
-    var v4 = Flagship.newVisitor("flagVisitor").build();
+    var v4 = Flagship.newVisitor(visitorId: "flagVisitor", hasConsented: true)
+        .build();
     v4.fetchFlags().whenComplete(() {
-      Flag myFlag = v4.getFlag("keyNull", null);
-      expect(myFlag.value(), null);
+      Flag myFlag = v4.getFlag("keyNull");
+      expect(myFlag.value(null), null);
       expect(myFlag.exists(), true);
       FlagMetadata metadata = myFlag.metadata();
       expect(metadata.campaignId, "bsffhle242b2l3igq4dg");
@@ -274,10 +284,11 @@ void main() async {
 
   test("Flag with default value = null", () {
     //PathProviderPlatform.instance = FakePathProviderPlatform();
-    var v4 = Flagship.newVisitor("flagVisitor").build();
+    var v4 = Flagship.newVisitor(visitorId: "flagVisitor", hasConsented: true)
+        .build();
     v4.fetchFlags().whenComplete(() {
-      Flag myFlag = v4.getFlag("key_A", null);
-      expect(myFlag.value(), "val_A");
+      Flag myFlag = v4.getFlag("key_A");
+      expect(myFlag.value(null), "val_A");
       expect(myFlag.exists(), true);
       FlagMetadata metadata = myFlag.metadata();
       expect(metadata.campaignId, "bsffhle242b2l3igq4dg");
@@ -296,10 +307,48 @@ void main() async {
         .thenAnswer((_) async {
       return http.Response("fakeResponse", 400);
     });
-    var v5 = Flagship.newVisitor("flagVisitor").build();
+    var v5 = Flagship.newVisitor(visitorId: "flagVisitor", hasConsented: true)
+        .build();
     v5.fetchFlags().whenComplete(() async {
-      Flag myFlag = v5.getFlag("key_A", "12");
+      Flag myFlag = v5.getFlag("key_A");
       myFlag.visitorExposed();
+    });
+  });
+
+  test("FlagCollections", () {
+    var vCollect =
+        Flagship.newVisitor(visitorId: "flagVisitor", hasConsented: true)
+            .build();
+
+    vCollect.trackingManager = fakeTracking;
+
+    vCollect.fetchFlags().whenComplete(() {
+      FlagCollection fCollect = vCollect.getFlags();
+      // is not empty
+      expect(fCollect.isEmpty, false);
+      // Count == 11
+      expect(fCollect.count, 11);
+
+      var collectResult = fCollect.filter((key, flag) {
+        return (key == "key_B");
+      });
+      // check if the count is equal to 1
+      expect(collectResult.count, 1);
+      // decode the json clollect
+      var mapResult = jsonDecode(collectResult.toJson());
+      // check the hex value
+      expect(mapResult[0]["hex"], "7b2276223a332e31347d");
+      // Expose all
+      fCollect.exposeAll();
+      // Check json with quick access
+      var collectResultbis = fCollect.filter((key, flag) {
+        return (key == "object");
+      });
+      var quickAccessFlag = collectResultbis["object"];
+      // Get Value
+      var val = quickAccessFlag.value({"value": 1111});
+      // Check the value as expected
+      expect(val["value"], 123456);
     });
   });
 }

@@ -59,8 +59,14 @@ Future<void> main() async {
     return http.Response(fakeResponse, 200);
   });
   test("Test activate ", () async {
-    await Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey");
-    Visitor vMock = VisitorBuilder("visitorId").build();
+    var conf =
+        ConfigBuilder().withOnVisitorExposed((visitorExposed, flagExposed) {
+      expect(visitorExposed.id, "visitorId");
+      expect(flagExposed.key, "key_A");
+    }).build();
+
+    await Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: conf);
+    Visitor vMock = VisitorBuilder("visitorId", true).build();
     vMock.trackingManager = fakeTrackingMgr;
     vMock.config.decisionManager = fakeApi;
 
@@ -69,9 +75,8 @@ Future<void> main() async {
         .fsQueue
         .clear();
     await vMock.fetchFlags();
-    var mockFlag = vMock.getFlag("key_A", "defaultValue");
-    var mockVal = mockFlag.value(visitorExposed: false);
-    // "key_A":"val_A",
+    var mockFlag = vMock.getFlag("key_A");
+    var mockVal = mockFlag.value("defaultValue", visitorExposed: false);
     expect(mockVal, "val_A");
     await mockFlag.visitorExposed();
     await mockFlag.visitorExposed();

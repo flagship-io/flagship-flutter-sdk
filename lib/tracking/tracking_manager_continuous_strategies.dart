@@ -10,6 +10,7 @@ import 'package:flagship/tracking/tracking_manager.dart';
 import 'package:flagship/tracking/tracking_manager_batch.dart';
 import 'package:flagship/tracking/tracking_manager_config.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
+import 'package:flagship/visitor/Ivisitor.dart';
 
 class TrackingManageContinuousStrategy extends TrackingManager {
   // Hit pool
@@ -69,8 +70,7 @@ class TrackingManageContinuousStrategy extends TrackingManager {
     }
   }
 
-  // later add code error in the future
-  Future<int> sendActivate(Activate activateHit) async {
+  Future<ActivateResopnse> sendActivate(Activate activateHit) async {
     // Add the current activate by default
     List<Hit> listOfActivate = [activateHit];
     bool needToClean = false;
@@ -86,8 +86,8 @@ class TrackingManageContinuousStrategy extends TrackingManager {
     } else {
       // We dont have any failed activate in the pool
     }
-    var statusCode = await sendActivateBatch(listOfActivate);
-    switch (statusCode) {
+    var response = await sendActivateBatch(listOfActivate);
+    switch (response.statusCode) {
       case 200:
       case 204:
         // Clear all the activate in the pool and clear them from cache
@@ -102,7 +102,7 @@ class TrackingManageContinuousStrategy extends TrackingManager {
         _activatePool.addNewTrackElement(activateHit);
         this.onCacheHit(activateHit);
     }
-    return statusCode;
+    return response;
   }
 
   @override

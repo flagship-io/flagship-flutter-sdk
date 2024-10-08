@@ -69,12 +69,12 @@ class _ContextScreenState extends State<ContextScreen> with ShowDialog {
 
       /// Synchronize
       //ignore: deprecated_member_use
-      currentClient.synchronizeModifications().then((_) {
-        subMsg = "Context updated and synchronized"; //(state == Status.READY)?
+      //currentClient.fetchFlags().then((_) {
+      subMsg = "Context updated and synchronized"; //(state == Status.READY)?
 
-        // : "Context updated but the synchronized failed";
-        showBasicDialog("Context validation", subMsg);
-      });
+      // : "Context updated but the synchronized failed";
+      showBasicDialog("Context validation", subMsg);
+      //});
       showBasicDialog("Context validation", subMsg);
     } catch (error) {
       subMsg = "Validation failed : $error";

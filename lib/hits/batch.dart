@@ -1,5 +1,6 @@
 import 'package:flagship/hits/activate.dart';
 import 'package:flagship/hits/hit.dart';
+import 'package:flagship/model/visitor_exposed.dart';
 
 class Batch extends BaseHit {
   final List<Hit> listOfHits;
@@ -56,5 +57,16 @@ class ActivateBatch {
       ret.add(elem);
     });
     return {"cid": envId, "batch": ret};
+  }
+
+  List<FSExposedInfo> getExposureInfos() {
+    List<FSExposedInfo> result = [];
+    batch.forEach((item) {
+      var ret = (item as Activate).getExposedInfo();
+      if (ret != null) {
+        result.add(ret);
+      }
+    });
+    return result;
   }
 }

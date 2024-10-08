@@ -1,6 +1,9 @@
 import 'dart:convert';
 
 import 'package:flagship/model/flag.dart';
+import 'package:flagship/model/visitor_flag.dart';
+import 'package:flagship/status.dart';
+import 'package:flagship/visitor.dart';
 import 'package:flagship_qa/widgets/FSinputField.dart';
 import 'package:flagship_qa/widgets/modifications_json_screen.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +38,8 @@ class _ModificationsState extends State<Modifications> {
   String valueForFlag = "None";
   String slug = "None";
   String campaignType = "None";
+  FlagStatus status = FlagStatus.NOT_FOUND;
+  FetchFlagsRequiredStatusReason reason = FetchFlagsRequiredStatusReason.NONE;
 
   double _spaceBetweenElements = 10;
 
@@ -55,12 +60,15 @@ class _ModificationsState extends State<Modifications> {
       defaultValue = jsonDecode(defaultValueFlagController.text);
     }
 
-    myFlag = currentVisitor?.getFlag(keyFlagController.text, defaultValue);
+    myFlag = currentVisitor?.getFlag(keyFlagController.text);
 
-    var ret = myFlag?.value();
+    var ret = myFlag?.value(defaultValue);
 
     setState(() {
       valueForFlag = ret.toString();
+      status = myFlag?.getFlagStatus() ?? FlagStatus.NOT_FOUND;
+      reason =
+          currentVisitor?.fetchReasons ?? FetchFlagsRequiredStatusReason.NONE;
     });
 
     var mapResult = myFlag?.metadata().toJson();
@@ -123,6 +131,20 @@ class _ModificationsState extends State<Modifications> {
     Navigator.of(ctx)
         .pushNamed(ModificationsJSONScreen.routeName, arguments: {});
   }
+
+  // _getCollection() {
+  //   Visitor? v1 = Flagship.getCurrentVisitor();
+
+  //   if (v1 != null) {
+  //     FSFlagCollection flagCollection = v1.getFlags();
+
+  //     var flag = flagCollection['btnColor'];
+
+  //     flag.value(12121);
+
+  //     flag.visitorExposed();
+  //   }
+  // }
 
   void _resetField() {
     variationId = "None";
@@ -247,7 +269,12 @@ class _ModificationsState extends State<Modifications> {
             FSOutputField("Slug", slug),
             SizedBox(height: _spaceBetweenElements),
             FSOutputField("campaignType", campaignType),
-            SizedBox(height: _spaceBetweenElements * 5),
+            SizedBox(height: _spaceBetweenElements),
+            FSOutputField("Status for Flag", status.name),
+            SizedBox(height: _spaceBetweenElements),
+            FSOutputField("Fetch Reason", reason.name),
+            SizedBox(height: _spaceBetweenElements),
+
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(

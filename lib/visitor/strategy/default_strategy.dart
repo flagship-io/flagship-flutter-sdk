@@ -7,6 +7,7 @@ import 'package:flagship/model/exposed_flag.dart';
 import 'package:flagship/model/flag.dart';
 import 'package:flagship/model/modification.dart';
 import 'package:flagship/model/visitor_cache/visitor_cache.dart';
+import 'package:flagship/status.dart';
 import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flagship/model/visitor_exposed.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
@@ -37,19 +38,41 @@ class DefaultStrategy implements IVisitor {
 
   // Activate
   Future<void> _sendActivate(Modification pModification) async {
-    // Construct the activate hit
+    // Check if the callback is defined
+    String? exposedFlag;
+    String? exposedVisitor;
+    if (Flagship.sharedInstance().getConfiguration()?.onVisitorExposed !=
+        null) {
+      exposedFlag = jsonEncode(ExposedFlag(
+              pModification.key,
+              pModification.value,
+              pModification.defaultValue,
+              FlagMetadata.withMap(pModification.toJsonInformation()))
+          .toJson());
 
-    Activate activateHit = Activate(pModification, visitor.visitorId,
-        visitor.anonymousId, Flagship.sharedInstance().envId ?? "");
-
+      exposedVisitor = jsonEncode(VisitorExposed(
+              visitor.visitorId, visitor.anonymousId, visitor.getContext())
+          .toJson());
+    }
+    // Build the activate hit
+    Activate activateHit = Activate(
+        pModification,
+        visitor.visitorId,
+        visitor.anonymousId,
+        Flagship.sharedInstance().envId ?? "",
+        exposedFlag,
+        exposedVisitor);
+    // Process the troubleShooting
     DataUsageTracking.sharedInstance().processTroubleShootingHits(
         CriticalPoints.VISITOR_SEND_ACTIVATE.name, visitor, activateHit);
-    visitor.trackingManager?.sendActivate(activateHit).then((statusCode) {
-      if (statusCode >= 200 && statusCode < 300) {
-        this.onExposure(pModification);
+    visitor.trackingManager?.sendActivate(activateHit).then((activateResponse) {
+      if (activateResponse.statusCode >= 200 &&
+          activateResponse.statusCode < 300) {
       } else {
-        Flagship.logger(Level.ERROR,
-            ACTIVATE_FAILED + " status code = ${statusCode.toString()}");
+        Flagship.logger(
+            Level.ERROR,
+            ACTIVATE_FAILED +
+                " status code = ${activateResponse.statusCode.toString()}");
       }
     });
   }
@@ -149,9 +172,10 @@ class DefaultStrategy implements IVisitor {
 
   // Synchronize modification for the visitor
   @override
-  Future<Error?> synchronizeModifications() async {
+  Future<FetchResponse?> fetchFlags() async {
     Flagship.logger(Level.ALL, SYNCHRONIZE_MODIFICATIONS);
-    Status state = Flagship.getStatus();
+    // get actual state flagship sdk
+    FSSdkStatus state = Flagship.getStatus();
     DataUsageTracking.sharedInstance().processDataUsageTracking(visitor);
     try {
       var camp = await visitor.decisionManager.getCampaigns(
@@ -165,11 +189,11 @@ class DefaultStrategy implements IVisitor {
       // Update panic value
       visitor.decisionManager.updatePanicMode(camp.panic);
       if (camp.panic) {
-        state = Status.PANIC_ON;
+        state = FSSdkStatus.SDK_PANIC;
         // Stop batching loop when the panic mode is ON
         visitor.trackingManager?.stopBatchingLoop();
       } else {
-        state = Status.READY;
+        state = FSSdkStatus.SDK_INITIALIZED;
         var modif = visitor.decisionManager.getModifications(camp.campaigns);
         visitor.modifications.addAll(modif);
         // Start Batching loop
@@ -190,14 +214,17 @@ class DefaultStrategy implements IVisitor {
           .updateTroubleshooting(camp.accountSettings?.troubleshooting);
       // Notify the data report
       DataUsageTracking.sharedInstance().processTSFetching(this.visitor);
-      return null;
+
+      return FetchResponse(
+          camp.panic ? FlagStatus.PANIC : FlagStatus.FETCHED, null);
+      // return null;
     } catch (error) {
       // Report the error
       Flagship.logger(Level.EXCEPTIONS,
           EXCEPTION.replaceFirst("%s", "${error.toString()}"));
       DataUsageTracking.sharedInstance()
           .processTroubleShootingException(visitor, error);
-      return Error(); // Return Error
+      return FetchResponse(FlagStatus.FETCH_REQUIRED, Error());
     }
   }
 
@@ -219,6 +246,11 @@ class DefaultStrategy implements IVisitor {
   @override
   authenticateVisitor(String pVisitorId) {
     if (visitor.config.decisionMode == Mode.DECISION_API) {
+      if (visitor.anonymousId == null) {
+        visitor.anonymousId = visitor.visitorId;
+        visitor.visitorId = pVisitorId;
+      }
+
       DataUsageTracking.sharedInstance()
           .processTSXpc(CriticalPoints.VISITOR_AUTHENTICATE.name, this.visitor);
     } else {
@@ -230,12 +262,12 @@ class DefaultStrategy implements IVisitor {
   @override
   unAuthenticateVisitor() {
     if (visitor.config.decisionMode == Mode.DECISION_API) {
-      DataUsageTracking.sharedInstance().processTSXpc(
-          CriticalPoints.VISITOR_UNAUTHENTICATE.name, this.visitor);
       if (visitor.anonymousId != null) {
         visitor.visitorId = visitor.anonymousId as String;
         visitor.anonymousId = null;
       }
+      DataUsageTracking.sharedInstance().processTSXpc(
+          CriticalPoints.VISITOR_UNAUTHENTICATE.name, this.visitor);
     } else {
       Flagship.logger(Level.ALL,
           "unAuthenticateVisitor method will be ignored in Bucketing configuration");
@@ -249,36 +281,41 @@ class DefaultStrategy implements IVisitor {
 
   @override
   // Called right at visitor creation, return a jsonString corresponding to visitor. Return a jsonString
-  void lookupVisitor(String visitoId) async {
-    visitor.config.visitorCacheImp
+  Future<bool> lookupVisitor(String visitoId) async {
+    var resultFromCacheBis = await visitor.config.visitorCacheImp
         ?.lookupVisitor(visitor.visitorId)
-        .then((resultFromCache) {
-      if (resultFromCache.length != 0) {
-        // convert to Map
-        Map<String, dynamic> result = jsonDecode(resultFromCache);
-        // Retreive the json string stored in the visitor filed of this map.
-        if (result['visitor'] != null) {
-          VisitorCache cachedVisitor =
-              VisitorCache.fromJson(jsonDecode(result['visitor']));
-          Flagship.logger(Level.DEBUG,
-              'The cached visitor get through the lookup is ${cachedVisitor.toString()}');
-          // update the current visitor with his own cached data
-          // 1 - update modification Map<String, Modification> modifications
-          visitor.modifications
-              .addEntries(cachedVisitor.getModifications().entries);
-          // 2- Update the assignation history
-          visitor.decisionManager.updateAssignationHistory(
-              cachedVisitor.getAssignationHistory() ?? {});
-        }
-      }
-    }).timeout(
+        .timeout(
             Duration(
                 milliseconds:
                     visitor.config.visitorCacheImp?.visitorCacheLookupTimeout ??
                         200), onTimeout: () {
       Flagship.logger(
           Level.ERROR, "Timeout on trying to read the cache visitor");
+      return "";
     });
+    if (resultFromCacheBis != null && resultFromCacheBis.length != 0) {
+      // convert to Map
+      Map<String, dynamic> result = jsonDecode(resultFromCacheBis);
+      // Retreive the json string stored in the visitor filed of this map.
+      if (result['visitor'] != null) {
+        VisitorCache cachedVisitor =
+            VisitorCache.fromJson(jsonDecode(result['visitor']));
+        Flagship.logger(Level.DEBUG,
+            'The cached visitor get through the lookup is ${cachedVisitor.toString()}');
+        // update the current visitor with his own cached data
+        // 1 - update modification Map<String, Modification> modifications
+        visitor.modifications
+            .addEntries(cachedVisitor.getModifications().entries);
+        // 2- Update the assignation history
+        visitor.decisionManager.updateAssignationHistory(
+            cachedVisitor.getAssignationHistory() ?? {});
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
   }
 
   @override
@@ -327,5 +364,28 @@ class DefaultStrategy implements IVisitor {
             pModification.value,
             pModification.defaultValue,
             FlagMetadata.withMap(pModification.toJsonInformation())));
+  }
+
+  // void onExposureBis(List<FSExposedInfo> exposureInfos) {
+  //   print(" @@@@@@@@@ callback exposure is called with " +
+  //       exposureInfos.length.toString() +
+  //       " Activate @@@@@@@@@@@@@@@@@");
+  //   exposureInfos.forEach((item) {
+  //     print(" onExposure item " + item.visitorExposed.id);
+
+  //     Flagship.sharedInstance()
+  //         .getConfiguration()
+  //         ?.onVisitorExposed
+  //         ?.call(item.visitorExposed, item.exposedFlag);
+  //   });
+  // }
+
+  @override
+  FlagStatus getFlagStatus(String key) {
+    if (this.visitor.modifications.containsKey(key)) {
+      return this.visitor.flagStatus;
+    } else {
+      return FlagStatus.NOT_FOUND;
+    }
   }
 }
