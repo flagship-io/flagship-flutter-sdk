@@ -323,7 +323,7 @@ void main() async {
     vCollect.trackingManager = fakeTracking;
 
     vCollect.fetchFlags().whenComplete(() {
-      FSFlagCollection fCollect = vCollect.getFlags();
+      FlagCollection fCollect = vCollect.getFlags();
       // is not empty
       expect(fCollect.isEmpty, false);
       // Count == 11

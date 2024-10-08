@@ -4,13 +4,13 @@ import 'package:flagship/model/modification.dart';
 import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flagship/visitor/visitor_delegate.dart';
 
-class FSFlagCollection {
+class FlagCollection {
   final VisitorDelegate _visitorDelegate;
 
   Map<String, Flag> _flags = {};
 
   // Constructor
-  FSFlagCollection(this._visitorDelegate, this._flags);
+  FlagCollection(this._visitorDelegate, this._flags);
 
   // Iterator
   Iterator<MapEntry<String, Flag>> makeIterator() {
@@ -27,11 +27,11 @@ class FSFlagCollection {
   }
 
   // Filtering
-  FSFlagCollection filter(bool Function(String, Flag) isIncluded) {
+  FlagCollection filter(bool Function(String, Flag) isIncluded) {
     var filteredFlags =
         _flags.entries.where((entry) => isIncluded(entry.key, entry.value));
     var newFlags = {for (var entry in filteredFlags) entry.key: entry.value};
-    return FSFlagCollection(this._visitorDelegate, newFlags);
+    return FlagCollection(this._visitorDelegate, newFlags);
   }
 
   void forEach(void action(String key, Flag value)) {

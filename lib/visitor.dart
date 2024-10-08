@@ -263,13 +263,13 @@ class Visitor {
 
   // Get the colllection flags
   /// - Returns: an instance of FSFlagCollection with flags
-  FSFlagCollection getFlags() {
+  FlagCollection getFlags() {
     Map<String, Flag> ret = {};
 
     this.modifications.forEach((keyItem, modifItem) {
       ret.addAll({keyItem: Flag(keyItem, this._visitorDelegate)});
     });
-    return FSFlagCollection(this._visitorDelegate, ret);
+    return FlagCollection(this._visitorDelegate, ret);
   }
 
   Future<void> fetchFlags() async {
