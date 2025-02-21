@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flagship/api/service.dart';
 import 'package:flagship/cache/default_cache.dart';
 import 'package:flagship/dataUsage/data_usage_tracking.dart';
+import 'package:flagship/emotionAi/emotion_tools.dart';
+import 'package:flagship/emotionAi/fs_emotion.dart';
 import 'package:flagship/flagshipContext/flagship_context.dart';
 import 'package:flagship/flagshipContext/flagship_context_manager.dart';
 import 'package:flagship/hits/event.dart';
@@ -103,6 +105,14 @@ class Visitor {
   FlagStatus get flagStatus {
     return _flagStatus;
   }
+
+  // EmotionAI
+  EmotionAI? emotion_ai;
+
+  // Is the visitor is scored
+  bool eaiVisitorScored = false;
+  // the score value
+  String? emotionScoreAI = null;
 
 // Get fetchReasons
   FetchFlagsRequiredStatusReason get fetchReasons {
@@ -354,6 +364,16 @@ class Visitor {
   @visibleForTesting
   FlagSyncStatus getFlagSyncStatus() {
     return _flagSyncStatus;
+  }
+
+  // Add emotionAI function
+  collectEmotionsAIEvents(String screenName) {
+    if (Flagship.sharedInstance().eaiCollectEnabled == true) {
+      this._visitorDelegate.collectEmotionsAIEvents(screenName);
+    } else {
+      print(
+          "@@@@@@@@@@@@ The Emotion AI feature is not activated @@@@@@@@@@@@");
+    }
   }
 }
 

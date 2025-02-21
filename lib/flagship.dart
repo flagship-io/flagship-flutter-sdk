@@ -1,6 +1,8 @@
 library flagship;
 
+import 'package:flagship/emotionAi/emotion_tools.dart';
 import 'package:flagship/flagship_config.dart';
+import 'package:flagship/model/account_settings.dart';
 import 'package:flagship/status.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/device_tools.dart';
@@ -35,6 +37,12 @@ class Flagship with FlagshipDelegate {
   // LastInitialization Timestamp
   String lastInitializationTimestamp = DateTime.now().toString();
 
+  // eaiCollectEnabled
+  bool eaiCollectEnabled = false;
+
+  // eaiActivationEnabled
+  bool eaiActivationEnabled = false;
+
   factory Flagship.sharedInstance() {
     return _singleton;
   }
@@ -59,6 +67,39 @@ class Flagship with FlagshipDelegate {
 
         Flagship._configuration.decisionManager.startPolling();
       } else {
+        _singleton.onUpdateState(FSSdkStatus.SDK_INITIALIZED);
+      }
+      Flagship.logger(Level.INFO, STARTED);
+    } else {
+      _singleton.onUpdateState(FSSdkStatus.SDK_NOT_INITIALIZED);
+      Flagship.logger(Level.ERROR, (INITIALIZATION_PARAM_ERROR));
+    }
+  }
+
+  static startAI(String envId, String apiKey, {FlagshipConfig? config}) async {
+    _singleton._status = FSSdkStatus.SDK_NOT_INITIALIZED;
+    await FSDevice.loadDeviceInfo();
+    if (FlagshipTools.chekcXidEnvironment(envId)) {
+      _singleton.apiKey = apiKey;
+      _singleton.envId = envId;
+      if (config != null) {
+        Flagship._configuration = config;
+      }
+      if (_configuration.decisionMode == Mode.BUCKETING) {
+        _singleton.onUpdateState(FSSdkStatus.SDK_INITIALIZING);
+        Flagship._configuration.decisionManager.startPolling();
+      } else {
+        // Get the account settings
+        AccountSettings? account_settings =
+            await EmotionAITools.fetchRessources(envId);
+
+        if (account_settings != null) {
+          // Update eaiActivationEnabled
+          _singleton.eaiActivationEnabled =
+              account_settings.eaiActivationEnabled;
+          // Update eaiActivationEnabled
+          _singleton.eaiCollectEnabled = account_settings.eaiCollectEnabled;
+        }
         _singleton.onUpdateState(FSSdkStatus.SDK_INITIALIZED);
       }
       Flagship.logger(Level.INFO, STARTED);

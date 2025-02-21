@@ -45,6 +45,9 @@ abstract class IVisitor {
 
   // Get Status
   FlagStatus getFlagStatus(String key);
+
+  // EmotionsAI
+  collectEmotionsAIEvents(String screenName);
 }
 
 // Future to represent the error and the status

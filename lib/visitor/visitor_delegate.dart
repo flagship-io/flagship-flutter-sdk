@@ -1,3 +1,4 @@
+import 'package:flagship/emotionAi/emotion_tools.dart';
 import 'package:flagship/hits/hit.dart';
 import 'package:flagship/hits/segment.dart';
 import 'package:flagship/model/modification.dart';
@@ -126,5 +127,10 @@ class VisitorDelegate implements IVisitor {
   @override
   FlagStatus getFlagStatus(String key) {
     return getStrategy().getFlagStatus(key);
+  }
+
+  @override
+  collectEmotionsAIEvents(String screenName) {
+    getStrategy().collectEmotionsAIEvents(screenName);
   }
 }

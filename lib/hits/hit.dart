@@ -118,6 +118,9 @@ class BaseHit extends Hit {
       case HitCategory.USAGE:
         ret = "USAGE";
         break;
+      case HitCategory.EMOTION_AI:
+        ret = "VISITOREVENT";
+        break;
       default:
     }
     return ret;
@@ -186,5 +189,6 @@ enum HitCategory {
   SEGMENT,
   TROUBLESHOOTING,
   USAGE,
+  EMOTION_AI,
   NONE
 }

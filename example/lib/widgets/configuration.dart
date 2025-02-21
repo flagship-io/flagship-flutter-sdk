@@ -98,7 +98,8 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
           print(visitorExposed.toJson());
         })
         .build();
-    Flagship.start(envIdController.text, apiKeyController.text, config: config);
+    Flagship.startAI(envIdController.text, apiKeyController.text,
+        config: config);
   }
 
   _createVisitor() {
@@ -384,6 +385,14 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
                       onPressed: () {
                         _customTest();
                       })),
+              SizedBox(height: _spaceBetweenInput),
+              Container(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                      child: Text("Start Emotion AI"),
+                      onPressed: () {
+                        _startEAI();
+                      })),
             ],
           ),
         ),
@@ -393,6 +402,12 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
 
   String _createRandomUser() {
     return 'visitor-A' + Random().nextInt(100).toString();
+  }
+
+  _startEAI() {
+    Flagship.sharedInstance()
+        .currentVisitor
+        ?.collectEmotionsAIEvents("screen_flutter");
   }
 
   _customTest() async {

@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:flagship/dataUsage/data_usage_tracking.dart';
+import 'package:flagship/emotionAi/emotion_tools.dart';
+import 'package:flagship/emotionAi/fs_emotion.dart';
 import 'package:flagship/hits/activate.dart';
 import 'package:flagship/hits/event.dart';
 import 'package:flagship/hits/hit.dart';
@@ -173,6 +175,11 @@ class DefaultStrategy implements IVisitor {
   // Synchronize modification for the visitor
   @override
   Future<FetchResponse?> fetchFlags() async {
+    var score = await _prepareEmotionAI();
+    if (score != null) {
+      this.visitor.emotionScoreAI = score;
+      this.visitor.updateContext("eai::eas", score);
+    }
     Flagship.logger(Level.ALL, SYNCHRONIZE_MODIFICATIONS);
     // get actual state flagship sdk
     FSSdkStatus state = Flagship.getStatus();
@@ -387,5 +394,64 @@ class DefaultStrategy implements IVisitor {
     } else {
       return FlagStatus.NOT_FOUND;
     }
+  }
+
+  @override
+  collectEmotionsAIEvents(String screenName) {
+    // if the emotion_ai is null create
+    if (this.visitor.emotion_ai == null) {
+      this.visitor.emotion_ai = EmotionAI(this.visitor.visitorId);
+    }
+    _prepareEmotionAI().then((score) {
+      if (score != null) {
+        print(
+            "Since the visitor ${visitor.visitorId} is already scored with $score the emotionAI process is skiped");
+        // Update the score
+        this.visitor.emotionScoreAI = score;
+        this.visitor.eaiVisitorScored = true; // See later if we need this
+        // Update the context
+        // Save the response for the visitor database
+        cacheVisitor(visitor.visitorId,
+            jsonEncode(VisitorCache.fromVisitor(this.visitor).toJson()));
+      } else {
+        // Start the collect emotions
+        this.visitor.emotion_ai?.startEAICollectForView(screenName);
+      }
+    });
+  }
+
+  // Prepare Emotions
+  Future<String?> _prepareEmotionAI() async {
+    // EAIActivation is enabled
+    if (Flagship.sharedInstance().eaiActivationEnabled) {
+      if (this.visitor.eaiVisitorScored) {
+        // If the user is already scored, check local cache first.
+        if (this.visitor.emotionScoreAI != null) {
+          print(
+              "This user has an existing score: + $this.visitor.emotionScoreAI +  in local cache");
+          return this.visitor.emotionScoreAI;
+        }
+      } else {
+        // Not scored: check remotely for an existing score
+        var scoreObject =
+            await EmotionAITools().fetchScore(this.visitor.visitorId);
+
+        if (scoreObject.statusCode == 200) {
+          print(
+              "@@@@@@@@@@@@@ The visitor ${this.visitor.visitorId} is already scored 🚀 🚀 🚀 🚀 🚀 🚀 ............");
+          print(
+              "@@@@@@@@@@@@@ The score for visitor ${this.visitor.visitorId} got from remote server  🚀 🚀 🚀 🚀 🚀 🚀 ............");
+          return scoreObject.score;
+        } else if (scoreObject.statusCode == 204) {
+          print(
+              "@@@@@@@@@@@@@ The visitor ${this.visitor.visitorId} is not scored 😕 😕 😕 😕 😕 😕 ............");
+          return null;
+        } else {
+          return null;
+        }
+      }
+    }
+    // If eaiActivationEnabled is false, complete without a score.
+    return null;
   }
 }

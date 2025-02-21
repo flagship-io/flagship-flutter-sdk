@@ -63,4 +63,9 @@ class NotReadyStrategy extends DefaultStrategy {
   void onExposure(Modification pModification) {
     Flagship.logger(Level.INFO, ACTIVATE_NOT_READY);
   }
+
+  @override
+  collectEmotionsAIEvents(String screenName) {
+    Flagship.logger(Level.ERROR, HIT_NOT_READY);
+  }
 }
