@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flagship/tracking/tracking_manager_config.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flutter/material.dart';
@@ -63,7 +65,7 @@ class FSData extends ChangeNotifier {
 }
 
 class UserData extends ChangeNotifier {
-  String _visitorId = "flutter21";
+  String _visitorId = "flutter_user" + Random().nextInt(100).toString();
   Map<String, Object> context = {
     "testing_tracking_manager": true,
     "isQA": true,

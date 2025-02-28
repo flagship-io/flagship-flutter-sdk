@@ -1,9 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flagship/api/service.dart';
 import 'package:flagship/cache/default_cache.dart';
 import 'package:flagship/dataUsage/data_usage_tracking.dart';
-import 'package:flagship/emotionAi/emotion_tools.dart';
 import 'package:flagship/emotionAi/fs_emotion.dart';
+import 'package:flagship/emotionAi/polling_score.dart';
 import 'package:flagship/flagshipContext/flagship_context.dart';
 import 'package:flagship/flagshipContext/flagship_context_manager.dart';
 import 'package:flagship/hits/event.dart';
@@ -13,6 +14,7 @@ import 'package:flagship/decision/decision_manager.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/hits/hit.dart';
+import 'package:flagship/model/visitor_cache/visitor_cache.dart';
 import 'package:flagship/tracking/tracking_manager_periodic_strategy.dart';
 import 'package:flagship/tracking/tracking_manager_continuous_strategies.dart';
 import 'package:flagship/tracking/tracking_manager.dart';
@@ -37,7 +39,7 @@ enum Instance {
   NEW_INSTANCE
 }
 
-class Visitor {
+class Visitor with EmotionAiDelegate {
   /// VisitorId
   String visitorId;
 
@@ -374,6 +376,31 @@ class Visitor {
       print(
           "@@@@@@@@@@@@ The Emotion AI feature is not activated @@@@@@@@@@@@");
     }
+  }
+
+  onAppScreenChange(String screenName) {
+    this._visitorDelegate.onAppScreenChange(screenName);
+  }
+
+  @override
+  void emotionAiCaptureCompleted(score) {
+    print(
+        " @@@@@@@@@@@@@ The delegate with score \($score ?? \"null\" has been called @@@@@@@@@@@@@");
+    this.eaiVisitorScored = (score == null) ? false : true;
+
+    if (Flagship.sharedInstance().eaiActivationEnabled) {
+      this.emotionScoreAI = score;
+      // Update the context
+      if (score != null) {
+        this.updateContext("eai::eas", score);
+      }
+    } else {
+      print(
+          " @@@@@@@@@@@@@ eaiActivationEnabled is false will not communicate the score value @@@@@@@@@@@@@");
+    }
+    // save to cache
+    _visitorDelegate.getStrategy().cacheVisitor(
+        visitorId, jsonEncode(VisitorCache.fromVisitor(this).toJson()));
   }
 }
 

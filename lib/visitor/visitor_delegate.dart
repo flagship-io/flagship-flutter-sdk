@@ -133,4 +133,9 @@ class VisitorDelegate implements IVisitor {
   collectEmotionsAIEvents(String screenName) {
     getStrategy().collectEmotionsAIEvents(screenName);
   }
+
+  @override
+  onAppScreenChange(String screenName) {
+    getStrategy().onAppScreenChange(screenName);
+  }
 }

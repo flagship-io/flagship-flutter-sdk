@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flagship/dataUsage/data_usage_tracking.dart';
 import 'package:flagship/emotionAi/emotion_tools.dart';
 import 'package:flagship/emotionAi/fs_emotion.dart';
+import 'package:flagship/emotionAi/polling_score.dart';
 import 'package:flagship/hits/activate.dart';
 import 'package:flagship/hits/event.dart';
 import 'package:flagship/hits/hit.dart';
@@ -401,6 +402,7 @@ class DefaultStrategy implements IVisitor {
     // if the emotion_ai is null create
     if (this.visitor.emotion_ai == null) {
       this.visitor.emotion_ai = EmotionAI(this.visitor.visitorId);
+      this.visitor.emotion_ai?.delegate = this.visitor;
     }
     _prepareEmotionAI().then((score) {
       if (score != null) {
@@ -453,5 +455,10 @@ class DefaultStrategy implements IVisitor {
     }
     // If eaiActivationEnabled is false, complete without a score.
     return null;
+  }
+
+  @override
+  onAppScreenChange(String screenName) {
+    this.visitor.emotion_ai?.onAppScreenChange(screenName);
   }
 }

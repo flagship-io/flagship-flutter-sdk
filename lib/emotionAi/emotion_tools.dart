@@ -65,6 +65,8 @@ class EmotionAITools {
             json.decode(response.body)['accountSettings'] ?? {});
       } else {
         // You can return any error message or throw an exception
+        print('Failed to get settings account');
+
         return null;
       }
     } catch (e) {

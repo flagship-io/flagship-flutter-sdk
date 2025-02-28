@@ -48,6 +48,9 @@ abstract class IVisitor {
 
   // EmotionsAI
   collectEmotionsAIEvents(String screenName);
+
+  // On change screen
+  onAppScreenChange(String screenName);
 }
 
 // Future to represent the error and the status
