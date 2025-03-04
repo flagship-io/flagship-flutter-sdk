@@ -64,8 +64,7 @@ class FSEmotionPageView extends Page {
     // Flutter does not support enumerating installed fonts at runtime.
     // In Swift the code stringifies UIFont.familyNames.
     // Here you might return a hardcoded value or an empty list.
-    customParams["fnt"] = "[\"Andale Mono\", \"Arial\"]";
-
+    customParams["fnt"] = '[]';
     // Fake browser infos.
     customParams["hlb"] = false;
     // Fake OS infos.

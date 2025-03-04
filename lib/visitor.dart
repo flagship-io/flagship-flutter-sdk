@@ -379,7 +379,10 @@ class Visitor with EmotionAiDelegate {
   }
 
   onAppScreenChange(String screenName) {
-    this._visitorDelegate.onAppScreenChange(screenName);
+    if (Flagship.sharedInstance().eaiCollectEnabled == true &&
+        this.eaiVisitorScored == false) {
+      this._visitorDelegate.onAppScreenChange(screenName);
+    }
   }
 
   @override

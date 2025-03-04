@@ -23,7 +23,8 @@ class FSEmotionEvent extends BaseHit {
     // Put the tracking event type
     customParams["t"] = typeOfEvent;
     // cpo field
-    customParams["cpo"] = "207.0,263.0,91197,0.030994415283203125"; //cpoString;
+    customParams["cpo"] = cpoString;
+    // cpoString;
     // Cursor and scroll positions
     customParams["cp"] = cpStirng;
     // spo field - click
