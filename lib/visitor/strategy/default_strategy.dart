@@ -265,6 +265,12 @@ class DefaultStrategy implements IVisitor {
       Flagship.logger(Level.ALL,
           "AuthenticateVisitor method will be ignored in Bucketing configuration");
     }
+
+    // Update the xpc info for the emotionAI
+    this
+        .visitor
+        .emotion_ai
+        ?.updateTupleId(this.visitor.visitorId, this.visitor.anonymousId);
   }
 
   @override
@@ -280,6 +286,11 @@ class DefaultStrategy implements IVisitor {
       Flagship.logger(Level.ALL,
           "unAuthenticateVisitor method will be ignored in Bucketing configuration");
     }
+    // Update the xpc info for the emotionAI
+    this
+        .visitor
+        .emotion_ai
+        ?.updateTupleId(this.visitor.visitorId, this.visitor.anonymousId);
   }
 
   @override
@@ -401,7 +412,8 @@ class DefaultStrategy implements IVisitor {
   collectEmotionsAIEvents(String screenName) {
     // if the emotion_ai is null create
     if (this.visitor.emotion_ai == null) {
-      this.visitor.emotion_ai = EmotionAI(this.visitor.visitorId);
+      this.visitor.emotion_ai =
+          EmotionAI(this.visitor.visitorId, this.visitor.anonymousId);
       this.visitor.emotion_ai?.delegate = this.visitor;
     }
     _prepareEmotionAI().then((score) {

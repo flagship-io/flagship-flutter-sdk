@@ -18,7 +18,8 @@ const double FSAIDuration30 = 30.0 + 2; // 32.0
 const double FSAIDuration120 = 120.0;
 
 class EmotionAI {
-  final String visitorId;
+  String visitorId;
+  String? anonymousId = null;
   String currentScreenName = "";
   VoidCallback? onEmotionCollected;
   DateTime? touchStartTime;
@@ -38,16 +39,14 @@ class EmotionAI {
   // -- Valeur seuil pour distinguer un "tap" d'un "scroll/drag"
   static const double kTouchSlop = 18.0;
 
-  // TODO Later
-  get anonymousId => null;
-
+  // Delegate
   EmotionAiDelegate? delegate;
 
   // Define your callback
   late PointerRoute _emotionAIGlobalPointerRoute;
 
   // Constructor
-  EmotionAI(this.visitorId) {
+  EmotionAI(this.visitorId, this.anonymousId) {
     // Init service
     service = Service(http.Client());
   }
@@ -193,6 +192,7 @@ class EmotionAI {
   }) async {
     // Set the visitor Id
     aiHit.visitorId = visitorId;
+    aiHit.anonymousId = anonymousId;
     // Create url
     String urlString = Endpoints.EmotionAiUrl;
     Flagship.logger(Level.DEBUG, 'Sending emotion AI events : ' + urlString);
@@ -255,5 +255,10 @@ class EmotionAI {
     this.sendEmotionEvent(eventPage).whenComplete(() {
       print("Send a pageview for a screen change ");
     });
+  }
+
+  updateTupleId(String visitorId, String? anonymousId) {
+    this.visitorId = visitorId;
+    this.anonymousId = anonymousId;
   }
 }
