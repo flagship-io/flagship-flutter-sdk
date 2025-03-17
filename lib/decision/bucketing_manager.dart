@@ -158,11 +158,26 @@ class BucketingManager extends DecisionManager {
     if (bk_file != null) {
       Flagship.sharedInstance().onUpdateState(
           bk_file.panic ? FSSdkStatus.SDK_PANIC : FSSdkStatus.SDK_INITIALIZED);
+      // Update Settings
+      Flagship.sharedInstance().eaiActivationEnabled =
+          bk_file.accountSettings?.eaiActivationEnabled ?? false;
+      Flagship.sharedInstance().eaiCollectEnabled =
+          bk_file.accountSettings?.eaiCollectEnabled ?? false;
+      DataUsageTracking.sharedInstance()
+          .updateTroubleshooting(bk_file.accountSettings?.troubleshooting);
     } else {
       _getSavedScript().then((savedBk) {
         Flagship.sharedInstance().onUpdateState(savedBk?.panic ?? false
             ? FSSdkStatus.SDK_PANIC
             : FSSdkStatus.SDK_INITIALIZED);
+
+        // Update Settings
+        Flagship.sharedInstance().eaiActivationEnabled =
+            savedBk?.accountSettings?.eaiActivationEnabled ?? false;
+        Flagship.sharedInstance().eaiCollectEnabled =
+            savedBk?.accountSettings?.eaiCollectEnabled ?? false;
+        DataUsageTracking.sharedInstance()
+            .updateTroubleshooting(savedBk?.accountSettings?.troubleshooting);
       });
     }
   }

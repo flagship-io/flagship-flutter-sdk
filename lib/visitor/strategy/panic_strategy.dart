@@ -75,6 +75,6 @@ class PanicStrategy extends DefaultStrategy {
 
   @override
   collectEmotionsAIEvents(String screenName) {
-    Flagship.logger(Level.INFO, PANIC_HIT);
+    Flagship.logger(Level.INFO, PANIC_EAI);
   }
 }

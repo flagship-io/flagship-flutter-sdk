@@ -49,34 +49,7 @@ class Flagship with FlagshipDelegate {
 
   Flagship._internal();
 
-  // Start Sdk
-  //
-  // envId : environement id (provided by flagship)
-  // apiKey: Api key (provided by flagship)
   static start(String envId, String apiKey, {FlagshipConfig? config}) async {
-    _singleton._status = FSSdkStatus.SDK_NOT_INITIALIZED;
-    FSDevice.loadDeviceInfo();
-    if (FlagshipTools.chekcXidEnvironment(envId)) {
-      _singleton.apiKey = apiKey;
-      _singleton.envId = envId;
-      if (config != null) {
-        Flagship._configuration = config;
-      }
-      if (_configuration.decisionMode == Mode.BUCKETING) {
-        _singleton.onUpdateState(FSSdkStatus.SDK_INITIALIZING);
-
-        Flagship._configuration.decisionManager.startPolling();
-      } else {
-        _singleton.onUpdateState(FSSdkStatus.SDK_INITIALIZED);
-      }
-      Flagship.logger(Level.INFO, STARTED);
-    } else {
-      _singleton.onUpdateState(FSSdkStatus.SDK_NOT_INITIALIZED);
-      Flagship.logger(Level.ERROR, (INITIALIZATION_PARAM_ERROR));
-    }
-  }
-
-  static startAI(String envId, String apiKey, {FlagshipConfig? config}) async {
     _singleton._status = FSSdkStatus.SDK_NOT_INITIALIZED;
     await FSDevice.loadDeviceInfo();
     if (FlagshipTools.chekcXidEnvironment(envId)) {
@@ -91,7 +64,7 @@ class Flagship with FlagshipDelegate {
       } else {
         // Get the account settings
         AccountSettings? account_settings =
-            await EmotionAITools.fetchRessources(envId);
+            await EmotionAITools().fetchRessources(envId);
 
         if (account_settings != null) {
           // Update eaiActivationEnabled
@@ -109,7 +82,7 @@ class Flagship with FlagshipDelegate {
     }
   }
 
-  /// Create new visitor
+  // Create new visitor
   static VisitorBuilder newVisitor(
       {required String visitorId,
       required bool hasConsented,

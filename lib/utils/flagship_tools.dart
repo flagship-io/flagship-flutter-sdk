@@ -98,4 +98,12 @@ class FlagshipTools {
 
     return hexString;
   }
+
+  /// Example: returns the number of bits per pixel. (Assumed value)
+  static int getBitsPerPixel() => 32;
+
+  /// Returns the amount of time offset in minutes from UTC.
+  static int getAmountTimeInMinute() {
+    return DateTime.now().timeZoneOffset.inMinutes;
+  }
 }

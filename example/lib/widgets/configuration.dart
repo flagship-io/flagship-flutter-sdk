@@ -14,6 +14,7 @@ import 'package:flagship/visitor.dart';
 import 'package:flagship_qa/Providers/fs_data.dart';
 import 'package:flagship_qa/mixins/dialog.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import './FSinputField.dart';
@@ -98,8 +99,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
           print(visitorExposed.toJson());
         })
         .build();
-    Flagship.startAI(envIdController.text, apiKeyController.text,
-        config: config);
+    Flagship.start(envIdController.text, apiKeyController.text, config: config);
   }
 
   _createVisitor() {
@@ -405,6 +405,17 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   }
 
   _startEAI() {
+    PointerRoute _emotionAIGlobalPointerRoute = (PointerEvent event) {
+      print("Collect from the application first ----------");
+    };
+    try {
+      GestureBinding.instance.pointerRouter
+          .addGlobalRoute(_emotionAIGlobalPointerRoute);
+    } catch (e) {
+      // Todo later add flagship logger
+      print(e);
+    }
+
     Flagship.sharedInstance()
         .currentVisitor
         ?.collectEmotionsAIEvents("screen_flutter");

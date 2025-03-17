@@ -371,10 +371,14 @@ class Visitor with EmotionAiDelegate {
   // Add emotionAI function
   collectEmotionsAIEvents(String screenName) {
     if (Flagship.sharedInstance().eaiCollectEnabled == true) {
-      this._visitorDelegate.collectEmotionsAIEvents(screenName);
+      if (eaiVisitorScored == true) {
+        Flagship.logger(Level.INFO,
+            "The visitor $visitorId has already collected and scored");
+      } else {
+        this._visitorDelegate.collectEmotionsAIEvents(screenName);
+      }
     } else {
-      print(
-          "@@@@@@@@@@@@ The Emotion AI feature is not activated @@@@@@@@@@@@");
+      Flagship.logger(Level.INFO, "The Emotion AI feature is not activated ");
     }
   }
 
@@ -387,8 +391,8 @@ class Visitor with EmotionAiDelegate {
 
   @override
   void emotionAiCaptureCompleted(score) {
-    print(
-        " @@@@@@@@@@@@@ The delegate with score \($score ?? \"null\" has been called @@@@@@@@@@@@@");
+    Flagship.logger(Level.INFO,
+        "The delegate with score \($score ?? \"null\" has been called");
     this.eaiVisitorScored = (score == null) ? false : true;
 
     if (Flagship.sharedInstance().eaiActivationEnabled) {
@@ -398,8 +402,8 @@ class Visitor with EmotionAiDelegate {
         this.updateContext("eai::eas", score);
       }
     } else {
-      print(
-          " @@@@@@@@@@@@@ eaiActivationEnabled is false will not communicate the score value @@@@@@@@@@@@@");
+      Flagship.logger(Level.INFO,
+          "eaiActivationEnabled is false will not communicate the score value");
     }
     // save to cache
     _visitorDelegate.getStrategy().cacheVisitor(

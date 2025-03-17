@@ -1,10 +1,6 @@
-import 'dart:ui' as ui;
-
+import 'package:flagship/emotionAi/emotion_tools.dart';
 import 'package:flagship/hits/hit.dart';
 
-/// This function mimics the Swift NumberFormatter that truncates integer digits
-
-/// Dart/Flutter version of your `FSEmotionEvent` class
 class FSEmotionEvent extends BaseHit {
   final String cpStirng;
   final String cpoString;
@@ -24,26 +20,15 @@ class FSEmotionEvent extends BaseHit {
     customParams["t"] = typeOfEvent;
     // cpo field
     customParams["cpo"] = cpoString;
-    // cpoString;
     // Cursor and scroll positions
     customParams["cp"] = cpStirng;
     // spo field - click
     customParams["spo"] = spoString;
     // The current screen
     customParams["dl"] = currentScreen;
-    // The resolution -- approximate UIScreen.main.bounds in Flutter:
-    // For a purely static approach (outside any widget tree):
-    final size = ui.window.physicalSize; // physical pixels
-    final devicePixelRatio = ui.window.devicePixelRatio;
-    final logicalWidth = size.width / devicePixelRatio;
-    final logicalHeight = size.height / devicePixelRatio;
-    // Or, inside a widget, you could use MediaQuery:
-    // final size = MediaQuery.of(context).size;
-    // final logicalWidth = size.width;
-    // final logicalHeight = size.height;
-    final String srValue = "$logicalWidth,$logicalHeight;";
-    customParams["sr"] = srValue;
-    // Merge in any common tracking fields. Equivalent to .merge(self.communBodyTrack).
+    // Size of the of the window ex: 1516,464;
+    customParams["sr"] = EmotionAITools.getSrValueScreen();
+    // Merge in any common tracking fields
     customParams.addAll(communBodyTrack);
 
     customParams.remove("qt");

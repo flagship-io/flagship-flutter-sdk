@@ -2,8 +2,9 @@
 /// Adjust as needed for your actual networking, logging, and delegate mechanisms.
 
 import 'dart:async';
-
 import 'package:flagship/emotionAi/emotion_tools.dart';
+import 'package:flagship/flagship.dart';
+import 'package:flagship/utils/logger/log_manager.dart';
 
 /// A sample delegate interface similar to FSEmotionAiDelegate in Swift.
 mixin EmotionAiDelegate {
@@ -36,7 +37,7 @@ class PollingScore {
     // polling after 10 seconds if no score was fetched.
     _stopTimer = Timer(const Duration(seconds: 10), stopPollingScore);
 
-    // Start polling right away (like startPolling() in Swift init).
+    // Start polling
     startPolling();
   }
 
@@ -46,7 +47,8 @@ class PollingScore {
     _pollingTimer =
         Timer.periodic(const Duration(milliseconds: 500), (timer) async {
       _retryCount++;
-      print('GET THE SCORE FROM THE SERVER - RETRY COUNT: $_retryCount');
+      Flagship.logger(Level.INFO,
+          "GET THE SCORE FROM THE SERVER - RETRY COUNT: $_retryCount");
 
       // Fetch the score from the server (placeholder).
       final scoreResult = await EmotionAITools().fetchScore(visitorId);
@@ -55,10 +57,12 @@ class PollingScore {
 
       if (statusCode == 204) {
         // Score not ready; let the timer keep going
-        print('Score not ready (statusCode=204). Continuing to poll...');
+        Flagship.logger(Level.INFO,
+            'Score not ready (statusCode=204). Continuing to poll...');
       } else if (statusCode == 200) {
         // We got a valid score
-        print('Score successfully received (statusCode=200)');
+        Flagship.logger(
+            Level.INFO, 'Score successfully received (statusCode=200)');
         delegate?.emotionAiCaptureCompleted(score);
 
         // Invalidate timers since we have our score
@@ -66,14 +70,15 @@ class PollingScore {
         _pollingTimer?.cancel();
       } else {
         // Some other status code (error, etc.)
-        print('Score not received - status code: $statusCode');
+        Flagship.logger(
+            Level.INFO, 'Score not received - status code: $statusCode');
       }
     });
   }
 
   /// Called when the stop timer fires (after 10 seconds), indicating no score was found.
   void stopPollingScore() {
-    print('Stop Polling Score-EmotionAI, Session Ended');
+    Flagship.logger(Level.INFO, 'Stop Polling Score-EmotionAI, Session Ended');
     _pollingTimer?.cancel();
   }
 }

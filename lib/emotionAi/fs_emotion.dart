@@ -30,7 +30,7 @@ class EmotionAI {
 
   double timeStartCollecting = 0;
 
-  // -- Dictionnaires pour mémoriser la position initiale et l'état de scroll pour chaque pointeur
+  // -- Dictio for positions
   final Map<int, Offset> startPositions = {};
   final Map<int, bool> hasScrolled = {};
   final Map<int, List<Map<String, dynamic>>> pointerPaths = {};
@@ -145,9 +145,9 @@ class EmotionAI {
               FSEmotionEvent("", cpoString, "", currentScreenName), deltaTime);
         } else {
           String cpString =
-              EmotionAITools.createCpFiled(pointerPaths[event.pointer]);
+              EmotionAITools().createCpFiled(pointerPaths[event.pointer]);
           String spoString =
-              EmotionAITools.createSpoFiled(pointerPaths[event.pointer]);
+              EmotionAITools().createSpoFiled(pointerPaths[event.pointer]);
           // Send Event for move
 
           sendEvent(FSEmotionEvent(cpString, "", spoString, currentScreenName),

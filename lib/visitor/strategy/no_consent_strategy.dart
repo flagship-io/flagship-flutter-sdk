@@ -53,6 +53,6 @@ class NoConsentStrategy extends DefaultStrategy {
 
   @override
   collectEmotionsAIEvents(String screenName) {
-    Flagship.logger(Level.INFO, CONSENT_HIT);
+    Flagship.logger(Level.INFO, CONSENT_EAI);
   }
 }

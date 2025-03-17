@@ -1,4 +1,3 @@
-import 'package:flagship/emotionAi/emotion_tools.dart';
 import 'package:flagship/hits/hit.dart';
 import 'package:flagship/hits/segment.dart';
 import 'package:flagship/model/modification.dart';

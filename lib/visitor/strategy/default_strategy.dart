@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flagship/dataUsage/data_usage_tracking.dart';
 import 'package:flagship/emotionAi/emotion_tools.dart';
 import 'package:flagship/emotionAi/fs_emotion.dart';
-import 'package:flagship/emotionAi/polling_score.dart';
 import 'package:flagship/hits/activate.dart';
 import 'package:flagship/hits/event.dart';
 import 'package:flagship/hits/hit.dart';
@@ -441,7 +440,7 @@ class DefaultStrategy implements IVisitor {
       if (this.visitor.eaiVisitorScored) {
         // If the user is already scored, check local cache first.
         if (this.visitor.emotionScoreAI != null) {
-          print(
+          Flagship.logger(Level.INFO,
               "This user has an existing score: + $this.visitor.emotionScoreAI +  in local cache");
           return this.visitor.emotionScoreAI;
         }
@@ -451,14 +450,12 @@ class DefaultStrategy implements IVisitor {
             await EmotionAITools().fetchScore(this.visitor.visitorId);
 
         if (scoreObject.statusCode == 200) {
-          print(
-              "@@@@@@@@@@@@@ The visitor ${this.visitor.visitorId} is already scored 🚀 🚀 🚀 🚀 🚀 🚀 ............");
-          print(
-              "@@@@@@@@@@@@@ The score for visitor ${this.visitor.visitorId} got from remote server  🚀 🚀 🚀 🚀 🚀 🚀 ............");
+          Flagship.logger(Level.INFO,
+              "The visitor ${this.visitor.visitorId} is already scored 🚀 🚀 🚀 🚀 🚀 🚀 ............");
           return scoreObject.score;
         } else if (scoreObject.statusCode == 204) {
-          print(
-              "@@@@@@@@@@@@@ The visitor ${this.visitor.visitorId} is not scored 😕 😕 😕 😕 😕 😕 ............");
+          Flagship.logger(Level.INFO,
+              "The visitor ${this.visitor.visitorId} is not scored 😕 😕 😕 😕 😕 😕 ............");
           return null;
         } else {
           return null;
