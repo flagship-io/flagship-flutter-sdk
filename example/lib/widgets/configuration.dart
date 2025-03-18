@@ -99,7 +99,8 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
           print(visitorExposed.toJson());
         })
         .build();
-    Flagship.start(envIdController.text, apiKeyController.text, config: config);
+    await Flagship.start(envIdController.text, apiKeyController.text,
+        config: config);
   }
 
   _createVisitor() {
