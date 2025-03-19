@@ -31,7 +31,7 @@ class EmotionAITools {
     }).join(';')}';
   }
 
-//Scroll position :
+// Scroll position :
   String createSpoFiled(List<Map<String, dynamic>>? path) {
     return '${path?.map((record) {
       final pos = record["position"] as Offset;
@@ -66,19 +66,17 @@ class EmotionAITools {
         return AccountSettings.fromJson(
             json.decode(response?.body ?? "")['accountSettings'] ?? {});
       } else {
-        // You can return any error message or throw an exception
         Flagship.logger(Level.INFO,
             "Failed to get AccountSettings.json from $urlString - Code Error is : ${response?.statusCode}");
         return null;
       }
     } catch (e) {
-      // Handle any exceptions thrown during the request
       Flagship.logger(Level.INFO, "Request failed with error: $e");
       return null;
     }
   }
 
-  /// This uses the http package to perform a GET request and parse the result.
+  // Fetch score
   Future<ScoreResult> fetchScore(String visitorId) async {
     String envId = Flagship.sharedInstance().envId ?? "";
     const fetchEmotionAIScoreURL = Endpoints.fetchEmotionAIScoreURL;
@@ -100,36 +98,26 @@ class EmotionAITools {
         Flagship.logger(Level.INFO, "Score not found");
         return ScoreResult(null, 204);
       } else if (response?.statusCode == 200) {
-        // The server returned OK, parse the body to extract the score
         final Map<String, dynamic> responseBody =
             json.decode(response?.body ?? "");
         final Map<String, dynamic>? eaiMap = responseBody["eai"];
-
         // Looking for a "score" inside "eas"
         final String? score = eaiMap?["eas"];
         if (score != null) {
-          Flagship.logger(
-              Level.INFO, "Your current EmotionAI score is: $score");
-
+          Flagship.logger(Level.INFO,
+              "The emotionAI score for $visitorId is: <<<< $score >>>>");
           return ScoreResult(score, 200);
         } else {
           Flagship.logger(
               Level.INFO, "No score found from the server response.");
-
-          // Return status 200, but null score
           return ScoreResult(null, 200);
         }
       } else {
-        // Any other status code – handle appropriately
-        print("");
-
-        Flagship.logger(Level.INFO,
-            "Error on fetching score: HTTP ${response?.statusCode}");
-        // ... You may also add logging or usage tracking as needed ...
+        Flagship.logger(
+            Level.INFO, "Error on fetching score: ${response?.statusCode}");
         return ScoreResult(null, response?.statusCode ?? 0);
       }
     } catch (error) {
-      // Handle network or decoding errors
       Flagship.logger(
           Level.INFO, "Exception occurred while fetching score: $error");
       return ScoreResult(null, -1);

@@ -6,7 +6,6 @@ import 'package:flagship/emotionAi/emotion_tools.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 
-/// A sample delegate interface similar to FSEmotionAiDelegate in Swift.
 mixin EmotionAiDelegate {
   /// Called when a score is successfully fetched from the server.
   void emotionAiCaptureCompleted(dynamic score);

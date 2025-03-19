@@ -217,7 +217,7 @@ class DataUsageTracking {
 
     try {
       criticalJson = _createTSHttp(resp.request, resp);
-      print(criticalJson); // Check later if should log
+      // print(criticalJson);
     } on Exception catch (e) {
       Flagship.logger(Level.EXCEPTIONS, e.toString());
       return;

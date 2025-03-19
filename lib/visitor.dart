@@ -373,7 +373,7 @@ class Visitor with EmotionAiDelegate {
     if (Flagship.sharedInstance().eaiCollectEnabled == true) {
       if (eaiVisitorScored == true) {
         Flagship.logger(Level.INFO,
-            "The visitor $visitorId has already collected and scored");
+            "The visitor $visitorId is already collected and scored");
       } else {
         this._visitorDelegate.collectEmotionsAIEvents(screenName);
       }

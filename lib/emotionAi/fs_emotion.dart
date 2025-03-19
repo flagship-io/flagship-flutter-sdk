@@ -30,13 +30,13 @@ class EmotionAI {
 
   double timeStartCollecting = 0;
 
-  // -- Dictio for positions
+  // -- Dico for positions
   final Map<int, Offset> startPositions = {};
   final Map<int, bool> hasScrolled = {};
   final Map<int, List<Map<String, dynamic>>> pointerPaths = {};
   final Map<int, DateTime> pointerDownTimes = {};
 
-  // -- Valeur seuil pour distinguer un "tap" d'un "scroll/drag"
+  // -- Threshold for "tap" - "scroll/drag"
   static const double kTouchSlop = 18.0;
 
   // Delegate
@@ -53,7 +53,8 @@ class EmotionAI {
 
   void startEAICollectForView(String nameScreen) {
     if (isCollecting == true) {
-      print("The process emotionAI is already collecting ..... ");
+      Flagship.logger(
+          Level.INFO, "The emotionAI process is already collecting");
       return;
     }
     // Update current scree name
@@ -70,16 +71,14 @@ class EmotionAI {
 
   // Start collecting gestures
   void _startCollecting() {
-    print("Start Collecting emotionAI ....");
     isCollecting = true;
     _emotionAIGlobalPointerRoute = (PointerEvent event) {
       if (event is PointerDownEvent) {
-        // Enregistre la position initiale pour ce pointeur
+        // Save initial position
         startPositions[event.pointer] = event.position;
-        // Marque qu'on n'a pas encore reconnu de scroll pour ce pointeur
+        // set as tap
         hasScrolled[event.pointer] = false;
-        // Initialise la liste des positions (historique) pour ce pointeur
-        // Initialise l'historique pour ce pointeur
+        // Initialise list positions
         pointerPaths[event.pointer] = [
           {
             'position': event.position,
@@ -89,17 +88,17 @@ class EmotionAI {
 
         pointerDownTimes[event.pointer] = DateTime.now().toUtc(); // Instant UTC
       } else if (event is PointerMoveEvent) {
-        // Ajoute la position courante + le timeStamp à l'historique
+        // Add the current position and timeStamp
         pointerPaths[event.pointer]?.add({
           'position': event.position,
           'timeStamp': DateTime.now().microsecondsSinceEpoch,
         });
-        // Vérifie si nous avons déjà identifié un scroll pour ce pointeur
+        // Check if already identified as scroll
         if (hasScrolled[event.pointer] == false) {
           final initialPosition = startPositions[event.pointer];
           if (initialPosition != null) {
             final distance = (event.position - initialPosition).distance;
-            // Si la distance dépasse le seuil, on considère qu'il s'agit d'un scroll/drag
+            // If the distance over the threshold, then will consider it as scroll
             if (distance > kTouchSlop) {
               hasScrolled[event.pointer] = true;
               debugPrint(
@@ -113,32 +112,26 @@ class EmotionAI {
             (DateTime.now().millisecondsSinceEpoch / 1000.0) -
                 timeStartCollecting;
 
-        // Ajoute la position finale + timeStamp à l'historique (pour complétude)
+        // Add final position and timeStamp
         pointerPaths[event.pointer]?.add({
           'position': event.position,
           'timeStamp': DateTime.now().toUtc().microsecondsSinceEpoch,
         });
-        // Vérifie si ce pointeur a été marqué comme ayant scrollé
+        // Check is this pointer is already tagged as scroll
         final wasScrolled = hasScrolled[event.pointer] ?? false;
         if (!wasScrolled) {
-          // On calcule la durée du clic
+          // Time click duration
           final downTime = pointerDownTimes[event.pointer];
           int clickDuration = 0;
           if (downTime != null) {
             clickDuration =
                 DateTime.now().toUtc().difference(downTime).inMilliseconds;
-            debugPrint(
-              'Durée du clic (Pointer ${event.pointer}): ${clickDuration} ms',
-            );
           }
-          // create a CPO
+          // create a CPO field
           String cpoString = EmotionAITools.createCpoField(
               event: event,
               timestamps: DateTime.now().toUtc().microsecondsSinceEpoch,
               clickDuration: clickDuration);
-          debugPrint(
-            'Pointer ${event.pointer}: Touch/Tap détecté (distance ≤ $kTouchSlop) Le champs SPO sera donc ${cpoString}',
-          );
 
           // Send Event for click
           sendEvent(
@@ -149,27 +142,16 @@ class EmotionAI {
           String spoString =
               EmotionAITools().createSpoFiled(pointerPaths[event.pointer]);
           // Send Event for move
-
           sendEvent(FSEmotionEvent(cpString, "", spoString, currentScreenName),
               deltaTime);
-
-          debugPrint(
-            'Pointer ${event.pointer}: Scroll/Drag confirmé, le champ CP est ${cpString}',
-          );
-
-          debugPrint(
-            'Pointer ${event.pointer}: Scroll/Drag confirmé, le champ SPO est ${spoString}',
-          );
         }
 
-        // Nettoyage : supprime les entrées pour ce pointeur
+        // Clean
         startPositions.remove(event.pointer);
         hasScrolled.remove(event.pointer);
         pointerPaths.remove(event.pointer);
       } else if (event is PointerCancelEvent) {
         // Cancel by the system
-        debugPrint(
-            'Pointer ${event.pointer}: Événement annulé (PointerCancel)');
         // Clean
         startPositions.remove(event.pointer);
         hasScrolled.remove(event.pointer);
@@ -226,20 +208,21 @@ class EmotionAI {
       GestureBinding.instance.pointerRouter
           .removeGlobalRoute(_emotionAIGlobalPointerRoute);
     } catch (e) {
-      // ToDO later add logger flagship
-      print(e);
+      Flagship.logger(Level.EXCEPTIONS, e.toString());
     }
-
-    debugPrint("Emotion AI collection stopped");
+    Flagship.logger(Level.INFO, "The emotionAI collection is stopped");
   }
 
   sendEvent(Hit event, double deltaTime) {
-    print("Send emotion Event after $deltaTime seconds from starting collect");
+    Flagship.logger(Level.INFO,
+        "Send emotion Event after $deltaTime seconds from starting collect");
     if (deltaTime < FSAIDuration30) {
       sendEmotionEvent(event);
     } else if (deltaTime <= FSAIDuration120) {
       sendEmotionEvent(event);
-      print("Send last EAI event and STOP COLLECTING");
+      print("");
+      Flagship.logger(
+          Level.INFO, "Send last emotion event and stop the collect");
       stopCollecting();
       // Start get scoring from remote
       pollingScore = PollingScore(
@@ -253,7 +236,8 @@ class EmotionAI {
     this.currentScreenName = screenName;
     FSEmotionPageView eventPage = FSEmotionPageView(this.currentScreenName);
     this.sendEmotionEvent(eventPage).whenComplete(() {
-      print("Send a pageview for a screen change ");
+      print(" ");
+      Flagship.logger(Level.INFO, "Send pageview when app change screen");
     });
   }
 
