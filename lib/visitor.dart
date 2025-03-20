@@ -443,22 +443,24 @@ class VisitorBuilder {
     return this;
   }
 
-  isAuthenticated(bool authenticated) {
+  VisitorBuilder isAuthenticated(bool authenticated) {
     _isAuthenticated = authenticated;
     return this;
   }
 
-  withOnFlagStatusChanged(OnFlagStatusChanged pCallback) {
+  // Visitor flags status callback
+  VisitorBuilder withOnFlagStatusChanged(OnFlagStatusChanged pCallback) {
     _onFlagStatusChanged = pCallback;
     return this;
   }
 
-  withOnFlagStatusFetchRequired(OnFlagStatusFetchRequired pCallback) {
+  VisitorBuilder withOnFlagStatusFetchRequired(
+      OnFlagStatusFetchRequired pCallback) {
     _onFlagStatusFetchRequired = pCallback;
     return this;
   }
 
-  withOnFlagStatusFetched(OnFlagStatusFetched pCallBack) {
+  VisitorBuilder withOnFlagStatusFetched(OnFlagStatusFetched pCallBack) {
     _onFlagStatusFetched = pCallBack;
     return this;
   }

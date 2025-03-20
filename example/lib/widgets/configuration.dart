@@ -488,4 +488,15 @@ class CustomVisitorCache with IVisitorCacheImplementation {
     print("--------------  CUSTOM VISITOR CACHE- ------------");
     return Future.value("");
   }
+
+  doc() {
+    // Start The sdk
+    Flagship.start("envId", "apiKey");
+
+    // Create visitor with withOnFlagStatusFetched callback
+    Flagship.newVisitor(visitorId: "userId", hasConsented: true)
+        .withOnFlagStatusFetched(() {
+      // Add your code
+    });
+  }
 }

@@ -66,7 +66,7 @@ class _ModificationsState extends State<Modifications> {
 
     setState(() {
       valueForFlag = ret.toString();
-      status = myFlag?.getFlagStatus() ?? FlagStatus.NOT_FOUND;
+      status = myFlag?.status ?? FlagStatus.NOT_FOUND;
       reason =
           currentVisitor?.fetchReasons ?? FetchFlagsRequiredStatusReason.NONE;
     });
