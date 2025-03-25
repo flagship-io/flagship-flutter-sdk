@@ -4,6 +4,7 @@ import 'package:flagship/decision/api_manager.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/flagship_version.dart';
+import 'package:flagship/model/flag.dart';
 import 'package:flagship/tracking/tracking_manager.dart';
 import 'package:flagship/tracking/tracking_manager_config.dart';
 import 'package:flagship/tracking/tracking_manager_continuous_strategies.dart';
@@ -75,19 +76,21 @@ Future<void> main() async {
         .fsQueue
         .clear();
     await vMock.fetchFlags();
-    var mockFlag = vMock.getFlag("key_A");
-    var mockVal = mockFlag.value("defaultValue", visitorExposed: false);
-    expect(mockVal, "val_A");
-    await mockFlag.visitorExposed();
-    await mockFlag.visitorExposed();
-    await mockFlag.visitorExposed();
+
+    for (int i = 0; i < 300; i++) {
+      Flag mockFlag;
+      mockFlag = vMock.getFlag("key_A");
+      var mockVal = mockFlag.value("defaultValue", visitorExposed: false);
+      expect(mockVal, "val_A");
+      await mockFlag.visitorExposed();
+    }
 
     expect(
         (vMock.trackingManager as TrackingManageContinuousStrategy)
             .activatePool
             .fsQueue
             .length,
-        3);
+        300);
 
     when(fakeTrackingService.sendHttpRequest(RequestType.Post,
             'https://decision.flagship.io/v2/activate', any, any,
@@ -95,7 +98,11 @@ Future<void> main() async {
         .thenAnswer((_) async {
       return http.Response("mock", 200);
     });
-    await mockFlag.visitorExposed();
+    Flag mockFlagBis;
+    mockFlagBis = vMock.getFlag("key_A");
+    var mockValBis = mockFlagBis.value("defaultValue", visitorExposed: false);
+    expect(mockValBis, "val_A");
+    await mockFlagBis.visitorExposed();
     // After sucess the pool should be empty
     expect(
         (vMock.trackingManager as TrackingManageContinuousStrategy)

@@ -92,7 +92,7 @@ class MainScreenState extends State<MainScreen> {
   ];
 
   @override
-  Widget build(BuildContext context) {
+  build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
         showUnselectedLabels: false,

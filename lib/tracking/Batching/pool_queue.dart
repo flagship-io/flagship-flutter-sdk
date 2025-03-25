@@ -96,10 +96,24 @@ class FlagshipPoolQueue {
   }
 
   /// Extract the hits relative to visitor
-  List<Hit> extractHitsWithVisitorId(String visitorId) {
+  List<Hit> extractActivateWithVisitorId(String visitorId) {
     return fsQueue.where((element) {
       return (element.visitorId == visitorId);
     }).toList();
+  }
+
+  /// Extract the hits relative to visitor
+  List<Hit> extractHitFromQue(String visitorId) {
+    return fsQueue.where((element) {
+      return (element.visitorId == visitorId);
+    }).toList();
+  }
+
+  // Re- Inject the elements
+  void reInjectElements(List<Hit> listToInject) {
+    listToInject.forEach((item) {
+      this.fsQueue.add(item);
+    });
   }
 
   // Get the ids for all the  hits in the actual pool
@@ -139,6 +153,8 @@ class FlagshipPoolQueue {
 
     return result;
   }
+
+  extractHitsWithVisitorId(String s) {}
 }
 
 mixin FlagshipPoolQueueDelegate {
