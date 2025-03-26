@@ -87,9 +87,6 @@ class TrackingManageContinuousStrategy extends TrackingManager {
       needToClean = true;
       Flagship.logger(Level.ALL,
           "Add previous activates in batch found in the pool activate");
-      //  listOfActivate.addAll(
-      //    _activatePool.extractHitsWithVisitorId(activateHit.visitorId));
-
       listOfActivate.addAll(
           _activatePool.extractXElementFromQueue(Activate_Limit_Batch_Size));
 
@@ -112,7 +109,6 @@ class TrackingManageContinuousStrategy extends TrackingManager {
         }
         break;
       default:
-        //_activatePool.addNewTrackElement(activateHit);
         // Save on cache the current one
         this.onCacheHit(activateHit);
         // Re inject the list activate to the pool
