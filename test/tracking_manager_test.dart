@@ -13,8 +13,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/widgets.dart';
+import 'fake_path_provider_platform.dart';
 import 'service_test.mocks.dart';
 import 'test_tools.dart';
 
@@ -29,6 +31,7 @@ TrackingManager fakeTrackingMgr = TrackingManageContinuousStrategy(
 ApiManager fakeApi = ApiManager(fakeService);
 
 Future<void> main() async {
+  PathProviderPlatform.instance = FakePathProviderPlatform();
   ToolsTest.sqfliteTestInit();
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences.setMockInitialValues({});
