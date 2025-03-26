@@ -96,7 +96,7 @@ class FlagshipPoolQueue {
   }
 
   /// Extract the hits relative to visitor
-  List<Hit> extractActivateWithVisitorId(String visitorId) {
+  List<Hit> extractHitsWithVisitorId(String visitorId) {
     return fsQueue.where((element) {
       return (element.visitorId == visitorId);
     }).toList();
@@ -153,8 +153,6 @@ class FlagshipPoolQueue {
 
     return result;
   }
-
-  extractHitsWithVisitorId(String s) {}
 }
 
 mixin FlagshipPoolQueueDelegate {
