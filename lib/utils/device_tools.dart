@@ -1,10 +1,8 @@
-import 'dart:ui';
-
-import 'package:device_info/device_info.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_device_type/flutter_device_type.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
+import 'package:device_info_plus/device_info_plus.dart';
 
 class FSDevice {
   // Load thoses infos when start flagship becasue an async
