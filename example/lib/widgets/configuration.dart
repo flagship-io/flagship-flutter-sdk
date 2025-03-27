@@ -14,6 +14,7 @@ import 'package:flagship/visitor.dart';
 import 'package:flagship_qa/Providers/fs_data.dart';
 import 'package:flagship_qa/mixins/dialog.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import './FSinputField.dart';
@@ -383,11 +384,36 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
                       onPressed: () {
                         _customTest();
                       })),
+              SizedBox(height: _spaceBetweenInput),
+              Container(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                      child: Text("Start Emotion AI"),
+                      onPressed: () {
+                        _startEAI();
+                      })),
             ],
           ),
         ),
       ),
     );
+  }
+
+  _startEAI() {
+    PointerRoute _emotionAIGlobalPointerRoute = (PointerEvent event) {
+      print("Collect from the application first ----------");
+    };
+    try {
+      GestureBinding.instance.pointerRouter
+          .addGlobalRoute(_emotionAIGlobalPointerRoute);
+    } catch (e) {
+      // Todo later add flagship logger
+      print(e);
+    }
+
+    Flagship.sharedInstance()
+        .currentVisitor
+        ?.collectEmotionsAIEvents("screen_flutter");
   }
 
   String _createRandomUser() {
