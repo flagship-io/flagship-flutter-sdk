@@ -442,6 +442,11 @@ class DefaultStrategy implements IVisitor {
         if (this.visitor.emotionScoreAI != null) {
           Flagship.logger(Level.INFO,
               "This user has an existing score: + $this.visitor.emotionScoreAI +  in local cache");
+          DataUsageTracking.sharedInstance().processEaiGetScore(
+              CriticalPoints.EMOTIONS_AI_SCORE_FROM_LOCAL_CACHE.name,
+              visitor,
+              null,
+              this.visitor.emotionScoreAI);
           return this.visitor.emotionScoreAI;
         }
       } else {

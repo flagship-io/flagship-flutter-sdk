@@ -2,9 +2,12 @@
 /// Adjust as needed for your actual networking, logging, and delegate mechanisms.
 
 import 'dart:async';
+import 'package:flagship/dataUsage/data_report_queue.dart';
+import 'package:flagship/dataUsage/data_usage_tracking.dart';
 import 'package:flagship/emotionAi/emotion_tools.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
+import 'package:flutter/foundation.dart';
 
 mixin EmotionAiDelegate {
   /// Called when a score is successfully fetched from the server.
@@ -42,6 +45,9 @@ class PollingScore {
 
   /// Initiate repeated polling of the server to fetch the score.
   void startPolling() {
+    DataUsageTracking.sharedInstance().processTroubleShootingEAIWorkFlow(
+        CriticalPoints.EMOTIONS_AI_START_SCORING.name,
+        Flagship.sharedInstance().currentVisitor);
     // Create a repeating timer with a 0.5 second interval (similar to FSRepeatingTimer in Swift).
     _pollingTimer =
         Timer.periodic(const Duration(milliseconds: 500), (timer) async {
@@ -63,14 +69,21 @@ class PollingScore {
         Flagship.logger(
             Level.INFO, 'Score successfully received (statusCode=200)');
         delegate?.emotionAiCaptureCompleted(score);
-
         // Invalidate timers since we have our score
         _stopTimer?.cancel();
         _pollingTimer?.cancel();
+
+        DataUsageTracking.sharedInstance().processTroubleShootingEAIWorkFlow(
+            CriticalPoints.EMOTIONS_AI_SCORING_SUCCESS.name,
+            Flagship.sharedInstance().currentVisitor,
+            score: score);
       } else {
         // Some other status code (error, etc.)
         Flagship.logger(
             Level.INFO, 'Score not received - status code: $statusCode');
+        DataUsageTracking.sharedInstance().processTroubleShootingEAIWorkFlow(
+            CriticalPoints.EMOTIONS_AI_SCORING_FAILED.name,
+            Flagship.sharedInstance().currentVisitor);
       }
     });
   }

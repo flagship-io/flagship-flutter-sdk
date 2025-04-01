@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:ui';
 import 'package:flagship/api/endpoints.dart';
 import 'package:flagship/api/service.dart';
+import 'package:flagship/dataUsage/data_usage_tracking.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/model/account_settings.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
@@ -62,12 +63,20 @@ class EmotionAITools {
           .sendHttpRequest(RequestType.Get, urlString, {}, null);
 
       if (response?.statusCode == 200) {
+        if (response != null) {
+          DataUsageTracking.sharedInstance().processTroubleShootingHttp(
+              CriticalPoints.ACCOUNT_SETTINGS.name, response);
+        }
         // Return AccountSettings
         return AccountSettings.fromJson(
             json.decode(response?.body ?? "")['accountSettings'] ?? {});
       } else {
         Flagship.logger(Level.INFO,
             "Failed to get AccountSettings.json from $urlString - Code Error is : ${response?.statusCode}");
+        if (response != null) {
+          DataUsageTracking.sharedInstance().processTroubleShootingHttp(
+              CriticalPoints.ACCOUNT_SETTINGS_ERROR.name, response);
+        }
         return null;
       }
     } catch (e) {
@@ -106,6 +115,8 @@ class EmotionAITools {
         if (score != null) {
           Flagship.logger(Level.INFO,
               "The emotionAI score for $visitorId is: <<<< $score >>>>");
+          DataUsageTracking.sharedInstance().processEaiGetScore(
+              CriticalPoints.EMOTIONS_AI_SCORE.name, null, response, score);
           return ScoreResult(score, 200);
         } else {
           Flagship.logger(
@@ -115,6 +126,9 @@ class EmotionAITools {
       } else {
         Flagship.logger(
             Level.INFO, "Error on fetching score: ${response?.statusCode}");
+
+        DataUsageTracking.sharedInstance().processEaiGetScore(
+            CriticalPoints.EMOTIONS_AI_SCORE_ERROR.name, null, response, null);
         return ScoreResult(null, response?.statusCode ?? 0);
       }
     } catch (error) {

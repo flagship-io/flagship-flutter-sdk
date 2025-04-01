@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flagship/api/endpoints.dart';
 import 'package:flagship/api/service.dart';
+import 'package:flagship/dataUsage/data_usage_tracking.dart';
 import 'package:flagship/emotionAi/emotion_event.dart';
 import 'package:flagship/emotionAi/emotion_pageview.dart';
 import 'package:flagship/emotionAi/emotion_tools.dart';
@@ -66,6 +67,11 @@ class EmotionAI {
       timeStartCollecting = DateTime.now().millisecondsSinceEpoch / 1000.0;
       // Start event emotion capture
       this._startCollecting();
+
+      // Send TR on start emotionAI
+      DataUsageTracking.sharedInstance().processTroubleShootingEAIWorkFlow(
+          CriticalPoints.EMOTIONS_AI_START_COLLECTING.name,
+          Flagship.sharedInstance().currentVisitor);
     });
   }
 
@@ -190,9 +196,16 @@ class EmotionAI {
         case 204:
         case 201:
           Flagship.logger(Level.INFO, HIT_SUCCESS);
+
+          DataUsageTracking.sharedInstance()
+              .processTroubleShootingEAIEvent(null, aiHit, response);
+
           break;
         default:
           Flagship.logger(Level.ERROR, HIT_FAILED);
+          DataUsageTracking.sharedInstance().processTroubleShootingEAIEvent(
+              null, aiHit, response,
+              onFailed: true);
       }
     } catch (error) {
       Flagship.logger(
@@ -203,6 +216,9 @@ class EmotionAI {
 
   // Stop collecting gestures
   void stopCollecting() {
+    DataUsageTracking.sharedInstance().processTroubleShootingEAIWorkFlow(
+        CriticalPoints.EMOTIONS_AI_STOP_COLLECTING.name,
+        Flagship.sharedInstance().currentVisitor);
     isCollecting = false;
     try {
       GestureBinding.instance.pointerRouter
