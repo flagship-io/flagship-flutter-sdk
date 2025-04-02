@@ -24,7 +24,7 @@ class PollingScore {
   /// Number of times we've retried fetching the score.
   int _retryCount = 0;
 
-  /// Values passed from Swift code.
+  /// Values
   final String visitorId;
   final String? anonymousId;
   final EmotionAiDelegate? delegate;
@@ -35,7 +35,6 @@ class PollingScore {
     this.anonymousId,
     this.delegate,
   }) {
-    // Equivalent to the Timer.scheduledTimer(...) in Swift that stops
     // polling after 10 seconds if no score was fetched.
     _stopTimer = Timer(const Duration(seconds: 10), stopPollingScore);
 
