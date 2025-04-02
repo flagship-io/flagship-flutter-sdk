@@ -327,6 +327,11 @@ class DefaultStrategy implements IVisitor {
         // 2- Update the assignation history
         visitor.decisionManager.updateAssignationHistory(
             cachedVisitor.getAssignationHistory() ?? {});
+        // 3- Update the Score
+        this.visitor.emotionScoreAI = cachedVisitor.getFromCacheEAIScore();
+        this.visitor.eaiVisitorScored =
+            (this.visitor.emotionScoreAI == null) ? false : true;
+
         return true;
       } else {
         return false;

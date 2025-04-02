@@ -1,5 +1,6 @@
 library flagship;
 
+import 'package:flagship/dataUsage/data_usage_tracking.dart';
 import 'package:flagship/emotionAi/emotion_tools.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/model/account_settings.dart';
@@ -72,6 +73,9 @@ class Flagship with FlagshipDelegate {
               account_settings.eaiActivationEnabled;
           // Update eaiActivationEnabled
           _singleton.eaiCollectEnabled = account_settings.eaiCollectEnabled;
+          // Update Troubleshootings
+          DataUsageTracking.sharedInstance()
+              .updateTroubleshooting(account_settings.troubleshooting);
         }
         _singleton.onUpdateState(FSSdkStatus.SDK_INITIALIZED);
       }

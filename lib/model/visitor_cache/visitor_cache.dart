@@ -97,4 +97,9 @@ class VisitorCache {
   Map<String, dynamic>? getAssignationHistory() {
     return data?.assignmentsHistory;
   }
+
+  // Get Score from cache
+  String? getFromCacheEAIScore() {
+    return data?.emotionScoreAI;
+  }
 }

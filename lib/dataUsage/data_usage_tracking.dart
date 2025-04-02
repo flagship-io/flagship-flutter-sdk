@@ -12,7 +12,6 @@ import 'package:flagship/model/modification.dart';
 import 'package:flagship/utils/flagship_tools.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor.dart';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 import 'package:murmurhash/murmurhash.dart';
 
