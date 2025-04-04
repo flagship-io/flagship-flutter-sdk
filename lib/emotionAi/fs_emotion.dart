@@ -107,9 +107,8 @@ class EmotionAI {
             // If the distance over the threshold, then will consider it as scroll
             if (distance > kTouchSlop) {
               hasScrolled[event.pointer] = true;
-              debugPrint(
-                'Pointer ${event.pointer}: Scroll/Drag détecté (distance > $kTouchSlop)',
-              );
+              Flagship.logger(Level.DEBUG,
+                  "Pointer ${event.pointer}: Scroll/Drag détecté (distance > $kTouchSlop)");
             }
           }
         }
@@ -169,8 +168,7 @@ class EmotionAI {
       GestureBinding.instance.pointerRouter
           .addGlobalRoute(_emotionAIGlobalPointerRoute);
     } catch (e) {
-      // Todo later add flagship logger
-      print(e);
+      Flagship.logger(Level.EXCEPTIONS, e.toString());
     }
   }
 
@@ -236,7 +234,6 @@ class EmotionAI {
       sendEmotionEvent(event);
     } else if (deltaTime <= FSAIDuration120) {
       sendEmotionEvent(event);
-      print("");
       Flagship.logger(
           Level.INFO, "Send last emotion event and stop the collect");
       stopCollecting();
@@ -252,7 +249,6 @@ class EmotionAI {
     this.currentScreenName = screenName;
     FSEmotionPageView eventPage = FSEmotionPageView(this.currentScreenName);
     this.sendEmotionEvent(eventPage).whenComplete(() {
-      print(" ");
       Flagship.logger(Level.INFO, "Send pageview when app change screen");
     });
   }

@@ -4,7 +4,6 @@ import 'package:flagship/cache/interface_cache.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/hits/activate.dart';
 import 'package:flagship/hits/hit.dart';
-import 'package:flagship/model/modification.dart';
 import 'package:flagship/tracking/Batching/batch_manager.dart';
 import 'package:flagship/tracking/Batching/pool_queue.dart';
 import 'package:flagship/tracking/tracking_manager.dart';
@@ -89,9 +88,6 @@ class TrackingManageContinuousStrategy extends TrackingManager {
           "Add previous activates in batch found in the pool activate");
       listOfActivate.addAll(
           _activatePool.extractXElementFromQueue(Activate_Limit_Batch_Size));
-
-      print(
-          "-------- La liste des activate est ${listOfActivate.length}--------");
     } else {
       // We dont have any failed activate in the pool
     }

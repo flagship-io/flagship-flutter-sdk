@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flagship/api/endpoints.dart';
 import 'package:flagship/cache/default_cache.dart';
 import 'package:flagship/dataUsage/data_report_queue.dart';

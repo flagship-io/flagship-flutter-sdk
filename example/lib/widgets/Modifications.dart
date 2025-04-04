@@ -1,9 +1,7 @@
 import 'dart:convert';
 
 import 'package:flagship/model/flag.dart';
-import 'package:flagship/model/visitor_flag.dart';
 import 'package:flagship/status.dart';
-import 'package:flagship/visitor.dart';
 import 'package:flagship_qa/widgets/FSinputField.dart';
 import 'package:flagship_qa/widgets/modifications_json_screen.dart';
 import 'package:flutter/material.dart';

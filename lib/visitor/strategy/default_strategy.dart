@@ -389,20 +389,6 @@ class DefaultStrategy implements IVisitor {
             FlagMetadata.withMap(pModification.toJsonInformation())));
   }
 
-  // void onExposureBis(List<FSExposedInfo> exposureInfos) {
-  //   print(" @@@@@@@@@ callback exposure is called with " +
-  //       exposureInfos.length.toString() +
-  //       " Activate @@@@@@@@@@@@@@@@@");
-  //   exposureInfos.forEach((item) {
-  //     print(" onExposure item " + item.visitorExposed.id);
-
-  //     Flagship.sharedInstance()
-  //         .getConfiguration()
-  //         ?.onVisitorExposed
-  //         ?.call(item.visitorExposed, item.exposedFlag);
-  //   });
-  // }
-
   @override
   FlagStatus getFlagStatus(String key) {
     if (this.visitor.modifications.containsKey(key)) {
@@ -422,7 +408,7 @@ class DefaultStrategy implements IVisitor {
     }
     _prepareEmotionAI().then((score) {
       if (score != null) {
-        print(
+        Flagship.logger(Level.DEBUG,
             "Since the visitor ${visitor.visitorId} is already scored with $score the emotionAI process is skiped");
         // Update the score
         this.visitor.emotionScoreAI = score;

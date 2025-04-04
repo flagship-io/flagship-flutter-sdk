@@ -77,7 +77,6 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
         .withMode(fsData.sdkMode)
         .onSdkStatusChanged((newStatus) {
           print('--------- Callback with $newStatus ---------');
-          //var newVisitor;
           if (newStatus == FSSdkStatus.SDK_INITIALIZED) {
             setState(() {
               widget.isSdkReady = ((newStatus == FSSdkStatus.SDK_PANIC) ||
