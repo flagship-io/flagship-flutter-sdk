@@ -154,16 +154,24 @@ class BucketingManager extends DecisionManager {
   }
 
 // Refresh state
-  void _updateStatus(Bucketing? bk_file) {
-    if (bk_file != null) {
-      Flagship.sharedInstance().onUpdateState(
-          bk_file.panic ? FSSdkStatus.SDK_PANIC : FSSdkStatus.SDK_INITIALIZED);
-    } else {
-      _getSavedScript().then((savedBk) {
-        Flagship.sharedInstance().onUpdateState(savedBk?.panic ?? false
-            ? FSSdkStatus.SDK_PANIC
-            : FSSdkStatus.SDK_INITIALIZED);
-      });
+  void _updateStatus(Bucketing? bk_file) async {
+    Bucketing? bucketingObject =
+        (bk_file != null) ? bk_file : await _getSavedScript();
+
+    if (bucketingObject != null) {
+      Flagship.sharedInstance().onUpdateState(bucketingObject.panic
+          ? FSSdkStatus.SDK_PANIC
+          : FSSdkStatus.SDK_INITIALIZED);
+      Flagship.sharedInstance().onUpdateState(bucketingObject.panic
+          ? FSSdkStatus.SDK_PANIC
+          : FSSdkStatus.SDK_INITIALIZED);
+      // Update Settings
+      Flagship.sharedInstance().eaiActivationEnabled =
+          bucketingObject.accountSettings?.eaiActivationEnabled ?? false;
+      Flagship.sharedInstance().eaiCollectEnabled =
+          bucketingObject.accountSettings?.eaiCollectEnabled ?? false;
+      DataUsageTracking.sharedInstance().updateTroubleshooting(
+          bucketingObject.accountSettings?.troubleshooting);
     }
   }
 

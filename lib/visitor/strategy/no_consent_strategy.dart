@@ -50,4 +50,9 @@ class NoConsentStrategy extends DefaultStrategy {
   void onExposure(Modification pModification) {
     Flagship.logger(Level.INFO, CONSENT_ACTIVATE);
   }
+
+  @override
+  collectEmotionsAIEvents(String screenName) {
+    Flagship.logger(Level.INFO, CONSENT_EAI);
+  }
 }

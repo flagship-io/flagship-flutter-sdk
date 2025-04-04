@@ -1,6 +1,9 @@
 library flagship;
 
+import 'package:flagship/dataUsage/data_usage_tracking.dart';
+import 'package:flagship/emotionAi/emotion_tools.dart';
 import 'package:flagship/flagship_config.dart';
+import 'package:flagship/model/account_settings.dart';
 import 'package:flagship/status.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flagship/utils/device_tools.dart';
@@ -35,19 +38,21 @@ class Flagship with FlagshipDelegate {
   // LastInitialization Timestamp
   String lastInitializationTimestamp = DateTime.now().toString();
 
+  // eaiCollectEnabled
+  bool eaiCollectEnabled = false;
+
+  // eaiActivationEnabled
+  bool eaiActivationEnabled = false;
+
   factory Flagship.sharedInstance() {
     return _singleton;
   }
 
   Flagship._internal();
 
-  // Start Sdk
-  //
-  // envId : environement id (provided by flagship)
-  // apiKey: Api key (provided by flagship)
   static start(String envId, String apiKey, {FlagshipConfig? config}) async {
     _singleton._status = FSSdkStatus.SDK_NOT_INITIALIZED;
-    FSDevice.loadDeviceInfo();
+    await FSDevice.loadDeviceInfo();
     if (FlagshipTools.chekcXidEnvironment(envId)) {
       _singleton.apiKey = apiKey;
       _singleton.envId = envId;
@@ -56,9 +61,22 @@ class Flagship with FlagshipDelegate {
       }
       if (_configuration.decisionMode == Mode.BUCKETING) {
         _singleton.onUpdateState(FSSdkStatus.SDK_INITIALIZING);
-
         Flagship._configuration.decisionManager.startPolling();
       } else {
+        // Get the account settings
+        AccountSettings? account_settings =
+            await EmotionAITools().fetchRessources(envId);
+
+        if (account_settings != null) {
+          // Update eaiActivationEnabled
+          _singleton.eaiActivationEnabled =
+              account_settings.eaiActivationEnabled;
+          // Update eaiActivationEnabled
+          _singleton.eaiCollectEnabled = account_settings.eaiCollectEnabled;
+          // Update Troubleshootings
+          DataUsageTracking.sharedInstance()
+              .updateTroubleshooting(account_settings.troubleshooting);
+        }
         _singleton.onUpdateState(FSSdkStatus.SDK_INITIALIZED);
       }
       Flagship.logger(Level.INFO, STARTED);
@@ -68,7 +86,7 @@ class Flagship with FlagshipDelegate {
     }
   }
 
-  /// Create new visitor
+  // Create new visitor
   static VisitorBuilder newVisitor(
       {required String visitorId,
       required bool hasConsented,

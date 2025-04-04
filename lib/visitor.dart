@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flagship/api/service.dart';
 import 'package:flagship/cache/default_cache.dart';
 import 'package:flagship/dataUsage/data_usage_tracking.dart';
+import 'package:flagship/emotionAi/fs_emotion.dart';
+import 'package:flagship/emotionAi/polling_score.dart';
 import 'package:flagship/flagshipContext/flagship_context.dart';
 import 'package:flagship/flagshipContext/flagship_context_manager.dart';
 import 'package:flagship/hits/event.dart';
@@ -11,6 +14,7 @@ import 'package:flagship/decision/decision_manager.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/hits/hit.dart';
+import 'package:flagship/model/visitor_cache/visitor_cache.dart';
 import 'package:flagship/tracking/tracking_manager_periodic_strategy.dart';
 import 'package:flagship/tracking/tracking_manager_continuous_strategies.dart';
 import 'package:flagship/tracking/tracking_manager.dart';
@@ -35,7 +39,7 @@ enum Instance {
   NEW_INSTANCE
 }
 
-class Visitor {
+class Visitor with EmotionAiDelegate {
   /// VisitorId
   String visitorId;
 
@@ -103,6 +107,14 @@ class Visitor {
   FlagStatus get flagStatus {
     return _flagStatus;
   }
+
+  // EmotionAI
+  EmotionAI? emotion_ai;
+
+  // Is the visitor is scored
+  bool eaiVisitorScored = false;
+  // the score value
+  String? emotionScoreAI = null;
 
 // Get fetchReasons
   FetchFlagsRequiredStatusReason get fetchReasons {
@@ -355,6 +367,48 @@ class Visitor {
   FlagSyncStatus getFlagSyncStatus() {
     return _flagSyncStatus;
   }
+
+  // Add emotionAI function
+  collectEmotionsAIEvents(String screenName) {
+    if (Flagship.sharedInstance().eaiCollectEnabled == true) {
+      if (eaiVisitorScored == true) {
+        Flagship.logger(Level.INFO,
+            "The visitor $visitorId is already collected and scored");
+      } else {
+        this._visitorDelegate.collectEmotionsAIEvents(screenName);
+      }
+    } else {
+      Flagship.logger(Level.INFO, "The Emotion AI feature is not activated ");
+    }
+  }
+
+  onAppScreenChange(String screenName) {
+    if (Flagship.sharedInstance().eaiCollectEnabled == true &&
+        this.eaiVisitorScored == false) {
+      this._visitorDelegate.onAppScreenChange(screenName);
+    }
+  }
+
+  @override
+  void emotionAiCaptureCompleted(score) {
+    Flagship.logger(Level.INFO,
+        "The delegate with score \($score ?? \"null\" has been called");
+    this.eaiVisitorScored = (score == null) ? false : true;
+
+    if (Flagship.sharedInstance().eaiActivationEnabled) {
+      this.emotionScoreAI = score;
+      // Update the context
+      if (score != null) {
+        this.updateContext("eai::eas", score);
+      }
+    } else {
+      Flagship.logger(Level.INFO,
+          "eaiActivationEnabled is false will not communicate the score value");
+    }
+    // save to cache
+    _visitorDelegate.getStrategy().cacheVisitor(
+        visitorId, jsonEncode(VisitorCache.fromVisitor(this).toJson()));
+  }
 }
 
 // Builder
@@ -389,22 +443,24 @@ class VisitorBuilder {
     return this;
   }
 
-  isAuthenticated(bool authenticated) {
+  VisitorBuilder isAuthenticated(bool authenticated) {
     _isAuthenticated = authenticated;
     return this;
   }
 
-  withOnFlagStatusChanged(OnFlagStatusChanged pCallback) {
+  // Visitor flags status callback
+  VisitorBuilder withOnFlagStatusChanged(OnFlagStatusChanged pCallback) {
     _onFlagStatusChanged = pCallback;
     return this;
   }
 
-  withOnFlagStatusFetchRequired(OnFlagStatusFetchRequired pCallback) {
+  VisitorBuilder withOnFlagStatusFetchRequired(
+      OnFlagStatusFetchRequired pCallback) {
     _onFlagStatusFetchRequired = pCallback;
     return this;
   }
 
-  withOnFlagStatusFetched(OnFlagStatusFetched pCallBack) {
+  VisitorBuilder withOnFlagStatusFetched(OnFlagStatusFetched pCallBack) {
     _onFlagStatusFetched = pCallBack;
     return this;
   }

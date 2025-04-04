@@ -1,10 +1,12 @@
+import 'dart:math';
+
 import 'package:flagship/tracking/tracking_manager_config.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flutter/material.dart';
 
 class FSData extends ChangeNotifier {
   // Apikey
-  String _apiKey = "apiKey"; //
+  String _apiKey = "DxAcxlnRB9yFBZYtLDue1q01dcXZCw6aM49CQB23"; //
   // EnvId
   String _envId = "bkk9glocmjcg0vtmdlng"; //  cpg6t44kv21g1ajm3bhg
   // Mode
@@ -63,7 +65,8 @@ class FSData extends ChangeNotifier {
 }
 
 class UserData extends ChangeNotifier {
-  String _visitorId = "flutter_user253";
+  String _visitorId = "flutter_user" + Random().nextInt(100).toString();
+
   Map<String, Object> context = {
     "testing_tracking_manager": true,
     "isQA": true,

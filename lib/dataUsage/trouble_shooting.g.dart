@@ -40,7 +40,7 @@ Map<String, String> _createTSxpc(Visitor v) {
 }
 
 // For the hit and activate
-Map<String, String> _createTSendHit(Visitor v, Hit h) {
+Map<String, String> _createTSendHit(Hit h) {
   Map<String, String> contentHit = {};
   h.bodyTrack.forEach((key, value) {
     contentHit.addEntries({"hit.$key": value.toString()}.entries);

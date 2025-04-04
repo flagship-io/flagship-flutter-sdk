@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flagship/api/endpoints.dart';
 import 'package:flagship/cache/default_cache.dart';
 import 'package:flagship/dataUsage/data_report_queue.dart';
@@ -201,7 +203,7 @@ class DataUsageTracking {
   void processTroubleShootingHits(String label, Visitor visitor, BaseHit hit) {
     Map<String, String> criticalJson = {};
 
-    criticalJson = _createTSendHit(visitor, hit);
+    criticalJson = _createTSendHit(hit);
 
     // Add vid aid,uuid
     criticalJson.addEntries(_createTrioIds(visitor).entries);
@@ -217,7 +219,7 @@ class DataUsageTracking {
 
     try {
       criticalJson = _createTSHttp(resp.request, resp);
-      print(criticalJson);
+      // print(criticalJson);
     } on Exception catch (e) {
       Flagship.logger(Level.EXCEPTIONS, e.toString());
       return;
@@ -259,6 +261,82 @@ class DataUsageTracking {
     // Send TS reporting
     _sendTroubleShootingReport(TroubleshootingHit(
         visitorId, CriticalPoints.ERROR_CATCHED.name, criticalJson));
+  }
+
+  void processEaiGetScore(
+      String label, Visitor? visitor, Response? res, String? score) {
+    Map<String, String> criticalJson = {};
+
+    try {
+      if (res != null) {
+        // Http infos
+        criticalJson = _createTSHttp(res.request, res);
+      }
+      // Add TRIO vid aid,uuid
+      criticalJson.addEntries(_createTrioIds(visitor).entries);
+
+      // Add score
+      if (score != null) {
+        criticalJson.addEntries({"eai.eas": score}.entries);
+      }
+    } on Exception catch (e) {
+      Flagship.logger(Level.EXCEPTIONS, e.toString());
+      return;
+    }
+    // Send TS reporting
+    _sendTroubleShootingReport(
+        TroubleshootingHit(visitorId, label, criticalJson));
+  }
+
+  // Create Trouble shooting information for hits
+  void processTroubleShootingEAIEvent(Visitor? visitor, Hit hit, Response? res,
+      {bool onFailed = false}) {
+    Map<String, String> criticalJson = {};
+
+    try {
+      if (res != null) {
+        // Http infos
+        criticalJson = _createTSHttp(res.request, res);
+      }
+    } on Exception catch (e) {
+      Flagship.logger(Level.EXCEPTIONS, e.toString());
+      return;
+    }
+
+    criticalJson = _createTSendHit(hit);
+
+    // Add vid aid,uuid
+    criticalJson.addEntries(_createTrioIds(visitor).entries);
+    var label = "";
+    // Send TS report
+    if (onFailed == false) {
+      label = (hit.type == HitCategory.PAGEVIEW)
+          ? CriticalPoints.EMOTIONS_AI_PAGE_VIEW.name
+          : CriticalPoints.EMOTIONS_AI_VISITOR_EVENT.name;
+    } else {
+      label = (hit.type == HitCategory.PAGEVIEW)
+          ? CriticalPoints.EMOTIONS_AI_PAGE_VIEW_ERROR.name
+          : CriticalPoints.EMOTIONS_AI_VISITOR_EVENT_ERROR.name;
+    }
+    _sendTroubleShootingReport(
+        TroubleshootingHit(visitorId, label, criticalJson));
+  }
+
+  processTroubleShootingEAIWorkFlow(String label, Visitor? v,
+      {String? score = null}) {
+    Map<String, String> criticalJson = {};
+    // Add TRIO vid aid,uuid
+    criticalJson.addEntries(_createTrioIds(v).entries);
+    // Time stamp
+    criticalJson.addEntries({
+      "visitor.eai.timestamp": DateTime.now().millisecondsSinceEpoch.toString()
+    }.entries);
+
+    if (score != null) {
+      criticalJson.addEntries({"visitor.eai.eas": score}.entries);
+    }
+    _sendTroubleShootingReport(
+        TroubleshootingHit(visitorId, label, criticalJson));
   }
 
   // Create data usage information
@@ -337,5 +415,32 @@ enum CriticalPoints {
   // Trigger when the Flag.visitorExposed method is called and the flag value has a different type with default value
   GET_FLAG_VALUE_TYPE_WARNING,
   // Trigger when the SDK catches any other error but those listed here.
-  ERROR_CATCHED
+  ERROR_CATCHED,
+  // It will be triggered when the route \accountSettings.json  has succeeded
+  ACCOUNT_SETTINGS,
+  // It will be triggered when the route \accountSettings.json  has failed
+  ACCOUNT_SETTINGS_ERROR,
+  // It will be triggered when get score succeeded
+  EMOTIONS_AI_SCORE,
+  // It will be triggered when EAI score is fetched from local storage.
+  EMOTIONS_AI_SCORE_FROM_LOCAL_CACHE,
+  // It will be triggered when the route get score is failed.
+  EMOTIONS_AI_SCORE_ERROR,
+  // It will be triggered when a visitor event (Click or move) or a page view event is sent
+  EMOTIONS_AI_VISITOR_EVENT,
+  // It will be triggered when a visitor change screen
+  EMOTIONS_AI_PAGE_VIEW,
+  // It will be triggered when the sending of a visitor event (Click or move) or a page view event has failed.
+  EMOTIONS_AI_PAGE_VIEW_ERROR,
+  EMOTIONS_AI_VISITOR_EVENT_ERROR,
+  // It will be triggered when the collection of emotion AI events (Click or move) has begun.
+  EMOTIONS_AI_START_COLLECTING,
+  // It will be triggered when the collection of emotion AI events (Click or move) has stopped.
+  EMOTIONS_AI_STOP_COLLECTING,
+  // It will be triggered when the pulling of score has begun.
+  EMOTIONS_AI_START_SCORING,
+  // It will be triggered when no score has been calculated after the pulling max time is over
+  EMOTIONS_AI_SCORING_FAILED,
+  // It will be triggered when  a score has been calculated during the pulling process
+  EMOTIONS_AI_SCORING_SUCCESS
 }

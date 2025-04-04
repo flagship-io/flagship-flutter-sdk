@@ -29,4 +29,13 @@ class Endpoints {
 
   // Data usage
   static const String Analytics = "/analytics";
+
+  // Emotion AI Event
+  static const String EmotionAiUrl = "https://ariane.abtasty.com/emotionsai";
+  // Get ressource
+  static const String SettingsUrl =
+      "https://cdn.flagship.io/%s/accountSettings.json";
+
+  static const String fetchEmotionAIScoreURL =
+      "https://uc-info.flagship.io/v1/segments/clients/%s/visitors/%s?partner=eai";
 }

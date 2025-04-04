@@ -1,0 +1,7 @@
+{
+  "account": {
+  "enabledXPC": true,
+  "eaiCollectEnabled": true,
+  "eaiActivationEnabled": true
+  }
+}

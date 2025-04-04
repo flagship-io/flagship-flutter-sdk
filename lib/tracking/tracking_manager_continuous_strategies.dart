@@ -4,6 +4,7 @@ import 'package:flagship/cache/interface_cache.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/hits/activate.dart';
 import 'package:flagship/hits/hit.dart';
+import 'package:flagship/model/modification.dart';
 import 'package:flagship/tracking/Batching/batch_manager.dart';
 import 'package:flagship/tracking/Batching/pool_queue.dart';
 import 'package:flagship/tracking/tracking_manager.dart';
@@ -11,6 +12,9 @@ import 'package:flagship/tracking/tracking_manager_batch.dart';
 import 'package:flagship/tracking/tracking_manager_config.dart';
 import 'package:flagship/utils/logger/log_manager.dart';
 import 'package:flagship/visitor/Ivisitor.dart';
+
+// To prevent network overload, we set a batch limit.
+int Activate_Limit_Batch_Size = 100;
 
 class TrackingManageContinuousStrategy extends TrackingManager {
   // Hit pool
@@ -77,15 +81,21 @@ class TrackingManageContinuousStrategy extends TrackingManager {
 
     /// When yes, the cache and pool need to be cleaned
     // If we have a failed activate hits
+
+    // create a fake activate
     if (_activatePool.isNotEmpty()) {
       needToClean = true;
       Flagship.logger(Level.ALL,
           "Add previous activates in batch found in the pool activate");
       listOfActivate.addAll(
-          _activatePool.extractHitsWithVisitorId(activateHit.visitorId));
+          _activatePool.extractXElementFromQueue(Activate_Limit_Batch_Size));
+
+      print(
+          "-------- La liste des activate est ${listOfActivate.length}--------");
     } else {
       // We dont have any failed activate in the pool
     }
+
     var response = await sendActivateBatch(listOfActivate);
     switch (response.statusCode) {
       case 200:
@@ -99,8 +109,10 @@ class TrackingManageContinuousStrategy extends TrackingManager {
         }
         break;
       default:
-        _activatePool.addNewTrackElement(activateHit);
+        // Save on cache the current one
         this.onCacheHit(activateHit);
+        // Re inject the list activate to the pool
+        _activatePool.reInjectElements(listOfActivate);
     }
     return response;
   }

@@ -130,6 +130,18 @@ void main() {
       return http.Response(fakeResponse, 408);
     });
 
+    String fakeRessoource =
+        await ToolsTest.readFile('test_resources/accountSettings.json') ?? "";
+    when(fakeService.sendHttpRequest(
+            RequestType.Get,
+            'https://cdn.flagship.io/bkk9glocmjcg0vtmdlrr/accountSettings.json',
+            any,
+            any,
+            timeoutMs: TIMEOUT))
+        .thenAnswer((_) async {
+      return http.Response(fakeRessoource, 200);
+    });
+
     FlagshipConfig config =
         ConfigBuilder().withTimeout(TIMEOUT).onSdkStatusChanged((newStatus) {
       print(" ---- statusListner is trigger ---- ");
@@ -139,7 +151,7 @@ void main() {
 
     config.decisionManager = fakeApi;
 
-    Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
+    await Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: config);
     PathProviderPlatform.instance = FakePathProviderPlatform();
     var v1 =
         Flagship.newVisitor(visitorId: "visitorId", hasConsented: true).build();

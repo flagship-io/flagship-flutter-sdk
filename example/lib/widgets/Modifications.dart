@@ -66,7 +66,7 @@ class _ModificationsState extends State<Modifications> {
 
     setState(() {
       valueForFlag = ret.toString();
-      status = myFlag?.getFlagStatus() ?? FlagStatus.NOT_FOUND;
+      status = myFlag?.status ?? FlagStatus.NOT_FOUND;
       reason =
           currentVisitor?.fetchReasons ?? FetchFlagsRequiredStatusReason.NONE;
     });
@@ -155,6 +155,9 @@ class _ModificationsState extends State<Modifications> {
 
   @override
   Widget build(BuildContext context) {
+    Flagship.sharedInstance()
+        .currentVisitor
+        ?.onAppScreenChange("Flutter_modification_screen");
     final mediaQuery = MediaQuery.of(context);
     return Container(
       color: Color.fromRGBO(39, 39, 39, 1),

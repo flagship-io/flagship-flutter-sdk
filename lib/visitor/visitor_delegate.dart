@@ -65,9 +65,13 @@ class VisitorDelegate implements IVisitor {
   @override
   Future<FetchResponse?> fetchFlags() async {
     return getStrategy().fetchFlags().whenComplete(() {
+      // Before to send the segment, we need to check if the context already changed
+      // In Buckting mode
       if (visitor.config.decisionMode == Mode.BUCKETING &&
-          Flagship.getStatus() != FSSdkStatus.SDK_PANIC) {
-        visitor.sendHit(Segment(persona: visitor.getCurrentContext()));
+          //Flagship.getStatus() != FSSdkStatus.SDK_PANIC &&
+          visitor.fetchReasons ==
+              FetchFlagsRequiredStatusReason.VISITOR_CONTEXT_UPDATED) {
+        sendHit(Segment(persona: visitor.getCurrentContext()));
       }
     });
   }
@@ -126,5 +130,15 @@ class VisitorDelegate implements IVisitor {
   @override
   FlagStatus getFlagStatus(String key) {
     return getStrategy().getFlagStatus(key);
+  }
+
+  @override
+  collectEmotionsAIEvents(String screenName) {
+    getStrategy().collectEmotionsAIEvents(screenName);
+  }
+
+  @override
+  onAppScreenChange(String screenName) {
+    getStrategy().onAppScreenChange(screenName);
   }
 }

@@ -72,4 +72,9 @@ class PanicStrategy extends DefaultStrategy {
   void onExposure(Modification pModification) {
     Flagship.logger(Level.INFO, PANIC_ACTIVATE);
   }
+
+  @override
+  collectEmotionsAIEvents(String screenName) {
+    Flagship.logger(Level.INFO, PANIC_EAI);
+  }
 }
