@@ -1,4 +1,4 @@
-# 4.1.0 - 07/04/2025
+# 4.1.0-beta - 07/04/2025
 ### Added
 
 - Emotion AI collect method `collectEmotionsAIEvents` in visitor instance
