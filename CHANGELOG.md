@@ -1,3 +1,10 @@
+# 4.1.0 - 07/04/2025
+### Added
+
+- Emotion AI collect method `collectEmotionsAIEvents` in visitor instance
+- Emotion AI `onAppScreenChange` method to update the name of the screen being displayed during the collect process
+- The EmotionAI features are covered by troubleshooting hits in order to debug and examine any issues that may arise.
+
 # 4.0.0 - 10/08/2024
   ### Changed 
 -   The `Flag getFlag<T>(String key)` is the new signature for the getFlag method .
