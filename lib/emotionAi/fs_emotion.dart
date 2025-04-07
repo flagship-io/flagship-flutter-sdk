@@ -37,7 +37,7 @@ class EmotionAI {
   final Map<int, List<Map<String, dynamic>>> pointerPaths = {};
   final Map<int, DateTime> pointerDownTimes = {};
 
-  // -- Threshold for "tap" - "scroll/drag"
+  // Threshold  "tap" - "scroll/drag"
   static const double kTouchSlop = 18.0;
 
   // Delegate
@@ -107,8 +107,8 @@ class EmotionAI {
             // If the distance over the threshold, then will consider it as scroll
             if (distance > kTouchSlop) {
               hasScrolled[event.pointer] = true;
-              Flagship.logger(Level.DEBUG,
-                  "Pointer ${event.pointer}: Scroll/Drag détecté (distance > $kTouchSlop)");
+              // Flagship.logger(Level.DEBUG,
+              //   "Pointer ${event.pointer}: Scroll/Drag détecté (distance > $kTouchSlop)");
             }
           }
         }
@@ -224,7 +224,7 @@ class EmotionAI {
     } catch (e) {
       Flagship.logger(Level.EXCEPTIONS, e.toString());
     }
-    Flagship.logger(Level.INFO, "The emotionAI collection is stopped");
+    Flagship.logger(Level.INFO, "The emotionAI collection is Stopped");
   }
 
   sendEvent(Hit event, double deltaTime) {
@@ -234,8 +234,7 @@ class EmotionAI {
       sendEmotionEvent(event);
     } else if (deltaTime <= FSAIDuration120) {
       sendEmotionEvent(event);
-      Flagship.logger(
-          Level.INFO, "Send last emotion event and stop the collect");
+      Flagship.logger(Level.INFO, "Send last emotion event and STOP collect");
       stopCollecting();
       // Start get scoring from remote
       pollingScore = PollingScore(
@@ -249,7 +248,8 @@ class EmotionAI {
     this.currentScreenName = screenName;
     FSEmotionPageView eventPage = FSEmotionPageView(this.currentScreenName);
     this.sendEmotionEvent(eventPage).whenComplete(() {
-      Flagship.logger(Level.INFO, "Send pageview when app change screen");
+      Flagship.logger(
+          Level.INFO, "Send pageview when Application change screen");
     });
   }
 
