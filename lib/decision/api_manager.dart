@@ -44,6 +44,7 @@ class ApiManager extends DecisionManager {
         Flagship.logger(Level.ALL, utf8.decode(response.bodyBytes),
             isJsonString: true);
         return Campaigns.fromJson(json.decode(utf8.decode(response.bodyBytes)));
+
       default:
         Flagship.logger(
           Level.ALL,

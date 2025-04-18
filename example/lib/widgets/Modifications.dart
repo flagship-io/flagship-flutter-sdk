@@ -57,12 +57,17 @@ class _ModificationsState extends State<Modifications> {
       defaultValue = double.parse(defaultValueFlagController.text);
     }
     if (flagType == "array" || flagType == "object") {
-      defaultValue = jsonDecode(defaultValueFlagController.text);
+      try {
+        defaultValue = jsonDecode(defaultValueFlagController.text);
+      } catch (e) {
+        defaultValue = jsonDecode("{}");
+      }
     }
 
     myFlag = currentVisitor?.getFlag(keyFlagController.text);
 
     var ret = myFlag?.value(defaultValue);
+    print("The Flag value is $ret  \n");
 
     setState(() {
       valueForFlag = ret.toString();

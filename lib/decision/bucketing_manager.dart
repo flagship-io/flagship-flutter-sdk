@@ -84,7 +84,7 @@ class BucketingManager extends DecisionManager {
               lastModified);
         }
         // Save response body
-        _saveFile(response.body);
+        _saveFile(utf8.decode(response.bodyBytes));
         // Report TR
         DataUsageTracking.sharedInstance().processTroubleShootingHttp(
             CriticalPoints.SDK_BUCKETING_FILE.name, response);
