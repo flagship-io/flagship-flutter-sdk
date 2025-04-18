@@ -74,7 +74,8 @@ class BucketingManager extends DecisionManager {
             Flagship.sharedInstance().getConfiguration()?.timeout ?? TIMEOUT);
     switch (response.statusCode) {
       case 200:
-        Flagship.logger(Level.ALL, response.body, isJsonString: true);
+        Flagship.logger(Level.ALL, utf8.decode(response.bodyBytes),
+            isJsonString: true);
         String? lastModified = response.headers["last-modified"];
         if (lastModified != null) {
           prefs.setString(
