@@ -1,3 +1,10 @@
+
+# 4.0.1-beta - 18/04/2025
+
+### Fixed
+
+-  Handle special characters on decoding.
+
 # 4.0.0 - 10/08/2024
   ### Changed 
 -   The `Flag getFlag<T>(String key)` is the new signature for the getFlag method .
