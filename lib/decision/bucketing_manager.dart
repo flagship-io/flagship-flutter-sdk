@@ -88,7 +88,7 @@ class BucketingManager extends DecisionManager {
         DataUsageTracking.sharedInstance().processTroubleShootingHttp(
             CriticalPoints.SDK_BUCKETING_FILE.name, response);
         // Update sdk status
-        return Bucketing.fromJson(json.decode(response.body));
+        return Bucketing.fromJson(json.decode(utf8.decode(response.bodyBytes)));
       case 304:
         Flagship.logger(Level.ALL,
             "The bucketing script is not modified since last download");
