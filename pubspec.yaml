@@ -9,7 +9,6 @@ environment:
 
 dependencies:
   collection: ^1.15.0
-  device_information: ^0.0.4
   flutter:
     sdk: flutter
   flutter_device_type: ^0.4.0
