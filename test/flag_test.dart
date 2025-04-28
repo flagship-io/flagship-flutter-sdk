@@ -134,6 +134,13 @@ void main() async {
           "expectedValue": "dflt",
           "existingFlag": false,
           "shouldHaveMetadata": false
+        },
+        {
+          "key": "specialChar",
+          "dfltValue": "defaultValue",
+          "expectedValue": "aaa",
+          "existingFlag": true,
+          "shouldHaveMetadata": true
         }
       ];
 
@@ -327,7 +334,7 @@ void main() async {
       // is not empty
       expect(fCollect.isEmpty, false);
       // Count == 11
-      expect(fCollect.count, 11);
+      expect(fCollect.count, 12);
 
       var collectResult = fCollect.filter((key, flag) {
         return (key == "key_B");
