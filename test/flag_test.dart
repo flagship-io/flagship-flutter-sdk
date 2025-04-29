@@ -84,6 +84,14 @@ void main() async {
       List<Map<String, dynamic>> listEntry = [
         // Correct Flag
         {
+          "key": "specialChar",
+          "dfltValue": "defaultValue",
+          "expectedValue":
+              "Ceci est un exemple avec des caractères spéciaux : é, à, ü, œ, ñ, ç…",
+          "existingFlag": true,
+          "shouldHaveMetadata": true
+        },
+        {
           "key": "key_A",
           "dfltValue": "defaultValue",
           "expectedValue": "val_A",
@@ -138,6 +146,7 @@ void main() async {
       ];
 
       for (var item in listEntry) {
+        print(item['key']);
         Flag myFlag = v1.getFlag(item['key']);
 
         expect(myFlag.value(item['dfltValue']), item['expectedValue']);
@@ -327,7 +336,7 @@ void main() async {
       // is not empty
       expect(fCollect.isEmpty, false);
       // Count == 11
-      expect(fCollect.count, 11);
+      expect(fCollect.count, 12);
 
       var collectResult = fCollect.filter((key, flag) {
         return (key == "key_B");

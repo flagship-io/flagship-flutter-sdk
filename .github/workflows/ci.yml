@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-java@v1
         with:
-          java-version: "12.x"
+          java-version: '15'
 
       - uses: subosito/flutter-action@v1
         with:
@@ -31,17 +31,17 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-java@v1
         with:
-          java-version: "12.x"
+          java-version: '17'
       - uses: subosito/flutter-action@v1
         with:
           flutter-version: ${{ matrix.flutter }}
       - run: flutter pub get
         working-directory: example
-      - run: flutter build apk
+      - run: flutter build apk --debug 
         working-directory: example
       - name: Archive FlagshipQA APK
         uses: actions/upload-artifact@v4
         with:
           name: QA APK
-          path: example/build/app/outputs/flutter-apk/app-release.apk
+          path: example/build/app/outputs/flutter-apk/app-debug.apk
           retention-days: 2
