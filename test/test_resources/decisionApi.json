@@ -38,7 +38,7 @@
             "key_C": 2,
             "key_D":true,
             "keyNull":null,
-            "specialChar":"aaa"
+            "specialChar":"Ceci est un exemple avec des caractères spéciaux : é, à, ü, œ, ñ, ç…"
           }
         },
         "reference": true
@@ -64,7 +64,8 @@
           "type": "JSON",
           "value": {
             "aliasTer": "testValue",
-            "aliasDouble": 12.0          }
+            "aliasDouble": 12.0 
+          }
         },
         "reference": false
       }

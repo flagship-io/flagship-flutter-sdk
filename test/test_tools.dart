@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:io';
+import 'package:flagship/model/visitor_cache/data.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
@@ -6,8 +8,10 @@ class ToolsTest {
   /// Read the mock response
   static Future<String?> readFile(String path) async {
     final file = new File(testPath(path));
-    final jsonString = await file.readAsString();
-    return jsonString;
+    final jsonString = await file.readAsBytes();
+    return latin1.decode(jsonString);
+
+    // return jsonString;
   }
 
   /// From : https://github.com/terryx/flutter-muscle/blob/master/github_provider/test/utils/test_path.dart
