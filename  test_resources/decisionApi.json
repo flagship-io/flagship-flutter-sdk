@@ -54,8 +54,7 @@
         "modifications": {
           "type": "JSON",
           "value":{
-            "aliasTer": "testValue",
-            "specialChar":"éèà"
+            "aliasTer": "testValue"
           }
         },
         "reference": false
