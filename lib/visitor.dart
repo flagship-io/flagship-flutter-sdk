@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flagship/Targeting/targeting_manager.dart';
 import 'package:flagship/api/service.dart';
 import 'package:flagship/cache/default_cache.dart';
 import 'package:flagship/dataUsage/data_usage_tracking.dart';
@@ -63,6 +64,7 @@ class Visitor {
   TrackingManager? trackingManager;
 
   /// Consent by default is true
+  /// 
   bool _hasConsented = true;
 
   /// Experience Continuity
@@ -162,6 +164,9 @@ class Visitor {
 
     // Load preset_Context
     this.updateContextWithMap(FlagshipContextManager.getPresetContextForApp());
+
+    // Set visitorId into the context
+    this.updateContext(FS_USERS, visitorId);
 
     // Update context
     this.updateContextWithMap(context);
