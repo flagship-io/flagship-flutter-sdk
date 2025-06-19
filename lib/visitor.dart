@@ -64,7 +64,7 @@ class Visitor {
   TrackingManager? trackingManager;
 
   /// Consent by default is true
-  /// 
+  ///
   bool _hasConsented = true;
 
   /// Experience Continuity
@@ -166,7 +166,7 @@ class Visitor {
     this.updateContextWithMap(FlagshipContextManager.getPresetContextForApp());
 
     // Set visitorId into the context
-    this.updateContext(FS_USERS, visitorId);
+    context.addEntries({FS_USERS: visitorId}.entries);
 
     // Update context
     this.updateContextWithMap(context);
