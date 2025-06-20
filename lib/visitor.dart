@@ -333,22 +333,21 @@ class Visitor {
 
   authenticate(String visitorId) {
     // Update flagSyncStatus
-    this._flagSyncStatus = FlagSyncStatus.AUTHENTICATED;
-    this.flagStatus = FlagStatus.FETCH_REQUIRED;
-    this._fetchReasons = FetchFlagsRequiredStatusReason.VISITOR_AUTHENTICATED;
     _isAuthenticated = true;
     _visitorDelegate.getStrategy().authenticateVisitor(visitorId);
+    this.flagStatus = FlagStatus.FETCH_REQUIRED;
+    this._fetchReasons = FetchFlagsRequiredStatusReason.VISITOR_AUTHENTICATED;
+    this._flagSyncStatus = FlagSyncStatus.AUTHENTICATED;
   }
 
   /// Use authenticate methode to go from Logged in  session to logged out session
   unauthenticate() {
     // Update flagSyncStatus
-    this._flagSyncStatus = FlagSyncStatus.UNAUTHENTICATED;
-    this.flagStatus = FlagStatus.FETCH_REQUIRED;
-    this._fetchReasons = FetchFlagsRequiredStatusReason.VISITOR_UNAUTHENTICATED;
-
     _isAuthenticated = false;
     _visitorDelegate.getStrategy().unAuthenticateVisitor();
+    this.flagStatus = FlagStatus.FETCH_REQUIRED;
+    this._fetchReasons = FetchFlagsRequiredStatusReason.VISITOR_UNAUTHENTICATED;
+    this._flagSyncStatus = FlagSyncStatus.UNAUTHENTICATED;
   }
 
 // Is the visitor is autenticated

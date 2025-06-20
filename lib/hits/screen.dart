@@ -9,7 +9,7 @@ class Screen extends BaseHit {
   @override
   Map<String, Object> get bodyTrack {
     var customBody = new Map<String, Object>();
-    customBody.addAll({"t": typeOfEvent, "dl": super.location ?? ""});
+    customBody.addAll({"t": typeOfEvent /*, "dl": super.location ?? ""*/});
     // Add commun body
     customBody.addAll(super.communBodyTrack);
     return customBody;

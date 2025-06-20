@@ -75,6 +75,9 @@ class BaseHit extends Hit {
     /// Session number
     if (sessionNumber != null) result["sn"] = sessionNumber ?? 0;
 
+    /// Location
+    if (location != null) result["dl"] = location ?? "";
+
     /// Add qt entries
     /// Time difference between when the hit was created and when it was sent
     if (this.createdAt != null) {
