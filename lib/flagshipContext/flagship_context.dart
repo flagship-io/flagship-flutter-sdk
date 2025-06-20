@@ -59,10 +59,17 @@ enum FlagshipContext {
   APP_VERSION_CODE, // = "sdk_versionCode"
 
   /// Version FlagShip
+  @Deprecated('Use .FS_VERSION')
   FLAGSHIP_VERSION, //  = "sdk_fsVersion"
+
+  /// Version FlagShip
+  FS_VERSION, //  = "fs_Version"
 
   /// Name of the interface
   INTERFACE_NAME, // = "sdk_interfaceName"
+
+  /// Client
+  FS_CLIENT, // fs_client
 }
 
 // Get the key for the relative context
@@ -128,6 +135,12 @@ String rawValue(FlagshipContext type) {
       break;
     case FlagshipContext.INTERFACE_NAME:
       ret = "sdk_interfaceName";
+      break;
+    case FlagshipContext.FS_VERSION:
+      ret = "fs_version";
+      break;
+    case FlagshipContext.FS_CLIENT:
+      ret = "fs_client";
       break;
   }
   return ret;
