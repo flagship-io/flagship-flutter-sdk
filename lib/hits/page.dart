@@ -9,7 +9,7 @@ class Page extends BaseHit {
   @override
   Map<String, Object> get bodyTrack {
     var customBody = new Map<String, Object>();
-    customBody.addAll({"t": typeOfEvent /*, "dl": super.location ?? ""*/});
+    customBody.addAll({"t": typeOfEvent});
     // Add commun body
     customBody.addAll(super.communBodyTrack);
     return customBody;

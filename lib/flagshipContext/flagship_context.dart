@@ -59,6 +59,7 @@ enum FlagshipContext {
   APP_VERSION_CODE, // = "sdk_versionCode"
 
   /// Version FlagShip
+  @Deprecated('Use .FS_VERSION')
   FLAGSHIP_VERSION, //  = "sdk_fsVersion"
 
   FS_VERSION, //  = "fs_Version"
