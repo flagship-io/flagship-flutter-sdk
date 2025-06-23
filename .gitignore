@@ -34,7 +34,7 @@ build/
 coverage/
 
 # Android related
-**/android/**/gradle-wrapper.jar
+**/android/**/-wrapper.jar
 **/android/.gradle
 **/android/captures/
 **/android/gradlew
