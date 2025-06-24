@@ -1,4 +1,9 @@
 
+# 4.0.2 - 24/06/2025
+
+### Fix
+Add information in visitor context: fs_users , fs_client , fs_version.
+
 # 4.0.1 - 18/04/2025
 
 ### Fixed

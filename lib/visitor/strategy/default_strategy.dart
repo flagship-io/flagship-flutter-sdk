@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flagship/Targeting/targeting_manager.dart';
 import 'package:flagship/dataUsage/data_usage_tracking.dart';
 import 'package:flagship/hits/activate.dart';
 import 'package:flagship/hits/event.dart';
@@ -249,6 +250,8 @@ class DefaultStrategy implements IVisitor {
       if (visitor.anonymousId == null) {
         visitor.anonymousId = visitor.visitorId;
         visitor.visitorId = pVisitorId;
+        // Update fs_users
+        visitor.updateContext(FS_USERS, pVisitorId);
       }
 
       DataUsageTracking.sharedInstance()
@@ -265,6 +268,9 @@ class DefaultStrategy implements IVisitor {
       if (visitor.anonymousId != null) {
         visitor.visitorId = visitor.anonymousId as String;
         visitor.anonymousId = null;
+
+        // Update fs_users in context
+        visitor.updateContext(FS_USERS, visitor.visitorId);
       }
       DataUsageTracking.sharedInstance().processTSXpc(
           CriticalPoints.VISITOR_UNAUTHENTICATE.name, this.visitor);
