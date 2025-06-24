@@ -3,6 +3,7 @@
 
 ### Fix
 - Add information in visitor context: 'fs_users', 'fs_client', 'fs_version'.
+- Handle special characters on decoding.
 
 # 4.1.0-beta - 07/04/2025
 ### Added
