@@ -1,5 +1,5 @@
 
-# 4.1.1-beta - 24/06/2025
+# 4.1.2-beta - 24/06/2025
 
 ### Fix
 - Add information in visitor context: 'fs_users', 'fs_client', 'fs_version'.
