@@ -30,8 +30,10 @@ class FlagshipContextManager {
       case FlagshipContext.OS_VERSION_CODE:
         return FSDevice.getSystemVersion();
       case FlagshipContext.FLAGSHIP_VERSION:
+      case FlagshipContext.FS_VERSION:
         return FlagshipVersion;
-      // Set by the client
+      case FlagshipContext.FS_CLIENT:
+        return "flutter";
       case FlagshipContext.LOCATION_CITY:
       case FlagshipContext.LOCATION_REGION:
       case FlagshipContext.LOCATION_COUNTRY:
@@ -70,6 +72,8 @@ class FlagshipContextManager {
       case FlagshipContext.FLAGSHIP_VERSION:
       case FlagshipContext.INTERFACE_NAME:
       case FlagshipContext.IP:
+      case FlagshipContext.FS_VERSION:
+      case FlagshipContext.FS_CLIENT:
         return (value is String);
       // double
       case FlagshipContext.LOCATION_LAT:

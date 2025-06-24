@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flagship/Targeting/targeting_manager.dart';
 import 'package:flagship/api/service.dart';
 import 'package:flagship/cache/default_cache.dart';
 import 'package:flagship/dataUsage/data_usage_tracking.dart';
@@ -175,6 +176,9 @@ class Visitor with EmotionAiDelegate {
     // Load preset_Context
     this.updateContextWithMap(FlagshipContextManager.getPresetContextForApp());
 
+    // Set visitorId into the context
+    context.addEntries({FS_USERS: visitorId}.entries);
+
     // Update context
     this.updateContextWithMap(context);
 
@@ -339,23 +343,22 @@ class Visitor with EmotionAiDelegate {
   /// - Requires: Make sure that the experience continuity option is enabled on the flagship platform before using this method
 
   authenticate(String visitorId) {
-    // Update flagSyncStatus
-    this._flagSyncStatus = FlagSyncStatus.AUTHENTICATED;
-    this.flagStatus = FlagStatus.FETCH_REQUIRED;
-    this._fetchReasons = FetchFlagsRequiredStatusReason.VISITOR_AUTHENTICATED;
     _isAuthenticated = true;
     _visitorDelegate.getStrategy().authenticateVisitor(visitorId);
+    this.flagStatus = FlagStatus.FETCH_REQUIRED;
+    this._fetchReasons = FetchFlagsRequiredStatusReason.VISITOR_AUTHENTICATED;
+    // Update flagSyncStatus
+    this._flagSyncStatus = FlagSyncStatus.AUTHENTICATED;
   }
 
   /// Use authenticate methode to go from Logged in  session to logged out session
   unauthenticate() {
-    // Update flagSyncStatus
-    this._flagSyncStatus = FlagSyncStatus.UNAUTHENTICATED;
-    this.flagStatus = FlagStatus.FETCH_REQUIRED;
-    this._fetchReasons = FetchFlagsRequiredStatusReason.VISITOR_UNAUTHENTICATED;
-
     _isAuthenticated = false;
     _visitorDelegate.getStrategy().unAuthenticateVisitor();
+    this.flagStatus = FlagStatus.FETCH_REQUIRED;
+    this._fetchReasons = FetchFlagsRequiredStatusReason.VISITOR_UNAUTHENTICATED;
+    // Update flagSyncStatus
+    this._flagSyncStatus = FlagSyncStatus.UNAUTHENTICATED;
   }
 
 // Is the visitor is autenticated
