@@ -74,7 +74,8 @@ class BucketingManager extends DecisionManager {
             Flagship.sharedInstance().getConfiguration()?.timeout ?? TIMEOUT);
     switch (response.statusCode) {
       case 200:
-        Flagship.logger(Level.ALL, response.body, isJsonString: true);
+        Flagship.logger(Level.ALL, utf8.decode(response.bodyBytes),
+            isJsonString: true);
         String? lastModified = response.headers["last-modified"];
         if (lastModified != null) {
           prefs.setString(
@@ -83,12 +84,13 @@ class BucketingManager extends DecisionManager {
               lastModified);
         }
         // Save response body
-        _saveFile(response.body);
+        _saveFile(utf8.decode(response.bodyBytes));
         // Report TR
         DataUsageTracking.sharedInstance().processTroubleShootingHttp(
             CriticalPoints.SDK_BUCKETING_FILE.name, response);
         // Update sdk status
-        return Bucketing.fromJson(json.decode(response.body));
+        return Bucketing.fromJson(json.decode(utf8.decode(response.bodyBytes)));
+
       case 304:
         Flagship.logger(Level.ALL,
             "The bucketing script is not modified since last download");

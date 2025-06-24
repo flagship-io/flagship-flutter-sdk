@@ -41,8 +41,9 @@ class ApiManager extends DecisionManager {
             Flagship.sharedInstance().getConfiguration()?.timeout ?? TIMEOUT);
     switch (response.statusCode) {
       case 200:
-        Flagship.logger(Level.ALL, response.body, isJsonString: true);
-        return Campaigns.fromJson(json.decode(response.body));
+        Flagship.logger(Level.ALL, utf8.decode(response.bodyBytes),
+            isJsonString: true);
+        return Campaigns.fromJson(json.decode(utf8.decode(response.bodyBytes)));
       default:
         Flagship.logger(
           Level.ALL,

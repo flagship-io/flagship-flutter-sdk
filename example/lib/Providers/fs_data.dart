@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 class FSData extends ChangeNotifier {
   // Apikey
-  String _apiKey = "apiKey"; //
+  String _apiKey = "DxAcxlnRB9yFBZYtLDue1q01dcXZCw6aM49CQB23"; //
   // EnvId
   String _envId = "bkk9glocmjcg0vtmdlng"; //
   // Mode
@@ -70,7 +70,8 @@ class UserData extends ChangeNotifier {
   Map<String, Object> context = {
     "testing_tracking_manager": true,
     "isQA": true,
-    "fs_is_vip": true
+    "fs_is_vip": true,
+    "condition1": "spécial"
   };
   bool _hasConsented = true;
   bool _isAuthenticated = false;
