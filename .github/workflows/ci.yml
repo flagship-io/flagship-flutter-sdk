@@ -37,7 +37,7 @@ jobs:
           flutter-version: ${{ matrix.flutter }}
       - run: flutter pub get
         working-directory: example
-      - run: flutter build apk --debug -v 
+      - run: flutter build apk --release -v 
         working-directory: example
       - name: Archive FlagshipQA APK
         uses: actions/upload-artifact@v4
