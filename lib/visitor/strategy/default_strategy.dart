@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:nativewrappers/_internal/vm/lib/ffi_allocation_patch.dart';
 import 'package:flagship/Targeting/targeting_manager.dart';
 import 'package:flagship/dataUsage/data_usage_tracking.dart';
 import 'package:flagship/emotionAi/emotion_tools.dart';
@@ -19,9 +20,15 @@ import 'package:flagship/flagship.dart';
 import 'package:flagship/visitor.dart';
 import 'package:flagship/visitor/Ivisitor.dart';
 
+const Duration FSSessionVisitor =
+    Duration(seconds: 1 * 60 * 30); // example 30 min
+
 // This class represent the default behaviour
 class DefaultStrategy implements IVisitor {
   final Visitor visitor;
+
+  /// Stores the last variation-group id that was activated per campaign id.
+  Map<String, String> _activatedVariations = {};
 
   DefaultStrategy(this.visitor);
 
@@ -42,32 +49,46 @@ class DefaultStrategy implements IVisitor {
   // Activate
   Future<void> _sendActivate(Modification pModification) async {
     // Check if the callback is defined
-    String? exposedFlag;
-    String? exposedVisitor;
+    ExposedFlag? exposedFlag;
+    VisitorExposed? exposedVisitor;
     if (Flagship.sharedInstance().getConfiguration()?.onVisitorExposed !=
         null) {
-      exposedFlag = jsonEncode(ExposedFlag(
-              pModification.key,
-              pModification.value,
-              pModification.defaultValue,
-              FlagMetadata.withMap(pModification.toJsonInformation()))
-          .toJson());
+      exposedFlag = ExposedFlag(
+          pModification.key,
+          pModification.value,
+          pModification.defaultValue,
+          FlagMetadata.withMap(pModification.toJsonInformation()));
 
-      exposedVisitor = jsonEncode(VisitorExposed(
-              visitor.visitorId, visitor.anonymousId, visitor.getContext())
-          .toJson());
+      exposedVisitor = VisitorExposed(
+          visitor.visitorId, visitor.anonymousId, visitor.getContext());
     }
+
+    // If deduplication we exit
+    if (isDeduplicatedFlag(
+        pModification.campaignId, pModification.variationGroupId)) {
+      if (exposedFlag != null && exposedVisitor != null) {
+        Flagship.sharedInstance()
+            .getConfiguration()
+            ?.onVisitorExposed
+            ?.call(exposedVisitor, exposedFlag);
+      }
+
+      print("skip the activate .... since the flag is already activated ");
+      return;
+    }
+
     // Build the activate hit
     Activate activateHit = Activate(
         pModification,
         visitor.visitorId,
         visitor.anonymousId,
         Flagship.sharedInstance().envId ?? "",
-        exposedFlag,
-        exposedVisitor);
+        jsonEncode(exposedFlag).toString(),
+        jsonEncode(exposedVisitor).toString());
     // Process the troubleShooting
     DataUsageTracking.sharedInstance().processTroubleShootingHits(
         CriticalPoints.VISITOR_SEND_ACTIVATE.name, visitor, activateHit);
+
     visitor.trackingManager?.sendActivate(activateHit).then((activateResponse) {
       if (activateResponse.statusCode >= 200 &&
           activateResponse.statusCode < 300) {
@@ -470,5 +491,34 @@ class DefaultStrategy implements IVisitor {
   @override
   onAppScreenChange(String screenName) {
     this.visitor.emotion_ai?.onAppScreenChange(screenName);
+  }
+
+  /// Returns `true` if this (campId, varGrpId) pair is considered “deduplicated”.
+  /// Renvoie `true` si (campId, varGrpId) a déjà été vu durant la session courante.
+  bool isDeduplicatedFlag(String campId, String varGrpId) {
+    final DateTime now = DateTime.now();
+    final Duration elapsed = now.difference(visitor.sessionStart);
+
+    // On exécute ce code quel que soit le chemin de retour (équivalent de `defer`)
+    try {
+      // -- 1. Session expirée ---------------------------------------------------
+      if (elapsed > FSSessionVisitor) {
+        _activatedVariations
+          ..clear()
+          ..[campId] = varGrpId; // on enregistre la nouvelle paire
+        return false; // pas dédupliqué
+      }
+
+      // -- 2. Session toujours valide ------------------------------------------
+      final bool isDup = _activatedVariations[campId] == varGrpId;
+
+      // Dans tous les cas on mémorise la dernière valeur rencontrée
+      _activatedVariations[campId] = varGrpId;
+
+      return isDup;
+    } finally {
+      // Rafraîchit le “last activity time” (Swift utilisait `defer`)
+      visitor.sessionStart = now;
+    }
   }
 }

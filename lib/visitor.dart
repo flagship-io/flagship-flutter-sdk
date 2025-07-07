@@ -137,6 +137,9 @@ class Visitor with EmotionAiDelegate {
     }
   }
 
+  // Init the sesssion
+  DateTime sessionStart = DateTime.now();
+
   // Create new instance for visitor
   Visitor(
       this.config,
