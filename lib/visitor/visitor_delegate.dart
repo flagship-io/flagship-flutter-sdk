@@ -15,12 +15,7 @@ class VisitorDelegate implements IVisitor {
   final Visitor visitor;
 
   Map<String, String> _activatedVariations = {};
-
-  int nbr = 0;
-  VisitorDelegate(this.visitor) {
-    nbr++;
-    print("-------- I am a delegate visitor" + nbr.toString() + "---------");
-  }
+  VisitorDelegate(this.visitor);
   // Get the strategy
   DefaultStrategy getStrategy() {
     switch (Flagship.getStatus()) {
@@ -39,12 +34,6 @@ class VisitorDelegate implements IVisitor {
         return NotReadyStrategy(visitor);
     }
   }
-
-// Activate modification
-  //@override
-//  Future<void> activateModification(String key) {
-  //  return getStrategy().activateModification(key);
-  //}
 
   @override
   Future<void> activateFlag(Modification pModification) {
@@ -152,30 +141,28 @@ class VisitorDelegate implements IVisitor {
   }
 
   /// Returns `true` if this (campId, varGrpId) pair is considered “deduplicated”.
-  /// Renvoie `true` si (campId, varGrpId) a déjà été vu durant la session courante.
   bool _isDeduplicatedFlag(String campId, String varGrpId) {
     final DateTime now = DateTime.now();
     final Duration elapsed = now.difference(visitor.sessionDuration);
 
-    // On exécute ce code quel que soit le chemin de retour (équivalent de `defer`)
+    print(
+        "--------- Session time duration is ${elapsed.inSeconds} ------------");
+
     try {
       // -- 1. Session expirée ---------------------------------------------------
       if (elapsed > FSSessionVisitor) {
         _activatedVariations
           ..clear()
-          ..[campId] = varGrpId; // on enregistre la nouvelle paire
-        return false; // pas dédupliqué
+          ..[campId] = varGrpId;
+        return false;
       }
 
-      // -- 2. Session toujours valide ------------------------------------------
       final bool isDup = _activatedVariations[campId] == varGrpId;
 
-      // Dans tous les cas on mémorise la dernière valeur rencontrée
       _activatedVariations[campId] = varGrpId;
 
       return isDup;
     } finally {
-      // Rafraîchit le “last activity time” (Swift utilisait `defer`)
       visitor.sessionDuration = now;
     }
   }

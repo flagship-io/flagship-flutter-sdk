@@ -61,11 +61,10 @@ class DefaultStrategy implements IVisitor {
     }
 
     // If deduplication we exit
-    if /*isDeduplicatedFlag(
-        pModification.campaignId, pModification.variationGroupId))*/
-        (isDuplicated) {
-      /// redo later
+    if (isDuplicated) {
       if (exposedFlag != null && exposedVisitor != null) {
+        // Update exposed flag
+        exposedFlag.alreadyActivatedCampaign = true;
         Flagship.sharedInstance()
             .getConfiguration()
             ?.onVisitorExposed
@@ -101,30 +100,10 @@ class DefaultStrategy implements IVisitor {
   }
 
   @override
-/*   Future<void> activateModification(String key) async {
-    if (visitor.modifications.containsKey(key)) {
-      try {
-        var modification = visitor.modifications[key];
-
-        if (modification != null) {
-          await _sendActivate(modification);
-        }
-      } catch (exp) {
-        Flagship.logger(Level.EXCEPTIONS, EXCEPTION.replaceFirst("%s", "$exp"));
-      }
-    }
-  } */
-
-  @override
   Future<void> activateFlag(Modification pModification,
       {bool isDuplicated = false}) async {
     return _sendActivate(pModification, isDuplicated);
   }
-/* 
-  Future<void> activateFlag(Modification pModification,
-      {bool isDuplicated = false}) async {
-    return _sendActivate(pModification);
-  } */
 
   @override
   // Get Modification object, this object will be used by the flag class

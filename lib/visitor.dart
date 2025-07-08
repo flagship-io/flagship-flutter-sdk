@@ -40,8 +40,9 @@ enum Instance {
   NEW_INSTANCE
 }
 
-const Duration FSSessionVisitor =
-    Duration(seconds: 1 * 60 * 30); // example 30 min
+const Duration FSSessionVisitor = Duration(
+    seconds:
+        20); // redo later Duration(seconds: 1 * 60 * 30); // example 30 min
 
 class Visitor with EmotionAiDelegate {
   /// VisitorId
@@ -214,11 +215,13 @@ class Visitor with EmotionAiDelegate {
 
   // Update context directely with map for <String, Object>
   void clearContext() {
+    sessionDuration = DateTime.now();
     _context.clear();
   }
 
   // Update context directely with map for <String, Object>
   void updateContextWithMap(Map<String, Object> context) {
+    sessionDuration = DateTime.now();
     var oldContext = Map.fromEntries(_context.entries);
     _context.addAll(context);
     if (mapEquals(oldContext, _context) == false) {
@@ -247,6 +250,7 @@ class Visitor with EmotionAiDelegate {
   /// otherwise the update context skip with warnning log
 
   void updateContext<T>(String key, T value) {
+    sessionDuration = DateTime.now();
     var oldContext = Map.fromEntries(_context.entries);
 
     /// Delegate the action to strategy to update
@@ -265,6 +269,7 @@ class Visitor with EmotionAiDelegate {
 
   /// Update with predefined context
   void updateFlagshipContext<T>(FlagshipContext flagshipContext, T value) {
+    sessionDuration = DateTime.now();
     if (FlagshipContextManager.chekcValidity(flagshipContext, value)) {
       updateContext(rawValue(flagshipContext), value);
     } else {
@@ -276,6 +281,7 @@ class Visitor with EmotionAiDelegate {
   // Get Flag
   // - Return Flag instance
   Flag getFlag<T>(String key) {
+    sessionDuration = DateTime.now();
     if (_flagSyncStatus != FlagSyncStatus.FLAGS_FETCHED) {
       Flagship.logger(
           Level.ALL, _flagSyncStatus.warningMessage(visitorId, key));
@@ -286,6 +292,7 @@ class Visitor with EmotionAiDelegate {
   // Get the colllection flags
   /// - Returns: an instance of FSFlagCollection with flags
   FlagCollection getFlags() {
+    sessionDuration = DateTime.now();
     Map<String, Flag> ret = {};
 
     this.modifications.forEach((keyItem, modifItem) {
@@ -295,6 +302,8 @@ class Visitor with EmotionAiDelegate {
   }
 
   Future<void> fetchFlags() async {
+    sessionDuration = DateTime.now();
+
     /// Delegate the action to strategy
     this.flagStatus = FlagStatus.FETCHING;
     return _visitorDelegate.fetchFlags().then((fetchResponse) {
@@ -314,12 +323,14 @@ class Visitor with EmotionAiDelegate {
 
   /// Send hit
   Future<void> sendHit(BaseHit hit) async {
+    sessionDuration = DateTime.now();
     // Delegate the action to strategy
     _visitorDelegate.sendHit(hit);
   }
 
   /// Set Consent
   void setConsent(bool newValue) {
+    sessionDuration = DateTime.now();
     // flush the hits from the pool
     if (newValue == false) {
       this.trackingManager?.flushAllTracking(this.visitorId);
@@ -338,6 +349,7 @@ class Visitor with EmotionAiDelegate {
 
   // Get consent
   bool getConsent() {
+    sessionDuration = DateTime.now();
     return _hasConsented;
   }
 
@@ -349,6 +361,7 @@ class Visitor with EmotionAiDelegate {
   /// - Requires: Make sure that the experience continuity option is enabled on the flagship platform before using this method
 
   authenticate(String visitorId) {
+    sessionDuration = DateTime.now();
     _isAuthenticated = true;
     _visitorDelegate.getStrategy().authenticateVisitor(visitorId);
     this.flagStatus = FlagStatus.FETCH_REQUIRED;
@@ -359,6 +372,7 @@ class Visitor with EmotionAiDelegate {
 
   /// Use authenticate methode to go from Logged in  session to logged out session
   unauthenticate() {
+    sessionDuration = DateTime.now();
     _isAuthenticated = false;
     _visitorDelegate.getStrategy().unAuthenticateVisitor();
     this.flagStatus = FlagStatus.FETCH_REQUIRED;
@@ -374,11 +388,13 @@ class Visitor with EmotionAiDelegate {
 
   @visibleForTesting
   FlagSyncStatus getFlagSyncStatus() {
+    sessionDuration = DateTime.now();
     return _flagSyncStatus;
   }
 
   // Add emotionAI function
   collectEmotionsAIEvents(String screenName) {
+    sessionDuration = DateTime.now();
     if (Flagship.sharedInstance().eaiCollectEnabled == true) {
       if (eaiVisitorScored == true) {
         Flagship.logger(Level.INFO,
