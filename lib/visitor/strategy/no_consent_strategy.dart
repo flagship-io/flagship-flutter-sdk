@@ -12,12 +12,13 @@ class NoConsentStrategy extends DefaultStrategy {
 
 // The activate modification is not allowed
   @override
-  Future<void> activateModification(String key) async {
-    Flagship.logger(Level.INFO, CONSENT_ACTIVATE);
-  }
+  // Future<void> activateModification(String key) async {
+  // Flagship.logger(Level.INFO, CONSENT_ACTIVATE);
+  // }
 
   @override
-  Future<void> activateFlag(Modification pFlag) async {
+  Future<void> activateFlag(Modification pFlag,
+      {bool isDuplicated = false}) async {
     Flagship.logger(Level.INFO, CONSENT_ACTIVATE);
   }
 

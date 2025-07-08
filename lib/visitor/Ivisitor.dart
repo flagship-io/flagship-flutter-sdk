@@ -15,7 +15,7 @@ abstract class IVisitor {
 // Fetch Flags
   Future<void> fetchFlags();
 // Activate modification
-  Future<void> activateModification(String key);
+  // Future<void> activateModification(String key);
 // Activate flag
   Future<void> activateFlag(Modification pModification);
 // Send Hits

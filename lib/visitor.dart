@@ -40,6 +40,9 @@ enum Instance {
   NEW_INSTANCE
 }
 
+const Duration FSSessionVisitor =
+    Duration(seconds: 1 * 60 * 30); // example 30 min
+
 class Visitor with EmotionAiDelegate {
   /// VisitorId
   String visitorId;
@@ -138,7 +141,7 @@ class Visitor with EmotionAiDelegate {
   }
 
   // Init the sesssion
-  DateTime sessionStart = DateTime.now();
+  DateTime sessionDuration = DateTime.now();
 
   // Create new instance for visitor
   Visitor(
