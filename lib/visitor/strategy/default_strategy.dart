@@ -43,7 +43,7 @@ class DefaultStrategy implements IVisitor {
   }
 
   // Activate
-  Future<void> _sendActivate(
+  /*  Future<void> _sendActivate(
       Modification pModification, bool isDuplicated) async {
     // Check if the callback is defined
     ExposedFlag? exposedFlag;
@@ -97,6 +97,81 @@ class DefaultStrategy implements IVisitor {
                 " status code = ${activateResponse.statusCode.toString()}");
       }
     });
+  } */
+
+  Future<void> _sendActivate(
+    Modification modification,
+    bool isDuplicated,
+  ) async {
+    // Getconfig et le callback
+    final config = Flagship.sharedInstance().getConfiguration();
+    final onExposed = config?.onVisitorExposed;
+
+    // Prepare exposure object
+    ExposedFlag? exposedFlag;
+    VisitorExposed? exposedVisitor;
+    if (onExposed != null) {
+      exposedFlag = ExposedFlag(
+        modification.key,
+        modification.value,
+        modification.defaultValue,
+        FlagMetadata.withMap(modification.toJsonInformation()),
+      );
+      exposedVisitor = VisitorExposed(
+        visitor.visitorId,
+        visitor.anonymousId,
+        visitor.getContext(),
+      );
+    }
+
+    // When deduplicated
+    if (isDuplicated) {
+      if (onExposed != null && exposedFlag != null && exposedVisitor != null) {
+        exposedFlag.alreadyActivatedCampaign = true;
+        onExposed(exposedVisitor, exposedFlag);
+      }
+      print('Skip the activate: Flag already activated.');
+      return;
+    }
+
+    // When not duplicated
+    final String? flagJson =
+        exposedFlag != null ? jsonEncode(exposedFlag) : null;
+    final String? visitorJson =
+        exposedVisitor != null ? jsonEncode(exposedVisitor) : null;
+
+    final activateHit = Activate(
+      modification,
+      visitor.visitorId,
+      visitor.anonymousId,
+      Flagship.sharedInstance().envId ?? '',
+      flagJson,
+      visitorJson,
+    );
+
+    // Log interne pour troubleshooting
+    DataUsageTracking.sharedInstance().processTroubleShootingHits(
+      CriticalPoints.VISITOR_SEND_ACTIVATE.name,
+      visitor,
+      activateHit,
+    );
+
+    // Envoi du hit
+    try {
+      final response = await visitor.trackingManager?.sendActivate(activateHit);
+      final status = response?.statusCode ?? -1;
+      if (status < 200 || status >= 300) {
+        Flagship.logger(
+          Level.ERROR,
+          'ACTIVATE_FAILED: status code = $status',
+        );
+      }
+    } catch (e, stack) {
+      Flagship.logger(
+        Level.ERROR,
+        'ACTIVATE_FAILED: exception = $e\n$stack',
+      );
+    }
   }
 
   @override

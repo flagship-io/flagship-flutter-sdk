@@ -349,7 +349,6 @@ class Visitor with EmotionAiDelegate {
 
   // Get consent
   bool getConsent() {
-    sessionDuration = DateTime.now();
     return _hasConsented;
   }
 

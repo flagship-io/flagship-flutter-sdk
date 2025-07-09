@@ -9,6 +9,7 @@ import 'package:flagship/visitor/strategy/no_consent_strategy.dart';
 import 'package:flagship/visitor/strategy/not_ready_strategy.dart';
 import 'package:flagship/visitor/strategy/panic_strategy.dart';
 import 'package:flagship/flagship.dart';
+import 'package:flutter/material.dart';
 import '../visitor.dart';
 
 class VisitorDelegate implements IVisitor {
@@ -149,7 +150,6 @@ class VisitorDelegate implements IVisitor {
         "--------- Session time duration is ${elapsed.inSeconds} ------------");
 
     try {
-      // -- 1. Session expirée ---------------------------------------------------
       if (elapsed > FSSessionVisitor) {
         _activatedVariations
           ..clear()

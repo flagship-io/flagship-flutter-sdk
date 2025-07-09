@@ -85,6 +85,8 @@ Future<void> main() async {
       mockFlag = vMock.getFlag("key_A");
       var mockVal = mockFlag.value("defaultValue", visitorExposed: false);
       expect(mockVal, "val_A");
+      vMock.sessionDuration =
+          DateTime.now().subtract(const Duration(minutes: 35));
       await mockFlag.visitorExposed();
     }
 
@@ -105,7 +107,10 @@ Future<void> main() async {
     mockFlagBis = vMock.getFlag("key_A");
     var mockValBis = mockFlagBis.value("defaultValue", visitorExposed: false);
     expect(mockValBis, "val_A");
+    vMock.sessionDuration =
+        DateTime.now().subtract(const Duration(minutes: 35));
     await mockFlagBis.visitorExposed();
+
     // After sucess the pool should be empty
     expect(
         (vMock.trackingManager as TrackingManageContinuousStrategy)
