@@ -81,6 +81,7 @@ class Visitor with EmotionAiDelegate {
   Map<String, dynamic> assignmentsHistory = {};
 
   /// Delegate visitor
+
   late VisitorDelegate _visitorDelegate;
 
   /// Delegate to update the status

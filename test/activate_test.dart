@@ -24,7 +24,6 @@ import 'fake_path_provider_platform.dart';
 import 'test_tools.dart';
 import 'package:http/http.dart' as http;
 import 'service_test.mocks.dart';
-import 'test_tools.dart';
 
 @GenerateMocks([Service])
 void main() {
@@ -70,6 +69,7 @@ void main() {
       if (v.id == "expoVisitor") {
         expect(f.metadata().campaignId, "campaignId");
         expect(v.id, "expoVisitor");
+        expect(f.alreadyActivatedCampaign, false);
       }
     }).build();
     Flagship.start("bkk9glocmjcg0vtmdlrr", "apiKey", config: expoConfig);
@@ -178,5 +178,6 @@ void main() {
     var tr = dfltStrategy.visitor.trackingManager
         as TrackingManageContinuousStrategy;
     expect(tr.activatePool.fsQueue.length, 0);
+    dfltStrategy.onExposure(itemModif);
   });
 }

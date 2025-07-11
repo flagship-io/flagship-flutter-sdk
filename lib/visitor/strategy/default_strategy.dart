@@ -22,10 +22,6 @@ import 'package:flagship/visitor/Ivisitor.dart';
 // This class represent the default behaviour
 class DefaultStrategy implements IVisitor {
   final Visitor visitor;
-
-  /// Stores the last variation-group id that was activated per campaign id.
-  //Map<String, String> _activatedVariations = {};
-
   DefaultStrategy(this.visitor);
 
   @override
@@ -41,63 +37,6 @@ class DefaultStrategy implements IVisitor {
         Flagship.logger(Level.WARNING, CONTEXT_PARAM_ERROR);
     }
   }
-
-  // Activate
-  /*  Future<void> _sendActivate(
-      Modification pModification, bool isDuplicated) async {
-    // Check if the callback is defined
-    ExposedFlag? exposedFlag;
-    VisitorExposed? exposedVisitor;
-    if (Flagship.sharedInstance().getConfiguration()?.onVisitorExposed !=
-        null) {
-      exposedFlag = ExposedFlag(
-          pModification.key,
-          pModification.value,
-          pModification.defaultValue,
-          FlagMetadata.withMap(pModification.toJsonInformation()));
-
-      exposedVisitor = VisitorExposed(
-          visitor.visitorId, visitor.anonymousId, visitor.getContext());
-    }
-
-    // If deduplication we exit
-    if (isDuplicated) {
-      if (exposedFlag != null && exposedVisitor != null) {
-        // Update exposed flag
-        exposedFlag.alreadyActivatedCampaign = true;
-        Flagship.sharedInstance()
-            .getConfiguration()
-            ?.onVisitorExposed
-            ?.call(exposedVisitor, exposedFlag);
-      }
-
-      print("skip the activate .... since the flag is already activated ");
-      return;
-    }
-
-    // Build the activate hit
-    Activate activateHit = Activate(
-        pModification,
-        visitor.visitorId,
-        visitor.anonymousId,
-        Flagship.sharedInstance().envId ?? "",
-        jsonEncode(exposedFlag).toString(),
-        jsonEncode(exposedVisitor).toString());
-    // Process the troubleShooting
-    DataUsageTracking.sharedInstance().processTroubleShootingHits(
-        CriticalPoints.VISITOR_SEND_ACTIVATE.name, visitor, activateHit);
-
-    visitor.trackingManager?.sendActivate(activateHit).then((activateResponse) {
-      if (activateResponse.statusCode >= 200 &&
-          activateResponse.statusCode < 300) {
-      } else {
-        Flagship.logger(
-            Level.ERROR,
-            ACTIVATE_FAILED +
-                " status code = ${activateResponse.statusCode.toString()}");
-      }
-    });
-  } */
 
   Future<void> _sendActivate(
     Modification modification,
