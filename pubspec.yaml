@@ -1,6 +1,6 @@
 name: flagship
 description: Flutter SDK for Flagship Feature management & Experiment platform for modern engineering and product teams
-version: 4.1.2-beta
+version: 4.2.0-beta
 homepage: https://flagship.io
 
 environment:
