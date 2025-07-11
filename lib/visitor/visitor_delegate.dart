@@ -9,7 +9,6 @@ import 'package:flagship/visitor/strategy/no_consent_strategy.dart';
 import 'package:flagship/visitor/strategy/not_ready_strategy.dart';
 import 'package:flagship/visitor/strategy/panic_strategy.dart';
 import 'package:flagship/flagship.dart';
-import 'package:flutter/material.dart';
 import '../visitor.dart';
 
 class VisitorDelegate implements IVisitor {
@@ -141,7 +140,7 @@ class VisitorDelegate implements IVisitor {
     getStrategy().onAppScreenChange(screenName);
   }
 
-  /// Returns `true` if this (campId, varGrpId) pair is considered “deduplicated”.
+  /// Returns `true` if flag is already activated during visitor session
   bool _isDeduplicatedFlag(String campId, String varGrpId) {
     final DateTime now = DateTime.now();
     final Duration elapsed = now.difference(visitor.sessionDuration);

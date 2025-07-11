@@ -42,7 +42,7 @@ class DefaultStrategy implements IVisitor {
     Modification modification,
     bool isDuplicated,
   ) async {
-    // Getconfig et le callback
+    // Get config and callback
     final config = Flagship.sharedInstance().getConfiguration();
     final onExposed = config?.onVisitorExposed;
 
@@ -69,7 +69,7 @@ class DefaultStrategy implements IVisitor {
         exposedFlag.alreadyActivatedCampaign = true;
         onExposed(exposedVisitor, exposedFlag);
       }
-      print('Skip the activate: Flag already activated.');
+      Flagship.logger(Level.INFO, " The camapign's flag already activated ");
       return;
     }
 
@@ -88,14 +88,14 @@ class DefaultStrategy implements IVisitor {
       visitorJson,
     );
 
-    // Log interne pour troubleshooting
+    // Send troubleshooting
     DataUsageTracking.sharedInstance().processTroubleShootingHits(
       CriticalPoints.VISITOR_SEND_ACTIVATE.name,
       visitor,
       activateHit,
     );
 
-    // Envoi du hit
+    // Send Activate hit
     try {
       final response = await visitor.trackingManager?.sendActivate(activateHit);
       final status = response?.statusCode ?? -1;

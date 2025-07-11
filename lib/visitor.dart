@@ -40,9 +40,7 @@ enum Instance {
   NEW_INSTANCE
 }
 
-const Duration FSSessionVisitor = Duration(
-    seconds:
-        20); // redo later Duration(seconds: 1 * 60 * 30); // example 30 min
+const Duration FSSessionVisitor = Duration(seconds: 1 * 60 * 30); // 30 min
 
 class Visitor with EmotionAiDelegate {
   /// VisitorId

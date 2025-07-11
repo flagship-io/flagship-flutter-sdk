@@ -17,11 +17,6 @@ class NotReadyStrategy extends DefaultStrategy {
     return null;
   }
 
-  //@override
-  // Future<void> activateModification(String key) async {
-  // Flagship.logger(Level.ERROR, ACTIVATE_NOT_READY);
-  //}
-
   @override
   Future<void> activateFlag(Modification pFlag,
       {bool isDuplicated = false}) async {

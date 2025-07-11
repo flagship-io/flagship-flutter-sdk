@@ -406,8 +406,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
       GestureBinding.instance.pointerRouter
           .addGlobalRoute(_emotionAIGlobalPointerRoute);
     } catch (e) {
-      // Todo later add flagship logger
-      print(e);
+      Flagship.logger(Level.ERROR, e.toString());
     }
 
     Flagship.sharedInstance()
