@@ -11,11 +11,6 @@ class PanicStrategy extends DefaultStrategy {
   PanicStrategy(Visitor visitor) : super(visitor);
 
   @override
-  // Future<void> activateModification(String key) async {
-  // Flagship.logger(Level.INFO, PANIC_ACTIVATE);
-  //}
-
-  @override
   Future<void> activateFlag(Modification pFlag,
       {bool isDuplicated = false}) async {
     Flagship.logger(Level.INFO, PANIC_ACTIVATE);

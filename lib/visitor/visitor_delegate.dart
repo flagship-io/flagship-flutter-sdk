@@ -145,9 +145,6 @@ class VisitorDelegate implements IVisitor {
     final DateTime now = DateTime.now();
     final Duration elapsed = now.difference(visitor.sessionDuration);
 
-    print(
-        "--------- Session time duration is ${elapsed.inSeconds} ------------");
-
     try {
       if (elapsed > FSSessionVisitor) {
         _activatedVariations

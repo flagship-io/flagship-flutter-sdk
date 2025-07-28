@@ -166,10 +166,7 @@ class DefaultStrategy implements IVisitor {
         }
         if (activate && hasSameType) {
           // Send activate later
-
           this._sendActivate(modification, false);
-
-          /// Attention a remove cette partie ou a revoir
         }
       } catch (exp) {
         Flagship.logger(Level.INFO,
