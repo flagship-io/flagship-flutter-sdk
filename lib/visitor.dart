@@ -329,11 +329,11 @@ class Visitor with EmotionAiDelegate {
     if (idToLookup != null) {
       await _visitorDelegate
           .lookupVisitor(idToLookup)
-          .then((isLoadedFromCache) => {
+          .then((isLoadedFromCache) {
                 this._fetchReasons = isLoadedFromCache
                     ? FetchFlagsRequiredStatusReason.FLAGS_FETCHED_FROM_CACHE
-                    : FetchFlagsRequiredStatusReason.FLAGS_NEVER_FETCHED,
-                this._needLookupVisitor = false
+                    : FetchFlagsRequiredStatusReason.FLAGS_NEVER_FETCHED;
+                this._needLookupVisitor = false;
               });
     } else {
       // No existing visitor found, set appropriate fetch reason
