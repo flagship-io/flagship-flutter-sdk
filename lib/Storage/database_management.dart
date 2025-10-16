@@ -159,4 +159,22 @@ class DatabaseManagement {
       return '';
     }
   }
+
+  // Check if visitor exists in database
+  Future<bool> visitorExists(String visitorId, String nameTable) async {
+    try {
+      final db = _visitorDatabase;
+      if (db == null) return false;
+
+      List<Map> result = await db.rawQuery(
+          'SELECT COUNT(*) as count FROM $nameTable WHERE id = ?', [visitorId]);
+
+      int count = result.first['count'] ?? 0;
+      return count > 0;
+    } on Exception catch (e) {
+      Flagship.logger(Level.EXCEPTIONS,
+          "Error checking if visitor exists: ${e.toString()}");
+      return false;
+    }
+  }
 }

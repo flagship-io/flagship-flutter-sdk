@@ -107,6 +107,9 @@ class Visitor with EmotionAiDelegate {
   // _onFlagStatusFetched
   OnFlagStatusFetched _onFlagStatusFetched;
 
+  // Add this flag to track if visitor lookup has been performed
+  bool _needLookupVisitor = true;
+
 // Get flagStatus
   FlagStatus get flagStatus {
     return _flagStatus;
@@ -198,12 +201,12 @@ class Visitor with EmotionAiDelegate {
     _visitorDelegate.lookupHits();
 
     // Lookup for the cached visitor data
-    _visitorDelegate.lookupVisitor(this.visitorId).then((isLoadedFromCache) => {
-          this._fetchReasons = isLoadedFromCache
-              ? FetchFlagsRequiredStatusReason.FLAGS_FETCHED_FROM_CACHE
-              : FetchFlagsRequiredStatusReason.FLAGS_NEVER_FETCHED
-        });
-    _visitorDelegate.lookupVisitor(this.visitorId).whenComplete(() {});
+    // _visitorDelegate.lookupVisitor(this.visitorId).then((isLoadedFromCache) => {
+    //       this._fetchReasons = isLoadedFromCache
+    //           ? FetchFlagsRequiredStatusReason.FLAGS_FETCHED_FROM_CACHE
+    //           : FetchFlagsRequiredStatusReason.FLAGS_NEVER_FETCHED
+    //     });
+    // _visitorDelegate.lookupVisitor(this.visitorId).whenComplete(() {});
 
     /// Send the consent hit
     _visitorDelegate.sendHit(Consent(hasConsented: _hasConsented));
@@ -300,11 +303,54 @@ class Visitor with EmotionAiDelegate {
     return FlagCollection(this._visitorDelegate, ret);
   }
 
+  // Private function to handle visitor lookup logic
+  Future<void> _performVisitorLookupIfNeeded() async {
+    if (!_needLookupVisitor) return;
+
+    String? idToLookup;
+
+    // First check if visitorId exists in cache using config
+    bool visitorExists =
+        await (config.visitorCacheImp?.visitorExists(visitorId) ??
+            Future.value(false));
+
+    if (visitorExists) {
+      idToLookup = visitorId;
+    } else if (anonymousId != null) {
+      // If visitorId doesn't exist but we have anonymousId, check if it exists
+      bool anonymousExists =
+          await (config.visitorCacheImp?.visitorExists(anonymousId!) ??
+              Future.value(false));
+      if (anonymousExists) {
+        idToLookup = anonymousId!;
+      }
+    }
+    // Only perform lookup if we found an existing ID
+    if (idToLookup != null) {
+      await _visitorDelegate
+          .lookupVisitor(idToLookup)
+          .then((isLoadedFromCache) => {
+                this._fetchReasons = isLoadedFromCache
+                    ? FetchFlagsRequiredStatusReason.FLAGS_FETCHED_FROM_CACHE
+                    : FetchFlagsRequiredStatusReason.FLAGS_NEVER_FETCHED,
+                this._needLookupVisitor = false
+              });
+    } else {
+      // No existing visitor found, set appropriate fetch reason
+      this._fetchReasons = FetchFlagsRequiredStatusReason.FLAGS_NEVER_FETCHED;
+      this._needLookupVisitor = false;
+    }
+  }
+
   Future<void> fetchFlags() async {
     sessionDuration = DateTime.now();
 
     /// Delegate the action to strategy
     this.flagStatus = FlagStatus.FETCHING;
+
+    // Only lookup visitor if it is necessary
+    await _performVisitorLookupIfNeeded();
+
     return _visitorDelegate.fetchFlags().then((fetchResponse) {
       if (fetchResponse?.error == null) {
         _flagSyncStatus = FlagSyncStatus.FLAGS_FETCHED;
