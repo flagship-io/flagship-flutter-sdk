@@ -169,7 +169,7 @@ class DatabaseManagement {
       List<Map> result = await db.rawQuery(
           'SELECT COUNT(*) as count FROM $nameTable WHERE id = ?', [visitorId]);
 
-      int count = result.first['count'] ?? 0;
+      int count = result.isNotEmpty ? (result.first['count'] ?? 0) : 0;
       return count > 0;
     } on Exception catch (e) {
       Flagship.logger(Level.EXCEPTIONS,
