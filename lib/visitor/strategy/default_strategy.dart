@@ -234,8 +234,25 @@ class DefaultStrategy implements IVisitor {
       visitor.flagshipDelegate.onUpdateState(state);
 
       // Save the response for the visitor database
-      cacheVisitor(visitor.visitorId,
-          jsonEncode(VisitorCache.fromVisitor(this.visitor).toJson()));
+      // Save the response for the visitor database
+      String visitorCacheData =
+          jsonEncode(VisitorCache.fromVisitor(this.visitor).toJson());
+      cacheVisitor(visitor.visitorId, visitorCacheData);
+      // In bucketing mode, if anonymousId exists and no cache exists for it, cache the same data
+      if (visitor.config.decisionMode == Mode.BUCKETING &&
+          visitor.anonymousId != null) {
+        // Check if cache exists for anonymousId
+        bool anonymousExists = await visitor.config.visitorCacheImp
+                ?.visitorExists(visitor.anonymousId!) ??
+            false;
+
+        if (!anonymousExists) {
+          // Cache the same visitor data with anonymousId as key
+          cacheVisitor(visitor.anonymousId!, visitorCacheData);
+          Flagship.logger(Level.DEBUG,
+              "Cached visitor data for anonymousId: ${visitor.anonymousId} in bucketing mode");
+        }
+      }
       // Update the dataUsage tracking
       visitor.dataUsageTracking
           .updateTroubleshooting(camp.accountSettings?.troubleshooting);

@@ -330,11 +330,11 @@ class Visitor with EmotionAiDelegate {
       await _visitorDelegate
           .lookupVisitor(idToLookup)
           .then((isLoadedFromCache) {
-                this._fetchReasons = isLoadedFromCache
-                    ? FetchFlagsRequiredStatusReason.FLAGS_FETCHED_FROM_CACHE
-                    : FetchFlagsRequiredStatusReason.FLAGS_NEVER_FETCHED;
-                this._needLookupVisitor = false;
-              });
+        this._fetchReasons = isLoadedFromCache
+            ? FetchFlagsRequiredStatusReason.FLAGS_FETCHED_FROM_CACHE
+            : FetchFlagsRequiredStatusReason.FLAGS_NEVER_FETCHED;
+        this._needLookupVisitor = false;
+      });
     } else {
       // No existing visitor found, set appropriate fetch reason
       this._fetchReasons = FetchFlagsRequiredStatusReason.FLAGS_NEVER_FETCHED;
@@ -406,6 +406,7 @@ class Visitor with EmotionAiDelegate {
 
   authenticate(String visitorId) {
     sessionDuration = DateTime.now();
+    _needLookupVisitor = true;
     _isAuthenticated = true;
     _visitorDelegate.getStrategy().authenticateVisitor(visitorId);
     this.flagStatus = FlagStatus.FETCH_REQUIRED;
@@ -417,6 +418,7 @@ class Visitor with EmotionAiDelegate {
   /// Use authenticate methode to go from Logged in  session to logged out session
   unauthenticate() {
     sessionDuration = DateTime.now();
+    _needLookupVisitor = true;
     _isAuthenticated = false;
     _visitorDelegate.getStrategy().unAuthenticateVisitor();
     this.flagStatus = FlagStatus.FETCH_REQUIRED;
