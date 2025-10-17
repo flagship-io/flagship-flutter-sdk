@@ -311,16 +311,14 @@ class Visitor with EmotionAiDelegate {
 
     // First check if visitorId exists in cache using config
     bool visitorExists =
-        await (config.visitorCacheImp?.visitorExists(visitorId) ??
-            Future.value(false));
+        await config.visitorCacheImp?.visitorExists(visitorId) ?? false;
 
     if (visitorExists) {
       idToLookup = visitorId;
     } else if (anonymousId != null) {
       // If visitorId doesn't exist but we have anonymousId, check if it exists
       bool anonymousExists =
-          await (config.visitorCacheImp?.visitorExists(anonymousId!) ??
-              Future.value(false));
+          await config.visitorCacheImp?.visitorExists(anonymousId!) ?? false;
       if (anonymousExists) {
         idToLookup = anonymousId!;
       }
