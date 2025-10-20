@@ -10,7 +10,7 @@ class FSData extends ChangeNotifier {
   // EnvId
   String _envId = "bkk9glocmjcg0vtmdlng"; //
   // Mode
-  Mode _mode = Mode.DECISION_API;
+  Mode _mode = Mode.BUCKETING;
   // Timeout
   int _timeout = 2000;
 
@@ -65,7 +65,7 @@ class FSData extends ChangeNotifier {
 }
 
 class UserData extends ChangeNotifier {
-  String _visitorId = "flutter_user" + Random().nextInt(10000).toString();
+  String _visitorId = "anonymousId"; //+ Random().nextInt(10000).toString();
 
   Map<String, Object> context = {
     "testing_tracking_manager": true,

@@ -222,6 +222,7 @@ class DefaultStrategy implements IVisitor {
       } else {
         state = FSSdkStatus.SDK_INITIALIZED;
         var modif = visitor.decisionManager.getModifications(camp.campaigns);
+
         visitor.modifications.addAll(modif);
         // Start Batching loop
         visitor.trackingManager?.startBatchingLoop();
@@ -289,20 +290,15 @@ class DefaultStrategy implements IVisitor {
 
   @override
   authenticateVisitor(String pVisitorId) {
-    if (visitor.config.decisionMode == Mode.DECISION_API) {
-      if (visitor.anonymousId == null) {
-        visitor.anonymousId = visitor.visitorId;
-        visitor.visitorId = pVisitorId;
-        // Update fs_users
-        visitor.updateContext(FS_USERS, pVisitorId);
-      }
-
-      DataUsageTracking.sharedInstance()
-          .processTSXpc(CriticalPoints.VISITOR_AUTHENTICATE.name, this.visitor);
-    } else {
-      Flagship.logger(Level.ALL,
-          "AuthenticateVisitor method will be ignored in Bucketing configuration");
+    if (visitor.anonymousId == null) {
+      visitor.anonymousId = visitor.visitorId;
+      visitor.visitorId = pVisitorId;
+      // Update fs_users
+      visitor.updateContext(FS_USERS, pVisitorId);
     }
+
+    DataUsageTracking.sharedInstance()
+        .processTSXpc(CriticalPoints.VISITOR_AUTHENTICATE.name, this.visitor);
 
     // Update the xpc info for the emotionAI
     this
@@ -313,19 +309,15 @@ class DefaultStrategy implements IVisitor {
 
   @override
   unAuthenticateVisitor() {
-    if (visitor.config.decisionMode == Mode.DECISION_API) {
-      if (visitor.anonymousId != null) {
-        visitor.visitorId = visitor.anonymousId as String;
-        visitor.anonymousId = null;
-        // Update fs_users in context
-        visitor.updateContext(FS_USERS, visitor.visitorId);
-      }
-      DataUsageTracking.sharedInstance().processTSXpc(
-          CriticalPoints.VISITOR_UNAUTHENTICATE.name, this.visitor);
-    } else {
-      Flagship.logger(Level.ALL,
-          "unAuthenticateVisitor method will be ignored in Bucketing configuration");
+    if (visitor.anonymousId != null) {
+      visitor.visitorId = visitor.anonymousId as String;
+      visitor.anonymousId = null;
+      // Update fs_users in context
+      visitor.updateContext(FS_USERS, visitor.visitorId);
     }
+    DataUsageTracking.sharedInstance()
+        .processTSXpc(CriticalPoints.VISITOR_UNAUTHENTICATE.name, this.visitor);
+
     // Update the xpc info for the emotionAI
     this
         .visitor

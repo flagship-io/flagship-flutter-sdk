@@ -305,7 +305,7 @@ class Visitor with EmotionAiDelegate {
 
   // Private function to handle visitor lookup logic
   Future<void> _performVisitorLookupIfNeeded() async {
-    if (!_needLookupVisitor) return;
+    // if (!_needLookupVisitor) return;  // temporary disable to always lookup visitor
 
     String? idToLookup;
 
