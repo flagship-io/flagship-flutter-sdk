@@ -150,8 +150,10 @@ class BucketingManager extends DecisionManager {
     if (this.assignationHistory == null) {
       this.assignationHistory = Map.fromEntries(newAssign.entries);
     } else {
-      this.assignationHistory?.clear();
-      this.assignationHistory?.addEntries(newAssign.entries);
+      this.assignationHistory = {
+        ...this.assignationHistory ?? <String, dynamic>{},
+        ...newAssign
+      };
     }
   }
 

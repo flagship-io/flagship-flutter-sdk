@@ -98,6 +98,10 @@ class DefaultCacheVisitorImp with IVisitorCacheImplementation {
 
   @override
   Future<bool> visitorExists(String visitorId) async {
+    // Rejeter les strings vides
+    if (visitorId.isEmpty) {
+      return false;
+    }
     Flagship.logger(
         Level.DEBUG, "visitorExists from default cache Implementation");
     await _checkDatabase();

@@ -244,7 +244,7 @@ class DefaultStrategy implements IVisitor {
           visitor.anonymousId != null) {
         // Check if cache exists for anonymousId
         bool anonymousExists = await visitor.config.visitorCacheImp
-                ?.visitorExists(visitor.anonymousId!) ??
+                ?.visitorExists(visitor.anonymousId ?? "") ??
             false;
 
         if (!anonymousExists) {
@@ -326,15 +326,15 @@ class DefaultStrategy implements IVisitor {
   }
 
   @override
-  void cacheVisitor(String visitorId, String jsonString) {
-    visitor.config.visitorCacheImp?.cacheVisitor(visitor.visitorId, jsonString);
+  void cacheVisitor(String pVisitorId, String jsonString) {
+    visitor.config.visitorCacheImp?.cacheVisitor(pVisitorId, jsonString);
   }
 
   @override
   // Called right at visitor creation, return a jsonString corresponding to visitor. Return a jsonString
-  Future<bool> lookupVisitor(String visitoId) async {
+  Future<bool> lookupVisitor(String visitorId) async {
     var resultFromCacheBis = await visitor.config.visitorCacheImp
-        ?.lookupVisitor(visitor.visitorId)
+        ?.lookupVisitor(visitorId)
         .timeout(
             Duration(
                 milliseconds:
