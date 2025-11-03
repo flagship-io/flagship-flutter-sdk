@@ -69,7 +69,7 @@ class DefaultStrategy implements IVisitor {
         exposedFlag.alreadyActivatedCampaign = true;
         onExposed(exposedVisitor, exposedFlag);
       }
-      Flagship.logger(Level.INFO, " The camapign's flag already activated ");
+      Flagship.logger(Level.INFO, " The campaign's flag already activated ");
       return;
     }
 
