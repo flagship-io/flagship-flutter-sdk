@@ -222,6 +222,7 @@ class DefaultStrategy implements IVisitor {
       } else {
         state = FSSdkStatus.SDK_INITIALIZED;
         var modif = visitor.decisionManager.getModifications(camp.campaigns);
+
         visitor.modifications.addAll(modif);
         // Start Batching loop
         visitor.trackingManager?.startBatchingLoop();
@@ -234,8 +235,25 @@ class DefaultStrategy implements IVisitor {
       visitor.flagshipDelegate.onUpdateState(state);
 
       // Save the response for the visitor database
-      cacheVisitor(visitor.visitorId,
-          jsonEncode(VisitorCache.fromVisitor(this.visitor).toJson()));
+      // Save the response for the visitor database
+      String visitorCacheData =
+          jsonEncode(VisitorCache.fromVisitor(this.visitor).toJson());
+      cacheVisitor(visitor.visitorId, visitorCacheData);
+      // In bucketing mode, if anonymousId exists and no cache exists for it, cache the same data
+      if (visitor.config.decisionMode == Mode.BUCKETING &&
+          visitor.anonymousId != null) {
+        // Check if cache exists for anonymousId
+        bool anonymousExists = await visitor.config.visitorCacheImp
+                ?.visitorExists(visitor.anonymousId ?? "") ??
+            false;
+
+        if (!anonymousExists) {
+          // Cache the same visitor data with anonymousId as key
+          cacheVisitor(visitor.anonymousId!, visitorCacheData);
+          Flagship.logger(Level.DEBUG,
+              "Cached visitor data for anonymousId: ${visitor.anonymousId} in bucketing mode");
+        }
+      }
       // Update the dataUsage tracking
       visitor.dataUsageTracking
           .updateTroubleshooting(camp.accountSettings?.troubleshooting);
@@ -272,20 +290,15 @@ class DefaultStrategy implements IVisitor {
 
   @override
   authenticateVisitor(String pVisitorId) {
-    if (visitor.config.decisionMode == Mode.DECISION_API) {
-      if (visitor.anonymousId == null) {
-        visitor.anonymousId = visitor.visitorId;
-        visitor.visitorId = pVisitorId;
-        // Update fs_users
-        visitor.updateContext(FS_USERS, pVisitorId);
-      }
-
-      DataUsageTracking.sharedInstance()
-          .processTSXpc(CriticalPoints.VISITOR_AUTHENTICATE.name, this.visitor);
-    } else {
-      Flagship.logger(Level.ALL,
-          "AuthenticateVisitor method will be ignored in Bucketing configuration");
+    if (visitor.anonymousId == null) {
+      visitor.anonymousId = visitor.visitorId;
+      visitor.visitorId = pVisitorId;
+      // Update fs_users
+      visitor.updateContext(FS_USERS, pVisitorId);
     }
+
+    DataUsageTracking.sharedInstance()
+        .processTSXpc(CriticalPoints.VISITOR_AUTHENTICATE.name, this.visitor);
 
     // Update the xpc info for the emotionAI
     this
@@ -296,19 +309,15 @@ class DefaultStrategy implements IVisitor {
 
   @override
   unAuthenticateVisitor() {
-    if (visitor.config.decisionMode == Mode.DECISION_API) {
-      if (visitor.anonymousId != null) {
-        visitor.visitorId = visitor.anonymousId as String;
-        visitor.anonymousId = null;
-        // Update fs_users in context
-        visitor.updateContext(FS_USERS, visitor.visitorId);
-      }
-      DataUsageTracking.sharedInstance().processTSXpc(
-          CriticalPoints.VISITOR_UNAUTHENTICATE.name, this.visitor);
-    } else {
-      Flagship.logger(Level.ALL,
-          "unAuthenticateVisitor method will be ignored in Bucketing configuration");
+    if (visitor.anonymousId != null) {
+      visitor.visitorId = visitor.anonymousId as String;
+      visitor.anonymousId = null;
+      // Update fs_users in context
+      visitor.updateContext(FS_USERS, visitor.visitorId);
     }
+    DataUsageTracking.sharedInstance()
+        .processTSXpc(CriticalPoints.VISITOR_UNAUTHENTICATE.name, this.visitor);
+
     // Update the xpc info for the emotionAI
     this
         .visitor
@@ -317,15 +326,15 @@ class DefaultStrategy implements IVisitor {
   }
 
   @override
-  void cacheVisitor(String visitorId, String jsonString) {
-    visitor.config.visitorCacheImp?.cacheVisitor(visitor.visitorId, jsonString);
+  void cacheVisitor(String pVisitorId, String jsonString) {
+    visitor.config.visitorCacheImp?.cacheVisitor(pVisitorId, jsonString);
   }
 
   @override
   // Called right at visitor creation, return a jsonString corresponding to visitor. Return a jsonString
-  Future<bool> lookupVisitor(String visitoId) async {
+  Future<bool> lookupVisitor(String visitorId) async {
     var resultFromCacheBis = await visitor.config.visitorCacheImp
-        ?.lookupVisitor(visitor.visitorId)
+        ?.lookupVisitor(visitorId)
         .timeout(
             Duration(
                 milliseconds:
