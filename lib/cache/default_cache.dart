@@ -98,7 +98,7 @@ class DefaultCacheVisitorImp with IVisitorCacheImplementation {
 
   @override
   Future<bool> visitorExists(String visitorId) async {
-    // Rejeter les strings vides
+    // Reject empty strings
     if (visitorId.isEmpty) {
       return false;
     }
