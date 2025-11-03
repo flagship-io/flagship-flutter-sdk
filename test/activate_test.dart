@@ -145,7 +145,7 @@ void main() {
     var testConfig = ConfigBuilder().withOnVisitorExposed((v, f) {
       if (v.id == "testV") {
         expect(f.metadata().campaignId, "campaignId");
-        expect(v.id, "expoVisitorObj");
+        expect(v.id, "testV");
         expect(f.alreadyActivatedCampaign, true);
       }
     }).build();
