@@ -196,7 +196,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
     apiKeyController.text = fsData.apiKey;
     timeoutController.text = fsData.timeout.toString();
     visitorIdController.text = fsUser.visitorId;
-    bool isApiMode = (fsData.sdkMode == Mode.BUCKETING) ? true : false;
+    bool isApiMode = (fsData.sdkMode == Mode.DECISION_API) ? true : false;
     pollingTimeController.text = defaultPollingTime.toString();
 
     final mediaQuery = MediaQuery.of(context);
