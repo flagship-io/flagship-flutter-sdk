@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flagship/tracking/tracking_manager_config.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +8,7 @@ class FSData extends ChangeNotifier {
   // EnvId
   String _envId = "bkk9glocmjcg0vtmdlng"; //
   // Mode
-  Mode _mode = Mode.BUCKETING;
+  Mode _mode = Mode.DECISION_API;
   // Timeout
   int _timeout = 2000;
 
