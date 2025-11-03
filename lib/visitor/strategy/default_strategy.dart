@@ -235,7 +235,6 @@ class DefaultStrategy implements IVisitor {
       visitor.flagshipDelegate.onUpdateState(state);
 
       // Save the response for the visitor database
-      // Save the response for the visitor database
       String visitorCacheData =
           jsonEncode(VisitorCache.fromVisitor(this.visitor).toJson());
       cacheVisitor(visitor.visitorId, visitorCacheData);
