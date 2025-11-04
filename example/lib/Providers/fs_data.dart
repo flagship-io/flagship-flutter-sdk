@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 class FSData extends ChangeNotifier {
   // Apikey
-  String _apiKey = "DxAcxlnRB9yFBZYtLDue1q01dcXZCw6aM49CQB23"; //
+  String _apiKey = "apiKey"; //
   // EnvId
   String _envId = "bkk9glocmjcg0vtmdlng"; //
   // Mode

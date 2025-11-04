@@ -1,4 +1,14 @@
 
+
+# 4.2.0-beta - 4/11/2025
+
+### Added
+
+- Flag activation deduplication to prevent redundant activation hits for the same campaign/variation during a visitor session.
+- Adds session-based tracking (30 min) to deduplicate flag activations for the same campaign/variation
+- Manage experience continuity in bucketing mode.
+
+
 # 4.1.2-beta - 24/06/2025
 
 ### Fix
