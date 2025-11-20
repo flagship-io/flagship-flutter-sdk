@@ -73,11 +73,11 @@ class DefaultStrategy implements IVisitor {
       return;
     }
     // When not duplicated
-    String? flagJson = null;
-    String? visitorJson = null;
+    String? flagJson;
+    String? visitorJson;
     try {
-      exposedFlag != null ? jsonEncode(exposedFlag) : null;
-      exposedVisitor != null ? jsonEncode(exposedVisitor) : null;
+      flagJson = exposedFlag != null ? jsonEncode(exposedFlag) : null;
+      visitorJson = exposedVisitor != null ? jsonEncode(exposedVisitor) : null;
     } catch (e) {
       Flagship.logger(Level.ERROR, "Error encoding exposure data: $e");
     }

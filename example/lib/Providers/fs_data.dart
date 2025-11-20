@@ -74,8 +74,7 @@ class UserData extends ChangeNotifier {
     "condition1": "segment",
     "bucketKeyFlutter": "Mercredi",
     "numericKeyFlutter": true,
-    "floatKeyFlutter": 12.5,
-    "nullKeyFlutter": Null
+    "floatKeyFlutter": 12.5
   };
   bool _hasConsented = true;
   bool _isAuthenticated = false;
