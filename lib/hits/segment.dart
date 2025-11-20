@@ -10,7 +10,7 @@ class Segment extends BaseHit {
   @override
   Map<String, Object> get bodyTrack {
     var customBody = new Map<String, Object>();
-// Convert persona values to String
+    // Convert persona values to String
     Map<String, String> personaString =
         persona.map((key, value) => MapEntry(key, value.toString()));
     customBody.addAll({"s": personaString, "t": typeOfEvent});
