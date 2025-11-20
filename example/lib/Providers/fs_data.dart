@@ -68,7 +68,12 @@ class UserData extends ChangeNotifier {
     "testing_tracking_manager": true,
     "isQA": true,
     "fs_is_vip": true,
-    "customer": "spécial"
+    "customer": "spécial",
+    "condition1": "segment",
+    "bucketKeyFlutter": "Mercredi",
+    "numericKeyFlutter": true,
+    "floatKeyFlutter": 12.5,
+    "nullKeyFlutter": Null
   };
   bool _hasConsented = true;
   bool _isAuthenticated = false;

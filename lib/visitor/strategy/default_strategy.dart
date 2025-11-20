@@ -44,16 +44,22 @@ class DefaultStrategy implements IVisitor {
     String? exposedVisitor;
     if (Flagship.sharedInstance().getConfiguration()?.onVisitorExposed !=
         null) {
-      exposedFlag = jsonEncode(ExposedFlag(
-              pModification.key,
-              pModification.value,
-              pModification.defaultValue,
-              FlagMetadata.withMap(pModification.toJsonInformation()))
-          .toJson());
+      try {
+        exposedFlag = jsonEncode(ExposedFlag(
+                pModification.key,
+                pModification.value,
+                pModification.defaultValue,
+                FlagMetadata.withMap(pModification.toJsonInformation()))
+            .toJson());
 
-      exposedVisitor = jsonEncode(VisitorExposed(
-              visitor.visitorId, visitor.anonymousId, visitor.getContext())
-          .toJson());
+        exposedVisitor = jsonEncode(VisitorExposed(
+                visitor.visitorId, visitor.anonymousId, visitor.getContext())
+            .toJson());
+      } catch (e) {
+        Flagship.logger(Level.ERROR, "Failed to encode exposure object: $e");
+        exposedFlag = null;
+        exposedVisitor = null;
+      }
     }
     // Build the activate hit
     Activate activateHit = Activate(
