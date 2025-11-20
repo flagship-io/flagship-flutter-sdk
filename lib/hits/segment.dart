@@ -14,7 +14,7 @@ class Segment extends BaseHit {
     Map<String, String> personaString =
         persona.map((key, value) => MapEntry(key, value.toString()));
     customBody.addAll({"s": personaString, "t": typeOfEvent});
-    // Add commun body
+    // Add common body
     customBody.addAll(super.communBodyTrack);
     return customBody;
   }
