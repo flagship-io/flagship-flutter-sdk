@@ -1,4 +1,7 @@
 
+# 4.2.1-beta - 20/11/2025
+
+- Converts all persona values to strings in segment tracking.
 
 # 4.2.0-beta - 4/11/2025
 

@@ -72,12 +72,15 @@ class DefaultStrategy implements IVisitor {
       Flagship.logger(Level.INFO, " The campaign's flag already activated ");
       return;
     }
-
     // When not duplicated
-    final String? flagJson =
-        exposedFlag != null ? jsonEncode(exposedFlag) : null;
-    final String? visitorJson =
-        exposedVisitor != null ? jsonEncode(exposedVisitor) : null;
+    String? flagJson = null;
+    String? visitorJson = null;
+    try {
+      exposedFlag != null ? jsonEncode(exposedFlag) : null;
+      exposedVisitor != null ? jsonEncode(exposedVisitor) : null;
+    } catch (e) {
+      Flagship.logger(Level.ERROR, "Error encoding exposure data: $e");
+    }
 
     final activateHit = Activate(
       modification,
