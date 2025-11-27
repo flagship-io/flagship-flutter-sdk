@@ -1,6 +1,6 @@
 name: flagship
 description: Flutter SDK for Flagship Feature management & Experiment platform for modern engineering and product teams
-version: 4.2.0-beta
+version: 4.3.0-beta
 homepage: https://flagship.io
 
 environment:
@@ -24,6 +24,9 @@ dependencies:
   json_annotation: ^4.7.0
   path: ^1.8.2
   device_info_plus: ^11.3.0
+  get_it: ^8.0.2
+  abtastyqaassistant:
+    path: ../ABTastyQAAssistant/abtastyqaassistant
 dev_dependencies:
   flutter_test:
     sdk: flutter

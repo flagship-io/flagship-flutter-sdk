@@ -9,27 +9,59 @@ import 'package:flagship/visitor/strategy/no_consent_strategy.dart';
 import 'package:flagship/visitor/strategy/not_ready_strategy.dart';
 import 'package:flagship/visitor/strategy/panic_strategy.dart';
 import 'package:flagship/flagship.dart';
+import 'package:flagship/visitor/strategy/qassistant_strategy.dart';
 import '../visitor.dart';
 
 class VisitorDelegate implements IVisitor {
   final Visitor visitor;
+  DefaultStrategy? _cachedStrategy;
+  FSSdkStatus? _lastSdkStatus;
+  bool? _lastConsentStatus;
+  bool? _lastQAStatus;
 
   Map<String, String> _activatedVariations = {};
   VisitorDelegate(this.visitor);
   // Get the strategy
+
   DefaultStrategy getStrategy() {
-    switch (Flagship.getStatus()) {
+    final currentSdkStatus = Flagship.getStatus();
+    final currentConsent = visitor.getConsent();
+    final currentQAStatus = Flagship.sharedInstance().isQAAssistantConnected;
+
+    // Vérifier si la stratégie doit être invalidée
+    if (_cachedStrategy == null ||
+        _lastSdkStatus != currentSdkStatus ||
+        _lastConsentStatus != currentConsent ||
+        _lastQAStatus != currentQAStatus) {
+      // Créer une nouvelle stratégie seulement si nécessaire
+      _cachedStrategy =
+          _createStrategy(currentSdkStatus, currentConsent, currentQAStatus);
+
+      // Sauvegarder l'état actuel
+      _lastSdkStatus = currentSdkStatus;
+      _lastConsentStatus = currentConsent;
+      _lastQAStatus = currentQAStatus;
+    }
+
+    // Review later because we fallback on NotReadyStrategy too often
+    return _cachedStrategy ?? NotReadyStrategy(visitor);
+  }
+
+  DefaultStrategy _createStrategy(
+      FSSdkStatus status, bool? consent, bool qaConnected) {
+    // Temorary strategy selection based on SDK status and consent
+    if (qaConnected) {
+      return QassistantStrategy(visitor);
+    }
+    switch (status) {
       case FSSdkStatus.SDK_NOT_INITIALIZED:
         return NotReadyStrategy(visitor);
       case FSSdkStatus.SDK_PANIC:
         return PanicStrategy(visitor);
       case FSSdkStatus.SDK_INITIALIZED:
-        if (visitor.getConsent() == false) {
-          // Return non consented
-          return NoConsentStrategy(visitor);
-        } else {
-          return DefaultStrategy(visitor);
-        }
+        return consent == false
+            ? NoConsentStrategy(visitor)
+            : DefaultStrategy(visitor);
       case FSSdkStatus.SDK_INITIALIZING:
         return NotReadyStrategy(visitor);
     }

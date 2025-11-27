@@ -44,6 +44,8 @@ class Flagship with FlagshipDelegate {
   // eaiActivationEnabled
   bool eaiActivationEnabled = false;
 
+  bool isQAAssistantConnected = false;
+
   factory Flagship.sharedInstance() {
     return _singleton;
   }
