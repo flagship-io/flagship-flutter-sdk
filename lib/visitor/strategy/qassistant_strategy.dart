@@ -74,51 +74,63 @@ class FlagshipQAMessageHandler implements QAMessageHandler {
 
   @override
   void handleModificationMessage(ModificationMessage message) {
-    print('🎯 Flagship: Received FSModification message');
+    print('🎯 Flagship: Received modification message');
     print('📄 Message JSON: ${message.toJsonString()}');
     print('');
     print('Campaign Details:');
     print('  - ID: ${message.campaignId}');
     print('  - Name: ${message.campaignName}');
     print('  - Type: ${message.campaignType}');
+    print('  - Slug: ${message.campaignSlug}');
     print('');
     print('Variation Group:');
     print('  - ID: ${message.variationGroupId}');
     print('  - Name: ${message.variationGroupName}');
     print('');
     print('Variation Details:');
-    print('  - ID: ${message.variationId}');
-    print('  - Name: ${message.variationName}');
-    print('  - Is Reference: ${message.isReference}');
+    print('  - ID: ${message.variation.id}');
+    print('  - Name: ${message.variation.name}');
+    print('  - Is Reference: ${message.variation.reference}');
     print('');
-    print('Modifications:');
 
-    // Apply each modification to the QA strategy modifications map
-    for (final entry in message.modifications["value"]!.entries) {
-      final key = entry.key;
-      final value = entry.value;
+    // Extract the modifications from the nested structure
+    // Format: { "type": "Flag", "value": { "flagKey": "flagValue" } }
+    final modificationsData = message.variation.modifications;
+    final modificationType = modificationsData['type'] ?? 'Unknown';
+    final flagsValue = modificationsData['value'] as Map<String, dynamic>?;
 
-      // Create a Modification object and add it to strategy.modifications
-      final modification = Modification(
-        key,
-        message.campaignId,
-        message.campaignName,
-        message.variationGroupId,
-        message.variationGroupName,
-        message.variationId,
-        message.variationName,
-        message.isReference,
-        message.campaignType,
-        null, // slug is optional
-        value,
-      );
+    print('Modifications (Type: $modificationType):');
 
-      strategy.modifications[key] = modification;
-      print('  ✓ $key: $value (added to QA modifications)');
+    if (flagsValue != null && flagsValue.isNotEmpty) {
+      // Apply each flag modification to the QA strategy modifications map
+      for (final entry in flagsValue.entries) {
+        final key = entry.key;
+        final value = entry.value;
+
+        // Create a Modification object and add it to strategy.modifications
+        final modification = Modification(
+          key,
+          message.campaignId,
+          message.campaignName,
+          message.variationGroupId,
+          message.variationGroupName,
+          message.variation.id,
+          message.variation.name,
+          message.variation.reference,
+          message.campaignType,
+          message.campaignSlug, // slug
+          value,
+        );
+
+        strategy.modifications[key] = modification;
+        print('  ✓ $key: $value (added to QA modifications)');
+      }
+
+      print('✅ All modifications applied to QA strategy.modifications');
+      print('📊 Total QA modifications: ${strategy.modifications.length}');
+    } else {
+      print('⚠️ No flag values found in modifications');
     }
-
-    print('✅ All modifications applied to QA strategy.modifications');
-    print('📊 Total QA modifications: ${strategy.modifications.length}');
   }
 
   @override
