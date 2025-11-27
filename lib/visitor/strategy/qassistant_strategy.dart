@@ -1,5 +1,6 @@
 import 'package:flagship/visitor.dart';
 import 'package:flagship/visitor/strategy/default_strategy.dart';
+import 'package:flagship/visitor/Ivisitor.dart';
 import 'package:flagship/model/modification.dart';
 import 'package:abtastyqaassistant/abtastyqaassistant.dart';
 
@@ -62,6 +63,54 @@ class QassistantStrategy extends DefaultStrategy {
 
     // Sinon utiliser la méthode parent
     return super.getModification(key, defaultValue, activate: activate);
+  }
+
+  @override
+  Future<FetchResponse?> fetchFlags() async {
+    // Call parent fetchFlags to get campaigns/variations
+    final response = await super.fetchFlags();
+
+    // Send campaigns info to QA Assistant
+    _sendCampaignsInfoToQA();
+
+    return response;
+  }
+
+  void _sendCampaignsInfoToQA() {
+    try {
+      final messageService = getQAMessageService();
+
+      // Build list of variations with campaign/variation/variationGroup IDs
+      final variations = <Map<String, dynamic>>[];
+
+      // Track unique variations to avoid duplicates
+      final processedVariations = <String>{};
+
+      for (final modification in visitor.modifications.values) {
+        final variationKey =
+            '${modification.campaignId}_${modification.variationId}';
+
+        if (!processedVariations.contains(variationKey)) {
+          variations.add({
+            'campaignId': modification.campaignId,
+            'variationId': modification.variationId,
+            'variationGroupId': modification.variationGroupId,
+          });
+          processedVariations.add(variationKey);
+        }
+      }
+
+      final campaignsData = {'variations': variations};
+
+      print('📤 Sending campaigns info to QA Assistant');
+      print('   Variations count: ${variations.length}');
+
+      messageService.sendConfigurationUpdate(campaignsData);
+
+      print('✅ Campaigns info sent to QA Assistant');
+    } catch (e) {
+      print('⚠️ Error sending campaigns info to QA Assistant: $e');
+    }
   }
 }
 
