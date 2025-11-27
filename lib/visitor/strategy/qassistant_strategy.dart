@@ -105,7 +105,7 @@ class QassistantStrategy extends DefaultStrategy {
       print('📤 Sending campaigns info to QA Assistant');
       print('   Variations count: ${variations.length}');
 
-      messageService.sendConfigurationUpdate(campaignsData);
+      messageService.sendFetchedFlagIds(campaignsData);
 
       print('✅ Campaigns info sent to QA Assistant');
     } catch (e) {
@@ -183,11 +183,11 @@ class FlagshipQAMessageHandler implements QAMessageHandler {
   }
 
   @override
-  void handleConfigurationUpdate(Map<String, dynamic> config) {
-    print('⚙️ Flagship: Configuration update received');
-    print('   Config: $config');
+  void handleFetchedFlagsIds(Map<String, dynamic> fetchedFlagIds) {
+    print('⚙️ Flagship: Fetched flags IDs received');
+    print('   FetchedFlagIds: $fetchedFlagIds');
 
-    // Handle configuration updates if needed
+    // Handle fetched flags IDs if needed
   }
 
   @override
