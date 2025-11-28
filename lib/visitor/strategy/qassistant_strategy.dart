@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:flagship/flagship.dart';
 import 'package:flagship/visitor.dart';
 import 'package:flagship/visitor/strategy/default_strategy.dart';
 import 'package:flagship/visitor/Ivisitor.dart';
@@ -6,28 +8,54 @@ import 'package:abtastyqaassistant/abtastyqaassistant.dart';
 
 /// QA Assistant Strategy that connects to QA Assistant package
 class QassistantStrategy extends DefaultStrategy {
-  //final FlagshipQAListener flagshipListener = FlagshipQAListener();
-  late final FlagshipQAMessageHandler _messageHandler;
-
   /// Map des modifications QA qui override celles du visitor
   final Map<String, Modification> modifications = {};
 
-  QassistantStrategy(Visitor visitor) : super(visitor) {
-    // Register the message handler to receive FSModification messages
-    final messageService = getQAMessageService();
-    _messageHandler = FlagshipQAMessageHandler(visitor, this);
-    messageService.registerHandler(_messageHandler);
+  /// Stream subscriptions for listening to QA messages
+  final List<StreamSubscription> _streamSubscriptions = [];
 
-    //flagshipListener.startListening();
-    print('✅ QA Strategy: FSModification message handler registered');
+  QassistantStrategy(Visitor visitor) : super(visitor) {
+    // Subscribe to all message streams from QA Assistant
+    final messageService = getQAMessageService();
+
+    // Listen to modification messages
+    _streamSubscriptions.add(
+      messageService.modificationMessageStream
+          .listen(_handleModificationMessage),
+    );
+
+    // Listen to refresh commands
+    _streamSubscriptions.add(
+      messageService.refreshCommandStream
+          .listen((_) => _handleRefreshCommand()),
+    );
+
+    // Listen to reset commands
+    _streamSubscriptions.add(
+      messageService.resetCommandStream.listen((_) => _handleResetCommand()),
+    );
+
+    // Listen to start commands
+    _streamSubscriptions.add(
+      messageService.startCommandStream
+          .listen((_) => _handleStartQAAssistant()),
+    );
+
+    // Listen to stop commands
+    _streamSubscriptions.add(
+      messageService.stopCommandStream.listen((_) => _handleStopQAAssistant()),
+    );
+
+    print('✅ QA Strategy: Subscribed to all QA message streams');
   }
 
   void cleanup() {
-    // Clean up when strategy is disposed
-    final messageService = getQAMessageService();
-    messageService.unregisterHandler();
-    // flagshipListener.stopListening();
-    print('🧹 QA Strategy: Message handler unregistered');
+    // Clean up stream subscriptions when strategy is disposed
+    for (final subscription in _streamSubscriptions) {
+      subscription.cancel();
+    }
+    _streamSubscriptions.clear();
+    print('🧹 QA Strategy: All stream subscriptions cancelled');
   }
 
   @override
@@ -105,25 +133,17 @@ class QassistantStrategy extends DefaultStrategy {
       print('📤 Sending campaigns info to QA Assistant');
       print('   Variations count: ${variations.length}');
 
-      messageService.sendFetchedFlagIds(campaignsData);
+      messageService.broadcastFetchedFlagIds(campaignsData);
 
       print('✅ Campaigns info sent to QA Assistant');
     } catch (e) {
       print('⚠️ Error sending campaigns info to QA Assistant: $e');
     }
   }
-}
 
-/// Implementation of QAMessageHandler to receive FSModification messages from QA Assistant
-class FlagshipQAMessageHandler implements QAMessageHandler {
-  final Visitor visitor;
-  final QassistantStrategy strategy;
-
-  FlagshipQAMessageHandler(this.visitor, this.strategy);
-
-  @override
-  void handleModificationMessage(ModificationMessage message) {
-    print('🎯 Flagship: Received modification message');
+  /// Handle modification message from stream
+  void _handleModificationMessage(ModificationMessage message) {
+    print('🎯 Flagship: Received modification message from stream');
     print('📄 Message JSON: ${message.toJsonString()}');
     print('');
     print('Campaign Details:');
@@ -171,37 +191,49 @@ class FlagshipQAMessageHandler implements QAMessageHandler {
           value,
         );
 
-        strategy.modifications[key] = modification;
+        modifications[key] = modification;
         print('  ✓ $key: $value (added to QA modifications)');
       }
 
       print('✅ All modifications applied to QA strategy.modifications');
-      print('📊 Total QA modifications: ${strategy.modifications.length}');
+      print('📊 Total QA modifications: ${modifications.length}');
     } else {
       print('⚠️ No flag values found in modifications');
     }
   }
 
-  @override
-  void handleFetchedFlagsIds(Map<String, dynamic> fetchedFlagIds) {
-    print('⚙️ Flagship: Fetched flags IDs received');
-    print('   FetchedFlagIds: $fetchedFlagIds');
-
-    // Handle fetched flags IDs if needed
-  }
-
-  @override
-  void handleRefreshCommand() {
-    print('🔄 Flagship: Refresh command received');
+  /// Handle refresh command from stream
+  void _handleRefreshCommand() {
+    print('🔄 Flagship: Refresh command received from stream');
     visitor.fetchFlags();
     print('✅ Visitor flags refreshed');
   }
 
-  @override
-  void handleResetCommand() {
-    print('🔄 Flagship: Reset command received');
+  /// Handle reset command from stream
+  void _handleResetCommand() {
+    print('🔄 Flagship: Reset command received from stream');
     visitor.getContext().clear();
     visitor.fetchFlags();
     print('✅ Visitor context cleared and flags refreshed');
+  }
+
+  /// Handle start QA Assistant command from stream
+  void _handleStartQAAssistant() {
+    print('▶️ Flagship: Start QA Assistant command received from stream');
+    // Update Flagship SDK state to indicate QA Assistant is active
+    Flagship.sharedInstance().isQAAssistantConnected = true;
+
+    // Send current fetched flags IDs to QA Assistant
+    _sendCampaignsInfoToQA();
+
+    print('✅ QA Assistant started');
+  }
+
+  /// Handle stop QA Assistant command from stream
+  void _handleStopQAAssistant() {
+    print('⏹️ Flagship: Stop QA Assistant command received from stream');
+    // Update Flagship SDK state to indicate QA Assistant is inactive
+    Flagship.sharedInstance().isQAAssistantConnected = false;
+    print('✅ QA Assistant stopped');
   }
 }
