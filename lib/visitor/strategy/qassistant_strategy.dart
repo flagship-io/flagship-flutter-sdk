@@ -35,12 +35,6 @@ class QassistantStrategy extends DefaultStrategy {
       messageService.resetCommandStream.listen((_) => _handleResetCommand()),
     );
 
-    // Listen to start commands
-    _streamSubscriptions.add(
-      messageService.startCommandStream
-          .listen((_) => _handleStartQAAssistant()),
-    );
-
     // Listen to stop commands
     _streamSubscriptions.add(
       messageService.stopCommandStream.listen((_) => _handleStopQAAssistant()),
@@ -112,28 +106,18 @@ class QassistantStrategy extends DefaultStrategy {
       final variations = <Map<String, dynamic>>[];
 
       // Track unique variations to avoid duplicates
-      final processedVariations = <String>{};
+      List<Map<String, String>> processedVariations = [];
 
       for (final modification in visitor.modifications.values) {
-        final variationKey =
-            '${modification.campaignId}_${modification.variationId}';
-
-        if (!processedVariations.contains(variationKey)) {
-          variations.add({
-            'campaignId': modification.campaignId,
-            'variationId': modification.variationId,
-            'variationGroupId': modification.variationGroupId,
-          });
-          processedVariations.add(variationKey);
-        }
+        processedVariations.add({
+          'campaignId': modification.campaignId,
+          'variationId': modification.variationId,
+          'variationGroupId': modification.variationGroupId,
+        });
       }
-
-      final campaignsData = {'variations': variations};
-
       print('📤 Sending campaigns info to QA Assistant');
       print('   Variations count: ${variations.length}');
-
-      messageService.broadcastFetchedFlagIds(campaignsData);
+      messageService.broadcastFetchedFlagIds(processedVariations);
 
       print('✅ Campaigns info sent to QA Assistant');
     } catch (e) {
@@ -215,18 +199,6 @@ class QassistantStrategy extends DefaultStrategy {
     visitor.getContext().clear();
     visitor.fetchFlags();
     print('✅ Visitor context cleared and flags refreshed');
-  }
-
-  /// Handle start QA Assistant command from stream
-  void _handleStartQAAssistant() {
-    print('▶️ Flagship: Start QA Assistant command received from stream');
-    // Update Flagship SDK state to indicate QA Assistant is active
-    Flagship.sharedInstance().isQAAssistantConnected = true;
-
-    // Send current fetched flags IDs to QA Assistant
-    _sendCampaignsInfoToQA();
-
-    print('✅ QA Assistant started');
   }
 
   /// Handle stop QA Assistant command from stream

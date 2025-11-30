@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flagship/hits/hit.dart';
 import 'package:flagship/hits/segment.dart';
 import 'package:flagship/model/modification.dart';
@@ -10,6 +11,7 @@ import 'package:flagship/visitor/strategy/not_ready_strategy.dart';
 import 'package:flagship/visitor/strategy/panic_strategy.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/visitor/strategy/qassistant_strategy.dart';
+import 'package:abtastyqaassistant/abtastyqaassistant.dart';
 import '../visitor.dart';
 
 class VisitorDelegate implements IVisitor {
@@ -18,9 +20,59 @@ class VisitorDelegate implements IVisitor {
   FSSdkStatus? _lastSdkStatus;
   bool? _lastConsentStatus;
   bool? _lastQAStatus;
+  bool _isQAAssistantReady = false;
+  StreamSubscription? _qaReadySubscription;
 
   Map<String, String> _activatedVariations = {};
-  VisitorDelegate(this.visitor);
+
+  VisitorDelegate(this.visitor) {
+    _listenToQAAssistantReady();
+  }
+
+  // Listen to QA Assistant ready message
+  void _listenToQAAssistantReady() {
+    try {
+      final messageService = getQAMessageService();
+      _qaReadySubscription = messageService.startCommandStream.listen((_) {
+        print('✅ VisitorDelegate: QA Assistant is ready');
+        Flagship.sharedInstance().isQAAssistantConnected = true;
+        _isQAAssistantReady = true;
+        // Invalidate cached strategy to switch to QassistantStrategy
+        _cachedStrategy = null;
+
+        // Build variations list from visitor modifications
+        final variations = <Map<String, String>>[];
+        final processedVariations = <String>{};
+
+        for (final modification in visitor.modifications.values) {
+          final variationKey =
+              '${modification.campaignId}_${modification.variationId}';
+
+          if (!processedVariations.contains(variationKey)) {
+            variations.add({
+              'campaignId': modification.campaignId,
+              'variationId': modification.variationId,
+              'variationGroupId': modification.variationGroupId,
+            });
+            processedVariations.add(variationKey);
+          }
+        }
+
+        // Send fetched flag IDs to QA Assistant
+        messageService.broadcastFetchedFlagIds(variations);
+        print(
+            '📤 VisitorDelegate: Sent fetched flag IDs to QA Assistant (${variations.length} variations)');
+      });
+    } catch (e) {
+      print('⚠️ VisitorDelegate: Could not listen to QA Assistant ready: $e');
+    }
+  }
+
+  // Cleanup method to cancel subscriptions
+  void dispose() {
+    _qaReadySubscription?.cancel();
+  }
+
   // Get the strategy
 
   DefaultStrategy getStrategy() {
@@ -49,8 +101,9 @@ class VisitorDelegate implements IVisitor {
 
   DefaultStrategy _createStrategy(
       FSSdkStatus status, bool? consent, bool qaConnected) {
-    // Temorary strategy selection based on SDK status and consent
-    if (qaConnected) {
+    // Only use QassistantStrategy if QA Assistant is connected AND ready
+    if (qaConnected && _isQAAssistantReady) {
+      print('🔄 VisitorDelegate: Using QassistantStrategy');
       return QassistantStrategy(visitor);
     }
     switch (status) {
