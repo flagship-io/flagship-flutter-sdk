@@ -39,8 +39,9 @@ class VisitorDelegate implements IVisitor {
         print('✅ VisitorDelegate: QA Assistant is ready');
         Flagship.sharedInstance().isQAAssistantConnected = true;
         _isQAAssistantReady = true;
-        // Invalidate cached strategy to switch to QassistantStrategy
-        _cachedStrategy = null;
+        // Create QassistantStrategy immediately to ensure we don't miss broadcasts
+        _cachedStrategy = QassistantStrategy(visitor);
+        _lastQAStatus = true;
 
         // Build variations list from visitor modifications
         final variations = <Map<String, String>>[];
