@@ -22,11 +22,13 @@ class VisitorDelegate implements IVisitor {
   bool? _lastQAStatus;
   bool _isQAAssistantReady = false;
   StreamSubscription? _qaReadySubscription;
+  StreamSubscription? _qaStopSubscription;
 
   Map<String, String> _activatedVariations = {};
 
   VisitorDelegate(this.visitor) {
     _listenToQAAssistantReady();
+    _listenToQAAssistantStop();
   }
 
   // Listen to QA Assistant ready message
@@ -68,9 +70,27 @@ class VisitorDelegate implements IVisitor {
     }
   }
 
+  // Listen to QA Assistant stop message
+  void _listenToQAAssistantStop() {
+    try {
+      final messageService = getQAMessageService();
+      _qaStopSubscription = messageService.stopCommandStream.listen((_) {
+        print('⏹️ VisitorDelegate: QA Assistant stopped');
+        Flagship.sharedInstance().isQAAssistantConnected = false;
+        _isQAAssistantReady = false;
+        // Invalidate cached strategy to switch back to normal strategy
+        _cachedStrategy = null;
+        print('✅ VisitorDelegate: Switched back to normal strategy');
+      });
+    } catch (e) {
+      print('⚠️ VisitorDelegate: Could not listen to QA Assistant stop: $e');
+    }
+  }
+
   // Cleanup method to cancel subscriptions
   void dispose() {
     _qaReadySubscription?.cancel();
+    _qaStopSubscription?.cancel();
   }
 
   // Get the strategy
