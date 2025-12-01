@@ -9,38 +9,28 @@ import 'package:abtastyqaassistant/abtastyqaassistant.dart';
 /// QA Assistant Strategy that connects to QA Assistant package
 class QassistantStrategy extends DefaultStrategy {
   /// Map des modifications QA qui override celles du visitor
-  final Map<String, Modification> modifications = {};
+  final Map<String, Modification> qaaModifications = {};
 
   /// Stream subscriptions for listening to QA messages
   final List<StreamSubscription> _streamSubscriptions = [];
 
   QassistantStrategy(Visitor visitor) : super(visitor) {
-    // Subscribe to all message streams from QA Assistant
+    // Get QA Message Service
     final messageService = getQAMessageService();
 
-    // Listen to modification messages
+    // Listen to QA Modification from QA Assistant
     _streamSubscriptions.add(
       messageService.modificationMessageStream
           .listen(_handleModificationMessage),
     );
 
-    // Listen to refresh commands
-    _streamSubscriptions.add(
-      messageService.refreshCommandStream
-          .listen((_) => _handleRefreshCommand()),
-    );
-
-    // Listen to reset commands
-    _streamSubscriptions.add(
-      messageService.resetCommandStream.listen((_) => _handleResetCommand()),
-    );
-
     // Listen to stop commands
-    _streamSubscriptions.add(
-      messageService.stopCommandStream.listen((_) => _handleStopQAAssistant()),
-    );
+    //  _streamSubscriptions.add(
+    //   messageService.stopCommandStream.listen((_) => _handleStopQAAssistant()),
+    //  );
 
-    print('✅ QA Strategy: Subscribed to all QA message streams');
+    print(
+        '✅ QA Strategy: Subscribed to QAAssistant Modification Message Stream');
   }
 
   void cleanup() {
@@ -55,9 +45,9 @@ class QassistantStrategy extends DefaultStrategy {
   @override
   Modification? getFlagModification(String key) {
     // D'abord chercher dans les modifications QA
-    if (modifications.containsKey(key)) {
+    if (qaaModifications.containsKey(key)) {
       print('🎯 QA Override: Using QA modification for key: $key');
-      return modifications[key];
+      return qaaModifications[key];
     }
 
     // Sinon chercher dans les modifications du visitor
@@ -68,33 +58,12 @@ class QassistantStrategy extends DefaultStrategy {
   }
 
   @override
-  T getModification<T>(String key, T defaultValue, {bool activate = false}) {
-    // D'abord chercher dans les modifications QA
-    if (modifications.containsKey(key)) {
-      final modification = modifications[key];
-      if (modification != null) {
-        print('🎯 QA Override: Using QA modification for key: $key');
-        try {
-          return modification.value as T;
-        } catch (e) {
-          print('⚠️ Type conversion error for QA modification: $e');
-          return defaultValue;
-        }
-      }
-    }
-
-    // Sinon utiliser la méthode parent
-    return super.getModification(key, defaultValue, activate: activate);
-  }
-
-  @override
   Future<FetchResponse?> fetchFlags() async {
     // Call parent fetchFlags to get campaigns/variations
     final response = await super.fetchFlags();
 
     // Send campaigns info to QA Assistant
     _sendCampaignsInfoToQA();
-
     return response;
   }
 
@@ -102,21 +71,27 @@ class QassistantStrategy extends DefaultStrategy {
     try {
       final messageService = getQAMessageService();
 
-      // Build list of variations with campaign/variation/variationGroup IDs
-      final variations = <Map<String, dynamic>>[];
-
-      // Track unique variations to avoid duplicates
-      List<Map<String, String>> processedVariations = [];
+      // Track unique variations using a Set to avoid duplicates
+      final seenVariations = <String>{};
+      final processedVariations = <Map<String, String>>[];
 
       for (final modification in visitor.modifications.values) {
-        processedVariations.add({
-          'campaignId': modification.campaignId,
-          'variationId': modification.variationId,
-          'variationGroupId': modification.variationGroupId,
-        });
+        // Create unique key combining campaignId, variationId, and variationGroupId
+        final uniqueKey =
+            '${modification.campaignId}_${modification.variationId}_${modification.variationGroupId}';
+
+        // Only add if not already processed
+        if (!seenVariations.contains(uniqueKey)) {
+          seenVariations.add(uniqueKey);
+          processedVariations.add({
+            'campaignId': modification.campaignId,
+            'variationId': modification.variationId,
+            'variationGroupId': modification.variationGroupId,
+          });
+        }
       }
       print('📤 Sending campaigns info to QA Assistant');
-      print('   Variations count: ${variations.length}');
+      print('   Variations count: ${processedVariations.length}');
       messageService.broadcastFetchedFlagIds(processedVariations);
 
       print('✅ Campaigns info sent to QA Assistant');
@@ -175,37 +150,22 @@ class QassistantStrategy extends DefaultStrategy {
           value,
         );
 
-        modifications[key] = modification;
+        qaaModifications[key] = modification;
         print('  ✓ $key: $value (added to QA modifications)');
       }
 
       print('✅ All modifications applied to QA strategy.modifications');
-      print('📊 Total QA modifications: ${modifications.length}');
+      print('📊 Total QA modifications: ${qaaModifications.length}');
     } else {
       print('⚠️ No flag values found in modifications');
     }
   }
 
-  /// Handle refresh command from stream
-  void _handleRefreshCommand() {
-    print('🔄 Flagship: Refresh command received from stream');
-    visitor.fetchFlags();
-    print('✅ Visitor flags refreshed');
-  }
-
-  /// Handle reset command from stream
-  void _handleResetCommand() {
-    print('🔄 Flagship: Reset command received from stream');
-    visitor.getContext().clear();
-    visitor.fetchFlags();
-    print('✅ Visitor context cleared and flags refreshed');
-  }
-
   /// Handle stop QA Assistant command from stream
-  void _handleStopQAAssistant() {
-    print('⏹️ Flagship: Stop QA Assistant command received from stream');
-    // Update Flagship SDK state to indicate QA Assistant is inactive
-    Flagship.sharedInstance().isQAAssistantConnected = false;
-    print('✅ QA Assistant stopped');
-  }
+  // void _handleStopQAAssistant() {
+  //   print('⏹️ Flagship: Stop QA Assistant command received from stream');
+  //   // Update Flagship SDK state to indicate QA Assistant is inactive
+  //   Flagship.sharedInstance().isQAAssistantConnected = false;
+  //   print('✅ QA Assistant stopped');
+  // }
 }

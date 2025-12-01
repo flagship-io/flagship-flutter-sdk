@@ -35,6 +35,8 @@ class VisitorDelegate implements IVisitor {
   void _listenToQAAssistantReady() {
     try {
       final messageService = getQAMessageService();
+
+      /// A refaire ce calll ce n 'est pas bon ---- ne compile pas
       _qaReadySubscription = messageService.startCommandStream.listen((_) {
         print('✅ VisitorDelegate: QA Assistant is ready');
         Flagship.sharedInstance().isQAAssistantConnected = true;
