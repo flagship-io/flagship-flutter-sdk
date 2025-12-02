@@ -4,7 +4,6 @@ import 'package:flagship/visitor.dart';
 import 'package:flagship/visitor/strategy/default_strategy.dart';
 import 'package:flagship/visitor/Ivisitor.dart';
 import 'package:flagship/model/modification.dart';
-import 'package:abtastyqaassistant/abtastyqaassistant.dart';
 
 /// QA Assistant Strategy that connects to QA Assistant package
 class QassistantStrategy extends DefaultStrategy {

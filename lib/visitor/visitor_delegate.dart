@@ -11,7 +11,6 @@ import 'package:flagship/visitor/strategy/not_ready_strategy.dart';
 import 'package:flagship/visitor/strategy/panic_strategy.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/visitor/strategy/qassistant_strategy.dart';
-import 'package:abtastyqaassistant/abtastyqaassistant.dart';
 import '../visitor.dart';
 
 class VisitorDelegate implements IVisitor {

@@ -1,5 +1,9 @@
 library flagship;
 
+// Export QA Message Service for QA Assistant integration
+export 'ServiceLocator/qa_message_service.dart';
+export 'ServiceLocator/service_locator.dart';
+
 import 'package:flagship/dataUsage/data_usage_tracking.dart';
 import 'package:flagship/emotionAi/emotion_tools.dart';
 import 'package:flagship/flagship_config.dart';
