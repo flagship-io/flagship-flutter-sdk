@@ -110,6 +110,11 @@ class Visitor with EmotionAiDelegate {
   // Add this flag to track if visitor lookup has been performed
   bool _needLookupVisitor = true;
 
+  /// Optional callback that is triggered when flags are updated by QA Assistant
+  /// This allows clients to refresh their UI in response to QA changes
+  /// Usage: visitor.onFlagUpdate = (changedKeys) => setState(() { /* refresh */ });
+  void Function(List<String> changedFlagKeys)? onFlagUpdate;
+
 // Get flagStatus
   FlagStatus get flagStatus {
     return _flagStatus;

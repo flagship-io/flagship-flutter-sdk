@@ -23,11 +23,6 @@ class QassistantStrategy extends DefaultStrategy {
           .listen(_handleModificationMessage),
     );
 
-    // Listen to stop commands
-    //  _streamSubscriptions.add(
-    //   messageService.stopCommandStream.listen((_) => _handleStopQAAssistant()),
-    //  );
-
     print(
         '✅ QA Strategy: Subscribed to QAAssistant Modification Message Stream');
   }
@@ -129,6 +124,8 @@ class QassistantStrategy extends DefaultStrategy {
     print('Modifications (Type: $modificationType):');
 
     if (flagsValue != null && flagsValue.isNotEmpty) {
+      final changedFlags = <String>[];
+
       // Apply each flag modification to the QA strategy modifications map
       for (final entry in flagsValue.entries) {
         final key = entry.key;
@@ -145,26 +142,32 @@ class QassistantStrategy extends DefaultStrategy {
           message.variation.name,
           message.variation.reference,
           message.campaignType,
-          message.campaignSlug, // slug
+          message.campaignSlug,
           value,
         );
 
         qaaModifications[key] = modification;
+        changedFlags.add(key);
         print('  ✓ $key: $value (added to QA modifications)');
       }
 
       print('✅ All modifications applied to QA strategy.modifications');
       print('📊 Total QA modifications: ${qaaModifications.length}');
+
+      // Trigger optional callback if client has set one
+      _notifyFlagChanges(changedFlags);
     } else {
       print('⚠️ No flag values found in modifications');
     }
   }
 
-  /// Handle stop QA Assistant command from stream
-  // void _handleStopQAAssistant() {
-  //   print('⏹️ Flagship: Stop QA Assistant command received from stream');
-  //   // Update Flagship SDK state to indicate QA Assistant is inactive
-  //   Flagship.sharedInstance().isQAAssistantConnected = false;
-  //   print('✅ QA Assistant stopped');
-  // }
+  /// Notify about flag changes via optional callback
+  void _notifyFlagChanges(List<String> changedFlagKeys) {
+    // Call the optional callback if it exists
+    final callback = visitor.onFlagUpdate;
+    if (callback != null) {
+      callback(changedFlagKeys);
+      print('🔔 Notified client about ${changedFlagKeys.length} flag changes');
+    }
+  }
 }
