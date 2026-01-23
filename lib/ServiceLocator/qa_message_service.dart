@@ -109,6 +109,13 @@ class QAMessageService {
   final _startCommandController = StreamController<void>.broadcast();
   final _stopCommandController = StreamController<void>.broadcast();
 
+  // User Profile information
+  final _userContextController =
+      StreamController<Map<String, dynamic>>.broadcast();
+
+  // User context request stream
+  final _userContextRequestController = StreamController<void>.broadcast();
+
   /// Stream of modification messages
   Stream<ModificationMessage> get modificationMessageStream =>
       _modificationMessageController.stream;
@@ -123,12 +130,22 @@ class QAMessageService {
   /// Stream of stop QA Assistant commands
   Stream<void> get stopCommandStream => _stopCommandController.stream;
 
+  /// Stream of the userc ontext updates
+  Stream<Map<String, dynamic>> get userContextUpdateStream =>
+      _userContextController.stream;
+
+  /// Stream of user context request
+  Stream<void> get userContextRequestStream =>
+      _userContextRequestController.stream;
+
   /// Dispose all stream controllers
   void dispose() {
     _modificationMessageController.close();
+    _userContextRequestController.close();
     _liveVariationsIdsController.close();
     _startCommandController.close();
     _stopCommandController.close();
+    _userContextController.close();
     print('🧹 QA Message Service: All streams closed');
   }
 
@@ -197,5 +214,18 @@ class QAMessageService {
   void broadcastStopQAAssistant() {
     print('📤 QA Message Service: Broadcasting stop QA Assistant command');
     _stopCommandController.add(null);
+  }
+
+  void broadcastUserContextUpdate(Map<String, dynamic> userContext) {
+    print('📤 QA Message Service: Broadcasting user context update');
+    print('   UserContext: ${jsonEncode(userContext)}');
+
+    _userContextController.add(userContext);
+  }
+
+  /// Request user context from Flagship SDK
+  void broadcastUserContextRequest() {
+    print('📤 QA Message Service: Broadcasting user context request');
+    _userContextRequestController.add(null);
   }
 }

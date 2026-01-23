@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/visitor.dart';
 import 'package:flagship/visitor/strategy/default_strategy.dart';
@@ -23,8 +24,16 @@ class QassistantStrategy extends DefaultStrategy {
           .listen(_handleModificationMessage),
     );
 
+    // Listen to user context requests from QA Assistant
+    _streamSubscriptions.add(
+      messageService.userContextRequestStream.listen((_) {
+        _handleUserContextRequest();
+      }),
+    );
+
     print(
         '✅ QA Strategy: Subscribed to QAAssistant Modification Message Stream');
+    print('✅ QA Strategy: Subscribed to User Context Request Stream');
   }
 
   void cleanup() {
@@ -61,6 +70,31 @@ class QassistantStrategy extends DefaultStrategy {
     return response;
   }
 
+  @override
+  void updateContext<T>(String key, T value) {
+    // Update parent context first
+    super.updateContext(key, value);
+
+    // Send updated user context to QA Assistant
+    try {
+      final messageService = getQAMessageService();
+
+      // Get the complete context after update
+      final completeContext = visitor.getContext();
+
+      print('📤 Broadcasting updated user context to QA Assistant');
+      print('   Updated key: $key = $value');
+      print('   Complete context: $completeContext');
+
+      // Broadcast the complete context
+      messageService.broadcastUserContextUpdate(completeContext);
+
+      print('✅ User context broadcasted successfully');
+    } catch (e) {
+      print('⚠️ Error sending updated user context to QA Assistant: $e');
+    }
+  }
+
   void _sendCampaignsInfoToQA() {
     try {
       final messageService = getQAMessageService();
@@ -84,11 +118,27 @@ class QassistantStrategy extends DefaultStrategy {
           });
         }
       }
-      print('📤 Sending campaigns info to QA Assistant');
+
+      // Get complete visitor context
+      final visitorContext = visitor.getContext();
+
+      // Prepare the complete data with variations and visitor context
+      final campaignsData = {
+        'variations': processedVariations,
+        'visitorContext': visitorContext,
+      };
+
+      print('📤 Sending campaigns info and user context to QA Assistant');
       print('   Variations count: ${processedVariations.length}');
+      print('   Visitor context keys: ${visitorContext.keys.toList()}');
+
+      // Send variations
       messageService.broadcastFetchedFlagIds(processedVariations);
 
-      print('✅ Campaigns info sent to QA Assistant');
+      // Send complete visitor context
+      messageService.broadcastUserContextUpdate(visitorContext);
+
+      print('✅ Campaigns info and visitor context sent to QA Assistant');
     } catch (e) {
       print('⚠️ Error sending campaigns info to QA Assistant: $e');
     }
@@ -168,6 +218,25 @@ class QassistantStrategy extends DefaultStrategy {
     if (callback != null) {
       callback(changedFlagKeys);
       print('🔔 Notified client about ${changedFlagKeys.length} flag changes');
+    }
+  }
+
+  /// Handle user context request from QA Assistant
+  void _handleUserContextRequest() {
+    print('🔔 QA Strategy: Received user context request');
+
+    try {
+      final messageService = getQAMessageService();
+      final currentContext = visitor.getContext();
+
+      print('📤 QA Strategy: Sending user context in response to request');
+      print('   Context: $currentContext');
+
+      messageService.broadcastUserContextUpdate(currentContext);
+
+      print('✅ QA Strategy: User context sent successfully');
+    } catch (e) {
+      print('⚠️ QA Strategy: Error sending user context: $e');
     }
   }
 }
