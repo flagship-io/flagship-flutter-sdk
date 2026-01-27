@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:flagship/flagship.dart';
+import 'package:flagship/hits/hit.dart';
 import 'package:flagship/visitor.dart';
 import 'package:flagship/visitor/strategy/default_strategy.dart';
 import 'package:flagship/visitor/Ivisitor.dart';
@@ -93,6 +93,29 @@ class QassistantStrategy extends DefaultStrategy {
     } catch (e) {
       print('⚠️ Error sending updated user context to QA Assistant: $e');
     }
+  }
+
+  @override
+  Future<void> sendHit(BaseHit hit) async {
+    try {
+      // Récupérer le payload du hit
+      final payload = hit.bodyTrack;
+
+      print('📤 QA Strategy: Intercepting hit before sending');
+      print('   Hit Type: ${hit.runtimeType}');
+      print('   Payload: $payload');
+
+      // Broadcaster le hit vers QA Assistant
+      final messageService = getQAMessageService();
+      messageService.broadcastHitEvent(hit, payload);
+
+      print('✅ QA Strategy: Hit broadcasted to QA Assistant');
+    } catch (e) {
+      print('⚠️ QA Strategy: Error broadcasting hit: $e');
+    }
+
+    // Envoyer le hit normalement via la stratégie parent
+    return super.sendHit(hit);
   }
 
   void _sendCampaignsInfoToQA() {

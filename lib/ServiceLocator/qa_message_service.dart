@@ -116,6 +116,9 @@ class QAMessageService {
   // User context request stream
   final _userContextRequestController = StreamController<void>.broadcast();
 
+  // Hit events stream
+  final _hitEventController = StreamController<HitEventMessage>.broadcast();
+
   /// Stream of modification messages
   Stream<ModificationMessage> get modificationMessageStream =>
       _modificationMessageController.stream;
@@ -138,6 +141,9 @@ class QAMessageService {
   Stream<void> get userContextRequestStream =>
       _userContextRequestController.stream;
 
+  /// Stream of hit events
+  Stream<HitEventMessage> get hitEventStream => _hitEventController.stream;
+
   /// Dispose all stream controllers
   void dispose() {
     _modificationMessageController.close();
@@ -146,6 +152,7 @@ class QAMessageService {
     _startCommandController.close();
     _stopCommandController.close();
     _userContextController.close();
+    _hitEventController.close();
     print('🧹 QA Message Service: All streams closed');
   }
 
@@ -228,4 +235,40 @@ class QAMessageService {
     print('📤 QA Message Service: Broadcasting user context request');
     _userContextRequestController.add(null);
   }
+
+  /// Broadcast hit event from Flagship SDK to QA Assistant
+  void broadcastHitEvent(dynamic hit, Map<String, dynamic> payload) {
+    final message = HitEventMessage(
+      hit: hit,
+      payload: payload,
+      timestamp: DateTime.now(),
+    );
+
+    print('📤 QA Message Service: Broadcasting hit event');
+    print('   Hit Type: ${hit.runtimeType}');
+    print('   Payload: ${jsonEncode(payload)}');
+
+    _hitEventController.add(message);
+  }
+}
+
+/// Message containing hit event information
+class HitEventMessage {
+  final dynamic hit;
+  final Map<String, dynamic> payload;
+  final DateTime timestamp;
+
+  HitEventMessage({
+    required this.hit,
+    required this.payload,
+    required this.timestamp,
+  });
+
+  String get hitType => hit.runtimeType.toString();
+
+  Map<String, dynamic> toJson() => {
+        'hitType': hitType,
+        'payload': payload,
+        'timestamp': timestamp.toIso8601String(),
+      };
 }

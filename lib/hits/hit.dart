@@ -178,6 +178,8 @@ abstract class Hit {
 
   // Check the validity
   bool isValid();
+
+  //"qa" TODO
 }
 
 enum HitCategory {
