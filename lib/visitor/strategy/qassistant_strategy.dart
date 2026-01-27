@@ -98,6 +98,8 @@ class QassistantStrategy extends DefaultStrategy {
   @override
   Future<void> sendHit(BaseHit hit) async {
     try {
+      // In QA mode the qa flag is set to true
+      hit.qa = true;
       // Récupérer le payload du hit
       final payload = hit.bodyTrack;
 

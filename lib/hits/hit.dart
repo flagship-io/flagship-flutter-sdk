@@ -78,6 +78,9 @@ class BaseHit extends Hit {
     /// Location
     if (location != null) result["dl"] = location ?? "";
 
+    // qa mode
+    if (qa == true) result["qa"] = true;
+
     /// Add qt entries
     /// Time difference between when the hit was created and when it was sent
     if (this.createdAt != null) {
@@ -179,7 +182,8 @@ abstract class Hit {
   // Check the validity
   bool isValid();
 
-  //"qa" TODO
+  // QA sessions are not counted in the report once the test is launched in production
+  bool qa = false;
 }
 
 enum HitCategory {
