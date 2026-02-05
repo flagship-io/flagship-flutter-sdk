@@ -498,4 +498,8 @@ class DefaultStrategy implements IVisitor {
   onAppScreenChange(String screenName) {
     this.visitor.emotion_ai?.onAppScreenChange(screenName);
   }
+
+  void hideCampaign(String campaignId) {}
+
+  void unhideCampaign(String campaignId) {}
 }

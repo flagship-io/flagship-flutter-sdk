@@ -119,6 +119,10 @@ class QAMessageService {
   // Hit events stream
   final _hitEventController = StreamController<HitEventMessage>.broadcast();
 
+  // Campaign action stream (hide/unhide)
+  final _campaignActionController =
+      StreamController<CampaignActionMessage>.broadcast();
+
   /// Stream of modification messages
   Stream<ModificationMessage> get modificationMessageStream =>
       _modificationMessageController.stream;
@@ -144,6 +148,10 @@ class QAMessageService {
   /// Stream of hit events
   Stream<HitEventMessage> get hitEventStream => _hitEventController.stream;
 
+  /// Stream of campaign actions (hide/unhide)
+  Stream<CampaignActionMessage> get campaignActionStream =>
+      _campaignActionController.stream;
+
   /// Dispose all stream controllers
   void dispose() {
     _modificationMessageController.close();
@@ -153,6 +161,7 @@ class QAMessageService {
     _stopCommandController.close();
     _userContextController.close();
     _hitEventController.close();
+    _campaignActionController.close();
     print('🧹 QA Message Service: All streams closed');
   }
 
@@ -250,6 +259,28 @@ class QAMessageService {
 
     _hitEventController.add(message);
   }
+
+  /// Send hide campaign message
+  void hideCampaign(String campaignId) {
+    final message = CampaignActionMessage(
+      action: 'hide',
+      campaignId: campaignId,
+    );
+    print('📤 QA Message Service: Broadcasting hide campaign message');
+    print('   Campaign ID: $campaignId');
+    _campaignActionController.add(message);
+  }
+
+  /// Send unhide campaign message
+  void unhideCampaign(String campaignId) {
+    final message = CampaignActionMessage(
+      action: 'unhide',
+      campaignId: campaignId,
+    );
+    print('📤 QA Message Service: Broadcasting unhide campaign message');
+    print('   Campaign ID: $campaignId');
+    _campaignActionController.add(message);
+  }
 }
 
 /// Message containing hit event information
@@ -271,4 +302,24 @@ class HitEventMessage {
         'payload': payload,
         'timestamp': timestamp.toIso8601String(),
       };
+}
+
+/// Message for campaign actions (hide/unhide)
+class CampaignActionMessage {
+  final String action; // 'hide' or 'unhide'
+  final String campaignId;
+
+  CampaignActionMessage({
+    required this.action,
+    required this.campaignId,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'action': action,
+        'campaignId': campaignId,
+      };
+
+  @override
+  String toString() =>
+      'CampaignActionMessage(action: $action, campaignId: $campaignId)';
 }

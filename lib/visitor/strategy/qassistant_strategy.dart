@@ -11,6 +11,9 @@ class QassistantStrategy extends DefaultStrategy {
   /// Map des modifications QA qui override celles du visitor
   final Map<String, Modification> qaaModifications = {};
 
+  /// Set of hidden campaign IDs - these should return null (default value)
+  final Set<String> hiddenCampaigns = {};
+
   /// Stream subscriptions for listening to QA messages
   final List<StreamSubscription> _streamSubscriptions = [];
 
@@ -31,9 +34,15 @@ class QassistantStrategy extends DefaultStrategy {
       }),
     );
 
+    // Listen to campaign actions (hide/unhide)
+    _streamSubscriptions.add(
+      messageService.campaignActionStream.listen(_handleCampaignAction),
+    );
+
     print(
         '✅ QA Strategy: Subscribed to QAAssistant Modification Message Stream');
     print('✅ QA Strategy: Subscribed to User Context Request Stream');
+    print('✅ QA Strategy: Subscribed to Campaign Action Stream');
   }
 
   void cleanup() {
@@ -47,17 +56,29 @@ class QassistantStrategy extends DefaultStrategy {
 
   @override
   Modification? getFlagModification(String key) {
-    // D'abord chercher dans les modifications QA
+    // First check if this flag belongs to a hidden campaign
+    final visitorMod = super.getFlagModification(key);
+
+    print('🔍 getFlagModification called for key: $key');
+    print('   hiddenCampaigns: $hiddenCampaigns');
+    print('   visitorMod campaignId: ${visitorMod?.campaignId}');
+
+    if (visitorMod != null && hiddenCampaigns.contains(visitorMod.campaignId)) {
+      print(
+          '🚫 QA Override: Flag "$key" belongs to hidden campaign ${visitorMod.campaignId}, returning null (default value)');
+      return null;
+    }
+
+    // Then check for QA forced modifications
     if (qaaModifications.containsKey(key)) {
       print('🎯 QA Override: Using QA modification for key: $key');
       return qaaModifications[key];
     }
 
-    // Sinon chercher dans les modifications du visitor
-    Modification? ret = super.getFlagModification(key);
+    // Finally return visitor modification (production value)
     print(
-        '📦 Visitor: Using visitor modification for key: $key, value: ${ret?.value}');
-    return ret;
+        '📦 Visitor: Using visitor modification for key: $key, value: ${visitorMod?.value}');
+    return visitorMod;
   }
 
   @override
@@ -147,12 +168,6 @@ class QassistantStrategy extends DefaultStrategy {
       // Get complete visitor context
       final visitorContext = visitor.getContext();
 
-      // Prepare the complete data with variations and visitor context
-      final campaignsData = {
-        'variations': processedVariations,
-        'visitorContext': visitorContext,
-      };
-
       print('📤 Sending campaigns info and user context to QA Assistant');
       print('   Variations count: ${processedVariations.length}');
       print('   Visitor context keys: ${visitorContext.keys.toList()}');
@@ -201,6 +216,10 @@ class QassistantStrategy extends DefaultStrategy {
     if (flagsValue != null && flagsValue.isNotEmpty) {
       final changedFlags = <String>[];
 
+      // Remove from hidden campaigns when forcing
+      hiddenCampaigns.remove(message.campaignId);
+      print('✓ Campaign ${message.campaignId} removed from hidden list');
+
       // Apply each flag modification to the QA strategy modifications map
       for (final entry in flagsValue.entries) {
         final key = entry.key;
@@ -232,7 +251,9 @@ class QassistantStrategy extends DefaultStrategy {
       // Trigger optional callback if client has set one
       _notifyFlagChanges(changedFlags);
     } else {
-      print('⚠️ No flag values found in modifications');
+      // Empty modifications means clearing the campaign (hide or unforce)
+      print('⚠️ Empty modifications received - clearing campaign');
+      _clearCampaignModifications(message.campaignId);
     }
   }
 
@@ -243,6 +264,93 @@ class QassistantStrategy extends DefaultStrategy {
     if (callback != null) {
       callback(changedFlagKeys);
       print('🔔 Notified client about ${changedFlagKeys.length} flag changes');
+    }
+  }
+
+  /// Clear all modifications for a specific campaign
+  void _clearCampaignModifications(String campaignId) {
+    print('🧹 Clearing modifications for campaign: $campaignId');
+
+    final removedKeys = <String>[];
+
+    // Remove all modifications belonging to this campaign
+    qaaModifications.removeWhere((key, modification) {
+      if (modification.campaignId == campaignId) {
+        removedKeys.add(key);
+        return true;
+      }
+      return false;
+    });
+
+    print(
+        '✅ Removed ${removedKeys.length} QA modifications for campaign $campaignId');
+
+    if (removedKeys.isNotEmpty) {
+      _notifyFlagChanges(removedKeys);
+    }
+  }
+
+  /// Handle campaign action messages (hide/unhide)
+  void _handleCampaignAction(CampaignActionMessage message) {
+    print(
+        '🎯 QA Strategy: Received campaign action: ${message.action} for ${message.campaignId}');
+
+    switch (message.action) {
+      case 'hide':
+        _hideCampaign(message.campaignId);
+        break;
+      case 'unhide':
+        _unhideCampaign(message.campaignId);
+        break;
+      default:
+        print('⚠️ Unknown campaign action: ${message.action}');
+    }
+  }
+
+  /// Mark a campaign as hidden - its flags will return null (default values)
+  void _hideCampaign(String campaignId) {
+    print('🙈 Hiding campaign: $campaignId');
+    print('   hiddenCampaigns before: $hiddenCampaigns');
+
+    hiddenCampaigns.add(campaignId);
+    _clearCampaignModifications(campaignId);
+
+    print('   hiddenCampaigns after: $hiddenCampaigns');
+    print('✅ Campaign $campaignId is now hidden');
+
+    // Notify about flags that will now return default values
+    final affectedFlags = visitor.modifications.entries
+        .where((entry) => entry.value.campaignId == campaignId)
+        .map((entry) => entry.key)
+        .toList();
+
+    if (affectedFlags.isNotEmpty) {
+      print('   Affected flags: $affectedFlags');
+      _notifyFlagChanges(affectedFlags);
+    }
+  }
+
+  /// Remove a campaign from hidden list - restore to production behavior
+  void _unhideCampaign(String campaignId) {
+    print('👁️ Unhiding campaign: $campaignId');
+    print('   hiddenCampaigns before: $hiddenCampaigns');
+
+    final wasHidden = hiddenCampaigns.remove(campaignId);
+
+    print('   hiddenCampaigns after: $hiddenCampaigns');
+
+    if (wasHidden) {
+      // Get all flags affected by this campaign and notify
+      final affectedFlags = visitor.modifications.entries
+          .where((entry) => entry.value.campaignId == campaignId)
+          .map((entry) => entry.key)
+          .toList();
+
+      if (affectedFlags.isNotEmpty) {
+        print('   Affected flags: $affectedFlags');
+        _notifyFlagChanges(affectedFlags);
+      }
+      print('✅ Campaign $campaignId is now visible');
     }
   }
 
