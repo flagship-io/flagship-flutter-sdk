@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flagship/flagship.dart';
+import 'package:flagship/hits/activate.dart';
 import 'package:flagship/hits/hit.dart';
 import 'package:flagship/visitor.dart';
 import 'package:flagship/visitor/strategy/default_strategy.dart';
@@ -139,6 +140,28 @@ class QassistantStrategy extends DefaultStrategy {
 
     // Envoyer le hit normalement via la stratégie parent
     return super.sendHit(hit);
+  }
+
+  @override
+  Future<void> activateFlag(Modification pModification,
+      {bool isDuplicated = false}) {
+    final activateHit = Activate(pModification, visitor.visitorId,
+        visitor.anonymousId, Flagship.sharedInstance().envId ?? '', null, null);
+    activateHit.qa = true; // Mark hit as QA
+    // Send activate hit to QA Assistant
+    try {
+      final messageService = getQAMessageService();
+      final payload = activateHit.bodyTrack;
+      print('📤 QA Strategy: Broadcasting activate hit to QA Assistant');
+      print('   Hit Type: Activate');
+      print('   Payload: $payload');
+      messageService.broadcastHitEvent(activateHit, payload);
+      print('✅ QA Strategy: Activate hit broadcasted to QA Assistant');
+    } catch (e) {
+      print('⚠️ QA Strategy: Error broadcasting activate hit: $e');
+    }
+
+    return super.activateFlag(pModification, isDuplicated: isDuplicated);
   }
 
   void _sendCampaignsInfoToQA() {
