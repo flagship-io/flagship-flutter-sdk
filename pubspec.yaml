@@ -1,6 +1,6 @@
 name: flagship
 description: Flutter SDK for Flagship Feature management & Experiment platform for modern engineering and product teams
-version: 4.0.3
+version: 4.0.4
 homepage: https://flagship.io
 
 environment:
@@ -12,8 +12,8 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_device_type: ^0.4.0
-  http: ^0.13.1
-  intl: ^0.17.0
+  http: ">=0.13.1 <2.0.0"
+  intl: ">=0.17.0 <1.0.0"
   murmurhash: ^1.0.1
   path_provider: ^2.0.11
   pausable_timer: ^1.0.0+6
