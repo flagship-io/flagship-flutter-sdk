@@ -1,4 +1,9 @@
 
+# 4.0.4 - 12/03/2026
+
+- Update constraint to avoid version conflicts in http and intl.
+
+
 # 4.0.3 - 20/11/2025
 
 ### Fix
