@@ -1,3 +1,6 @@
+# 4.0.5 - 23/03/2026
+
+- Update constraint to avoid version conflicts in uuid, pausable_timer and device_info_plus.
 
 # 4.0.4 - 12/03/2026
 
