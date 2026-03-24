@@ -1,4 +1,9 @@
 
+# 4.3.0-beta - 24/03/2026
+
+- Add connector with QA Assistant tools
+- Add QA Assistant Strategy for managing assistant interactions
+- Update dependency constraints for packages
 
 # 4.2.0-beta - 4/11/2025
 

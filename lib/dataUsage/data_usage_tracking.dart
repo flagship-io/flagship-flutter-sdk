@@ -104,12 +104,20 @@ class DataUsageTracking {
 
   bool isTimeSlotValide() {
     try {
-      // Get the dates
-      DateTime startDate =
-          DateTime.parse(_singleton._troubleshooting?.startDate ?? "");
+      // Check if dates exist
+      String? startDateStr = _singleton._troubleshooting?.startDate;
+      String? endDateStr = _singleton._troubleshooting?.endDate;
 
-      DateTime endDate =
-          DateTime.parse(_singleton._troubleshooting?.endDate ?? "");
+      if (startDateStr == null ||
+          startDateStr.isEmpty ||
+          endDateStr == null ||
+          endDateStr.isEmpty) {
+        return false;
+      }
+
+      // Get the dates
+      DateTime startDate = DateTime.parse(startDateStr);
+      DateTime endDate = DateTime.parse(endDateStr);
 
       // Get the actual date
       DateTime actualDate = DateTime.now();
