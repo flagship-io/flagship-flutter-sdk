@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flagship/model/flag.dart';
 import 'package:flagship/status.dart';
 import 'package:flagship_qa/widgets/FSinputField.dart';

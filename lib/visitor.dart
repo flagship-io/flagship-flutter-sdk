@@ -70,6 +70,7 @@ class Visitor with EmotionAiDelegate {
   TrackingManager? trackingManager;
 
   /// Consent by default is true
+  ///
   bool _hasConsented = true;
 
   /// Experience Continuity

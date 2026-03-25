@@ -32,6 +32,7 @@ class FlagshipContextManager {
       case FlagshipContext.FLAGSHIP_VERSION:
       case FlagshipContext.FS_VERSION:
         return FlagshipVersion;
+      // Set by the client
       case FlagshipContext.FS_CLIENT:
         return "flutter";
       case FlagshipContext.LOCATION_CITY:

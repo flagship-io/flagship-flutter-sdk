@@ -54,7 +54,6 @@
         "modifications": {
           "type": "JSON",
           "value":{
-            
             "aliasTer": "testValue"
           }
         },
