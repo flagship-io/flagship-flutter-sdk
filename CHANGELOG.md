@@ -1,5 +1,5 @@
 
-# 4.3.0-beta - 24/03/2026
+# 4.3.0 - 26/03/2026
 
 - Add connector with QA Assistant tools
 - Add QA Assistant Strategy for managing assistant interactions
