@@ -9,6 +9,13 @@ mixin IVisitorCacheImplementation {
 
 // Called when a visitor set consent to false. Must erase visitor data related to the given visitor
   void flushVisitor(String visitorId);
+
+// Optional: Called to check if a visitor exists in cache without retrieving the data
+// Returns true if visitor exists, false otherwise
+// Default implementation returns false (no cache)
+  Future<bool> visitorExists(String visitorId) async {
+    return Future.value(false);
+  }
 }
 
 mixin IHitCacheImplementation {

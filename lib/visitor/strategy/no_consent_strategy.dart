@@ -10,14 +10,9 @@ import 'package:flagship/visitor/strategy/default_strategy.dart';
 class NoConsentStrategy extends DefaultStrategy {
   NoConsentStrategy(Visitor visitor) : super(visitor);
 
-// The activate modification is not allowed
   @override
-  Future<void> activateModification(String key) async {
-    Flagship.logger(Level.INFO, CONSENT_ACTIVATE);
-  }
-
-  @override
-  Future<void> activateFlag(Modification pFlag) async {
+  Future<void> activateFlag(Modification pFlag,
+      {bool isDuplicated = false}) async {
     Flagship.logger(Level.INFO, CONSENT_ACTIVATE);
   }
 
@@ -49,5 +44,10 @@ class NoConsentStrategy extends DefaultStrategy {
   @override
   void onExposure(Modification pModification) {
     Flagship.logger(Level.INFO, CONSENT_ACTIVATE);
+  }
+
+  @override
+  collectEmotionsAIEvents(String screenName) {
+    Flagship.logger(Level.INFO, CONSENT_EAI);
   }
 }

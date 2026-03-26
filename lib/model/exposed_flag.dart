@@ -15,8 +15,11 @@ class ExposedFlag<T> implements IFlag {
   final T _value;
   // Metadata
   final FlagMetadata _metadata;
+  // If flag is already activated
+  bool alreadyActivatedCampaign = false;
 
-  ExposedFlag(this._key, this._value, this._defaultValue, this._metadata);
+  ExposedFlag(this._key, this._value, this._defaultValue, this._metadata,
+      {bool alreadyActivatedCampaign = false});
 
   T get value {
     return _value;
@@ -37,7 +40,8 @@ class ExposedFlag<T> implements IFlag {
       "key": this.key,
       "value": this.value,
       "defaultValue": this.defaultValue,
-      "metadata": this.metadata().toJson()
+      "metadata": this.metadata().toJson(),
+      "alreadyActivatedCampaign": this.alreadyActivatedCampaign
     };
   }
 }

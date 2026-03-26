@@ -101,6 +101,7 @@ class _TransactionState extends State<TransactionHit> {
     transacEvent.paymentMethod = _textControllerPaymentMethod.text;
     transacEvent.shippingMethod = _textControllerShippingMethod.text;
     transacEvent.itemCount = int.tryParse(_textControllerItemCount.text) ?? 0;
+    transacEvent.location = "screen_transac";
 
     print(transacEvent);
 

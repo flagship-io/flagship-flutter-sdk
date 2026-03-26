@@ -92,6 +92,9 @@ class Activate extends BaseHit {
     // Add Type t , to identify this hit as activate from the lookup hits
     customBody.addEntries({'t': typeOfEvent}.entries);
 
+    // qa mode
+    if (qa == true) customBody.addEntries({'qa': true}.entries);
+
     // Set exposed flag info
     if (this.exposure_flag != null) {
       customBody.addEntries(

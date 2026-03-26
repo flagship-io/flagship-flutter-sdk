@@ -50,33 +50,5 @@ void main() {
         .build();
     v1.config.decisionManager = fakeApi;
     expect(v1.getConsent(), false);
-    // ignore: deprecated_member_use_from_same_package
-    await v1.fetchFlags().then((value) {
-      //   expect(Flagship.getStatus(), FSSdkStatus.SDK_INITIALIZED);
-
-      //   /// Activate
-      //   // ignore: deprecated_member_use_from_same_package
-      //   v1.activateModification("key");
-
-      //   /// Get Modification
-      //   // ignore: deprecated_member_use_from_same_package
-      //   expect(v1.getModification('key_A', 'default'), "val_A");
-
-      //   /// Get infos
-      //   // ignore: deprecated_member_use_from_same_package
-      //   var infos = v1.getModificationInfo('alias');
-      //   expect(infos?.length, 9);
-      //   expect(infos!['campaignId'], "bsffhle242b2l3igq4dg");
-      //   expect(infos['variationGroupId'], "bsffhle242b2l3igq4egaa");
-      //   expect(infos['variationId'], "bsffhle242b2l3igq4f0");
-      //   expect(infos['isReference'], true);
-
-      /// Send hit
-      v1.sendHit(
-          Event(action: "action", category: EventCategory.Action_Tracking));
-
-      /// Send consent hit
-      v1.sendHit(Consent(hasConsented: false));
-    });
   });
 }

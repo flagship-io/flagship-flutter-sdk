@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flagship/tracking/tracking_manager_config.dart';
 import 'package:flagship/utils/constants.dart';
 import 'package:flutter/material.dart';
@@ -5,7 +6,7 @@ import 'package:flutter/material.dart';
 class FSData extends ChangeNotifier {
   // Apikey
   String _apiKey = "apiKey"; //
-  // EnvI
+  // EnvId
   String _envId = "bkk9glocmjcg0vtmdlng"; //
   // Mode
   Mode _mode = Mode.DECISION_API;
@@ -63,16 +64,13 @@ class FSData extends ChangeNotifier {
 }
 
 class UserData extends ChangeNotifier {
-  String _visitorId = "flutter_user196";
+  String _visitorId = "userTest" + Random().nextInt(10000).toString();
+
   Map<String, Object> context = {
     "testing_tracking_manager": true,
     "isQA": true,
     "fs_is_vip": true,
-    "customer": "spécial",
-    "condition1": "segment",
-    "bucketKeyFlutter": "Mercredi",
-    "numericKeyFlutter": true,
-    "floatKeyFlutter": 12.5
+    "condition1": "spécial"
   };
   bool _hasConsented = true;
   bool _isAuthenticated = false;

@@ -34,7 +34,7 @@ class DataReportQueue {
     var response = await this._reportService.sendHttpRequest(
         RequestType.Post,
         urlString,
-        Endpoints.getFSHeader(Flagship.sharedInstance().envId ?? ""),
+        Endpoints.getFSHeader(Flagship.sharedInstance().apiKey ?? ""),
         jsonEncode(dataReport.bodyTrack));
 
     switch (response.statusCode) {

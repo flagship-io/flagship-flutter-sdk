@@ -14,8 +14,6 @@ abstract class IVisitor {
   // Future<void> synchronizeModifications();
 // Fetch Flags
   Future<void> fetchFlags();
-// Activate modification
-  Future<void> activateModification(String key);
 // Activate flag
   Future<void> activateFlag(Modification pModification);
 // Send Hits
@@ -45,6 +43,12 @@ abstract class IVisitor {
 
   // Get Status
   FlagStatus getFlagStatus(String key);
+
+  // EmotionsAI
+  collectEmotionsAIEvents(String screenName);
+
+  // On change screen
+  onAppScreenChange(String screenName);
 }
 
 // Future to represent the error and the status

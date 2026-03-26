@@ -16,6 +16,11 @@ class Flag implements IFlag {
 
   Flag(this._key, this._visitorDelegate);
 
+  FlagStatus get status {
+    return this._visitorDelegate?.getFlagStatus(this._key) ??
+        FlagStatus.NOT_FOUND;
+  }
+
 // Get value for flag
 //
 // visitorExposed is true by default
@@ -135,12 +140,6 @@ class Flag implements IFlag {
 
   @override
   String get key => _key;
-
-  // Get Status
-  FlagStatus getFlagStatus() {
-    return this._visitorDelegate?.getFlagStatus(this._key) ??
-        FlagStatus.NOT_FOUND;
-  }
 
   @override
   get defaultValue => this._defaultValue;

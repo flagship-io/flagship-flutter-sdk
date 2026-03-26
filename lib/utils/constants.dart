@@ -45,6 +45,8 @@ const String FETCH_NOT_READY =
 // PANIC
 const String PANIC = "Panic mode is on.";
 const String PANIC_HIT = "Panic mode is on, no event will be sent";
+const String PANIC_EAI = "Panic mode is on, no emotionAI will be collect";
+
 const String PANIC_ACTIVATE = "panic mode is on, the activate is not sent";
 const String PANIC_MODIFICATION_INFO =
     "Panic mode is on, no modification infos for key '%s'.";
@@ -65,6 +67,7 @@ const String PANIC_UNAUTHENTICATE =
 const String CONSENT_HIT = "The user is not consented to send hit";
 const String CONSENT_ACTIVATE =
     "The user is not consented to send the actiavte hit";
+const String CONSENT_EAI = "The user is not consented to collect emotionAI";
 
 // REQUEST
 const String REQUEST_POST_BODY = "Body of the POST: %s";

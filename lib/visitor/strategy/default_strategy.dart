@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flagship/Targeting/targeting_manager.dart';
 import 'package:flagship/dataUsage/data_usage_tracking.dart';
+import 'package:flagship/emotionAi/emotion_tools.dart';
+import 'package:flagship/emotionAi/fs_emotion.dart';
 import 'package:flagship/hits/activate.dart';
 import 'package:flagship/hits/event.dart';
 import 'package:flagship/hits/hit.dart';
@@ -20,7 +22,6 @@ import 'package:flagship/visitor/Ivisitor.dart';
 // This class represent the default behaviour
 class DefaultStrategy implements IVisitor {
   final Visitor visitor;
-
   DefaultStrategy(this.visitor);
 
   @override
@@ -37,71 +38,85 @@ class DefaultStrategy implements IVisitor {
     }
   }
 
-  // Activate
-  Future<void> _sendActivate(Modification pModification) async {
-    // Check if the callback is defined
-    String? exposedFlag;
-    String? exposedVisitor;
-    if (Flagship.sharedInstance().getConfiguration()?.onVisitorExposed !=
-        null) {
-      try {
-        exposedFlag = jsonEncode(ExposedFlag(
-                pModification.key,
-                pModification.value,
-                pModification.defaultValue,
-                FlagMetadata.withMap(pModification.toJsonInformation()))
-            .toJson());
+  Future<void> _sendActivate(
+    Modification modification,
+    bool isDuplicated,
+  ) async {
+    // Get config and callback
+    final config = Flagship.sharedInstance().getConfiguration();
+    final onExposed = config?.onVisitorExposed;
 
-        exposedVisitor = jsonEncode(VisitorExposed(
-                visitor.visitorId, visitor.anonymousId, visitor.getContext())
-            .toJson());
-      } catch (e) {
-        Flagship.logger(Level.ERROR, "Failed to encode exposure object: $e");
-        exposedFlag = null;
-        exposedVisitor = null;
-      }
-    }
-    // Build the activate hit
-    Activate activateHit = Activate(
-        pModification,
+    // Prepare exposure object
+    ExposedFlag? exposedFlag;
+    VisitorExposed? exposedVisitor;
+    if (onExposed != null) {
+      exposedFlag = ExposedFlag(
+        modification.key,
+        modification.value,
+        modification.defaultValue,
+        FlagMetadata.withMap(modification.toJsonInformation()),
+      );
+      exposedVisitor = VisitorExposed(
         visitor.visitorId,
         visitor.anonymousId,
-        Flagship.sharedInstance().envId ?? "",
-        exposedFlag,
-        exposedVisitor);
-    // Process the troubleShooting
+        visitor.getContext(),
+      );
+    }
+
+    // When deduplicated
+    if (isDuplicated) {
+      if (onExposed != null && exposedFlag != null && exposedVisitor != null) {
+        exposedFlag.alreadyActivatedCampaign = true;
+        onExposed(exposedVisitor, exposedFlag);
+      }
+      Flagship.logger(Level.INFO, " The campaign's flag already activated ");
+      return;
+    }
+
+    // When not duplicated
+    final String? flagJson =
+        exposedFlag != null ? jsonEncode(exposedFlag) : null;
+    final String? visitorJson =
+        exposedVisitor != null ? jsonEncode(exposedVisitor) : null;
+
+    final activateHit = Activate(
+      modification,
+      visitor.visitorId,
+      visitor.anonymousId,
+      Flagship.sharedInstance().envId ?? '',
+      flagJson,
+      visitorJson,
+    );
+
+    // Send troubleshooting
     DataUsageTracking.sharedInstance().processTroubleShootingHits(
-        CriticalPoints.VISITOR_SEND_ACTIVATE.name, visitor, activateHit);
-    visitor.trackingManager?.sendActivate(activateHit).then((activateResponse) {
-      if (activateResponse.statusCode >= 200 &&
-          activateResponse.statusCode < 300) {
-      } else {
+      CriticalPoints.VISITOR_SEND_ACTIVATE.name,
+      visitor,
+      activateHit,
+    );
+
+    // Send Activate hit
+    try {
+      final response = await visitor.trackingManager?.sendActivate(activateHit);
+      final status = response?.statusCode ?? -1;
+      if (status < 200 || status >= 300) {
         Flagship.logger(
-            Level.ERROR,
-            ACTIVATE_FAILED +
-                " status code = ${activateResponse.statusCode.toString()}");
+          Level.ERROR,
+          'ACTIVATE_FAILED: status code = $status',
+        );
       }
-    });
-  }
-
-  @override
-  Future<void> activateModification(String key) async {
-    if (visitor.modifications.containsKey(key)) {
-      try {
-        var modification = visitor.modifications[key];
-
-        if (modification != null) {
-          await _sendActivate(modification);
-        }
-      } catch (exp) {
-        Flagship.logger(Level.EXCEPTIONS, EXCEPTION.replaceFirst("%s", "$exp"));
-      }
+    } catch (e, stack) {
+      Flagship.logger(
+        Level.ERROR,
+        'ACTIVATE_FAILED: exception = $e\n$stack',
+      );
     }
   }
 
   @override
-  Future<void> activateFlag(Modification pModification) async {
-    return _sendActivate(pModification);
+  Future<void> activateFlag(Modification pModification,
+      {bool isDuplicated = false}) async {
+    return _sendActivate(pModification, isDuplicated);
   }
 
   @override
@@ -151,7 +166,7 @@ class DefaultStrategy implements IVisitor {
         }
         if (activate && hasSameType) {
           // Send activate later
-          _sendActivate(modification);
+          this._sendActivate(modification, false);
         }
       } catch (exp) {
         Flagship.logger(Level.INFO,
@@ -180,6 +195,11 @@ class DefaultStrategy implements IVisitor {
   // Synchronize modification for the visitor
   @override
   Future<FetchResponse?> fetchFlags() async {
+    var score = await _prepareEmotionAI();
+    if (score != null) {
+      this.visitor.emotionScoreAI = score;
+      this.visitor.updateContext("eai::eas", score);
+    }
     Flagship.logger(Level.ALL, SYNCHRONIZE_MODIFICATIONS);
     // get actual state flagship sdk
     FSSdkStatus state = Flagship.getStatus();
@@ -202,6 +222,7 @@ class DefaultStrategy implements IVisitor {
       } else {
         state = FSSdkStatus.SDK_INITIALIZED;
         var modif = visitor.decisionManager.getModifications(camp.campaigns);
+
         visitor.modifications.addAll(modif);
         // Start Batching loop
         visitor.trackingManager?.startBatchingLoop();
@@ -214,8 +235,24 @@ class DefaultStrategy implements IVisitor {
       visitor.flagshipDelegate.onUpdateState(state);
 
       // Save the response for the visitor database
-      cacheVisitor(visitor.visitorId,
-          jsonEncode(VisitorCache.fromVisitor(this.visitor).toJson()));
+      String visitorCacheData =
+          jsonEncode(VisitorCache.fromVisitor(this.visitor).toJson());
+      cacheVisitor(visitor.visitorId, visitorCacheData);
+      // In bucketing mode, if anonymousId exists and no cache exists for it, cache the same data
+      if (visitor.config.decisionMode == Mode.BUCKETING &&
+          visitor.anonymousId != null) {
+        // Check if cache exists for anonymousId
+        bool anonymousExists = await visitor.config.visitorCacheImp
+                ?.visitorExists(visitor.anonymousId ?? "") ??
+            false;
+
+        if (!anonymousExists) {
+          // Cache the same visitor data with anonymousId as key
+          cacheVisitor(visitor.anonymousId!, visitorCacheData);
+          Flagship.logger(Level.DEBUG,
+              "Cached visitor data for anonymousId: ${visitor.anonymousId} in bucketing mode");
+        }
+      }
       // Update the dataUsage tracking
       visitor.dataUsageTracking
           .updateTroubleshooting(camp.accountSettings?.troubleshooting);
@@ -252,50 +289,51 @@ class DefaultStrategy implements IVisitor {
 
   @override
   authenticateVisitor(String pVisitorId) {
-    if (visitor.config.decisionMode == Mode.DECISION_API) {
-      if (visitor.anonymousId == null) {
-        visitor.anonymousId = visitor.visitorId;
-        visitor.visitorId = pVisitorId;
-        // Update fs_users
-        visitor.updateContext(FS_USERS, pVisitorId);
-      }
-
-      DataUsageTracking.sharedInstance()
-          .processTSXpc(CriticalPoints.VISITOR_AUTHENTICATE.name, this.visitor);
-    } else {
-      Flagship.logger(Level.ALL,
-          "AuthenticateVisitor method will be ignored in Bucketing configuration");
+    if (visitor.anonymousId == null) {
+      visitor.anonymousId = visitor.visitorId;
+      visitor.visitorId = pVisitorId;
+      // Update fs_users
+      visitor.updateContext(FS_USERS, pVisitorId);
     }
+
+    DataUsageTracking.sharedInstance()
+        .processTSXpc(CriticalPoints.VISITOR_AUTHENTICATE.name, this.visitor);
+
+    // Update the xpc info for the emotionAI
+    this
+        .visitor
+        .emotion_ai
+        ?.updateTupleId(this.visitor.visitorId, this.visitor.anonymousId);
   }
 
   @override
   unAuthenticateVisitor() {
-    if (visitor.config.decisionMode == Mode.DECISION_API) {
-      if (visitor.anonymousId != null) {
-        visitor.visitorId = visitor.anonymousId as String;
-        visitor.anonymousId = null;
-
-        // Update fs_users in context
-        visitor.updateContext(FS_USERS, visitor.visitorId);
-      }
-      DataUsageTracking.sharedInstance().processTSXpc(
-          CriticalPoints.VISITOR_UNAUTHENTICATE.name, this.visitor);
-    } else {
-      Flagship.logger(Level.ALL,
-          "unAuthenticateVisitor method will be ignored in Bucketing configuration");
+    if (visitor.anonymousId != null) {
+      visitor.visitorId = visitor.anonymousId as String;
+      visitor.anonymousId = null;
+      // Update fs_users in context
+      visitor.updateContext(FS_USERS, visitor.visitorId);
     }
+    DataUsageTracking.sharedInstance()
+        .processTSXpc(CriticalPoints.VISITOR_UNAUTHENTICATE.name, this.visitor);
+
+    // Update the xpc info for the emotionAI
+    this
+        .visitor
+        .emotion_ai
+        ?.updateTupleId(this.visitor.visitorId, this.visitor.anonymousId);
   }
 
   @override
-  void cacheVisitor(String visitorId, String jsonString) {
-    visitor.config.visitorCacheImp?.cacheVisitor(visitor.visitorId, jsonString);
+  void cacheVisitor(String pVisitorId, String jsonString) {
+    visitor.config.visitorCacheImp?.cacheVisitor(pVisitorId, jsonString);
   }
 
   @override
   // Called right at visitor creation, return a jsonString corresponding to visitor. Return a jsonString
-  Future<bool> lookupVisitor(String visitoId) async {
+  Future<bool> lookupVisitor(String visitorId) async {
     var resultFromCacheBis = await visitor.config.visitorCacheImp
-        ?.lookupVisitor(visitor.visitorId)
+        ?.lookupVisitor(visitorId)
         .timeout(
             Duration(
                 milliseconds:
@@ -321,6 +359,11 @@ class DefaultStrategy implements IVisitor {
         // 2- Update the assignation history
         visitor.decisionManager.updateAssignationHistory(
             cachedVisitor.getAssignationHistory() ?? {});
+        // 3- Update the Score
+        this.visitor.emotionScoreAI = cachedVisitor.getFromCacheEAIScore();
+        this.visitor.eaiVisitorScored =
+            (this.visitor.emotionScoreAI == null) ? false : true;
+
         return true;
       } else {
         return false;
@@ -378,20 +421,6 @@ class DefaultStrategy implements IVisitor {
             FlagMetadata.withMap(pModification.toJsonInformation())));
   }
 
-  // void onExposureBis(List<FSExposedInfo> exposureInfos) {
-  //   print(" @@@@@@@@@ callback exposure is called with " +
-  //       exposureInfos.length.toString() +
-  //       " Activate @@@@@@@@@@@@@@@@@");
-  //   exposureInfos.forEach((item) {
-  //     print(" onExposure item " + item.visitorExposed.id);
-
-  //     Flagship.sharedInstance()
-  //         .getConfiguration()
-  //         ?.onVisitorExposed
-  //         ?.call(item.visitorExposed, item.exposedFlag);
-  //   });
-  // }
-
   @override
   FlagStatus getFlagStatus(String key) {
     if (this.visitor.modifications.containsKey(key)) {
@@ -400,4 +429,77 @@ class DefaultStrategy implements IVisitor {
       return FlagStatus.NOT_FOUND;
     }
   }
+
+  @override
+  collectEmotionsAIEvents(String screenName) {
+    // if the emotion_ai is null create
+    if (this.visitor.emotion_ai == null) {
+      this.visitor.emotion_ai =
+          EmotionAI(this.visitor.visitorId, this.visitor.anonymousId);
+      this.visitor.emotion_ai?.delegate = this.visitor;
+    }
+    _prepareEmotionAI().then((score) {
+      if (score != null) {
+        Flagship.logger(Level.DEBUG,
+            "Since the visitor ${visitor.visitorId} is already scored with $score the emotionAI process is skiped");
+        // Update the score
+        this.visitor.emotionScoreAI = score;
+        this.visitor.eaiVisitorScored = true; // See later if we need this
+        // Update the context
+        // Save the response for the visitor database
+        cacheVisitor(visitor.visitorId,
+            jsonEncode(VisitorCache.fromVisitor(this.visitor).toJson()));
+      } else {
+        // Start the collect emotions
+        this.visitor.emotion_ai?.startEAICollectForView(screenName);
+      }
+    });
+  }
+
+  // Prepare Emotions
+  Future<String?> _prepareEmotionAI() async {
+    // EAIActivation is enabled
+    if (Flagship.sharedInstance().eaiActivationEnabled) {
+      if (this.visitor.eaiVisitorScored) {
+        // If the user is already scored, check local cache first.
+        if (this.visitor.emotionScoreAI != null) {
+          Flagship.logger(Level.INFO,
+              "This user has an existing score: + $this.visitor.emotionScoreAI +  in local cache");
+          DataUsageTracking.sharedInstance().processEaiGetScore(
+              CriticalPoints.EMOTIONS_AI_SCORE_FROM_LOCAL_CACHE.name,
+              visitor,
+              null,
+              this.visitor.emotionScoreAI);
+          return this.visitor.emotionScoreAI;
+        }
+      } else {
+        // Not scored: check remotely for an existing score
+        var scoreObject =
+            await EmotionAITools().fetchScore(this.visitor.visitorId);
+
+        if (scoreObject.statusCode == 200) {
+          Flagship.logger(Level.INFO,
+              "The visitor ${this.visitor.visitorId} is already scored 🚀 🚀 🚀 🚀 🚀 🚀 ............");
+          return scoreObject.score;
+        } else if (scoreObject.statusCode == 204) {
+          Flagship.logger(Level.INFO,
+              "The visitor ${this.visitor.visitorId} is not scored 😕 😕 😕 😕 😕 😕 ............");
+          return null;
+        } else {
+          return null;
+        }
+      }
+    }
+    // If eaiActivationEnabled is false, complete without a score.
+    return null;
+  }
+
+  @override
+  onAppScreenChange(String screenName) {
+    this.visitor.emotion_ai?.onAppScreenChange(screenName);
+  }
+
+  void hideCampaign(String campaignId) {}
+
+  void unhideCampaign(String campaignId) {}
 }

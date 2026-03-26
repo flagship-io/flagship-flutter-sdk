@@ -72,7 +72,7 @@ class _ItemState extends State<ItemHit> {
     itemEvent.price = double.tryParse(_textControllerPrice.text) ?? 0;
     itemEvent.quantity = int.tryParse(_textControllerQuantity.text) ?? 1;
     itemEvent.category = _textControllerCategory.text;
-
+    itemEvent.location = "itemScreen";
     print(itemEvent);
 
     var text = "Item sent";

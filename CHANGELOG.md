@@ -1,29 +1,31 @@
-# 4.0.5 - 23/03/2026
 
-- Update constraint to avoid version conflicts in uuid, pausable_timer and device_info_plus.
+# 4.3.0-beta - 24/03/2026
 
-# 4.0.4 - 12/03/2026
+- Add connector with QA Assistant tools
+- Add QA Assistant Strategy for managing assistant interactions
+- Update dependency constraints for packages
 
-- Update constraint to avoid version conflicts in http and intl.
+# 4.2.0-beta - 4/11/2025
+
+### Added
+
+- Flag activation deduplication to prevent redundant activation hits for the same campaign/variation during a visitor session.
+- Adds session-based tracking (30 min) to deduplicate flag activations for the same campaign/variation
+- Manage experience continuity in bucketing mode.
 
 
-# 4.0.3 - 20/11/2025
+# 4.1.2-beta - 24/06/2025
 
 ### Fix
+- Add information in visitor context: 'fs_users', 'fs_client', 'fs_version'.
+- Handle special characters on decoding.
 
-- Converts all persona values to strings in segment tracking.
+# 4.1.0-beta - 07/04/2025
+### Added
 
-
-# 4.0.2 - 24/06/2025
-
-### Fix
-- Add information in visitor context: fs_users , fs_client , fs_version.
-
-# 4.0.1 - 18/04/2025
-
-### Fixed
-
--  Handle special characters on decoding.
+- Emotion AI collect method `collectEmotionsAIEvents` in visitor instance
+- Emotion AI `onAppScreenChange` method to update the name of the screen being displayed during the collect process
+- The EmotionAI features are covered by troubleshooting hits in order to debug and examine any issues that may arise.
 
 # 4.0.0 - 10/08/2024
   ### Changed 

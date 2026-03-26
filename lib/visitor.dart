@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flagship/Targeting/targeting_manager.dart';
 import 'package:flagship/api/service.dart';
 import 'package:flagship/cache/default_cache.dart';
 import 'package:flagship/dataUsage/data_usage_tracking.dart';
+import 'package:flagship/emotionAi/fs_emotion.dart';
+import 'package:flagship/emotionAi/polling_score.dart';
 import 'package:flagship/flagshipContext/flagship_context.dart';
 import 'package:flagship/flagshipContext/flagship_context_manager.dart';
 import 'package:flagship/hits/event.dart';
@@ -12,6 +15,7 @@ import 'package:flagship/decision/decision_manager.dart';
 import 'package:flagship/flagship_config.dart';
 import 'package:flagship/flagship.dart';
 import 'package:flagship/hits/hit.dart';
+import 'package:flagship/model/visitor_cache/visitor_cache.dart';
 import 'package:flagship/tracking/tracking_manager_periodic_strategy.dart';
 import 'package:flagship/tracking/tracking_manager_continuous_strategies.dart';
 import 'package:flagship/tracking/tracking_manager.dart';
@@ -36,7 +40,9 @@ enum Instance {
   NEW_INSTANCE
 }
 
-class Visitor {
+const Duration FSSessionVisitor = Duration(seconds: 1 * 60 * 30); // 30 min
+
+class Visitor with EmotionAiDelegate {
   /// VisitorId
   String visitorId;
 
@@ -74,6 +80,7 @@ class Visitor {
   Map<String, dynamic> assignmentsHistory = {};
 
   /// Delegate visitor
+
   late VisitorDelegate _visitorDelegate;
 
   /// Delegate to update the status
@@ -101,10 +108,26 @@ class Visitor {
   // _onFlagStatusFetched
   OnFlagStatusFetched _onFlagStatusFetched;
 
+  // Add this flag to track if visitor lookup has been performed
+  bool _needLookupVisitor = true;
+
+  /// Optional callback that is triggered when flags are updated by QA Assistant
+  /// This allows clients to refresh their UI in response to QA changes
+  /// Usage: visitor.onFlagUpdate = (changedKeys) => setState(() { /* refresh */ });
+  void Function(List<String> changedFlagKeys)? onFlagUpdate;
+
 // Get flagStatus
   FlagStatus get flagStatus {
     return _flagStatus;
   }
+
+  // EmotionAI
+  EmotionAI? emotion_ai;
+
+  // Is the visitor is scored
+  bool eaiVisitorScored = false;
+  // the score value
+  String? emotionScoreAI = null;
 
 // Get fetchReasons
   FetchFlagsRequiredStatusReason get fetchReasons {
@@ -125,6 +148,9 @@ class Visitor {
       _onFlagStatusFetched?.call();
     }
   }
+
+  // Init the sesssion
+  DateTime sessionDuration = DateTime.now();
 
   // Create new instance for visitor
   Visitor(
@@ -181,12 +207,12 @@ class Visitor {
     _visitorDelegate.lookupHits();
 
     // Lookup for the cached visitor data
-    _visitorDelegate.lookupVisitor(this.visitorId).then((isLoadedFromCache) => {
-          this._fetchReasons = isLoadedFromCache
-              ? FetchFlagsRequiredStatusReason.FLAGS_FETCHED_FROM_CACHE
-              : FetchFlagsRequiredStatusReason.FLAGS_NEVER_FETCHED
-        });
-    _visitorDelegate.lookupVisitor(this.visitorId).whenComplete(() {});
+    // _visitorDelegate.lookupVisitor(this.visitorId).then((isLoadedFromCache) => {
+    //       this._fetchReasons = isLoadedFromCache
+    //           ? FetchFlagsRequiredStatusReason.FLAGS_FETCHED_FROM_CACHE
+    //           : FetchFlagsRequiredStatusReason.FLAGS_NEVER_FETCHED
+    //     });
+    // _visitorDelegate.lookupVisitor(this.visitorId).whenComplete(() {});
 
     /// Send the consent hit
     _visitorDelegate.sendHit(Consent(hasConsented: _hasConsented));
@@ -197,11 +223,13 @@ class Visitor {
 
   // Update context directely with map for <String, Object>
   void clearContext() {
+    sessionDuration = DateTime.now();
     _context.clear();
   }
 
   // Update context directely with map for <String, Object>
   void updateContextWithMap(Map<String, Object> context) {
+    sessionDuration = DateTime.now();
     var oldContext = Map.fromEntries(_context.entries);
     _context.addAll(context);
     if (mapEquals(oldContext, _context) == false) {
@@ -230,6 +258,7 @@ class Visitor {
   /// otherwise the update context skip with warnning log
 
   void updateContext<T>(String key, T value) {
+    sessionDuration = DateTime.now();
     var oldContext = Map.fromEntries(_context.entries);
 
     /// Delegate the action to strategy to update
@@ -248,6 +277,7 @@ class Visitor {
 
   /// Update with predefined context
   void updateFlagshipContext<T>(FlagshipContext flagshipContext, T value) {
+    sessionDuration = DateTime.now();
     if (FlagshipContextManager.chekcValidity(flagshipContext, value)) {
       updateContext(rawValue(flagshipContext), value);
     } else {
@@ -259,6 +289,7 @@ class Visitor {
   // Get Flag
   // - Return Flag instance
   Flag getFlag<T>(String key) {
+    sessionDuration = DateTime.now();
     if (_flagSyncStatus != FlagSyncStatus.FLAGS_FETCHED) {
       Flagship.logger(
           Level.ALL, _flagSyncStatus.warningMessage(visitorId, key));
@@ -269,6 +300,7 @@ class Visitor {
   // Get the colllection flags
   /// - Returns: an instance of FSFlagCollection with flags
   FlagCollection getFlags() {
+    sessionDuration = DateTime.now();
     Map<String, Flag> ret = {};
 
     this.modifications.forEach((keyItem, modifItem) {
@@ -277,9 +309,53 @@ class Visitor {
     return FlagCollection(this._visitorDelegate, ret);
   }
 
+  // Private function to handle visitor lookup logic
+  Future<void> _performVisitorLookupIfNeeded() async {
+    if (!_needLookupVisitor)
+      return; // temporary disable to always lookup visitor
+
+    String? idToLookup;
+
+    // First check if visitorId exists in cache using config
+    bool visitorExists =
+        await config.visitorCacheImp?.visitorExists(visitorId) ?? false;
+
+    if (visitorExists) {
+      idToLookup = visitorId;
+    } else if (anonymousId != null) {
+      // If visitorId doesn't exist but we have anonymousId, check if it exists
+      bool anonymousExists =
+          await config.visitorCacheImp?.visitorExists(anonymousId!) ?? false;
+      if (anonymousExists) {
+        idToLookup = anonymousId!;
+      }
+    }
+    // Only perform lookup if we found an existing ID
+    if (idToLookup != null) {
+      await _visitorDelegate
+          .lookupVisitor(idToLookup)
+          .then((isLoadedFromCache) {
+        this._fetchReasons = isLoadedFromCache
+            ? FetchFlagsRequiredStatusReason.FLAGS_FETCHED_FROM_CACHE
+            : FetchFlagsRequiredStatusReason.FLAGS_NEVER_FETCHED;
+        this._needLookupVisitor = false;
+      });
+    } else {
+      // No existing visitor found, set appropriate fetch reason
+      this._fetchReasons = FetchFlagsRequiredStatusReason.FLAGS_NEVER_FETCHED;
+      this._needLookupVisitor = false;
+    }
+  }
+
   Future<void> fetchFlags() async {
+    sessionDuration = DateTime.now();
+
     /// Delegate the action to strategy
     this.flagStatus = FlagStatus.FETCHING;
+
+    // Only lookup visitor if it is necessary
+    await _performVisitorLookupIfNeeded();
+
     return _visitorDelegate.fetchFlags().then((fetchResponse) {
       if (fetchResponse?.error == null) {
         _flagSyncStatus = FlagSyncStatus.FLAGS_FETCHED;
@@ -297,12 +373,14 @@ class Visitor {
 
   /// Send hit
   Future<void> sendHit(BaseHit hit) async {
+    sessionDuration = DateTime.now();
     // Delegate the action to strategy
     _visitorDelegate.sendHit(hit);
   }
 
   /// Set Consent
   void setConsent(bool newValue) {
+    sessionDuration = DateTime.now();
     // flush the hits from the pool
     if (newValue == false) {
       this.trackingManager?.flushAllTracking(this.visitorId);
@@ -332,21 +410,25 @@ class Visitor {
   /// - Requires: Make sure that the experience continuity option is enabled on the flagship platform before using this method
 
   authenticate(String visitorId) {
-    // Update flagSyncStatus
+    sessionDuration = DateTime.now();
+    _needLookupVisitor = true;
     _isAuthenticated = true;
     _visitorDelegate.getStrategy().authenticateVisitor(visitorId);
     this.flagStatus = FlagStatus.FETCH_REQUIRED;
     this._fetchReasons = FetchFlagsRequiredStatusReason.VISITOR_AUTHENTICATED;
+    // Update flagSyncStatus
     this._flagSyncStatus = FlagSyncStatus.AUTHENTICATED;
   }
 
   /// Use authenticate methode to go from Logged in  session to logged out session
   unauthenticate() {
-    // Update flagSyncStatus
+    sessionDuration = DateTime.now();
+    _needLookupVisitor = true;
     _isAuthenticated = false;
     _visitorDelegate.getStrategy().unAuthenticateVisitor();
     this.flagStatus = FlagStatus.FETCH_REQUIRED;
     this._fetchReasons = FetchFlagsRequiredStatusReason.VISITOR_UNAUTHENTICATED;
+    // Update flagSyncStatus
     this._flagSyncStatus = FlagSyncStatus.UNAUTHENTICATED;
   }
 
@@ -357,7 +439,51 @@ class Visitor {
 
   @visibleForTesting
   FlagSyncStatus getFlagSyncStatus() {
+    sessionDuration = DateTime.now();
     return _flagSyncStatus;
+  }
+
+  // Add emotionAI function
+  collectEmotionsAIEvents(String screenName) {
+    sessionDuration = DateTime.now();
+    if (Flagship.sharedInstance().eaiCollectEnabled == true) {
+      if (eaiVisitorScored == true) {
+        Flagship.logger(Level.INFO,
+            "The visitor $visitorId is already collected and scored");
+      } else {
+        this._visitorDelegate.collectEmotionsAIEvents(screenName);
+      }
+    } else {
+      Flagship.logger(Level.INFO, "The Emotion AI feature is not activated ");
+    }
+  }
+
+  onAppScreenChange(String screenName) {
+    if (Flagship.sharedInstance().eaiCollectEnabled == true &&
+        this.eaiVisitorScored == false) {
+      this._visitorDelegate.onAppScreenChange(screenName);
+    }
+  }
+
+  @override
+  void emotionAiCaptureCompleted(score) {
+    Flagship.logger(Level.INFO,
+        "The delegate with score \($score ?? \"null\" has been called");
+    this.eaiVisitorScored = (score == null) ? false : true;
+
+    if (Flagship.sharedInstance().eaiActivationEnabled) {
+      this.emotionScoreAI = score;
+      // Update the context
+      if (score != null) {
+        this.updateContext("eai::eas", score);
+      }
+    } else {
+      Flagship.logger(Level.INFO,
+          "eaiActivationEnabled is false will not communicate the score value");
+    }
+    // save to cache
+    _visitorDelegate.getStrategy().cacheVisitor(
+        visitorId, jsonEncode(VisitorCache.fromVisitor(this).toJson()));
   }
 }
 
@@ -393,22 +519,24 @@ class VisitorBuilder {
     return this;
   }
 
-  isAuthenticated(bool authenticated) {
+  VisitorBuilder isAuthenticated(bool authenticated) {
     _isAuthenticated = authenticated;
     return this;
   }
 
-  withOnFlagStatusChanged(OnFlagStatusChanged pCallback) {
+  // Visitor flags status callback
+  VisitorBuilder withOnFlagStatusChanged(OnFlagStatusChanged pCallback) {
     _onFlagStatusChanged = pCallback;
     return this;
   }
 
-  withOnFlagStatusFetchRequired(OnFlagStatusFetchRequired pCallback) {
+  VisitorBuilder withOnFlagStatusFetchRequired(
+      OnFlagStatusFetchRequired pCallback) {
     _onFlagStatusFetchRequired = pCallback;
     return this;
   }
 
-  withOnFlagStatusFetched(OnFlagStatusFetched pCallBack) {
+  VisitorBuilder withOnFlagStatusFetched(OnFlagStatusFetched pCallBack) {
     _onFlagStatusFetched = pCallBack;
     return this;
   }

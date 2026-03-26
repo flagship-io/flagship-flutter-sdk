@@ -11,19 +11,22 @@ class Data {
   Map<String, dynamic>? context;
   Map<String, dynamic>? assignmentsHistory;
   List<CampaignCache>? campaigns;
+  String? emotionScoreAI;
+  bool? eaiVisitorScored;
 
-  Data({
-    this.visitorId,
-    this.anonymousId,
-    this.consent,
-    this.context,
-    this.assignmentsHistory,
-    this.campaigns,
-  });
+  Data(
+      {this.visitorId,
+      this.anonymousId,
+      this.consent,
+      this.context,
+      this.assignmentsHistory,
+      this.campaigns,
+      this.emotionScoreAI,
+      this.eaiVisitorScored});
 
   @override
   String toString() {
-    return 'Data(visitorId: $visitorId, anonymousId: $anonymousId, consent: $consent, context: $context, assignmentsHistory: $assignmentsHistory, campaigns: $campaigns)';
+    return 'Data(visitorId: $visitorId, anonymousId: $anonymousId, consent: $consent, context: $context, assignmentsHistory: $assignmentsHistory, campaigns: $campaigns, emotionScoreAI:$emotionScoreAI, eaiVisitorScored:$eaiVisitorScored)';
   }
 
   factory Data.fromJson(Map<String, dynamic> json) => _$DataFromJson(json);

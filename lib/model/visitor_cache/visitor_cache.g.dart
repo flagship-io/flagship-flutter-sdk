@@ -7,7 +7,7 @@ part of 'visitor_cache.dart';
 // **************************************************************************
 
 VisitorCache _$VisitorCacheFromJson(Map<String, dynamic> json) => VisitorCache(
-      version: json['version'] as int?,
+      version: (json['version'] as num?)?.toInt(),
       data: json['data'] == null
           ? null
           : Data.fromJson(json['data'] as Map<String, dynamic>),

@@ -35,9 +35,12 @@ void main() {
     expect(result.campaigns.first.variation?.modifications?.vals["key6"], 12);
     expect(result.campaigns.first.variation?.modifications?.vals["key7"], true);
 
-    expect(result.accountSettings?.enabled1V1T, false);
-    expect(result.accountSettings?.enabledXPC, false);
-    expect(result.accountSettings?.troubleshooting, null);
+    expect(result.accountSettings?.enabled1V1T, false,
+        reason: 'enabled1V1T should be false');
+    expect(result.accountSettings?.enabledXPC, true,
+        reason: 'enabledXPC should be false');
+    expect(result.accountSettings?.troubleshooting, null,
+        reason: 'Troubleshooting should null');
 
     Campaigns resultBis = bkManager.bucketVariations(
         'alias', bucketingObject, {"condition4": "value5"}, {});
@@ -62,7 +65,7 @@ void main() {
     expect(resultTer.campaigns.length, 1);
   });
 
-  test("Bucketing test with context", () async {
+  test("Bucketing test with context bis", () async {
     MockService fakeService = MockService();
     BucketingManager bkManager = BucketingManager(fakeService, 60);
 

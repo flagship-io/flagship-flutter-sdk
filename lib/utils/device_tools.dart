@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_device_type/flutter_device_type.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
@@ -55,5 +56,10 @@ class FSDevice {
       deviceModel = value;
     });
     await isFirstTimeUser();
+  }
+
+  /// Returns the device language using the current window locale.
+  static String getDevicelanguageCode() {
+    return WidgetsBinding.instance.platformDispatcher.locale.languageCode;
   }
 }

@@ -90,6 +90,7 @@ class BucketingManager extends DecisionManager {
             CriticalPoints.SDK_BUCKETING_FILE.name, response);
         // Update sdk status
         return Bucketing.fromJson(json.decode(utf8.decode(response.bodyBytes)));
+
       case 304:
         Flagship.logger(Level.ALL,
             "The bucketing script is not modified since last download");
@@ -149,22 +150,32 @@ class BucketingManager extends DecisionManager {
     if (this.assignationHistory == null) {
       this.assignationHistory = Map.fromEntries(newAssign.entries);
     } else {
-      this.assignationHistory?.clear();
-      this.assignationHistory?.addEntries(newAssign.entries);
+      this.assignationHistory = {
+        ...this.assignationHistory ?? <String, dynamic>{},
+        ...newAssign
+      };
     }
   }
 
 // Refresh state
-  void _updateStatus(Bucketing? bk_file) {
-    if (bk_file != null) {
-      Flagship.sharedInstance().onUpdateState(
-          bk_file.panic ? FSSdkStatus.SDK_PANIC : FSSdkStatus.SDK_INITIALIZED);
-    } else {
-      _getSavedScript().then((savedBk) {
-        Flagship.sharedInstance().onUpdateState(savedBk?.panic ?? false
-            ? FSSdkStatus.SDK_PANIC
-            : FSSdkStatus.SDK_INITIALIZED);
-      });
+  void _updateStatus(Bucketing? bk_file) async {
+    Bucketing? bucketingObject =
+        (bk_file != null) ? bk_file : await _getSavedScript();
+
+    if (bucketingObject != null) {
+      Flagship.sharedInstance().onUpdateState(bucketingObject.panic
+          ? FSSdkStatus.SDK_PANIC
+          : FSSdkStatus.SDK_INITIALIZED);
+      Flagship.sharedInstance().onUpdateState(bucketingObject.panic
+          ? FSSdkStatus.SDK_PANIC
+          : FSSdkStatus.SDK_INITIALIZED);
+      // Update Settings
+      Flagship.sharedInstance().eaiActivationEnabled =
+          bucketingObject.accountSettings?.eaiActivationEnabled ?? false;
+      Flagship.sharedInstance().eaiCollectEnabled =
+          bucketingObject.accountSettings?.eaiCollectEnabled ?? false;
+      DataUsageTracking.sharedInstance().updateTroubleshooting(
+          bucketingObject.accountSettings?.troubleshooting);
     }
   }
 

@@ -33,7 +33,9 @@ class VisitorCache {
         context: visitor.getContext(),
         anonymousId: visitor.anonymousId,
         consent: visitor.getConsent(),
-        assignmentsHistory: visitor.assignmentsHistory);
+        assignmentsHistory: visitor.assignmentsHistory,
+        emotionScoreAI: visitor.emotionScoreAI,
+        eaiVisitorScored: visitor.eaiVisitorScored);
     List<CampaignCache> listCampCache = [];
 
     visitor.modifications.forEach((key, modificationItem) {
@@ -94,5 +96,10 @@ class VisitorCache {
   // Get Assignation history
   Map<String, dynamic>? getAssignationHistory() {
     return data?.assignmentsHistory;
+  }
+
+  // Get Score from cache
+  String? getFromCacheEAIScore() {
+    return data?.emotionScoreAI;
   }
 }

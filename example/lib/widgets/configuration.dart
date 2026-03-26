@@ -14,6 +14,7 @@ import 'package:flagship/visitor.dart';
 import 'package:flagship_qa/Providers/fs_data.dart';
 import 'package:flagship_qa/mixins/dialog.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import './FSinputField.dart';
@@ -58,8 +59,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
   }
 
   /////////////// start sdk ////////////////////
-//start SDK
-
+  // Start SDK
   _startSdk() async {
     // To localize the path of simulator
     Directory tempDir = await getTemporaryDirectory();
@@ -77,7 +77,6 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
         .withMode(fsData.sdkMode)
         .onSdkStatusChanged((newStatus) {
           print('--------- Callback with $newStatus ---------');
-          //var newVisitor;
           if (newStatus == FSSdkStatus.SDK_INITIALIZED) {
             setState(() {
               widget.isSdkReady = ((newStatus == FSSdkStatus.SDK_PANIC) ||
@@ -89,7 +88,7 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
         })
         .withTimeout(int.tryParse(timeoutController.text) ?? fsData.timeout)
         .withTrackingConfig(TrackingManagerConfig(
-            batchIntervals: 5000,
+            batchIntervals: DEFAULT_TIME_INTERVAL,
             poolMaxSize: 10,
             batchStrategy: fsData.strategy))
         .withOnVisitorExposed((visitorExposed, fromFlag) {
@@ -384,11 +383,35 @@ class _ConfigurationState extends State<Configuration> with ShowDialog {
                       onPressed: () {
                         _customTest();
                       })),
+              SizedBox(height: _spaceBetweenInput),
+              Container(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                      child: Text("Start Emotion AI"),
+                      onPressed: () {
+                        _startEAI();
+                      })),
             ],
           ),
         ),
       ),
     );
+  }
+
+  _startEAI() {
+    PointerRoute _emotionAIGlobalPointerRoute = (PointerEvent event) {
+      print("Collect from the application first ----------");
+    };
+    try {
+      GestureBinding.instance.pointerRouter
+          .addGlobalRoute(_emotionAIGlobalPointerRoute);
+    } catch (e) {
+      Flagship.logger(Level.ERROR, e.toString());
+    }
+
+    Flagship.sharedInstance()
+        .currentVisitor
+        ?.collectEmotionsAIEvents("screen_flutter");
   }
 
   String _createRandomUser() {

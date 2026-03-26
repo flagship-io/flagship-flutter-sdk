@@ -18,12 +18,8 @@ class NotReadyStrategy extends DefaultStrategy {
   }
 
   @override
-  Future<void> activateModification(String key) async {
-    Flagship.logger(Level.ERROR, ACTIVATE_NOT_READY);
-  }
-
-  @override
-  Future<void> activateFlag(Modification pFlag) async {
+  Future<void> activateFlag(Modification pFlag,
+      {bool isDuplicated = false}) async {
     Flagship.logger(Level.ERROR, ACTIVATE_NOT_READY);
   }
 
@@ -62,5 +58,10 @@ class NotReadyStrategy extends DefaultStrategy {
   @override
   void onExposure(Modification pModification) {
     Flagship.logger(Level.INFO, ACTIVATE_NOT_READY);
+  }
+
+  @override
+  collectEmotionsAIEvents(String screenName) {
+    Flagship.logger(Level.ERROR, HIT_NOT_READY);
   }
 }

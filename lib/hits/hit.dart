@@ -78,6 +78,9 @@ class BaseHit extends Hit {
     /// Location
     if (location != null) result["dl"] = location ?? "";
 
+    // qa mode
+    if (qa == true) result["qa"] = true;
+
     /// Add qt entries
     /// Time difference between when the hit was created and when it was sent
     if (this.createdAt != null) {
@@ -120,6 +123,9 @@ class BaseHit extends Hit {
         break;
       case HitCategory.USAGE:
         ret = "USAGE";
+        break;
+      case HitCategory.EMOTION_AI:
+        ret = "VISITOREVENT";
         break;
       default:
     }
@@ -175,6 +181,9 @@ abstract class Hit {
 
   // Check the validity
   bool isValid();
+
+  // QA sessions are not counted in the report once the test is launched in production
+  bool qa = false;
 }
 
 enum HitCategory {
@@ -189,5 +198,6 @@ enum HitCategory {
   SEGMENT,
   TROUBLESHOOTING,
   USAGE,
+  EMOTION_AI,
   NONE
 }

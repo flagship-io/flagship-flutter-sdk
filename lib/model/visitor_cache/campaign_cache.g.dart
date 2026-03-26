@@ -16,9 +16,7 @@ CampaignCache _$CampaignFromJson(Map<String, dynamic> json) => CampaignCache(
       isReference: json['isReference'] as bool?,
       type: json['type'] as String?,
       activated: json['activated'] as bool?,
-      flags: json['flags'] == null
-          ? null
-          : (json['flags'] as Map<String, dynamic>),
+      flags: json['flags'] as Map<String, dynamic>?,
     );
 
 Map<String, dynamic> _$CampaignCacheToJson(CampaignCache instance) =>

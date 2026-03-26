@@ -4,6 +4,9 @@ import 'package:json_annotation/json_annotation.dart';
 class AccountSettings {
   bool enabledXPC = false;
   bool enabled1V1T = false;
+  bool eaiCollectEnabled = false;
+  bool eaiActivationEnabled = false;
+
   Troubleshooting? troubleshooting;
 
   AccountSettings.fromJson(Map<String, dynamic> json) {
@@ -11,7 +14,13 @@ class AccountSettings {
     enabledXPC = (json['enabledXPC'] ?? false) as bool;
 
     // Set enabled1V1T
-    enabledXPC = (json['enabled1V1T'] ?? false) as bool;
+    enabled1V1T = (json['enabled1V1T'] ?? false) as bool;
+
+    // Set eaiActivationEnabled
+    eaiActivationEnabled = (json['eaiActivationEnabled'] ?? false) as bool;
+
+    // Set eaiCollectEnabled
+    eaiCollectEnabled = (json['eaiCollectEnabled'] ?? false) as bool;
 
     // Set Troubleshooting
     if (json.keys.contains('troubleshooting')) {
