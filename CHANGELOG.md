@@ -4,6 +4,7 @@
 - Bump `device_info_plus` to `>=13.2.0 <14.0.0`
 - Raise minimum supported SDK/Flutter versions to Dart `>=3.10.0 <4.0.0` and Flutter `>=3.38.1` to match `device_info_plus` requirements
 - Example app: bump Gradle wrapper to 8.14, Android Gradle Plugin to 8.13.0 and Kotlin to 2.2.20 to fix CI build failure (Flutter requires Gradle >=8.14.0 and Kotlin >=2.2.20)
+- Track `example/pubspec.lock` in version control so example app dependency versions are reproducible
 
 # 4.3.0 - 26/03/2026
 
