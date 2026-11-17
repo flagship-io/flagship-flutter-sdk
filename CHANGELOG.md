@@ -1,4 +1,8 @@
 
+# 4.3.2 - 17/11/2026
+
+- Update homepage URL
+
 # 4.3.1 - 23/09/2026
 
 - Bump `device_info_plus` to `>=13.2.0 <14.0.0`
